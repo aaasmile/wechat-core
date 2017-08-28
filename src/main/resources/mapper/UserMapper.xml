@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.UserMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.User">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+    <result column="kf_id" jdbcType="VARCHAR" property="kfId" />
+    <result column="head_img_url" jdbcType="VARCHAR" property="headImgUrl" />
+    <result column="local_head_img_url" jdbcType="VARCHAR" property="localHeadImgUrl" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="creator_id" jdbcType="INTEGER" property="creatorId" />
+    <result column="modify_at" jdbcType="TIMESTAMP" property="modifyAt" />
+    <result column="push_at" jdbcType="TIMESTAMP" property="pushAt" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+    <result column="position" jdbcType="VARCHAR" property="position" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="last_login_at" jdbcType="TIMESTAMP" property="lastLoginAt" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="role_id" jdbcType="INTEGER" property="roleId" />
+    <result column="company_id" jdbcType="INTEGER" property="companyId" />
+    <result column="counter" jdbcType="INTEGER" property="counter" />
+  </resultMap>
+  
+  <select id="login" parameterType="HashMap" resultMap="BaseResultMap">
+  	select * from user 
+	<where>
+		username = #{username} and password = #{password} and status = 1
+	</where>
+  </select>
+  
+  <select id="listVisibleWechat" parameterType="HashMap" resultMap="WechatResultMap">
+  	select w.id as id, w.name as name, w.head_img_url as headImg, uw.is_use as is_use from user_wechat as uw left join wechat as w on uw.wechat_id = w.id
+  	<where>
+  		uw.user_id = #{userId} and w.status = 1
+  		<if test="companyId != null">
+  			and w.company_id = #{companyId}
+  		</if>
+  		order by w.priority asc
+  	</where>
+  </select>
+  
+  <select id="listVisibleRole" parameterType="HashMap" resultMap="RoleResultMap">
+  	select r.id as id, r.name as name, r.isSystemRole as isSystemRole from role as r left join user as u on u.role_id = r.id
+  	<where>
+  		u.id = #{userId} and u.company_id = #{companyId}
+  	</where>
+  </select>
+  
+  <select id="listVisibleFunction" parameterType="HashMap" resultType="int">
+  	select f.id from role_function as rf left join function as f on rf.function_id = f.id
+  	<where>
+  		rf.role_id = #{roleId}
+  	</where>
+  </select>
+  
+  <select id="listAvailableWechat" parameterType="HashMap" resultMap="WechatAvailableResultMap">
+  	select w.id, w.name from wechat as w
+  	<where>
+  		w.status = 1
+  		<if test="companyId != null">
+  			and w.company_id = #{companyId}
+  		</if>
+  	</where>
+  	order by w.priority asc
+  </select>
+  
+  <select id="listAvailableRole" parameterType="HashMap" resultMap="RoleResultMap">
+  	select * from role as r
+  	<where>
+  		r.status = 1 and r.company_id = #{companyId}
+  	</where>
+  </select>
+  
+  <resultMap id="RoleResultMap" type="com.d1m.wechat.dto.RoleDto">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+  	<result column="name" jdbcType="VARCHAR" property="name" />
+  	<result column="isSystemRole" jdbcType="INTEGER" property="isSystemRole" />
+  </resultMap>
+  
+  <resultMap id="RoleDtoResultMap" type="com.d1m.wechat.dto.RoleDto">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+  	<result column="name" jdbcType="VARCHAR" property="name" />
+  	<association column="{roleId=id}" javaType="ArrayList" property="functionIds" select="listVisibleFunction" />
+  </resultMap>
+  
+  <resultMap id="WechatResultMap" type="com.d1m.wechat.dto.WechatDto">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="headImg" jdbcType="VARCHAR" property="headImg" />
+    <result column="is_use" jdbcType="INTEGER" property="isUse" />
+  </resultMap>
+  
+  <resultMap id="WechatAvailableResultMap" type="com.d1m.wechat.dto.WechatDto">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+  </resultMap>
+  
+  <select id="search" parameterType="HashMap" resultMap="UserResultMap">
+  	select * from user
+  	<where>
+  		status = 1
+  		<if test="companyId != null">
+  			and company_id = #{companyId}
+  		</if>
+  	</where>
+  </select>
+  
+  <select id="searchById" parameterType="HashMap" resultMap="UserResultMap">
+  	select * from user
+  	<where>
+  		id = #{id} and status = 1
+  	</where>
+  </select>
+
+  <resultMap id="UserResultMap" type="com.d1m.wechat.dto.UserDto">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+  	<result column="local_head_img_url" jdbcType="VARCHAR" property="avatar" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="position" jdbcType="VARCHAR" property="position" />
+    <result column="last_login_at" jdbcType="VARCHAR" property="lastLoginAt" />
+    <result column="role_id" jdbcType="INTEGER" property="roleId" />
+    <result column="company_id" jdbcType="INTEGER" property="companyId" />
+    <collection column="{userId=id, companyId=company_id}" ofType="com.d1m.wechat.dto.RoleDto" property="role" select="listVisibleRole" />
+    <collection column="{userId=id, companyId=company_id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.WechatDto" property="wechats" select="listVisibleWechat" />
+  </resultMap>
+  
+  <select id="getProfile" parameterType="HashMap" resultMap="UserResultMap">
+  	select * from user where id = #{userId} and status = 1 and company_id = #{companyId}
+  </select>
+  
+</mapper>

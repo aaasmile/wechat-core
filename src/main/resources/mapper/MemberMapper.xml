@@ -1,0 +1,760 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.MemberMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.Member">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="union_id" jdbcType="VARCHAR" property="unionId" />
+    <result column="open_id" jdbcType="VARCHAR" property="openId" />
+    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+    <result column="sex" jdbcType="TINYINT" property="sex" />
+    <result column="language" jdbcType="TINYINT" property="language" />
+    <result column="city" jdbcType="INTEGER" property="city" />
+    <result column="province" jdbcType="INTEGER" property="province" />
+    <result column="country" jdbcType="INTEGER" property="country" />
+    <result column="local_head_img_url" jdbcType="VARCHAR" property="localHeadImgUrl" />
+    <result column="head_img_url" jdbcType="VARCHAR" property="headImgUrl" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+    <result column="member_group_id" jdbcType="INTEGER" property="memberGroupId" />
+    <result column="activity" jdbcType="TINYINT" property="activity" />
+    <result column="batchsend_month" jdbcType="INTEGER" property="batchsendMonth" />
+    <result column="subscribe_at" jdbcType="TIMESTAMP" property="subscribeAt" />
+    <result column="unsubscribe_at" jdbcType="TIMESTAMP" property="unsubscribeAt" />
+    <result column="fromwhere" jdbcType="VARCHAR" property="fromwhere" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="is_subscribe" jdbcType="BIT" property="isSubscribe" />
+    <result column="last_conversation_at" jdbcType="TIMESTAMP" property="lastConversationAt" />
+    <result column="medium" jdbcType="VARCHAR" property="medium" />
+    <result column="source" jdbcType="VARCHAR" property="source" />
+    <result column="keyword" jdbcType="VARCHAR" property="keyword" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="pmcode" jdbcType="VARCHAR" property="pmcode" />
+    <result column="levels" jdbcType="VARCHAR" property="levels" />
+  </resultMap>
+
+	<resultMap id="MemberDtoResultMap" type="com.d1m.wechat.dto.MemberDto">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="union_id" jdbcType="VARCHAR" property="unionId" />
+		<result column="open_id" jdbcType="VARCHAR" property="openId" />
+		<result column="nickname" jdbcType="VARCHAR" property="nickname" />
+		<result column="sex" jdbcType="TINYINT" property="sex" />
+		<result column="language" jdbcType="VARCHAR" property="language" />
+		<result column="city" jdbcType="VARCHAR" property="city" />
+		<result column="province" jdbcType="VARCHAR" property="province" />
+		<result column="country" jdbcType="VARCHAR" property="country" />
+		<result column="local_head_img_url" jdbcType="VARCHAR" property="localHeadImgUrl" />
+		<result column="head_img_url" jdbcType="VARCHAR" property="headImgUrl" />
+		<result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+		<result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+		<result column="member_group_id" jdbcType="INTEGER" property="memberGroupId" />
+		<result column="activity" jdbcType="TINYINT" property="activity" />
+		<result column="batchsend_month" jdbcType="INTEGER" property="batchsendMonth" />
+		<result column="subscribe_at" jdbcType="TIMESTAMP" property="subscribeAt" />
+		<result column="unsubscribe_at" jdbcType="TIMESTAMP" property="unsubscribeAt" />
+		<result column="fromwhere" jdbcType="TINYINT" property="fromwhere" />
+		<result column="mobile" jdbcType="VARCHAR" property="mobile" />
+		<result column="is_subscribe" jdbcType="BIT" property="isSubscribe" />
+		<result column="last_conversation_at" jdbcType="TIMESTAMP" property="lastConversationAt" />
+		<association column="{memberId=id}" javaType="INTEGER" property="conversationCount" select="getConversationCount" />
+		<collection column="{memberId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.MemberTagDto" property="memberTags" select="getMemberMemberTags" />
+	</resultMap>
+	
+	<select id="getConversationCount" resultType="int">
+		SELECT
+			sum(t.a)
+		FROM
+			(
+				(
+					SELECT
+						count(1) AS a
+					FROM
+						conversation
+					WHERE
+						member_id = #{memberId}
+				)
+				UNION ALL
+					(
+						SELECT
+							count(1) AS a
+						FROM
+							mass_conversation
+						WHERE
+							member_id = #{memberId}
+					)
+			) AS t
+	</select>
+	
+	<resultMap id="TrendBaseResultMap" type="com.d1m.wechat.dto.TrendBaseDto">
+		<result column="time" jdbcType="VARCHAR" property="time" />
+		<result column="count" jdbcType="INTEGER" property="count" />
+	</resultMap>
+	
+	<resultMap id="PieBaseResultMap" type="com.d1m.wechat.dto.PieBaseDto">
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="count" jdbcType="INTEGER" property="count" />
+	</resultMap>
+	
+	
+	<resultMap id="activityUserBaseResultMap" type="com.d1m.wechat.dto.ReportActivityUserDto">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="nickname" jdbcType="VARCHAR" property="nickname" />
+		<result column="sex" jdbcType="TINYINT" property="sex" />
+		<result column="city" jdbcType="VARCHAR" property="city" />
+		<result column="province" jdbcType="VARCHAR" property="province" />
+		<result column="country" jdbcType="VARCHAR" property="country" />
+		<result column="head_img_url" jdbcType="VARCHAR" property="headImgUrl" />
+		<result column="subscribe_at" jdbcType="TIMESTAMP" property="subscribeAt" />
+		<result column="menuClickNum" jdbcType="INTEGER" property="menuClickNum" />
+		<result column="msgReplyNum" jdbcType="INTEGER" property="msgReplyNum" />
+	</resultMap>
+	
+	<resultMap id="sourceUserBaseResultMap" type="com.d1m.wechat.dto.ReportUserSourceDto">
+		<result column="time" jdbcType="VARCHAR" property="time" />
+		<result column="wechatSearch" jdbcType="TINYINT" property="wechatSearch" />
+		<result column="businessCard" jdbcType="TINYINT" property="businessCard" />
+		<result column="qrCode" jdbcType="TINYINT" property="qrCode" />
+		<result column="topRightMenu" jdbcType="TINYINT" property="topRightMenu" />
+		<result column="wechatInImageText" jdbcType="TINYINT" property="wechatInImageText" />
+		<result column="wechatInArticleAd" jdbcType="TINYINT" property="wechatInArticleAd" />
+		<result column="momentsAd" jdbcType="TINYINT" property="momentsAd" />
+		<result column="payAttentionAfter" jdbcType="TINYINT" property="payAttentionAfter" />
+		<result column="other" jdbcType="TINYINT" property="other" />
+		
+	</resultMap>
+
+	<!--查询用户开始，为优化性能，使用单独计算记录总数-->
+	<sql id="searchM">
+		<if test="memberTags != null and memberTags.length &gt; 0">
+			left join (
+			SELECT DISTINCT member_id FROM member_member_tag where 1=1
+			and member_tag_id in
+			<foreach close=")" collection="memberTags" index="index" item="item" open="(" separator=",">
+				#{item}
+			</foreach>
+			) as mmt on m.id = mmt.member_id
+		</if>
+		<if test="bindStatus != null">
+			left join member_profile as mp on m.id = mp.member_id
+		</if>
+		<where>
+			m.wechat_id = #{wechatId}
+			<if test="openId != null">
+				and m.open_id = #{openId}
+			</if>
+			<if test="nickname != null">
+				and m.nickname like CONCAT('%',#{nickname},'%')
+			</if>
+			<if test="sex != null">
+				and m.sex = #{sex}
+			</if>
+			<if test="country != null">
+				and m.country = #{country}
+			</if>
+			<if test="province != null">
+				and m.province = #{province}
+			</if>
+			<if test="city != null">
+				and m.city = #{city}
+			</if>
+			<if test="subscribe != null">
+				<if test="subscribe == true">
+					and m.is_subscribe = 1
+				</if>
+				<if test="subscribe == false">
+					and m.is_subscribe = 0
+				</if>
+			</if>
+			<if test="activityStartAt != null">
+				and m.activity &gt;= #{activityStartAt}
+			</if>
+			<if test="activityEndAt != null">
+				and m.activity &lt;= #{activityEndAt}
+			</if>
+			<if test="batchSendOfMonthStartAt != null">
+				and m.batchsend_month &gt;= #{batchSendOfMonthStartAt}
+			</if>
+			<if test="batchSendOfMonthEndAt != null">
+				and m.batchsend_month &lt;= #{batchSendOfMonthEndAt}
+			</if>
+			<if test="attentionStartAt != null">
+				and m.subscribe_at &gt;= #{attentionStartAt}
+			</if>
+			<if test="attentionEndAt != null">
+				and m.subscribe_at &lt;= #{attentionEndAt}
+			</if>
+			<if test="cancelSubscribeStartAt != null">
+				and m.unsubscribe_at &gt;= #{cancelSubscribeStartAt}
+			</if>
+			<if test="cancelSubscribeEndAt != null">
+				and m.unsubscribe_at &lt;= #{cancelSubscribeEndAt}
+			</if>
+			<if test="mobile != null">
+				and m.mobile like CONCAT('%',#{mobile},'%')
+			</if>
+			<if test="isOnline != null">
+				<if test="isOnline == true">
+					<if test="daytime == null">
+						and (m.is_subscribe = 1 and now() <![CDATA[ <= ]]> DATE_ADD(m.last_conversation_at, INTERVAL 48 DAY_HOUR))
+					</if>
+					<if test="daytime != null">
+						and (m.is_subscribe = 1 and m.last_conversation_at &gt;= #{daytime})
+					</if>
+				</if>
+				<if test="isOnline == false">
+					<if test="daytime == null">
+						and (m.is_subscribe = 0 or m.last_conversation_at is null or (m.is_subscribe = 1 and now() <![CDATA[ > ]]> DATE_ADD(m.last_conversation_at, INTERVAL 48 DAY_HOUR)))
+					</if>
+					<if test="daytime != null">
+						and (m.is_subscribe = 0 or m.last_conversation_at is null or (m.is_subscribe = 1 and m.last_conversation_at &lt; #{daytime}))
+					</if>
+				</if>
+			</if>
+			<if test="memberTags != null and memberTags.length &gt; 0">
+				and mmt.member_id is not null
+			</if>
+			<if test="bindStatus != null">
+				<if test="bindStatus != 2">
+					and mp.status = #{bindStatus}
+				</if>
+				<if test="bindStatus == 2">
+					and mp.id is null
+				</if>
+			</if>
+		</where>
+	</sql>
+
+	<select id="count" parameterType="HashMap" resultType="long">
+		select
+			count(m.id)
+		from member as m
+		<include refid="searchM"></include>
+	</select>
+
+	<select id="search" parameterType="HashMap" resultMap="MemberBindListDtoResultMap">
+		select
+			m.*, IF(ISNULL(mp.status),2,mp.status) as bindStatus
+		from member as m
+		<if test="bindStatus == null">
+			left join member_profile as mp on m.id = mp.member_id
+		</if>
+		<include refid="searchM"></include>
+		<if test="sortName != null">
+			<if test="sortName == 'bind_status'.toString()">
+				order by mp.status
+				<if test="sortDir != null">
+					${sortDir}
+				</if>
+				<if test="sortDir == null">
+					desc
+				</if> 
+			</if>
+			<if test="sortName != 'bind_status'.toString()">
+				order by m.${sortName}
+				<if test="sortDir != null">
+					${sortDir}
+				</if>
+				<if test="sortDir == null">
+					desc
+				</if>
+			</if>
+		</if>
+		<if test="sortName == null">
+			order by m.id desc
+		</if>
+	</select>
+	
+	<select id="searchIds" resultType="java.lang.Integer">
+		select m.id from member m 
+		<if test="bindStatus == null">
+			left join member_profile mp on m.id = mp.member_id
+		</if>
+		<include refid="searchM"></include>
+		<if test="sortName != null">
+			<if test="sortName == 'bind_status'.toString()">
+				order by mp.status
+				<if test="sortDir != null">
+					${sortDir}
+				</if>
+				<if test="sortDir == null">
+					desc
+				</if> 
+			</if>
+			<if test="sortName != 'bind_status'.toString()">
+				order by m.${sortName}
+				<if test="sortDir != null">
+					${sortDir}
+				</if>
+				<if test="sortDir == null">
+					desc
+				</if>
+			</if>
+		</if>
+		<if test="sortName == null">
+			order by m.id desc
+		</if>
+		LIMIT ${offset},${pageSize}
+	</select>
+	
+	<select id="searchByIds" resultMap="MemberBindListDtoResultMap">
+		select
+			m.*, IF(ISNULL(mp.status),2,mp.status) as bindStatus
+		from member m left join member_profile mp on m.id = mp.member_id
+		<where>
+			<if test="ids != null and size &gt; 0">
+				m.id in
+				<foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="ids == null or size == 0">
+				m.id is null
+			</if>
+		</where>
+	</select>
+	
+	<select id="massMembersSearch" parameterType="HashMap" resultMap="MassMembersSearchDtoResultMap">
+		select
+			m.*, IF(ISNULL(mp.status),2,mp.status) as bindStatus
+		from member m left join member_profile mp on m.id = mp.member_id
+		<include refid="searchM"></include>
+		<if test="sortName != null">
+			<if test="sortName == 'bind_status'.toString()">
+				order by mp.status
+				<if test="sortDir != null">
+					${sortDir}
+				</if>
+				<if test="sortDir == null">
+					desc
+				</if> 
+			</if>
+			<if test="sortName != 'bind_status'.toString()">
+				order by m.${sortName}
+				<if test="sortDir != null">
+					${sortDir}
+				</if>
+				<if test="sortDir == null">
+					desc
+				</if>
+			</if>
+		</if>
+		<if test="sortName == null">
+			order by m.id desc
+		</if>
+	</select>
+	<!--查询用户结束，为优化性能，使用单独计算记录总数-->
+
+	<select id="searchBySql" parameterType="HashMap" resultMap="SimpleMemberDtoResultMap">
+		select m.id from member as m
+		<where>
+			m.wechat_id = #{wechatId}
+			<if test="sql != null">
+				and ${sql}
+			</if>
+		</where>
+	</select>
+
+	<resultMap id="SimpleMemberDtoResultMap" type="com.d1m.wechat.dto.MemberDto">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="open_id" jdbcType="VARCHAR" property="openId" />
+		<result column="nickname" jdbcType="VARCHAR" property="nickname" />
+		<result column="sex" jdbcType="TINYINT" property="sex" />
+		<result column="language" jdbcType="TINYINT" property="language" />
+		<result column="city" jdbcType="INTEGER" property="city" />
+		<result column="province" jdbcType="INTEGER" property="province" />
+		<result column="country" jdbcType="INTEGER" property="country" />
+		<result column="local_head_img_url" jdbcType="VARCHAR" property="localHeadImgUrl" />
+		<result column="activity" jdbcType="TINYINT" property="activity" />
+		<result column="batchsend_month" jdbcType="INTEGER" property="batchsendMonth" />
+		<result column="subscribe_at" jdbcType="TIMESTAMP" property="subscribeAt" />
+		<result column="unsubscribe_at" jdbcType="TIMESTAMP" property="unsubscribeAt" />
+		<result column="fromwhere" jdbcType="TINYINT" property="fromwhere" />
+		<result column="mobile" jdbcType="VARCHAR" property="mobile" />
+	</resultMap>
+	
+	<select id="getMemberMemberTags" parameterType="HashMap" resultMap="GetMemberMemberTags">
+	  	SELECT mt.id as id, mmt.id as memberMemberTagId, mt.name as name
+	  	FROM member_member_tag mmt LEFT JOIN member_tag mt ON mmt.member_tag_id = mt.id WHERE mmt.member_id = #{memberId}
+	</select>
+	<resultMap id="GetMemberMemberTags" type="com.d1m.wechat.dto.MemberTagDto">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="memberMemberTagId" jdbcType="INTEGER" property="memberMemberTagId" />
+	 	<result column="name" jdbcType="VARCHAR" property="name" />
+	</resultMap>
+	
+	<select id="selectByWechat" parameterType="HashMap" resultMap="MemberDtoResultMap">
+		select * from member
+		<where>
+			wechat_id = #{wechatId}
+		</where>
+	</select>
+
+	<select id="countByMemberId" parameterType="HashMap" resultType="Long">
+		select count(*) from member
+		<where>
+			wechat_id = #{wechatId}
+			<if test="ids != null">
+				and id in
+				<foreach close=")" collection="ids" index="index" item="item" open="(" separator=",">
+					#{item}
+				</foreach>
+			</if>
+			<if test="isForce == true">
+				and (is_subscribe = 1 and now() &lt;= DATE_ADD(last_conversation_at, INTERVAL 48 DAY_HOUR))
+			</if>
+		</where>
+	</select>
+
+	<select id="selectByMemberId" parameterType="HashMap" resultMap="MemberDtoResultMap">
+		select * from member
+		<where>
+			wechat_id = #{wechatId}
+			<if test="ids != null">
+				and id in
+				<foreach close=")" collection="ids" index="index" item="item" open="(" separator=",">
+					#{item}
+				</foreach>
+			</if>
+			<if test="isForce == true">
+				and (is_subscribe = 1 and now() &lt;= DATE_ADD(last_conversation_at, INTERVAL 48 DAY_HOUR))
+			</if>
+		</where>
+	</select>
+	
+	<select id="trendReportTotal" resultType="int">
+		select 
+		count(*) as count from member
+		<where>
+			wechat_id = #{wechatId}
+			and subscribe_at is not null 
+			<if test="end != null">
+				and subscribe_at &lt;= #{end}
+			</if>
+		</where>
+	</select>
+	
+	<select id="trendReportAttention" resultMap="TrendBaseResultMap">
+		select 
+		DATE_FORMAT(subscribe_at,'%Y-%m-%d') as time,
+		count(*) as count from member
+		<where>
+			wechat_id = #{wechatId} and is_subscribe = 1
+			<if test="start != null">
+				<if test="end != null">
+				and	subscribe_at between #{start} and #{end}
+				</if>
+			</if>
+			group by DATE_FORMAT(subscribe_at,'%Y-%m-%d')
+		</where>
+	</select>
+	
+	
+	<select id="trendReportCancel" resultMap="TrendBaseResultMap">
+		select DATE_FORMAT(unsubscribe_at,'%Y-%m-%d') as time,
+		count(*) as count from member
+		<where>
+			wechat_id = #{wechatId} and is_subscribe = 0
+			<if test="start != null">
+				<if test="end != null">
+				and	unsubscribe_at between #{start} and #{end}
+				</if>
+			</if>
+			group by DATE_FORMAT(unsubscribe_at,'%Y-%m-%d')
+		</where>
+	</select>
+	
+	
+	<select id="pieReport" resultMap="PieBaseResultMap">
+		select
+			m.${type} as name,
+     		count(*) as count
+     		from member m
+		<where>
+			wechat_id = #{wechatId}
+			<if test="start != null">
+				<if test="end != null">
+				and	m.created_at between #{start} and #{end}
+				</if>
+			</if>
+			group by m.${type}
+		</where>
+	</select>
+	
+	
+	<select id="activityUser" resultMap="activityUserBaseResultMap">
+		select distinct m.id, m.head_img_url, m.nickname, m.subscribe_at, m.sex, m.country, m.province, m.city, m.activity,
+			(select count(*) from conversation where member_id = m.id and direction = 0) as msgReplyNum,(select count(*) from member_click_menu where member_id = m.id) as menuClickNum from member as m 
+		<where>
+			m.wechat_id = #{wechatId}
+			<if test="start != null">
+				<if test="end != null">
+				and	m.created_at between #{start} and #{end}
+				</if>
+			</if>
+			order by m.activity desc
+		</where>
+	</select>
+	
+	
+	<select id="sourceUser" resultMap="sourceUserBaseResultMap">
+		select date,
+		new_user_1 as wechatSearch,
+		new_user_17 as businessCard,
+		new_user_30 as qrCode,
+		new_user_43 as topRightMenu,
+		new_user_57 as wechatInImageText,
+		new_user_75 as wechatInArticleAd,
+		new_user_78 as momentsAd,
+		new_user_51 as payAttentionAfter,
+		new_user_0 as other
+		from report_user_source
+		<where>
+			wechat_id = #{wechatId}
+			<if test="start != null and end != null">
+				and date &gt;=DATE_FORMAT(#{start}, '%Y-%m-%d')
+				and date &lt;=DATE_FORMAT(#{end}, '%Y-%m-%d')
+			</if>
+			order by date desc
+		</where>
+	</select>
+	
+	
+	<resultMap id="PieCountryResultMap" type="com.d1m.wechat.dto.ReportAreaBaseDto">
+		<result column="country" jdbcType="INTEGER" property="id" />
+		<result column="count" jdbcType="INTEGER" property="count" />
+	</resultMap>
+	
+	
+	<resultMap id="PieProvinceResultMap" type="com.d1m.wechat.dto.ReportAreaBaseDto">
+		<result column="province" jdbcType="INTEGER" property="id" />
+		<result column="count" jdbcType="INTEGER" property="count" />
+	</resultMap>
+	
+	<resultMap id="PieCityResultMap" type="com.d1m.wechat.dto.ReportAreaBaseDto">
+		<result column="city" jdbcType="INTEGER" property="id" />
+		<result column="count" jdbcType="INTEGER" property="count" />
+	</resultMap>
+	
+	
+	<select id="pieAreaReport" resultMap="PieCountryResultMap">
+		select country,count(m.country) as count from member m
+		<where>
+			wechat_id = #{wechatId}
+			<if test="start != null">
+				<if test="end != null">
+				and	m.created_at between #{start} and #{end}
+				</if>
+			</if>
+			group by country
+		</where>
+	</select>
+	
+	<select id="getProvice" resultMap="PieProvinceResultMap">
+		SELECT m.province,count(m.province) as count FROM member m
+		<where>
+			m.wechat_id = #{wechatId} and m.country=#{country} 
+			<if test="start != null">
+				<if test="end != null">
+				and	m.created_at between #{start} and #{end}
+				</if>
+			</if>
+			group by m.province
+		</where>
+	</select>
+	
+	<select id="getCity" parameterType="HashMap" resultMap="PieCityResultMap">
+		SELECT m.city,count(m.city) as count FROM member m 
+		<where>
+			wechat_id = #{wechatId} and m.province=#{province} and m.country =#{country}
+			<if test="start != null">
+				<if test="end != null">
+				and	m.created_at between #{start} and #{end}
+				</if>
+			</if>
+			group by m.city
+		</where>
+	</select>
+	
+	<delete id="deleteMemberTag">
+		delete from member_member_tag
+		<where>
+			wechat_id = #{wechatId} and member_id = #{memberId} and member_tag_id = #{memberTagId}
+		</where>
+	</delete>
+	
+	<resultMap id="MemberStatusResultMap" type="com.d1m.wechat.dto.MemberStatusDto">
+		<result column="member_id" jdbcType="INTEGER" property="memberId" />
+	    <result column="is_subscribe" jdbcType="BIT" property="isSubscribe" />
+	    <result column="menu_click_last" jdbcType="TIMESTAMP" property="menuClickLast" />
+	    <result column="conversation_last" jdbcType="TIMESTAMP" property="conversationLast" />
+	</resultMap>
+	
+	<select id="memberStatus" resultMap="MemberStatusResultMap">
+		SELECT
+			a.id AS member_id,
+			a.is_subscribe,
+			MAX(b.created_at) AS menu_click_last,
+			MAX(c.created_at) AS conversation_last
+		FROM
+			member a
+		LEFT JOIN member_click_menu b ON a.id = b.member_id AND b.created_at &lt; #{end} AND b.created_at &gt; a.subscribe_at
+		LEFT JOIN conversation c ON a.id = c.member_id AND c.direction = 0 AND c.msg_type = 6 AND c.created_at &lt; #{end} AND b.created_at &gt; a.subscribe_at
+		<where>
+			a.wechat_id = #{wechatId}
+		GROUP BY
+			a.id
+		</where>
+	</select>
+	
+	<resultMap id="MemberProfileResultMap" type="com.d1m.wechat.dto.MemberLevelDto">
+		<result column="level" jdbcType="VARCHAR" property="level" />
+		<result column="credits" jdbcType="INTEGER" property="credits" />
+	</resultMap>
+	
+	<select id="selectMemberProfile" resultMap="MemberProfileResultMap">
+		select level, credits from member_profile 
+		<where>
+			member_id = #{id} and wechat_id = #{wechatId} and status = 1
+		</where>
+	</select>
+	
+	<select id="selectByOpenId" resultMap="selectByOpenIdResultMap">
+		select * from member
+		<where>
+			open_id = #{openId} and wechat_id = #{wechatId}
+		</where>
+	</select>
+	
+	<resultMap type="com.d1m.wechat.dto.MemberDto" id="selectByOpenIdResultMap">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<collection column="{memberId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.MemberTagDto" property="memberTags" select="getMemberMemberTags" />
+	</resultMap>
+	
+	<select id="selectWechatIdByOpenId" resultType="java.lang.Integer">
+		select wechat_id from member
+		<where>
+			open_id = #{openId} and status = 1
+		</where>
+	</select>
+	
+	<resultMap id="MemberBindDtoResultMap" type="com.d1m.wechat.dto.MemberDto">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="union_id" jdbcType="VARCHAR" property="unionId" />
+		<result column="open_id" jdbcType="VARCHAR" property="openId" />
+		<result column="nickname" jdbcType="VARCHAR" property="nickname" />
+		<result column="sex" jdbcType="TINYINT" property="sex" />
+		<result column="language" jdbcType="VARCHAR" property="language" />
+		<result column="city" jdbcType="VARCHAR" property="city" />
+		<result column="province" jdbcType="VARCHAR" property="province" />
+		<result column="country" jdbcType="VARCHAR" property="country" />
+		<result column="local_head_img_url" jdbcType="VARCHAR" property="localHeadImgUrl" />
+		<result column="head_img_url" jdbcType="VARCHAR" property="headImgUrl" />
+		<result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+		<result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+		<result column="member_group_id" jdbcType="INTEGER" property="memberGroupId" />
+		<result column="activity" jdbcType="TINYINT" property="activity" />
+		<result column="batchsend_month" jdbcType="INTEGER" property="batchsendMonth" />
+		<result column="subscribe_at" jdbcType="TIMESTAMP" property="subscribeAt" />
+		<result column="unsubscribe_at" jdbcType="TIMESTAMP" property="unsubscribeAt" />
+		<result column="fromwhere" jdbcType="TINYINT" property="fromwhere" />
+		<result column="mobile" jdbcType="VARCHAR" property="mobile" />
+		<result column="is_subscribe" jdbcType="BIT" property="isSubscribe" />
+		<result column="last_conversation_at" jdbcType="TIMESTAMP" property="lastConversationAt" />
+		<result column="bindStatus" jdbcType="INTEGER" property="bindStatus" />
+		<association column="{memberId=id}" javaType="INTEGER" property="conversationCount" select="getConversationCount" />
+		<collection column="{memberId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.MemberTagDto" property="memberTags" select="getMemberMemberTags" />
+	</resultMap>
+	
+	<resultMap id="MassMembersSearchDtoResultMap" type="com.d1m.wechat.dto.MemberDto">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="union_id" jdbcType="VARCHAR" property="unionId" />
+		<result column="open_id" jdbcType="VARCHAR" property="openId" />
+		<result column="nickname" jdbcType="VARCHAR" property="nickname" />
+		<result column="sex" jdbcType="TINYINT" property="sex" />
+		<result column="language" jdbcType="VARCHAR" property="language" />
+		<result column="city" jdbcType="VARCHAR" property="city" />
+		<result column="province" jdbcType="VARCHAR" property="province" />
+		<result column="country" jdbcType="VARCHAR" property="country" />
+		<result column="local_head_img_url" jdbcType="VARCHAR" property="localHeadImgUrl" />
+		<result column="head_img_url" jdbcType="VARCHAR" property="headImgUrl" />
+		<result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+		<result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+		<result column="member_group_id" jdbcType="INTEGER" property="memberGroupId" />
+		<result column="activity" jdbcType="TINYINT" property="activity" />
+		<result column="batchsend_month" jdbcType="INTEGER" property="batchsendMonth" />
+		<result column="subscribe_at" jdbcType="TIMESTAMP" property="subscribeAt" />
+		<result column="unsubscribe_at" jdbcType="TIMESTAMP" property="unsubscribeAt" />
+		<result column="fromwhere" jdbcType="TINYINT" property="fromwhere" />
+		<result column="mobile" jdbcType="VARCHAR" property="mobile" />
+		<result column="is_subscribe" jdbcType="BIT" property="isSubscribe" />
+		<result column="last_conversation_at" jdbcType="TIMESTAMP" property="lastConversationAt" />
+		<result column="bindStatus" jdbcType="INTEGER" property="bindStatus" />
+	</resultMap>
+	
+	<select id="getMemberIdsByOpenIds" resultType="java.lang.Integer">
+		select id from member 
+		<where>
+			<if test="openIdList != null">
+				open_id in 
+				<foreach close=")" collection="openIdList" index="index" item="item" open="(" separator=",">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+	</select>
+	
+	<select id="trendReportAttentionTimes" resultMap="TrendBaseResultMap">
+		select 
+		DATE_FORMAT(subscribe_at,'%Y-%m-%d') as time,
+		count(*) as count from member_subscribe
+		<where>
+			wechat_id = #{wechatId} and subscribe = 0
+			<if test="start != null">
+				<if test="end != null">
+				and	subscribe_at between #{start} and #{end}
+				</if>
+			</if>
+			group by DATE_FORMAT(subscribe_at,'%Y-%m-%d')
+		</where>
+	</select>
+	
+	<select id="trendReportCancelTimes" resultMap="TrendBaseResultMap">
+		select 
+		DATE_FORMAT(subscribe_at,'%Y-%m-%d') as time,
+		count(*) as count from member_subscribe
+		<where>
+			wechat_id = #{wechatId} and subscribe = 1
+			<if test="start != null">
+				<if test="end != null">
+				and	subscribe_at between #{start} and #{end}
+				</if>
+			</if>
+			group by DATE_FORMAT(subscribe_at,'%Y-%m-%d')
+		</where>
+	</select>
+
+	<update id="resetMonthSend">
+		UPDATE member SET batchsend_month = 0
+	</update>
+	
+	<resultMap id="MemberBindListDtoResultMap" type="com.d1m.wechat.dto.MemberDto">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="nickname" jdbcType="VARCHAR" property="nickname" />
+		<result column="sex" jdbcType="TINYINT" property="sex" />
+		<result column="city" jdbcType="VARCHAR" property="city" />
+		<result column="province" jdbcType="VARCHAR" property="province" />
+		<result column="country" jdbcType="VARCHAR" property="country" />
+		<result column="head_img_url" jdbcType="VARCHAR" property="headImgUrl" />
+		<result column="activity" jdbcType="TINYINT" property="activity" />
+		<result column="batchsend_month" jdbcType="INTEGER" property="batchsendMonth" />
+		<result column="subscribe_at" jdbcType="TIMESTAMP" property="subscribeAt" />
+		<result column="unsubscribe_at" jdbcType="TIMESTAMP" property="unsubscribeAt" />
+		<result column="mobile" jdbcType="VARCHAR" property="mobile" />
+		<result column="is_subscribe" jdbcType="BIT" property="isSubscribe" />
+		<result column="last_conversation_at" jdbcType="TIMESTAMP" property="lastConversationAt" />
+		<result column="bindStatus" jdbcType="INTEGER" property="bindStatus" />
+	</resultMap>
+</mapper>

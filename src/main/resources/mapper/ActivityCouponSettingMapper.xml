@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.d1m.wechat.mapper.ActivityCouponSettingMapper" >
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.ActivityCouponSetting" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="coupon_setting_id" property="couponSettingId" jdbcType="INTEGER" />
+    <result column="activity_id" property="activityId" jdbcType="INTEGER" />
+    <result column="wechat_id" property="wechatId" jdbcType="INTEGER" />
+  </resultMap>
+  
+  
+  <select id="get" resultMap="ActivityCouponSettingListResultMap">
+   	select acs.id, cs.id as coupon_setting_id, cs.name as coupon_setting_name, cs.grno as coupon_setting_grno, cs.channel as coupon_setting_channel, cs.type as coupon_setting_type from activity_coupon_setting acs left join coupon_setting cs on acs.coupon_setting_id = cs.id
+   	<where>
+   		acs.wechat_id = #{wechatId} and acs.id = #{id}
+    </where>
+  </select>
+  
+  
+  <select id="search" resultMap="ActivityCouponSettingListResultMap">
+   	select acs.id, cs.id as coupon_setting_id, cs.name as coupon_setting_name, cs.grno as coupon_setting_grno, cs.channel as coupon_setting_channel, cs.type as coupon_setting_type from activity_coupon_setting acs left join coupon_setting cs on acs.coupon_setting_id = cs.id
+   	<where>
+   		acs.wechat_id = #{wechatId} and acs.activity_id = #{activityId}
+    </where>
+    <if test="sortName != null">
+		order by acs.${sortName}
+		<if test="sortDir != null">
+			${sortDir}
+		</if>
+		<if test="sortDir == null">
+			desc
+		</if>
+	</if>
+	<if test="sortName == null">
+		order by acs.id desc
+	</if>
+  </select>
+  
+  <resultMap type="com.d1m.wechat.dto.ActivityCouponSettingDto" id="ActivityCouponSettingListResultMap">
+  	<id column="id" jdbcType="INTEGER" property="activityCouponSettingId" />
+	<result column="coupon_setting_id" jdbcType="INTEGER" property="id" />
+	<result column="coupon_setting_name" jdbcType="VARCHAR" property="name" />
+	<result column="coupon_setting_grno" jdbcType="VARCHAR" property="grno" />
+	<result column="coupon_setting_channel" jdbcType="VARCHAR" property="channel" />
+	<result column="coupon_setting_type" jdbcType="VARCHAR" property="type" />
+  </resultMap>
+  
+  <select id="getCouponSettingList" resultType="int">
+  	select coupon_setting_id from activity_coupon_setting
+  	<where>
+  		wechat_id = #{wechatId} and activity_id = #{id}
+  	</where>
+  </select>
+  
+</mapper>

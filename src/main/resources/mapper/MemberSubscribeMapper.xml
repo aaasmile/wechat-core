@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.MemberSubscribeMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.MemberSubscribe">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="member_id" jdbcType="INTEGER" property="memberId" />
+    <result column="subscribe" jdbcType="TINYINT" property="subscribe" />
+    <result column="subscribe_at" jdbcType="TIMESTAMP" property="subscribeAt" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+    <result column="subscribe_ip" jdbcType="VARCHAR" property="subscribeIp" />
+    <result column="subscribe_by" jdbcType="TINYINT" property="subscribeBy" />
+    <result column="qrcode_id" jdbcType="INTEGER" property="qrcodeId" />
+  </resultMap>
+</mapper>

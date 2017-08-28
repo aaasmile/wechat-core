@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.d1m.wechat.mapper.MassConversationBatchResultMapper" >
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.MassConversationBatchResult" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="msg_id" property="msgId" jdbcType="VARCHAR" />
+    <result column="pi_ci" property="piCi" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="msg_type" property="msgType" jdbcType="TINYINT" />
+    <result column="msg_content" property="msgContent" jdbcType="VARCHAR"/>
+    <result column="total_count" property="totalCount" jdbcType="INTEGER" />
+    <result column="filter_count" property="filterCount" jdbcType="INTEGER" />
+    <result column="send_count" property="sendCount" jdbcType="INTEGER" />
+    <result column="error_count" property="errorCount" jdbcType="INTEGER" />
+    <result column="conversation_id" property="conversationId" jdbcType="INTEGER" />
+    <result column="wechat_id" property="wechatId" jdbcType="INTEGER" />
+  </resultMap>
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.LoginTokenMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.LoginToken">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="token" jdbcType="VARCHAR" property="token" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="created_at" jdbcType="VARCHAR" property="createdAt" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+    <result column="expired_at" jdbcType="TIMESTAMP" property="expiredAt" />
+  </resultMap>
+  
+  
+  <select id="getActiveTokens" parameterType="HashMap" resultMap="BaseResultMap">
+  	select * from login_token where user_id = #{userId} and expired_at &gt;= now()
+  </select>
+  
+</mapper>

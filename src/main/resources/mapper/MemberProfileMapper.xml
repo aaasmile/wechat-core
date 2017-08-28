@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.MemberProfileMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.MemberProfile">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="card_id" jdbcType="VARCHAR" property="cardId" />
+    <result column="card_type" jdbcType="TINYINT" property="cardType" />
+    <result column="issue_date" jdbcType="TIMESTAMP" property="issueDate" />
+    <result column="card_status" jdbcType="TINYINT" property="cardStatus" />
+    <result column="store_id" jdbcType="VARCHAR" property="storeId" />
+    <result column="credits" jdbcType="INTEGER" property="credits" />
+    <result column="level" jdbcType="VARCHAR" property="level" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="birth_date" jdbcType="DATE" property="birthDate" />
+    <result column="member_id" jdbcType="INTEGER" property="memberId" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+    <result column="accept_promotion" jdbcType="BIT" property="acceptPromotion" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="bind_at" jdbcType="TIMESTAMP" property="bindAt" />
+    <result column="unbund_at" jdbcType="TIMESTAMP" property="unbundAt" />
+  </resultMap>
+  
+  <select id="getByMemberId" parameterType="HashMap" resultMap="BaseResultMap">
+  	select * from member_profile
+  	<where>
+  		wechat_id = #{wechatId} and member_id = #{memberId}
+  	</where>
+  </select>
+  
+  <select id="getMemberProfile" parameterType="HashMap" resultMap="getMemberProfile">
+  	select mp.card_id, mp.level, mp.credits, mp.name, DATE_FORMAT(mp.birth_date,'%Y-%m-%d') as birth_date, mp.address, mp.email, mp.accept_promotion, m.mobile, m.sex, m.province, m.city from member_profile mp left join member m on mp.member_id = m.id 
+  	<where>
+  		mp.wechat_id = #{wechatId} and mp.member_id = #{memberId}
+  	</where>
+  </select>
+  <resultMap id="getMemberProfile" type="com.d1m.wechat.dto.MemberProfileDto">
+    <result column="level" jdbcType="VARCHAR" property="level" />
+ 	<result column="credits" jdbcType="INTEGER" property="credits" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="card_id" jdbcType="VARCHAR" property="cardId" />
+    <result column="birth_date" jdbcType="TIMESTAMP" property="birthDate" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="accept_promotion" jdbcType="BIT" property="acceptPromotion" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="sex" jdbcType="TINYINT" property="sex" />
+    <result column="province" jdbcType="INTEGER" property="province" />
+    <result column="city" jdbcType="INTEGER" property="city" />
+  </resultMap>
+  
+  <select id="getBindNumber" resultType="int">
+  	select count(status) from member_profile 
+  		<where>
+  			wechat_id = #{wechatId} and status = 1
+  			<if test="start!=null">
+  				<if test="end!=null">
+  					and bind_at between #{start} and #{end}
+  				</if>	
+  			</if>
+  		</where>
+  </select>
+  
+  <select id="getUnBindNumber" resultType="int">
+  	select count(status) from member_profile 
+  		<where>
+  			wechat_id = #{wechatId} and status = 0
+  			<if test="start!=null">
+  				<if test="end!=null">
+  					and unbund_at between #{start} and #{end}
+  				</if>	
+  			</if>
+  		</where>
+  </select>
+  
+  <select id="getMemberBindStatus" resultType="java.lang.Integer">
+  	select status from member_profile 
+  	<where>
+  		member_id = #{id} and wechat_id = #{wechatId}
+  	</where>
+  </select>
+</mapper>

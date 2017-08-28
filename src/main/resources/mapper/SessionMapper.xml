@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.SessionMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.Session">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="offline_activity_id" jdbcType="INTEGER" property="offlineActivityId" />
+    <result column="session" jdbcType="VARCHAR" property="session" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="member_limit" jdbcType="INTEGER" property="memberLimit" />
+    <result column="apply" jdbcType="INTEGER" property="apply" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="creator_id" jdbcType="INTEGER" property="creatorId" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+  </resultMap>
+  
+  <select id="deleteSessionList" resultType="int">
+  	update session set status = 0
+  	<where>
+  		<if test="offlineActivityId != null">
+  			offline_activity_id = #{offlineActivityId}
+  		</if>
+  		<if test="sessionIds != null">
+			and id in
+			<foreach close=")" collection="sessionIds" index="index" item="item" open="(" separator=",">
+				#{item}
+			</foreach>
+		</if>
+  	</where>
+  </select>
+  
+  <select id="selectByOfflineActivityId" resultType="int">
+  	select id from session
+  	<where>
+  		offline_activity_id = #{offlineActivityId}
+  	</where>
+  </select>
+  
+  <select id="searchByOfflineActivityId" resultMap="SessionDtoResultMap">
+  	select DATE_FORMAT(created_at,'%Y/%m/%d') as date, session from session
+  	<where>
+  		offline_activity_id = #{offlineActivityId}
+  	</where>
+  </select>
+  
+  <resultMap id="SessionDtoResultMap" type="com.d1m.wechat.dto.SessionDto">
+  	<result column="date" jdbcType="VARCHAR" property="createdAt" />
+  	<result column="session" jdbcType="VARCHAR" property="session" />
+  </resultMap>
+  
+  <select id="searchById" resultMap="SessionDtoAllResultMap">
+  	select *, DATE_FORMAT(created_at,'%Y/%m/%d') as date from session
+  	<where>
+  		id = #{id}
+  	</where>
+  </select>
+  
+  <resultMap id="SessionDtoAllResultMap" type="com.d1m.wechat.dto.SessionDto">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+    <result column="offline_activity_id" jdbcType="INTEGER" property="offlineActivityId" />
+    <result column="session" jdbcType="VARCHAR" property="session" />
+    <result column="member_limit" jdbcType="INTEGER" property="memberLimit" />
+    <result column="apply" jdbcType="INTEGER" property="apply" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="date" jdbcType="VARCHAR" property="createdAt" />
+  </resultMap>
+  
+</mapper>

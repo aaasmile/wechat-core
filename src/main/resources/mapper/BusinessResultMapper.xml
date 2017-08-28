@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.BusinessResultMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.BusinessResult">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="poi_id" jdbcType="VARCHAR" property="poiId" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="uniq_id" jdbcType="VARCHAR" property="uniqId" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="msg" jdbcType="VARCHAR" property="msg" />
+  </resultMap>
+  
+  <select id="searchByUniqId" resultMap="BaseResultMap">
+  	select * from business_result
+  	<where>
+  		uniq_id = #{sid} and status = 1
+  	</where>
+  </select>
+</mapper>

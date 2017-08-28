@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.OriginalConversationMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.OriginalConversation">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="execute_start" jdbcType="TIMESTAMP" property="executeStart" />
+    <result column="execute_end" jdbcType="TIMESTAMP" property="executeEnd" />
+    <result column="execute_millis" jdbcType="INTEGER" property="executeMillis" />
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  
+  <select id="searchActiveOriginalConversations" resultMap="BaseResultMap">
+  	select * from original_conversation
+  	<where>
+  	 status = 1
+  	</where>
+  	order by id asc
+  </select>
+  
+</mapper>

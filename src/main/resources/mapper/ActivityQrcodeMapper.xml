@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.d1m.wechat.mapper.ActivityQrcodeMapper" >
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.ActivityQrcode" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="activity_id" property="activityId" jdbcType="INTEGER" />
+    <result column="channel" property="channel" jdbcType="VARCHAR" />
+    <result column="acty_url" property="actyUrl" jdbcType="VARCHAR" />
+    <result column="qrcode_img_url" property="qrcodeImgUrl" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="creator_id" property="creatorId" jdbcType="INTEGER" />
+    <result column="wechat_id" property="wechatId" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <select id="search" resultMap="ActivityQrcodeListResultMap">
+   	select aq.id, aq.channel, aq.acty_url, aq.qrcode_img_url from activity_qrcode aq
+   	<where>
+   		aq.wechat_id = #{wechatId} and aq.activity_id = #{activityId}
+    </where>
+    <if test="sortName != null">
+		order by aq.${sortName}
+		<if test="sortDir != null">
+			${sortDir}
+		</if>
+		<if test="sortDir == null">
+			desc
+		</if>
+	</if>
+	<if test="sortName == null">
+		order by aq.id desc
+	</if>
+  </select>
+  
+  <resultMap type="com.d1m.wechat.dto.ActivityQrcodeDto" id="ActivityQrcodeListResultMap">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+	<result column="channel" jdbcType="VARCHAR" property="channel" />
+	<result column="acty_url" jdbcType="VARCHAR" property="actyUrl" />
+	<result column="qrcode_img_url" jdbcType="VARCHAR" property="qrcodeImgUrl" />
+  </resultMap>
+  
+  
+</mapper>

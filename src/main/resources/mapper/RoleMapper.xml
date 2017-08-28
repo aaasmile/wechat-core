@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.RoleMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.Role">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="creator_id" jdbcType="INTEGER" property="creatorId" />
+    <result column="function_id" jdbcType="INTEGER" property="functionId" />
+    <result column="company_id" jdbcType="INTEGER" property="companyId" />
+    <result column="isSystemRole" jdbcType="TINYINT" property="issystemrole" />
+  </resultMap>
+  
+  <select id="listVisibleFunctionIds" parameterType="HashMap" resultType="int">
+  	select f.id from role_function as rf left join function as f on rf.function_id = f.id
+  	<where>
+  		rf.role_id = #{roleId}
+  	</where>
+  </select>
+  
+  <select id="listVisibleFunctionCodes" parameterType="HashMap" resultType="string">
+  	select f.code from role_function as rf left join function as f on rf.function_id = f.id
+  	<where>
+  		rf.role_id = #{roleId}
+  	</where>
+  </select>
+  
+  <resultMap id="FunctionDtoResultMap" type="com.d1m.wechat.dto.FunctionDto">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+	<result column="code" jdbcType="VARCHAR" property="code" />
+  </resultMap>
+  
+  <select id="search" parameterType="HashMap" resultMap="RoleDtoResultMap">
+  	select * from role
+  	<where>
+  		status = 1 and isSystemRole = 0
+  		<if test="companyId != null">
+  			and company_id = #{companyId}
+  		</if>
+  	</where>
+  	order by created_at desc
+  </select>
+  
+  <select id="searchById" parameterType="HashMap" resultMap="RoleDtoResultMap">
+  	select * from role
+  	<where>
+  		id = #{id} and status = 1
+  		<if test="companyId != null">
+  			and company_id = #{companyId}
+  		</if>
+  	</where>
+  </select>
+  
+  <resultMap id="RoleDtoResultMap" type="com.d1m.wechat.dto.RoleDto">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+  	<result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="creator_id" jdbcType="INTEGER" property="creatorId" />
+    <result column="isSystemRole" jdbcType="INTEGER" property="isSystemRole" />
+    <association column="{roleId=id}" javaType="ArrayList" property="functionIds" select="listVisibleFunctionIds" />
+    <association column="{roleId=id}" javaType="ArrayList" property="functionCodes" select="listVisibleFunctionCodes" />
+  </resultMap>
+  
+  
+</mapper>

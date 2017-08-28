@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.ConversationImageTextDetailMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.ConversationImageTextDetail">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="author" jdbcType="VARCHAR" property="author" />
+    <result column="content_source_checked" jdbcType="BIT" property="contentSourceChecked" />
+    <result column="content_source_url" jdbcType="VARCHAR" property="contentSourceUrl" />
+    <result column="show_cover" jdbcType="BIT" property="showCover" />
+    <result column="material_cover_url" jdbcType="VARCHAR" property="materialCoverUrl" />
+    <result column="summary" jdbcType="VARCHAR" property="summary" />
+    <result column="conversation_id" jdbcType="INTEGER" property="conversationId" />
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+</mapper>

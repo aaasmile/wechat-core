@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="debug">
+    <Appenders>
+        <Console name="CONSOLE" target="SYSTEM_OUT">
+            <PatternLayout>
+                <pattern>%d %highlight{%-5p} [%t] %c(%F:%L).%M - %n%m%n</pattern>
+            </PatternLayout>
+        </Console>
+        <Async name="ASYNC" includeLocation="true">
+            <AppenderRef ref="CONSOLE"/>
+        </Async>
+    </Appenders>
+
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="ASYNC"/>
+        </Root>
+        <Logger name="com.d1m.wechat" level="DEBUG"/>
+
+        <Logger name="com.github.pagehelper" level="DEBUG"/>
+
+        <Logger name="org.apache.ibatis" level="DEBUG"/>
+
+        <Logger name="com.github.pagehelper.mapper" level="info"/>
+
+        <!--<Logger name="org.apache.http" level="DEBUG"/>-->
+
+        <Logger name="org.exolab.castor" level="ERROR"/>
+
+        <Logger name="org.castor" level="ERROR"/>
+
+        <Logger name="org.springframework.web.socket.server" level="ERROR"/>
+
+        <Logger name="org.springframework.mock.web.MockServletContext" level="error"/>
+
+        <Logger name="org.springframework.web.servlet" level="debug"/>
+
+        <Logger name="org.apache.ibatis.transaction.jdbc" level="warn"/>
+    </Loggers>
+</Configuration>

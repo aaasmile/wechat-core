@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.d1m.wechat.mapper.FunctionMapper" >
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.Function" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="name_cn" property="nameCn" jdbcType="VARCHAR" />
+    <result column="name_en" property="nameEn" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="creator_id" property="creatorId" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <resultMap id="FunctionDtoResultMap" type="com.d1m.wechat.dto.FunctionDto" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="name_cn" property="nameCn" jdbcType="VARCHAR" />
+    <result column="name_en" property="nameEn" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="search" parameterType="HashMap" resultMap="FunctionDtoResultMap">
+		select * from function
+		<where>
+			<if test="id != null">
+				id = #{id} 
+			</if>
+			<if test="code != null">
+				and code = #{code}
+			</if>
+		</where>
+		<if test="sortName != null">
+			order by ${sortName}
+			<if test="sortDir != null">
+				${sortDir}
+			</if>
+			<if test="sortDir == null">
+				asc
+			</if>
+		</if>
+		<if test="sortName == null">
+			order by id asc
+		</if>
+	</select>
+	
+	<select id="getAll" resultType="java.lang.Integer">
+		select id from function
+	</select>
+</mapper>

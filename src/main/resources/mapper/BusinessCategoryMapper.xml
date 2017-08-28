@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.BusinessCategoryMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.BusinessCategory">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="parent_id" jdbcType="INTEGER" property="parentId" />
+  </resultMap>
+
+	<select id="countDuplicateName" resultType="int">
+		select count(*) from business_category
+		<where>
+			wechat_id = #{wechatId} and name = #{name}
+			<if test="id != null">
+				and id != #{id}
+			</if>
+			<if test="parentId != null">
+				and parent_id = #{parentId}
+			</if>
+			<if test="parentId == null">
+				and parent_id is null
+			</if>
+			<if test="status !=null">
+				and status = #{status}
+			</if>
+		</where>
+	</select>
+
+	<select id="list" resultMap="BusinessCategoryDtoResultMap">
+		select * from business_category
+		<where>
+			parent_id is null
+		</where>
+	</select>
+
+	<resultMap id="BusinessCategoryDtoResultMap" type="com.d1m.wechat.dto.BusinessCategoryDto">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<collection column="{parentId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.BusinessCategoryDto" property="children" select="getChildren" />
+	</resultMap>
+	
+	<select id="getChildren" parameterType="HashMap" resultMap="BusinessCategoryDtoResultMap">
+		SELECT * FROM business_category WHERE parent_id = #{parentId}
+	</select>
+
+</mapper>

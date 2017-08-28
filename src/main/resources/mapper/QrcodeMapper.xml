@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.QrcodeMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.Qrcode">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="qrcode_type_id" jdbcType="INTEGER" property="qrcodeTypeId" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="summary" jdbcType="VARCHAR" property="summary" />
+    <result column="ticket" jdbcType="VARCHAR" property="ticket" />
+    <result column="qrcode_url" jdbcType="VARCHAR" property="qrcodeUrl" />
+    <result column="qrcode_img_url" jdbcType="VARCHAR" property="qrcodeImgUrl" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="creator_id" jdbcType="INTEGER" property="creatorId" />
+    <result column="expire_seconds" jdbcType="INTEGER" property="expireSeconds" />
+    <result column="action_name" jdbcType="TINYINT" property="actionName" />
+    <result column="scene" jdbcType="VARCHAR" property="scene" />
+    <result column="sopport_subscribe_reply" jdbcType="TINYINT" property="sopportSubscribeReply" />
+  </resultMap>
+
+
+	
+	<select id="countDuplicateName" resultType="int">
+		select count(*) from qrcode
+		<where>
+			wechat_id = #{wechatId} and name = #{name}
+			<if test="id != null">
+				and id != #{id}
+			</if>
+			<if test="status !=null">
+				and status = #{status}
+			</if>
+		</where>
+	</select>
+
+	<select id="list" resultMap="QrcodeResultMap">
+		select q.id, q.summary, DATE_FORMAT(q.created_at,'%Y-%m-%d %T') as created_at, qt.name as qrcode_type_name,  qt.id as qrcodeTypeId, q.name, q.qrcode_img_url, q.scene, q.sopport_subscribe_reply from qrcode q left join qrcode_type qt on q.qrcode_type_id = qt.id
+		<where>
+			q.wechat_id = #{wechatId ,jdbcType=INTEGER}
+			<if test="query !=null">
+			    and (q.name like CONCAT('%','${query}','%' ) or q.summary like CONCAT('%','${query}','%' ))
+			</if>
+			<if test="qrcodeTypeId !=null">
+				and q.qrcode_type_id = #{qrcodeTypeId ,jdbcType=INTEGER}
+			</if>
+			<if test="status !=null">
+				and q.status = #{status ,jdbcType=INTEGER}
+			</if>
+		</where>
+		<if test="sortName != null">
+			order by q.${sortName}
+			<if test="sortDir != null">
+				${sortDir}
+			</if>
+			<if test="sortDir == null">
+				desc
+			</if>
+		</if>
+		<if test="sortName == null">
+			order by q.id desc
+		</if>
+	</select>
+	
+	<resultMap id="QrcodeResultMap" type="com.d1m.wechat.dto.QrcodeDto">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="summary" jdbcType="VARCHAR" property="summary" />
+		<result column="qrcode_type_name" jdbcType="VARCHAR" property="qrcodeTypeName" />
+		<result column="qrcode_type_id" jdbcType="INTEGER" property="qrcodeTypeId" />
+		<result column="qrcode_img_url" jdbcType="VARCHAR" property="qrcodeUrl" />
+		<result column="created_at" jdbcType="VARCHAR" property="createdAt" />
+		<result column="scene" jdbcType="VARCHAR" property="scene" />
+		<result column="sopport_subscribe_reply" jdbcType="TINYINT" property="sopportSubscribeReply" />
+	</resultMap>
+	
+	<select id="get" resultMap="QrcodeResultMap">
+		select q.id, q.summary, DATE_FORMAT(q.created_at,'%Y-%m-%d %T') as created_at, qt.name as qrcode_type_name, qt.id as qrcodeTypeId, q.name, q.qrcode_img_url, q.scene,q.sopport_subscribe_reply from qrcode q left join qrcode_type qt on q.qrcode_type_id = qt.id and q.status = 1
+		<where>
+			q.wechat_id = #{wechatId ,jdbcType=INTEGER} and q.id = #{id}
+		</where>
+	</select>
+	
+	
+	<resultMap id="QrcodeReportResultMap" type="com.d1m.wechat.dto.ReportQrcodeItemDto">
+		<result column="time" jdbcType="TIMESTAMP" property="date" />
+		<!-- <result column="attentionScanNum" jdbcType="INTEGER" property="attentionScanNum" /> -->
+		<result column="qrCodeName" jdbcType="VARCHAR" property="qrCodeName" />
+		<result column="qrCodeType" jdbcType="VARCHAR" property="qrCodeType" />
+		<result column="scanNum" jdbcType="INTEGER" property="scanNum" />
+		<result column="attentionByScan" jdbcType="INTEGER" property="attentionByScan" />
+		<result column="scene" jdbcType="VARCHAR" property="scene" />
+		<result column="userByScan" jdbcType="INTEGER" property="userByScan" />
+		<result column="qrCodeParentType" jdbcType="VARCHAR" property="qrCodeParentType" />
+    </resultMap>
+	
+	
+	<select id="qrcodeReport" resultMap="QrcodeReportResultMap">
+		SELECT
+			t.time, t.scanNum, t.userByScan,
+			(SELECT count(DISTINCT member_id) FROM member_subscribe
+			WHERE qrcode_id = t.qrcode_id AND subscribe_by = 2 AND t.time = DATE(subscribe_at)) AS attentionByScan,
+			q.name   AS qrCodeName,
+			q.scene  AS scene,
+			qt.name  AS qrCodeType,
+			qtp.name AS qrCodeParentType
+		FROM
+		(
+			SELECT
+				DATE(m.created_at)        AS time,
+				m.qrcode_id               AS qrcode_id,
+				count(m.qrcode_id)        AS scanNum,
+				count(DISTINCT member_id) AS userByScan
+			FROM member_scan_qrcode m
+			<where>
+				m.wechat_id = #{wechatId}
+				<if test="start != null">
+					<if test="end != null">
+						and m.created_at between #{start} and #{end}
+					</if>
+				</if>
+			</where>
+			GROUP BY DATE(m.created_at), m.qrcode_id
+		) t
+		LEFT JOIN qrcode q ON t.qrcode_id = q.id
+		LEFT JOIN qrcode_type qt ON qt.id = q.qrcode_type_id
+		LEFT JOIN qrcode_type qtp ON qtp.id = qt.parent_id
+		<where>
+			qt.status = 1
+			<if test="status !=null">
+				and q.status = #{status}
+			</if>
+			<if test="qrcodeId !=null">
+				and q.id = #{qrcodeId}
+			</if>
+			<if test="scene !=null">
+				and q.scene = #{scene}
+			</if>
+		</where>
+		ORDER BY t.time ASC
+	</select>
+	
+	
+	<select id="qrcodeTotalCount" resultType="int">
+		select count(*) from qrcode
+		<where>
+			wechat_id = #{wechatId}
+			<if test="status !=null">
+				and status = #{status}
+			</if>
+		</where>
+	</select>
+	
+	<select id="qrcodeCurrentTotalCount" resultType="int">
+		select count(*) from qrcode
+		<where>
+			wechat_id = #{wechatId}
+			<if test="start != null">
+				<if test="end != null">
+				and	created_at between #{start} and #{end}
+				</if>
+			</if>
+			<if test="status !=null">
+				and status = #{status}
+			</if>
+			<if test="qrcodeId !=null">
+				and id = #{qrcodeId}
+			</if>
+			<if test="scene !=null">
+				and scene = #{scene}
+			</if>
+		</where>
+	</select>
+	
+	<resultMap id="QrcodeListReportResultMap" type="com.d1m.wechat.dto.ReportQrcodeItemDto">
+		<!-- <result column="attentionScanNum" jdbcType="INTEGER" property="attentionScanNum" /> -->
+		<result column="qrCodeName" jdbcType="VARCHAR" property="qrCodeName" />
+		<result column="qrCodeType" jdbcType="VARCHAR" property="qrCodeType" />
+		<result column="scanNum" jdbcType="INTEGER" property="scanNum" />
+		<result column="attentionByScan" jdbcType="INTEGER" property="attentionByScan" />
+    </resultMap>
+	
+	<select id="qrcodeListReport" resultMap="QrcodeListReportResultMap">
+		select 
+			q.name as qrCodeName,
+			(select name from qrcode_type t where t.status = 1 and q.qrcode_type_id = t.id) as qrCodeType,
+			count(m.qrcode_id) as scanNum,
+			count(DISTINCT member_id) as  userByScan,
+			(select count(DISTINCT member_id) from member_subscribe where qrcode_id=m.qrcode_id and subscribe_by=2 and DATE_FORMAT(m.created_at,'%Y-%m-%d') = DATE_FORMAT(subscribe_at,'%Y-%m-%d')) as  attentionByScan
+			from member_scan_qrcode m 
+			left join qrcode q on m.qrcode_id=q.id
+		<where>
+			m.wechat_id = #{wechatId}
+			<if test="start != null">
+				<if test="end != null">
+				and	m.created_at between #{start} and #{end}
+				</if>
+			</if>
+			<if test="qrcodeId !=null">
+				and q.id = #{qrcodeId}
+			</if>
+			<if test="scene !=null">
+				and q.scene = #{scene}
+			</if>
+			<if test="status !=null">
+				and q.status = #{status}
+			</if>
+			group by q.name
+			order by q.created_at asc
+		</where>
+	</select>
+	
+	<resultMap id="ReportQrcodeResultMap" type="com.d1m.wechat.dto.QrcodeDto">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="status" jdbcType="TINYINT" property="status" />
+	</resultMap>
+	
+	<select id="qrcodeList" resultMap="ReportQrcodeResultMap">
+		select id, name, status from qrcode
+		<where>
+			wechat_id = #{wechatId}
+			<if test="status !=null">
+				and status = #{status}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getLackWxQrcode" resultMap="BaseResultMap">
+		select * from qrcode
+		<where>
+			status = 1 and ticket = "" or qrcode_url ="" or qrcode_img_url = ""
+		</where>
+	</select>
+	
+	<select id="qrcodeNameList" resultMap="QrcodeNameListResultMap">
+        SELECT
+            q.name AS qrCodeName,
+            (
+                SELECT name
+                FROM qrcode_type qt
+                WHERE qt.id = q.qrcode_type_id
+            )      AS qrCodeType
+        FROM qrcode q
+        <where>
+            q.id IN (
+                SELECT DISTINCT m.qrcode_id
+                FROM member_scan_qrcode m
+                <where>
+                    m.wechat_id = #{wechatId}
+                    <if test="start != null">
+                        <if test="end != null">
+                            and m.created_at between #{start} and #{end}
+                        </if>
+                    </if>
+                    <if test="qrcodeId !=null">
+                        and m.qrcode_id = #{qrcodeId}
+                    </if>
+                </where>
+            )
+            <if test="scene !=null">
+                and q.scene = #{scene}
+            </if>
+            <if test="status !=null">
+                and q.status = #{status}
+            </if>
+        </where>
+	</select>
+
+	<resultMap id="QrcodeNameListResultMap" type="com.d1m.wechat.dto.ReportQrcodeItemDto">
+		<result column="qrCodeName" jdbcType="VARCHAR" property="qrCodeName" />
+		<result column="qrCodeType" jdbcType="VARCHAR" property="qrCodeType" />
+    </resultMap>
+
+</mapper>

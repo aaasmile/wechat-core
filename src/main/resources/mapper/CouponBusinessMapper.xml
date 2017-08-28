@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.CouponBusinessMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.CouponBusiness">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="coupon_setting_id" jdbcType="INTEGER" property="couponSettingId" />
+    <result column="business_id" jdbcType="INTEGER" property="businessId" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="creator_id" jdbcType="INTEGER" property="creatorId" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+  </resultMap>
+  
+  <select id="search" resultMap="CouponSettingBusinessListResultMap">
+   	select b.id, b.business_name as name, b.business_code as code from coupon_business cb left join business b on cb.business_id = b.id
+   	<where>
+   		cb.wechat_id = #{wechatId} 
+   		<if test="activityId != null">
+	   		and cb.coupon_setting_id in
+	   		(
+				select acs.coupon_setting_id from activity_coupon_setting acs
+				<where>
+			   		acs.wechat_id = #{wechatId}
+					<if test="activityId != null">
+						and acs.activity_id = #{activityId}
+					</if>
+			    </where>
+			)
+   		</if>
+   		<if test="id != null">
+   			and cb.coupon_setting_id = #{id}
+   		</if>
+   		<if test="type != null">
+			and cb.type = #{type}
+		</if>
+    </where>
+    <if test="sortName != null">
+			order by cb.${sortName}
+			<if test="sortDir != null">
+				${sortDir}
+			</if>
+			<if test="sortDir == null">
+				desc
+			</if>
+		</if>
+		<if test="sortName == null">
+			order by cb.id desc
+		</if>
+  </select>
+  
+  <resultMap type="com.d1m.wechat.dto.CouponSettingBusinessDto" id="CouponSettingBusinessListResultMap">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+	<result column="name" jdbcType="VARCHAR" property="name" />
+	<result column="code" jdbcType="VARCHAR" property="code" />
+  </resultMap>
+  
+</mapper>

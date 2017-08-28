@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.CouponMemberMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.CouponMember">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="push_status" jdbcType="TINYINT" property="pushStatus" />
+    <result column="push_at" jdbcType="TIMESTAMP" property="pushAt" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="receive_at" jdbcType="TIMESTAMP" property="receiveAt" />
+    <result column="verification_at" jdbcType="TIMESTAMP" property="verificationAt" />
+    <result column="coupon_id" jdbcType="INTEGER" property="couponId" />
+    <result column="coupon_setting_id" jdbcType="INTEGER" property="couponSettingId" />
+    <result column="member_id" jdbcType="INTEGER" property="memberId" />
+    <result column="business_id" jdbcType="INTEGER" property="businessId" />
+    <result column="wechat_id" property="wechatId" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <select id="getUnPushedCoupons" resultType="java.util.HashMap">
+  	SELECT
+		'1' as status,
+		c.open_id as openId,
+		d.`code` as skuSeq,
+		d.`code` as giftSeq,
+		b.grno as grno,
+		e.card_id as cardId
+	FROM
+		coupon_member a
+	LEFT JOIN coupon_setting b ON a.coupon_setting_id = b.id
+	LEFT JOIN member c ON a.member_id = c.id
+	LEFT JOIN coupon d ON a.coupon_id = d.id
+	LEFT JOIN member_profile e ON a.member_id = e.member_id
+	WHERE
+		a.push_status = 0
+	AND a.`status` = 0
+	AND b.gift_type = #{giftType}
+  </select>
+  
+  <select id="getUnPushedCouponsByCodes" resultType="java.util.HashMap">
+  	SELECT
+		'1' as status,
+		c.open_id as openId,
+		d.`code` as skuSeq,
+		d.`code` as giftSeq,
+		b.grno as grno,
+		e.card_id as cardId
+	FROM
+		coupon_member a
+	LEFT JOIN coupon_setting b ON a.coupon_setting_id = b.id
+	LEFT JOIN member c ON a.member_id = c.id
+	LEFT JOIN coupon d ON a.coupon_id = d.id
+	LEFT JOIN member_profile e ON a.member_id = e.member_id
+	<where>
+	<if test="list != null and list.length > 0">
+		and d.code in
+		<foreach close=")" collection="list" index="index" item="item" open="(" separator=",">
+			#{item}
+		</foreach>
+	</if>
+	</where>
+  </select>
+  
+  <select id="getPushedCoupons" resultType="String">
+  	SELECT
+		d.`code` as skuSeq
+	FROM
+		coupon_member a
+	LEFT JOIN coupon_setting b ON a.coupon_setting_id = b.id
+	LEFT JOIN member c ON a.member_id = c.id
+	LEFT JOIN coupon d ON a.coupon_id = d.id
+	LEFT JOIN member_profile e ON a.member_id = e.member_id
+	<where>
+		a.push_status = 1
+		AND b.gift_type = #{giftType}
+		<if test="start != null">
+			AND a.push_at &gt;= #{start}
+		</if>
+		<if test="end != null">
+			AND a.push_at &lt;= #{end}
+		</if>
+	</where>
+  </select>
+
+  <select id="getWinCount" parameterType="HashMap" resultType="int">
+  	select count(*) from coupon_member 
+  	<where>
+	  	wechat_id = #{wechatId} and coupon_setting_id = #{couponSettingId}
+	  	<if test="memberId != null">
+	  		and member_id = #{memberId}		
+	  	</if>
+	  	<if test="startAt != null">
+	  		and receive_at &gt;= #{startAt}		
+	  	</if>
+	  	<if test="endAt != null">
+	  		and receive_at &lt;= #{endAt}
+	  	</if>
+  	</where>
+  </select>
+  
+  <select id="countReceive" parameterType="HashMap" resultType="int">
+  	select count(*) from coupon_member
+  	<where>
+  		<if test="list != null">
+			coupon_setting_id in
+			<foreach close=")" collection="list" index="index" item="item" open="(" separator=",">
+				#{item}
+			</foreach>
+		</if>
+  		<if test="start != null">
+  			<if test="end != null">
+  				and receive_at between #{start} and #{end}
+  			</if>
+  		</if>
+  	</where>
+  </select>
+  
+  <select id="countValidity" parameterType="HashMap" resultType="int">
+  	select count(*) from coupon_member
+  	<where>
+  		status = 1
+  		<if test="list != null">
+			and coupon_setting_id in
+			<foreach close=")" collection="list" index="index" item="item" open="(" separator=",">
+				#{item}
+			</foreach>
+		</if>
+  		<if test="start != null">
+  			<if test="end != null">
+  				and verification_at between #{start} and #{end}
+  			</if>
+  		</if>
+  	</where>
+  </select>
+
+	<select id="countMember" parameterType="HashMap" resultType="int">
+		select count(DISTINCT member_id,coupon_setting_id) from coupon_member
+		<where>
+			<if test="list != null">
+				coupon_setting_id in
+				<foreach close=")" collection="list" index="index" item="item" open="(" separator=",">
+					#{item}
+				</foreach>
+			</if>
+			<if test="start != null">
+				<if test="end != null">
+					and receive_at between #{start} and #{end}
+				</if>
+			</if>
+		</where>
+	</select>
+
+	<select id="getByOpenIdAndCoupon" resultMap="BaseResultMap">
+		SELECT
+		a.*
+		FROM
+		coupon_member a
+		LEFT JOIN coupon b ON a.coupon_id = b.id
+		LEFT JOIN member c ON c.id = a.member_id
+		WHERE
+		b.`code`= #{code}
+		AND
+		c.open_id = #{openId}
+	</select>
+
+	<select id="getRelationIds" resultType="java.util.HashMap">
+		SELECT
+			a.coupon_id AS couponId,
+			b.id AS couponSettingId,
+			c.activity_id AS activityId
+		FROM
+			coupon_member a
+		LEFT JOIN coupon_setting b ON a.coupon_setting_id = b.id
+		LEFT JOIN activity_coupon_setting c ON b.id = c.coupon_setting_id
+		LEFT JOIN coupon d ON a.coupon_id = d.id
+
+		where d.`code` = #{code}
+	</select>
+</mapper>

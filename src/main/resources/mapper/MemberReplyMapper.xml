@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.MemberReplyMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.MemberReply">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="member_id" jdbcType="INTEGER" property="memberId" />
+    <result column="reply_id" jdbcType="INTEGER" property="replyId" />
+    <result column="conversation_id" jdbcType="INTEGER" property="conversationId" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+  </resultMap>
+  
+  <resultMap id="ReportKeyMatchTrendDto" type="com.d1m.wechat.dto.ReportKeyMatchTrendDto">
+	<result column="date" jdbcType="VARCHAR" property="date" />
+	<result column="total_count" jdbcType="INTEGER" property="totalCount" />
+	<result column="match_count" jdbcType="INTEGER" property="matchCount" />
+  </resultMap>
+	
+  <select id="matchTrend" resultMap="ReportKeyMatchTrendDto">
+  	SELECT
+	DATE_FORMAT(a.created_at, '%Y-%m-%d') AS date,
+	COUNT(a.id) AS total_count,
+	COUNT(if(b.`reply_id` is null,null,true)) AS match_count
+	FROM
+		conversation a
+	LEFT JOIN member_reply b ON a.id = b.conversation_id
+	<where>
+		a.wechat_id = #{wechatId}
+	AND a.direction = 0
+	AND a.msg_type = 6
+	<if test="start != null">
+		<if test="end != null">
+		AND	a.created_at between #{start} and #{end}
+		</if>
+	</if>
+	GROUP BY
+		DATE_FORMAT(a.created_at, '%Y-%m-%d')
+	</where>
+   </select>
+	
+   <resultMap id="ReportKeyMatchTopDto" type="com.d1m.wechat.dto.ReportKeyMatchTopDto">
+	<result column="content" jdbcType="VARCHAR" property="content" />
+	<result column="count" jdbcType="INTEGER" property="count" />
+   </resultMap>
+			
+   <select id="matchTop" resultMap="ReportKeyMatchTopDto">
+    SELECT
+		b.reply_key AS content,
+		COUNT(a.id) AS count
+	FROM
+		 member_reply a
+	LEFT JOIN reply b ON a.reply_id = b.id
+	<where>
+		a.wechat_id = #{wechatId} and a.reply_id is not null
+		<if test="start != null">
+			<if test="end != null">
+			AND	a.created_at between #{start} and #{end}
+			</if>
+		</if>
+	GROUP BY
+		b.reply_key
+	ORDER BY count DESC
+	</where>
+   </select>
+	
+   <select id="unMatchTop" resultMap="ReportKeyMatchTopDto">
+	SELECT
+		a.content AS content,
+		COUNT(a.id) AS count
+	FROM
+		conversation a
+	LEFT JOIN member_reply b ON a.id = b.conversation_id
+	<where>
+		a.wechat_id = #{wechatId}
+		AND a.direction = 0
+		AND a.msg_type = 6
+		AND b.reply_id IS NULL
+		<if test="start != null">
+			<if test="end != null">
+			AND	a.created_at between #{start} and #{end}
+			</if>
+		</if>
+	GROUP BY
+		a.content
+	ORDER BY
+		count DESC
+	</where>
+   </select>
+</mapper>

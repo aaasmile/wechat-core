@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.MenuMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.Menu">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="menu_key" jdbcType="INTEGER" property="menuKey" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="media_id" jdbcType="INTEGER" property="mediaId" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="modify_at" jdbcType="TIMESTAMP" property="modifyAt" />
+    <result column="creator_id" jdbcType="INTEGER" property="creatorId" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+    <result column="menu_group_id" jdbcType="INTEGER" property="menuGroupId" />
+    <result column="parent_id" jdbcType="INTEGER" property="parentId" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="deleted_at" jdbcType="TIMESTAMP" property="deletedAt" />
+    <result column="deletor_id" jdbcType="INTEGER" property="deletorId" />
+    <result column="seq" jdbcType="INTEGER" property="seq" />
+  </resultMap>
+  
+  <select id="list" resultMap="BaseResultMap">
+  	select * from menu as m
+   	<where>
+   		m.wechat_id = #{wechatId} 
+   		<if test="menuGroupId != null">
+   			m.menu_group_id = #{menuGroupId}
+   		</if>
+   		<if test="status != null">
+   			m.status = #{status}
+   		</if>
+   		<if test="parentId != null">
+   			m.parent_id = #{parentId}
+   		</if>
+ 		<if test="parentId == null">
+ 			m.parent_id is null
+ 		</if>
+    </where>
+  </select>
+  
+  <resultMap id="menuBaseResultMap" type="com.d1m.wechat.dto.ReportMenuBaseDto">
+		<result column="menu_id" jdbcType="INTEGER" property="id" />
+		<result column="parentId" jdbcType="INTEGER" property="parentId" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="groupName" jdbcType="VARCHAR" property="groupName" />
+		<result column="menu_group_id" jdbcType="INTEGER" property="groupId" />
+		<result column="count" jdbcType="INTEGER" property="count" />
+		<result column="date" jdbcType="VARCHAR" property="date" />
+		<result column="parentName" jdbcType="VARCHAR" property="parentName" />
+  </resultMap>
+
+  <resultMap id="menuGroupResultMap" type="com.d1m.wechat.dto.ReportMenuDto">
+		<result column="menu1" jdbcType="INTEGER" property="menu1" />
+		<result column="menu2" jdbcType="INTEGER" property="menu2" />
+		<result column="menu3" jdbcType="INTEGER" property="menu3" />
+  </resultMap>
+  
+  <select id="menuReport" resultMap="menuBaseResultMap">
+		select 
+		m.menu_id,
+		n.parent_id as parentId,
+		n.name as name,
+		g.name as groupName,
+		n.menu_group_id,
+		count(m.menu_id) as count,
+		DATE_FORMAT(m.created_at,'%Y-%m-%d') as date
+		from member_click_menu m
+		left join menu n on m.menu_id=n.id
+		left join menu_group g on n.menu_group_id=g.id
+		<where>
+			m.wechat_id = #{wechatId} and n.menu_group_id=#{groupId}
+			<if test="start != null">
+				<if test="end != null">
+				and	m.created_at between #{start} and #{end}
+				</if>
+			</if>
+			<if test="status != null and status&gt;=0">
+				and	n.status = #{status}
+			</if>
+			group by m.menu_id,DATE_FORMAT(m.created_at,'%Y-%m-%d')
+			order by m.menu_id desc
+		</where>
+	</select>
+	
+	<select id="menuUserReport" resultMap="menuUserResultMap">
+		select m.menu_id, n.parent_id as parentId, n.name as name, g.name as groupName,
+			count(DISTINCT(m.open_id)) as userCount
+		from member_click_menu m
+			left join menu n on m.menu_id=n.id
+			left join menu_group g on n.menu_group_id=g.id
+		<where>
+			m.wechat_id = #{wechatId} and n.menu_group_id=#{groupId}
+			<if test="start != null">
+				<if test="end != null">
+				and	m.created_at between #{start} and #{end}
+				</if>
+			</if>
+			<if test="status != null and status&gt;=0">
+				and	n.status = #{status}
+			</if>
+			group by m.menu_id
+			order by m.menu_id desc
+		</where>
+	</select>
+	
+	<resultMap id="menuUserResultMap" type="com.d1m.wechat.dto.ReportMenuBaseDto">
+		<result column="menu_id" jdbcType="INTEGER" property="id" />
+		<result column="parentId" jdbcType="INTEGER" property="parentId" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="groupName" jdbcType="VARCHAR" property="groupName" />
+		<result column="menu_group_id" jdbcType="INTEGER" property="groupId" />
+		<result column="userCount" jdbcType="INTEGER" property="userCount" />
+   </resultMap>
+	
+	<select id="getSubMenuList" resultMap="menuBaseResultMap">
+		select id as menu_id, parent_id as parentId, name, menu_group_id, 
+			if(n.parent_id is null, null, (select name from menu m WHERE m.id = n.parent_id)) as parentName from menu as n
+		<where>
+			wechat_id = #{wechatId} and menu_group_id=#{groupId}
+			<if test="status != null">
+				and	status = #{status}
+			</if>
+			order by parent_id asc, seq asc
+		</where>
+	</select>
+	
+	<select id="getMainMenuList" resultMap="menuBaseResultMap">
+		select id as menu_id, parent_id as parentId, name, menu_group_id from menu
+		<where>
+			wechat_id = #{wechatId} and menu_group_id=#{groupId}
+			and parent_id is null and status = 1
+			order by parent_id asc, seq asc
+		</where>
+	</select>
+	
+    <resultMap id="menuChildBaseResultMap" type="com.d1m.wechat.dto.ReportMenuChildDto">
+		<result column="id" jdbcType="INTEGER" property="id" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="count" jdbcType="INTEGER" property="count" />
+		<result column="date" jdbcType="VARCHAR" property="date" />
+  	</resultMap>
+  
+    <select id="menuChildReport" resultMap="menuChildBaseResultMap">
+		select 
+		m.id as id,
+		m.name as name,
+		count(n.menu_id) as count,
+		DATE_FORMAT(n.created_at,'%Y-%m-%d') as date 
+		from menu m
+		join member_click_menu n on m.id=n.menu_id
+		<where>
+			m.wechat_id = #{wechatId} 
+			and m.parent_id&gt;0 
+			and m.menu_group_id=#{groupId}
+			<if test="start != null">
+				<if test="end != null">
+				and	m.created_at between #{start} and #{end}
+				</if>
+			</if>
+			group by n.created_at 
+			order by n.created_at desc
+		</where>
+	</select>
+	
+	<select id="getMatchUrl" resultMap="BaseResultMap">
+		select * from menu
+		<where>
+			wechat_id = #{wechatId} and status = #{status}
+			and menu_group_id = #{groupId}
+			and locate(#{url}, url) > 0
+		</where>
+	</select>
+  
+</mapper>

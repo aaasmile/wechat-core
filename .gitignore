@@ -1,0 +1,11 @@
+target/
+.classpath
+.project
+.settings
+.svn
+.idea/
+*.iml
+/.local*
+*/src/main/profile/dev/*.properties
+*/src/main/profile/dev/*.xml
+.local/

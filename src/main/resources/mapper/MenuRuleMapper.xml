@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.MenuRuleMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.MenuRule">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="group_id" jdbcType="INTEGER" property="groupId" />
+    <result column="sex" jdbcType="TINYINT" property="sex" />
+    <result column="client_platform_type" jdbcType="TINYINT" property="clientPlatformType" />
+    <result column="country" jdbcType="INTEGER" property="country" />
+    <result column="province" jdbcType="INTEGER" property="province" />
+    <result column="city" jdbcType="INTEGER" property="city" />
+    <result column="language" jdbcType="TINYINT" property="language" />
+    <result column="tag_id" jdbcType="INTEGER" property="tagId" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="creator_id" jdbcType="INTEGER" property="creatorId" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+    <result column="menu_group_id" jdbcType="INTEGER" property="menuGroupId" />
+  </resultMap>
+</mapper>

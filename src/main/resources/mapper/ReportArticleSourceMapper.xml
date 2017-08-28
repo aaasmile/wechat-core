@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.ReportArticleSourceMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.ReportArticleSource">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="msgid" jdbcType="VARCHAR" property="msgid" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="ref_date" jdbcType="VARCHAR" property="refDate" />
+    <result column="page_user" jdbcType="INTEGER" property="pageUser" />
+    <result column="page_count" jdbcType="INTEGER" property="pageCount" />
+    <result column="ori_page_user" jdbcType="INTEGER" property="oriPageUser" />
+    <result column="ori_page_count" jdbcType="INTEGER" property="oriPageCount" />
+    <result column="add_fav_user" jdbcType="INTEGER" property="addFavUser" />
+    <result column="add_fav_count" jdbcType="INTEGER" property="addFavCount" />
+    <result column="share_user" jdbcType="INTEGER" property="shareUser" />
+    <result column="share_count" jdbcType="INTEGER" property="shareCount" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+  </resultMap>
+  
+  <resultMap id="ArticleCountResultMap" type="com.d1m.wechat.dto.ReportArticleDto">
+     <result column="pageTotal" jdbcType="INTEGER" property="pageTotal" />
+     <result column="oriPageTotal" jdbcType="INTEGER" property="oriPageTotal" />
+     <result column="addFavTotal" jdbcType="INTEGER" property="addFavTotal" />
+     <result column="shareTotal" jdbcType="INTEGER" property="shareTotal" />
+  </resultMap>
+  
+  <select id="countArticle" resultMap="ArticleCountResultMap">
+  	select sum(page_count) as pageTotal,
+  	sum(ori_page_count) as oriPageTotal,
+  	sum(add_fav_count) as addFavTotal,
+  	sum(share_count) as shareTotal from report_article_source
+  	<where>
+  		wechat_id = #{wechatId}
+  		<if test="start != null">
+			<if test="end != null">
+			and	created_at &gt;= #{start} and created_at &lt;= #{end}
+			</if>
+		</if>
+  	</where>
+  </select>
+  
+  <resultMap id="ArticleResultMap" type="com.d1m.wechat.dto.ReportArticleItemDto" >
+  	<id column="created_at" jdbcType="TIMESTAMP" property="date" />
+  	<result column="pageUser" jdbcType="INTEGER" property="pageUser" />
+  	<result column="pageCount" jdbcType="INTEGER" property="pageCount" />
+  	<result column="oriPageUser" jdbcType="INTEGER" property="oriPageUser" />
+  	<result column="oriPageCount" jdbcType="INTEGER" property="oriPageCount" />
+  	<result column="addFavUser" jdbcType="INTEGER" property="addFavUser" />
+  	<result column="addFavCount" jdbcType="INTEGER" property="addFavCount" />
+  	<result column="shareUser" jdbcType="INTEGER" property="shareUser" />
+  	<result column="shareCount" jdbcType="INTEGER" property="shareCount" />
+  </resultMap>
+  
+  <select id="articleReport" resultMap="ArticleResultMap">
+  	select DATE_FORMAT(created_at,'%Y-%m-%d') as date,
+  		sum(page_user) as pageUser, sum(page_count) as pageCount,
+  		sum(ori_page_user) as oriPageUser,
+  		sum(ori_page_count) as oriPageCount,
+  		sum(add_fav_user) as addFavUser,
+  		sum(add_fav_count) as addFavCount,
+  		sum(share_user) as shareUser,
+  		sum(share_count) as shareCount
+  		from report_article_source
+  	<where>
+  		wechat_id = #{wechatId}
+  		<if test="start != null">
+			<if test="end != null">
+			and	created_at &gt;= DATE_FORMAT(#{start}, '%Y-%m-%d')
+			and created_at &lt;= #{end}
+			</if>
+		</if>
+  	</where>
+  		group by date
+		order by date desc
+  </select>
+  
+  <resultMap id="ArticleListResultMap" type="com.d1m.wechat.dto.ReportArticleItemDto" >
+  	<result column="title" jdbcType="VARCHAR" property="title" />
+  	<result column="msgid" jdbcType="VARCHAR" property="msgid" />
+  	<result column="pageUser" jdbcType="INTEGER" property="pageUser" />
+  	<result column="pageCount" jdbcType="INTEGER" property="pageCount" />
+  	<result column="oriPageUser" jdbcType="INTEGER" property="oriPageUser" />
+  	<result column="oriPageCount" jdbcType="INTEGER" property="oriPageCount" />
+  	<result column="addFavUser" jdbcType="INTEGER" property="addFavUser" />
+  	<result column="addFavCount" jdbcType="INTEGER" property="addFavCount" />
+  	<result column="shareUser" jdbcType="INTEGER" property="shareUser" />
+  	<result column="shareCount" jdbcType="INTEGER" property="shareCount" />
+  </resultMap>
+  
+  <select id="articleListReport" resultMap="ArticleListResultMap">
+  	select title as title,
+  		sum(page_user) as pageUser, sum(page_count) as pageCount,
+  		sum(ori_page_user) as oriPageUser,
+  		sum(ori_page_count) as oriPageCount,
+  		sum(add_fav_user) as addFavUser,
+  		sum(add_fav_count) as addFavCount,
+  		sum(share_user) as shareUser,
+  		sum(share_count) as shareCount
+  		from report_article_source
+  	<where>
+  		wechat_id = #{wechatId}
+  		<if test="start != null">
+			<if test="end != null">
+			and	created_at &gt;= DATE_FORMAT(#{start}, '%Y-%m-%d')
+			and created_at &lt;= #{end}
+			</if>
+		</if>
+  	</where>
+  		group by title
+		order by title desc
+  </select>
+ 
+  
+</mapper>

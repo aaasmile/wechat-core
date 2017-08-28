@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.ReplyMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.Reply">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="reply_type" jdbcType="TINYINT" property="replyType" />
+    <result column="match_mode" jdbcType="TINYINT" property="matchMode" />
+    <result column="reply_key" jdbcType="VARCHAR" property="replyKey" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="creator_id" jdbcType="INTEGER" property="creatorId" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+    <result column="weight" jdbcType="INTEGER" property="weight" />
+  </resultMap>
+  
+  <select id="get" resultMap="ReplyDtoResultMap">
+  	SELECT id, reply_key, DATE_FORMAT(created_at,'%Y-%m-%d %T'),reply_type, match_mode, wechat_id, weight from reply
+	<where>
+		wechat_id = #{wechatId} and id = #{replyId} and status = 1
+	</where>
+  </select>
+
+  <select id="search" parameterType="HashMap" resultMap="ReplyDtoResultMap">
+  	SELECT id, reply_key, DATE_FORMAT(created_at,'%Y-%m-%d %T') as created_at, reply_type, match_mode, wechat_id, weight from reply
+	<where>
+		wechat_id = #{wechatId} and status = 1
+		<if test="query != null">
+			and reply_key like concat('%', #{query}, '%')
+		</if>
+	</where>
+	<if test="sortName != null">
+		order by ${sortName}
+		<if test="sortDir != null">
+			${sortDir}
+		</if>
+		<if test="sortDir == null">
+			desc
+		</if>
+	</if>
+	<if test="sortName == null">
+		order by reply_type, id desc
+	</if>
+  </select>
+  <resultMap id="ReplyDtoResultMap" type="com.d1m.wechat.dto.ReplyDto">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+    <result column="reply_key" jdbcType="VARCHAR" property="name" />
+    <result column="reply_type" jdbcType="TINYINT" property="replyType" />
+    <result column="match_mode" jdbcType="TINYINT" property="matchMode" />
+    <result column="created_at" jdbcType="VARCHAR" property="createdAt" />
+    <result column="weight" jdbcType="INTEGER" property="weight" />
+    <collection column="{replyId=id,wechatId=wechat_id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.ReplyActionEngineDto" property="rules" select="getReplyActionEngines" />
+    <collection column="{replyId=id}" javaType="ArrayList" ofType="java.lang.String" property="keyWords" select="getReplyWords"/>
+  </resultMap>
+  
+  <select id="getReplyWords" resultType="java.lang.String">
+  	select reply_word from reply_words
+  	<where>
+  		reply_id = #{replyId}
+  	</where>
+  </select>
+  
+  <select id="getReplyActionEngines" parameterType="HashMap" resultMap="ReplyActionEngineDtoResultMap">
+  	SELECT rae.id as id, ae.name as name, ae.start_at as start_at, ae.end_at as end_at, ae.conditions as conditions, ae.effect as effect, rae.action_engine_id as actionEngineId from reply_action_engine rae LEFT JOIN action_engine ae on rae.action_engine_id = ae.id
+		<where>
+			rae.wechat_id = #{wechatId} and rae.reply_id = #{replyId}
+		</where>
+		order by rae.id desc
+  </select>
+  <resultMap id="ReplyActionEngineDtoResultMap" type="com.d1m.wechat.dto.ReplyActionEngineDto">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="start_at" jdbcType="TIMESTAMP" property="start_at" />
+    <result column="end_at" jdbcType="TIMESTAMP" property="end_at" />
+    <result column="conditions" jdbcType="LONGVARCHAR" property="conditions" />
+    <result column="effect" jdbcType="LONGVARCHAR" property="effect" />
+    <result column="action_engine_id" jdbcType="INTEGER" property="actionEngineId" />
+  </resultMap>
+  
+  
+  <select id="getSubscribeReply" parameterType="HashMap" resultMap="ReplyDtoResultMap">
+  	SELECT id, reply_key, DATE_FORMAT(created_at,'%Y-%m-%d %T') as created_at, reply_type, match_mode, wechat_id, weight from reply
+	<where>
+		wechat_id = #{wechatId} and status = 1 and reply_type = 1
+	</where>
+  </select>
+  
+  <select id="getDefaultReply" parameterType="HashMap" resultMap="ReplyDtoResultMap">
+  	SELECT id, reply_key, DATE_FORMAT(created_at,'%Y-%m-%d %T') as created_at, reply_type, match_mode, wechat_id, weight from reply
+	<where>
+		wechat_id = #{wechatId} and status = 1 and reply_type = 0
+	</where>
+  </select>
+  
+  <select id="searchMatchReply" parameterType="HashMap" resultMap="ReplyDtoResultMap">
+	(SELECT r.id, r.reply_key, DATE_FORMAT(r.created_at,'%Y-%m-%d %T') as created_at, r.reply_type, r.match_mode, r.wechat_id, r.weight from reply as r
+		left join reply_words as rw on rw.reply_id = r.id
+	<where>
+		r.wechat_id = #{wechatId} and r.status = 1 and r.reply_type = 2 and r.match_mode = 2
+		<if test="content != null">
+			and rw.reply_word = #{content}
+		</if>
+		order by r.weight desc
+	</where>
+	)
+	union
+  	(SELECT r.id, r.reply_key, DATE_FORMAT(r.created_at,'%Y-%m-%d %T') as created_at, r.reply_type, r.match_mode, r.wechat_id, r.weight from reply as r
+  		left join reply_words as rw on rw.reply_id = r.id
+	<where>
+		r.wechat_id = #{wechatId} and r.status = 1 and r.reply_type = 2 and r.match_mode = 1
+		<if test="content != null">
+			and locate(rw.reply_word, #{content}) > 0
+		</if>
+		order by r.weight desc
+	</where>
+	)
+	order by weight desc
+  </select>
+  
+  
+</mapper>

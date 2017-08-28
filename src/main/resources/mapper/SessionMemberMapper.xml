@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.SessionMemberMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.SessionMember">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="business_id" jdbcType="INTEGER" property="businessId" />
+    <result column="offline_activity_id" jdbcType="INTEGER" property="offlineActivityId" />
+    <result column="session_id" jdbcType="INTEGER" property="sessionId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="open_id" jdbcType="VARCHAR" property="openId" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="province" jdbcType="INTEGER" property="province" />
+    <result column="city" jdbcType="INTEGER" property="city" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+  </resultMap>
+  
+  <select id="search" parameterType="HashMap" resultMap="SessionMemberListResultMap">
+  	select sm.name as memberName, sm.phone as phone, b.business_name as businessName,
+  	   	concat(date_format(s.created_at,'%Y/%m/%d'), " ", s.session) as memberSession,
+  	   	(select c_name from area_info where id = sm.province) as province, 
+  	   	(select c_name from area_info where id = sm.city) as city
+  	   	from session_member as sm 
+  		left join business as b on b.id = sm.business_id
+  		left join session as s on s.id = sm.session_id
+  	<where>
+  		sm.wechat_id = #{wechatId} 
+  		<if test="offlineActivityId != null">
+  			and sm.offline_activity_id = #{offlineActivityId}
+  		</if>
+  		<if test="phone != null">
+  			and sm.phone = #{phone}
+  		</if>
+  		<if test="date != null">
+  			and date_format(s.created_at,'%Y/%m/%d') = str_to_date(#{date}, '%Y/%m/%d')
+  		</if>
+  		<if test="session != null">
+  			and s.session = #{session}
+  		</if>
+  		<if test="sortName != null">
+			order by ${sortName}
+			<if test="sortDir != null">
+				${sortDir}
+			</if>
+			<if test="sortDir == null">
+				desc
+			</if>
+		</if>
+		<if test="sortName == null">
+			order by sm.created_at desc
+		</if>
+  	</where>
+  </select>
+  
+  <resultMap id="SessionMemberListResultMap" type="com.d1m.wechat.dto.SessionMemberDto">
+  	<result column="memberName" jdbcType="VARCHAR" property="memberName" />
+  	<result column="phone" jdbcType="VARCHAR" property="phone" />
+  	<result column="businessName" jdbcType="VARCHAR" property="businessName" />
+  	<result column="memberSession" jdbcType="VARCHAR" property="memberSession" />
+  	<result column="province" jdbcType="VARCHAR" property="province" />
+  	<result column="city" jdbcType="VARCHAR" property="city" />
+  </resultMap>
+  
+  <select id="searchById" parameterType="HashMap" resultMap="OfflineActivityListResultMap">
+  	select oa.id, oa.name, oa.created_at, oa.share_pic, oa.start_date, oa.end_date 
+  		from offline_activity as oa
+   	<where>
+   		oa.wechat_id = #{wechatId} and oa.id = #{offlineActivityId} and oa.status = 1
+		order by oa.created_at desc
+	</where>
+  </select>
+  
+  <resultMap id="OfflineActivityListResultMap" type="com.d1m.wechat.dto.OfflineActivityDto">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+	<result column="name" jdbcType="VARCHAR" property="name" />
+	<collection column="{offlineActivityId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.BusinessItemDto" property="businessList" select="listVisibleBusiness" />
+	<collection column="{offlineActivityId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.SessionDto" property="sessionList" select="listVisibleSession" />
+  </resultMap>
+  
+  <select id="listVisibleBusiness" parameterType="HashMap" resultMap="BusinessResultMap">
+  	select b.id, b.business_name, 
+  		(select c_name from area_info where id = b.province) as province, 
+  	   	(select c_name from area_info where id = b.city) as city
+  		from offline_activity_business as oab left join business as b on oab.business_id = b.id
+  	<where>
+  		oab.offline_activity_id = #{offlineActivityId} and b.status = 1
+  	</where>
+  </select>
+  
+  <resultMap id="BusinessResultMap" type="com.d1m.wechat.dto.BusinessItemDto">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+    <result column="business_name" jdbcType="VARCHAR" property="name" />
+    <result column="province" jdbcType="VARCHAR" property="province" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+  </resultMap>
+  
+  <select id="listVisibleSession" parameterType="HashMap" resultMap="SessionResultMap">
+  	select id, offline_activity_id, session,
+  		DATE_FORMAT(created_at,'%Y/%m/%d') as date, member_limit as ml, 
+  		status from session
+  	<where>
+  		offline_activity_id = #{offlineActivityId} and status = 1
+  	</where>
+  </select>
+  
+  <resultMap id="SessionResultMap" type="com.d1m.wechat.dto.SessionDto">
+  	<id column="id" property="id" jdbcType="INTEGER" />
+    <result column="oai" property="offlineActivityId" jdbcType="INTEGER" />
+    <result column="session" property="session" jdbcType="VARCHAR" />
+    <result column="date" property="createdAt" jdbcType="VARCHAR" />
+    <result column="ml" property="memberLimit" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+  </resultMap>
+  
+  <select id="searchWxList" parameterType="HashMap" resultMap="OfflineActivityWxListResultMap">
+  	select oa.id, oa.name from offline_activity as oa
+  		left join session as s on s.offline_activity_id = oa.id
+   	<where>
+   		oa.wechat_id = #{wechatId} and oa.status = 1
+   		and s.member_limit &gt; s.apply
+   		and now() between oa.start_date and oa.end_date
+		order by oa.created_at desc
+	</where>
+  </select>
+  
+  <resultMap id="OfflineActivityWxListResultMap" type="com.d1m.wechat.dto.OfflineActivityDto">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+	<result column="name" jdbcType="VARCHAR" property="name" />
+  </resultMap>
+  
+</mapper>

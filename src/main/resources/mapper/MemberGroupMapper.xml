@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.MemberGroupMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.MemberGroup">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="modify_at" jdbcType="TIMESTAMP" property="modifyAt" />
+    <result column="push_at" jdbcType="TIMESTAMP" property="pushAt" />
+    <result column="wx_group_id" jdbcType="INTEGER" property="wxGroupId" />
+    <result column="creator_id" jdbcType="INTEGER" property="creatorId" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+  </resultMap>
+</mapper>

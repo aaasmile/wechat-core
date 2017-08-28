@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.QrcodeTypeMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.QrcodeType">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="parent_id" jdbcType="INTEGER" property="parentId" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="creator_id" jdbcType="INTEGER" property="creatorId" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+  </resultMap>
+
+	<select id="countDuplicateName" resultType="int">
+		select count(*) from qrcode_type
+		<where>
+			wechat_id = #{wechatId} and name = #{name}
+			<if test="id != null">
+				and id != #{id}
+			</if>
+			<if test="parentId != null">
+				and parent_id = #{parentId}
+			</if>
+			<if test="parentId == null">
+				and parent_id is null
+			</if>
+			<if test="status !=null">
+				and status = #{status}
+			</if>
+		</where>
+	</select>
+
+	<select id="list" resultMap="QrcodeTypeDtoResultMap">
+		select * from qrcode_type
+		<where>
+			wechat_id = #{wechatId}
+			<if test="name != null">
+				and name like CONCAT('%','${name}','%' )
+			</if>
+			and status = 1 and parent_id is null
+		</where>
+	</select>
+
+	<resultMap id="QrcodeTypeDtoResultMap" type="com.d1m.wechat.dto.QrcodeTypeDto">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<collection column="{parentId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.QrcodeTypeDto" property="children" select="getChildren" />
+	</resultMap>
+	
+	<select id="getChildren" parameterType="HashMap" resultMap="QrcodeTypeDtoResultMap">
+		SELECT * FROM qrcode_type WHERE parent_id = #{parentId} and status = 1
+	</select>
+
+</mapper>

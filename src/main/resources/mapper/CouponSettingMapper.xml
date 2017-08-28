@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.CouponSettingMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.CouponSetting">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="grno" jdbcType="VARCHAR" property="grno" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="short_name" jdbcType="VARCHAR" property="shortName" />
+    <result column="conditions" jdbcType="VARCHAR" property="conditions" />
+    <result column="channel" jdbcType="VARCHAR" property="channel" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="gift_type" jdbcType="VARCHAR" property="giftType" />
+    <result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
+    <result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
+    <result column="validity_start_date" jdbcType="TIMESTAMP" property="validityStartDate" />
+    <result column="validity_end_date" jdbcType="TIMESTAMP" property="validityEndDate" />
+    <result column="rebate_method" jdbcType="VARCHAR" property="rebateMethod" />
+    <result column="rebate_sum" jdbcType="DOUBLE" property="rebateSum" />
+    <result column="coupon_sum" jdbcType="INTEGER" property="couponSum" />
+    <result column="issue_limit_type" jdbcType="VARCHAR" property="issueLimitType" />
+    <result column="issue_limit_value" jdbcType="DOUBLE" property="issueLimitValue" />
+    <result column="fetch_type" jdbcType="TINYINT" property="fetchType" />
+    <result column="win_probability" jdbcType="INTEGER" property="winProbability" />
+    <result column="times_of_join" jdbcType="INTEGER" property="timesOfJoin" />
+    <result column="times_of_win" jdbcType="INTEGER" property="timesOfWin" />
+    <result column="coupon_description" jdbcType="VARCHAR" property="couponDescription" />
+    <result column="coupon_pic" jdbcType="VARCHAR" property="couponPic" />
+    <result column="coupon_bgcolor" jdbcType="VARCHAR" property="couponBgcolor" />
+    <result column="coupon_title_bgcolor" jdbcType="VARCHAR" property="couponTitleBgcolor" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="creator_id" jdbcType="INTEGER" property="creatorId" />
+    <result column="modify_by_id" jdbcType="INTEGER" property="modifyById" />
+    <result column="modify_at" jdbcType="TIMESTAMP" property="modifyAt" />
+    <result column="pordInfos" jdbcType="VARCHAR" property="pordinfos" />
+  </resultMap>
+  
+  <select id="getByGrno" resultMap="BaseResultMap">
+  	select * from coupon_setting where grno = #{grno}
+  </select>
+  
+  
+  <select id="search" resultMap="CouponSettingListResultMap">
+   	select id, name, grno, channel, type, gift_type from coupon_setting
+   	<where>
+   		wechat_id = #{wechatId} and id not in (SELECT DISTINCT coupon_setting_id from activity_coupon_setting)
+   		<if test="query != null">
+			and (name like CONCAT('%','${query}','%' ) or grno like CONCAT('%','${query}','%' ))
+		</if>
+		<if test="channel != null">
+			and channel = #{channel}
+		</if>
+		<if test="endAt != null">
+			and end_date <![CDATA[ <= ]]> #{endAt}
+		</if>
+    </where>
+    <if test="sortName != null">
+			order by ${sortName}
+			<if test="sortDir != null">
+				${sortDir}
+			</if>
+			<if test="sortDir == null">
+				desc
+			</if>
+		</if>
+		<if test="sortName == null">
+			order by id desc
+		</if>
+  </select>
+  
+  <resultMap id="CouponSettingListResultMap" type="com.d1m.wechat.dto.CouponSettingDto">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+	<result column="name" jdbcType="VARCHAR" property="name" />
+	<result column="grno" jdbcType="VARCHAR" property="grno" />
+	<result column="channel" jdbcType="VARCHAR" property="channel" />
+	<result column="type" jdbcType="VARCHAR" property="type" />
+	<result column="gift_type" jdbcType="VARCHAR" property="giftType" />
+  </resultMap>
+  
+  <select id="get" parameterType="HashMap" resultMap="CouponSettingGetResultMap">
+	select id, name, created_at, grno, channel, type, gift_type, DATE_FORMAT(start_date, '%Y-%m-%d') as start_date, 
+	DATE_FORMAT(end_date, '%Y-%m-%d') as end_date, DATE_FORMAT(validity_start_date, '%Y-%m-%d') as validity_start_date, 
+	DATE_FORMAT(validity_end_date, '%Y-%m-%d') as validity_end_date, rebate_method,
+	rebate_sum, coupon_sum, fetch_type, win_probability, times_of_join, times_of_win, coupon_description, coupon_pic, coupon_bgcolor, fetch_type,
+	coupon_title_bgcolor, issue_limit_type, issue_limit_value, short_name, conditions, pordInfos from coupon_setting
+  	<where>
+	  	wechat_id = #{wechatId} and id = #{id}
+  	</where>
+  </select>
+  
+  <resultMap id="CouponSettingGetResultMap" type="com.d1m.wechat.dto.CouponSettingDto">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+	<result column="name" jdbcType="VARCHAR" property="name" />
+	<result column="created_at" jdbcType="VARCHAR" property="createdAt" />
+	<result column="grno" jdbcType="VARCHAR" property="grno" />
+	<result column="channel" jdbcType="VARCHAR" property="channel" />
+	<result column="type" jdbcType="VARCHAR" property="type" />
+	<result column="gift_type" jdbcType="VARCHAR" property="giftType" />
+	<result column="start_date" jdbcType="VARCHAR" property="startDate" />
+	<result column="end_date" jdbcType="VARCHAR" property="endDate" />
+	<result column="validity_start_date" jdbcType="VARCHAR" property="validityStartDate" />
+	<result column="validity_end_date" jdbcType="VARCHAR" property="validityEndDate" />
+	<result column="rebate_method" jdbcType="VARCHAR" property="rebateMethod" />
+	<result column="rebate_sum" jdbcType="DOUBLE" property="rebateSum" />
+	<result column="issue_limit_type" jdbcType="VARCHAR" property="issueLimitType" />
+    <result column="issue_limit_value" jdbcType="DOUBLE" property="issueLimitValue" />
+	<result column="coupon_sum" jdbcType="INTEGER" property="couponSum" />
+	<result column="fetch_type" jdbcType="TINYINT" property="fetchType" />
+	<result column="win_probability" jdbcType="INTEGER" property="winProbability" />
+	<result column="times_of_join" jdbcType="INTEGER" property="timesOfJoin" />
+	<result column="times_of_win" jdbcType="INTEGER" property="timesOfWin" />
+	<result column="coupon_description" jdbcType="VARCHAR" property="couponDescription" />
+	<result column="coupon_pic" jdbcType="VARCHAR" property="couponPic" />
+	<result column="coupon_bgcolor" jdbcType="VARCHAR" property="couponBgcolor" />
+	<result column="coupon_title_bgcolor" jdbcType="VARCHAR" property="couponTitleBgcolor" />
+	<result column="fetch_type" jdbcType="TINYINT" property="fetchType" />
+	<result column="issue_limit_type" jdbcType="VARCHAR" property="issueLimitType" />
+    <result column="issue_limit_value" jdbcType="DOUBLE" property="issueLimitValue" />
+    <result column="short_name" jdbcType="VARCHAR" property="shortName" />
+    <result column="conditions" jdbcType="VARCHAR" property="conditions" />
+    <result column="pordInfos" jdbcType="VARCHAR" property="pordInfos" />
+	<collection column="{couponSettingId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.BusinessDto" property="businesses" select="selectBusiness" />
+  </resultMap>
+  
+  <select id="selectBusiness" parameterType="HashMap" resultMap="BusinessResultMap">
+  	SELECT b.id, b.business_name FROM coupon_business cb left join business b on cb.business_id = b.id
+  	<where>
+	  	cb.coupon_setting_id = #{couponSettingId}
+  	</where>
+  	order by cb.id desc
+  </select>
+  <resultMap id="BusinessResultMap" type="com.d1m.wechat.dto.BusinessDto">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+  	<result column="business_name" jdbcType="VARCHAR" property="businessName" />
+  </resultMap>
+  
+  <select id="countCoupon" parameterType="HashMap" resultType="int">
+	  select IF(ISNULL(sum(coupon_sum)),0,sum(coupon_sum)) as num from coupon_setting
+  	<where>
+  		wechat_id = #{wechatId} and status = 1
+  		<if test="list != null">
+			and id in
+			<foreach close=")" collection="list" index="index" item="item" open="(" separator=",">
+				#{item}
+			</foreach>
+		</if>
+  		<if test="start != null">
+  			<if test="end != null">
+  				and start_date &lt; #{end} and end_date &gt; #{start}
+  			</if>
+  		</if>
+  	</where>
+  </select>
+  
+</mapper>

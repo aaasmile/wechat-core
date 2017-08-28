@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.d1m.wechat.mapper.MassConversationBatchMemberMapper" >
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.MassConversationBatchMember" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="open_id" property="openId" jdbcType="VARCHAR" />
+    <result column="member_id" property="memberId" jdbcType="INTEGER" />
+    <result column="batch_id" property="batchId" jdbcType="INTEGER" />
+    <result column="wechat_id" property="wechatId" jdbcType="INTEGER" />
+  </resultMap>
+</mapper>

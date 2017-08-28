@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.MemberTagMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.MemberTag">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="member_tag_type_id" jdbcType="INTEGER" property="memberTagTypeId" />
+    <result column="creator_id" jdbcType="INTEGER" property="creatorId" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+  </resultMap>
+
+	<resultMap id="tagUserBaseResultMap" type="com.d1m.wechat.dto.ReportMemberTagDto">
+		<result column="id" jdbcType="INTEGER" property="id" />
+		<result column="name" jdbcType="VARCHAR" property="tagName" />
+		<result column="tagname" jdbcType="VARCHAR" property="tagType" />
+		<result column="count" jdbcType="INTEGER" property="count" />
+	</resultMap>
+
+
+	<select id="getDuplicateName" resultMap="BaseResultMap">
+		select * from member_tag
+		<where>
+			wechat_id = #{wechatId} and name = #{name}
+			<if test="id != null">
+				and id != #{id}
+			</if>
+		</where>
+	</select>
+
+	<select id="search" resultMap="memberTagListResultMap">
+		select mt.id, mt.name, mt.member_tag_type_id, mtt.name as tag_type_name,
+			(select count(*) from member_member_tag mmt where mmt.member_tag_id = mt.id) as ownedMemberCount 
+		from member_tag mt left join member_tag_type mtt on mt.member_tag_type_id = mtt.id
+		<where>
+			mt.wechat_id = #{wechatId} and mt.status = 1
+			<if test="name != null">
+				and mt.name like CONCAT('%', #{name}, '%' )
+			</if>
+			<if test="memberTagTypeIds != null">
+				and mt.member_tag_type_id in
+				<foreach collection="memberTagTypeIds" index="index" item="item" open="(" close=")" separator=",">
+					#{item}
+				</foreach>
+			</if>
+			<if test="memberTagIds != null">
+				and mt.id in
+				<foreach collection="memberTagIds" index="index" item="item" open="(" close=")" separator=",">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+		<if test="sortName != null">
+			order by mt.${sortName}
+			<if test="sortDir != null">
+				${sortDir}
+			</if>
+			<if test="sortDir == null">
+				desc
+			</if>
+		</if>
+		<if test="sortName == null">
+			order by mt.id desc
+		</if>
+	</select>
+	
+	<resultMap id="memberTagListResultMap" type="com.d1m.wechat.dto.MemberTagDto">
+		<result column="id" jdbcType="INTEGER" property="id" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="member_tag_type_id" jdbcType="INTEGER" property="memberTagTypeId" />
+		<result column="tag_type_name" jdbcType="VARCHAR" property="memberTagTypeName" />
+		<result column="ownedMemberCount" jdbcType="INTEGER" property="ownedMemberCount" />
+	</resultMap>
+	
+	<select id="searchName" resultMap="memberTagDtoResultMap">
+		select mt.id, mt.name, mt.member_tag_type_id, mtt.parent_id from member_tag mt
+			left join member_tag_type mtt on mt.member_tag_type_id = mtt.id
+		<where>
+			mt.wechat_id = #{wechatId} and mt.status = 1
+			<if test="name != null">
+				and mt.name like CONCAT('%', #{name}, '%' )
+			</if>
+		</where>
+	</select>
+
+	<resultMap id="memberTagDtoResultMap" type="com.d1m.wechat.dto.MemberTagDto">
+		<result column="id" jdbcType="INTEGER" property="id" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="member_tag_type_id" jdbcType="INTEGER" property="memberTagTypeId" />
+		<result column="parent_id" jdbcType="INTEGER" property="memberTagTypeParentId" />
+	</resultMap>
+	
+	<select id="tagUser" resultMap="tagUserBaseResultMap">
+		select m.name,n.name as tagname,count(o.member_tag_id) as count from member_tag m 
+		join member_tag_type n on m.member_tag_type_id=n.id
+		join member_member_tag o on o.member_tag_id = m.id
+		<where>
+			m.wechat_id = #{wechatId}
+			<if test="start != null">
+				<if test="end != null">
+					and m.created_at between #{start} and #{end}
+				</if>
+			</if>
+			group by o.member_tag_id
+			order by count desc
+		</where>
+	</select>
+
+	<resultMap id="memberTagResultMap" type="com.d1m.wechat.dto.MemberTagDto">
+		<result column="id" jdbcType="INTEGER" property="id" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="memberTagTypeId" jdbcType="INTEGER" property="memberTagTypeId" />
+		<result column="ownedMemberCount" jdbcType="INTEGER" property="ownedMemberCount" />		
+	</resultMap>
+	<select id="getAllMemberTags" resultMap="memberTagResultMap">
+		select id, name, member_tag_type_id as memberTagTypeId,
+				(select count(*) from member_member_tag where member_tag_id = member_tag.id) as ownedMemberCount 
+		from member_tag where wechat_id = #{wechatId} and status=1
+	</select>
+
+</mapper>

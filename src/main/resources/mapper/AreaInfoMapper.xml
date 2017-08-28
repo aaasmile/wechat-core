@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.AreaInfoMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.AreaInfo">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="code" jdbcType="INTEGER" property="code" />
+    <result column="parent_id" jdbcType="INTEGER" property="parentId" />
+    <result column="c_name" jdbcType="VARCHAR" property="cName" />
+    <result column="e_name" jdbcType="VARCHAR" property="eName" />
+  </resultMap>
+  
+  <select id="selectByParentId" resultMap="BaseResultMap">
+  	select * from area_info where parent_id = #{parentId}
+  </select>
+  
+  <select id="selectByCName" resultMap="BaseResultMap">
+  	select * from area_info where c_name = #{cName}
+  </select>
+ 
+ <select id="selectNameById" resultType="string">
+ 	<if test="lang == 'CN'">
+ 		select c_name from area_info where id = #{id}
+ 	</if>
+ 	<if test="lang == 'US'">
+ 		select e_name from area_info where id = #{id}
+ 	</if>
+ 	<if test="lang == null">
+ 		select c_name from area_info where id = #{id}
+ 	</if>
+ </select>
+ 
+ <select id="selectIdByName" resultType="java.lang.Integer">
+ 	select id from area_info
+ 	<where>
+ 		<if test="parentId == null">
+ 			<if test="cName != null">
+	 			c_name = #{cName}
+	 		</if>
+ 		</if>
+ 		<if test="parentId != null">
+ 			and parent_id = #{parentId}
+ 			<if test="cName != null">
+	 			and locate(c_name, #{cName}) > 0
+	 		</if>
+ 		</if>
+ 	</where>
+ </select>
+  
+</mapper>

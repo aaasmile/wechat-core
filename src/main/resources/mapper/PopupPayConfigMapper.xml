@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.d1m.wechat.mapper.PopupPayConfigMapper" >
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.popup.PopupPayConfig" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="icon_url" property="iconUrl" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="config" property="config" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="open" property="open" jdbcType="SMALLINT" />
+    <result column="wechat_id" property="wechatId" jdbcType="INTEGER" />
+    <result column="company_id" property="companyId" jdbcType="INTEGER" />
+  </resultMap>
+
+  <select id="selectInfoByPayType" resultMap="BaseResultMap" parameterType="HashMap">
+    select * from popup_pay_config where type = #{payType} and open = 1
+    <if test="wechatId != null">
+      and wechat_id = #{wechatId}
+    </if>
+  </select>
+
+  <select id="selectInfoByWechatId" resultMap="BaseResultMap" parameterType="HashMap">
+    select * from popup_pay_config where 1=1
+    <if test="wechatId != null">
+      and wechat_id = #{wechatId}
+    </if>
+  </select>
+</mapper>

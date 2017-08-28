@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.d1m.wechat.mapper.VerifyTokenMapper" >
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.VerifyToken" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="member_id" property="memberId" jdbcType="INTEGER" />
+    <result column="token" property="token" jdbcType="VARCHAR" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="verified" property="verified" jdbcType="BIT" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="expired_on" property="expiredOn" jdbcType="TIMESTAMP" />
+    <result column="accept" property="accept" jdbcType="VARCHAR" />
+    <result column="wechat_id" property="wechatId" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <select id="countSend" resultType="int">
+  	select count(*) from verify_token
+  	<where>
+  		wechat_id = #{wechatId} and member_id = #{memberId} and accept = #{mobile}
+  		<if test="startAt != null">
+  			and created_at &gt;= #{startAt}
+  		</if>
+  		<if test="endAt != null">
+  			and created_at &gt;= #{endAt}
+  		</if>
+  	</where>
+  
+  </select>
+  
+</mapper>

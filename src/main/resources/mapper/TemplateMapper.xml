@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.TemplateMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.Template">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="template_id" jdbcType="VARCHAR" property="templateId" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="primary_industry" jdbcType="VARCHAR" property="primaryIndustry" />
+    <result column="deputy_industry" jdbcType="VARCHAR" property="deputyIndustry" />
+    <result column="parameters" jdbcType="VARCHAR" property="parameters" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+    <result column="example" jdbcType="LONGVARCHAR" property="example" />
+  </resultMap>
+  
+  <select id="list" resultMap="BaseResultMap">
+	select * from template 
+	<where>
+		wechat_id = #{wechatId}
+	</where>  
+  </select>
+  
+  <select id="selectParamsByTemplateId" resultType="String">
+  	select parameters from template
+  	<where>
+  		template_id = #{templateId}
+  	</where>
+  </select>
+</mapper>

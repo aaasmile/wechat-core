@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.ConversationIndexMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.ConversationIndex">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="msg_id" jdbcType="BIGINT" property="msgId" />
+    <result column="open_id" jdbcType="VARCHAR" property="openId" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+  </resultMap>
+  
+  <delete id="weekDelete">
+  	delete from conversation_index
+  	<where>
+  		created_at &lt; DATE_SUB(now(),INTERVAL 7 DAY)
+  	</where>
+  </delete>
+</mapper>

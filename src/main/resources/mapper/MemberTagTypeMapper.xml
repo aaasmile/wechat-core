@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.MemberTagTypeMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.MemberTagType">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+    <result column="creator_id" jdbcType="INTEGER" property="creatorId" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+  </resultMap>
+  
+  <select id="countDuplicateName" resultType="int">
+   	select count(*) from member_tag_type
+   	<where>
+   		wechat_id = #{wechatId} and id != #{id} and name = #{name}
+    </where>
+  </select>
+  
+  <select id="search" resultMap="BaseResultMap">
+   	select * from member_tag_type 
+   	<where>
+   		wechat_id = #{wechatId}
+        <if test="name != null">  
+            and name like CONCAT('%','${name}','%' )
+        </if> 
+    </where>
+    <if test="sortName != null">
+    	order by ${sortName}
+    	<if test="sortDir != null">
+    		${sortDir}
+    	</if>
+    	<if test="sortDir == null">
+    		desc
+    	</if>
+    </if>
+    <if test="sortName == null">
+    	order by id desc
+    </if>
+  </select>
+  
+  <select id="getFirst" resultType="java.lang.Integer">
+  	select min(id) from member_tag_type
+  </select>
+  
+	<resultMap id="memberTagTypeResultMap" type="com.d1m.wechat.dto.MemberTagTypeDto">
+		<result column="id" jdbcType="INTEGER" property="id" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="parentId" jdbcType="INTEGER" property="parentId" />		
+	</resultMap>
+	
+	<select id="selectAllTagTypes" resultMap="memberTagTypeResultMap">
+		select id, name, parent_id as parentId from member_tag_type where wechat_id = #{wechatId} and status=1
+	</select>
+
+</mapper>

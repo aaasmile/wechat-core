@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.MemberTagCsvMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.MemberTagCsv">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="ori_file" jdbcType="VARCHAR" property="oriFile" />
+    <result column="csv" jdbcType="VARCHAR" property="csv" />
+    <result column="exception" jdbcType="VARCHAR" property="exception" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="task" jdbcType="VARCHAR" property="task" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+    <result column="creator_id" jdbcType="INTEGER" property="creatorId" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="data" jdbcType="LONGVARCHAR" property="data" />
+  </resultMap>
+  
+  <select id="selectByTaskName" resultMap="BaseResultMap">
+  	select * from member_tag_csv
+  	<where>
+  		task = #{taskName}
+  	</where>
+  </select>
+  
+  <select id="searchTask" resultMap="BaseResultMap">
+  	select id,ori_file,csv,exception,status,task,wechat_id,creator_id,created_at from member_tag_csv
+  	<where>
+  		wechat_id = #{wechatId} 
+  		<if test="status != null">
+  			and status = #{status}
+  		</if>
+  		<if test="start != null">
+  			<if test="end != null">
+  				and created_at between #{start} and #{end}
+  			</if>
+  		</if>
+  		<if test="sortName != null">
+			order by ${sortName}
+			<if test="sortDir != null">
+				${sortDir}
+			</if>
+			<if test="sortDir == null">
+				desc
+			</if>
+		</if>
+		<if test="sortName == null">
+			order by created_at desc
+		</if>
+  	</where>
+  </select>
+</mapper>

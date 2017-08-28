@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.d1m.wechat.mapper.ReportUserSourceMapper" >
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.ReportUserSource" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="date" property="date" jdbcType="VARCHAR" />
+    <result column="new_user_0" property="newUser0" jdbcType="INTEGER" />
+    <result column="cancel_user_0" property="cancelUser0" jdbcType="INTEGER" />
+    <result column="new_user_1" property="newUser1" jdbcType="INTEGER" />
+    <result column="cancel_user_1" property="cancelUser1" jdbcType="INTEGER" />
+    <result column="new_user_17" property="newUser17" jdbcType="INTEGER" />
+    <result column="cancel_user_17" property="cancelUser17" jdbcType="INTEGER" />
+    <result column="new_user_30" property="newUser30" jdbcType="INTEGER" />
+    <result column="cancel_user_30" property="cancelUser30" jdbcType="INTEGER" />
+    <result column="new_user_43" property="newUser43" jdbcType="INTEGER" />
+    <result column="cancel_user_43" property="cancelUser43" jdbcType="INTEGER" />
+    <result column="new_user_51" property="newUser51" jdbcType="INTEGER" />
+    <result column="cancel_user_51" property="cancelUser51" jdbcType="INTEGER" />
+    <result column="new_user_57" property="newUser57" jdbcType="INTEGER" />
+    <result column="cancel_user_57" property="cancelUser57" jdbcType="INTEGER" />
+    <result column="new_user_75" property="newUser75" jdbcType="INTEGER" />
+    <result column="cancel_user_75" property="cancelUser75" jdbcType="INTEGER" />
+    <result column="new_user_78" property="newUser78" jdbcType="INTEGER" />
+    <result column="cancel_user_78" property="cancelUser78" jdbcType="INTEGER" />
+    <result column="cumulate_user" property="cumulateUser" jdbcType="INTEGER" />
+    <result column="wechat_id" property="wechatId" jdbcType="INTEGER" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <select id="getRecordByDate" resultMap="BaseResultMap">
+	select * from report_user_source
+	<where>
+		wechat_id = #{wechatId} and date = #{date}
+	</where>
+  </select>
+  
+</mapper>

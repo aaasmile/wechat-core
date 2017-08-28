@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <!--shiro配置-->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager" />
+        <property name="loginUrl" value="/" />
+        <property name="unauthorizedUrl" value="/" />
+        <property name="filters">
+            <map>
+                <entry key="authc">
+                    <bean class="com.d1m.wechat.security.AuthcAuthenticationFilter" />
+                </entry>
+            </map>
+        </property>
+        <property name="filterChainDefinitions">
+            <value>
+                /trace = anon
+                /jolokia/ = anon
+                /health = anon
+                /dump = anon
+                /loggers = anon
+                /loggers/** = anon
+                /refresh = anon
+                /env = anon
+                /metrics = anon
+                /logfile = anon
+                /configprops = anon
+                /info = anon
+                /auditevents = anon
+                /heapdump = anon
+
+                /druid/** = anon
+                /webapp/attached/** = anon
+                /api/** = anon
+                /oauth/** = anon
+                /task/** = anon
+                /user/login.json = anon
+                /user/init.json = anon
+                /notify = anon
+                /socketjs/websocket = anon
+                /websocket = anon
+                /websocket/** = anon
+                /jsconfig.json = anon
+                /imagetext/html/** = anon
+                /order/** = anon
+                /static/** = anon
+
+                /mapi/popup/** = anon
+
+                /** = authc
+            </value>
+        </property>
+    </bean>
+    <bean id="redisCacheManager" class="com.d1m.wechat.security.shiro.RedisCacheManager" />
+    <bean id="sessionManager" class="org.apache.shiro.web.session.mgt.ServletContainerSessionManager" />
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="myRealm" />
+        <property name="sessionManager" ref="sessionManager"/>
+        <property name="cacheManager" ref="redisCacheManager"/>
+    </bean>
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor" />
+    <bean id="myRealm" class="com.d1m.wechat.security.ShiroDbRealm"/>
+</beans>

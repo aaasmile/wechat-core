@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.ActivityMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.Activity">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
+    <result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
+    <result column="share_pic" jdbcType="VARCHAR" property="sharePic" />
+    <result column="share_title" jdbcType="VARCHAR" property="shareTitle" />
+    <result column="share_description" jdbcType="VARCHAR" property="shareDescription" />
+    <result column="acty_url" jdbcType="VARCHAR" property="actyUrl" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="creator_id" jdbcType="INTEGER" property="creatorId" />
+    <result column="modify_by_id" jdbcType="INTEGER" property="modifyById" />
+    <result column="modify_at" jdbcType="TIMESTAMP" property="modifyAt" />
+    <result column="oauth_url_id" jdbcType="INTEGER" property="oauthUrlId" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="acty_h5" jdbcType="LONGVARCHAR" property="actyH5" />
+    <result column="acty_offline_h5" jdbcType="LONGVARCHAR" property="actyOfflineH5" />
+  </resultMap>
+  
+  <select id="search" resultMap="ActivityListResultMap">
+   	select id, name, created_at, share_pic, start_date, end_date, type from activity
+   	<where>
+   		wechat_id = #{wechatId} and status != 0
+   		<if test="activityType != null">
+   			and type = #{activityType}
+   		</if>
+   		<if test="activityStatus != null">
+   			<if test="activityStatus == 2">
+   				and start_date &gt; now()
+   			</if>
+   			<if test="activityStatus == 3">
+   				and start_date &lt;= now() and end_date &gt; now()
+   			</if>
+   			<if test="activityStatus == 4">
+   				and end_date &lt; now()
+   			</if>
+   		</if>
+   		<if test="status != null">
+   			and status = #{status}
+   		</if>
+   		<if test="query != null">
+   			and (name like CONCAT('%',#{query},'%') or description like CONCAT('%',#{query},'%'))
+   		</if>
+    </where>
+    <if test="sortName != null">
+			order by ${sortName}
+			<if test="sortDir != null">
+				${sortDir}
+			</if>
+			<if test="sortDir == null">
+				desc
+			</if>
+		</if>
+		<if test="sortName == null">
+			order by id desc
+		</if>
+  </select>
+  
+  <resultMap id="ActivityListResultMap" type="com.d1m.wechat.dto.ActivityDto">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+	<result column="name" jdbcType="VARCHAR" property="name" />
+	<result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+	<result column="share_pic" jdbcType="VARCHAR" property="sharePic" />
+	<result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
+	<result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
+	<result column="type" jdbcType="TINYINT" property="activityType" />
+  </resultMap>
+  
+  <select id="get" parameterType="HashMap" resultMap="ActivityGetResultMap">
+	select id, name, created_at, share_pic, start_date, end_date, code, description, share_title, share_description, acty_h5, acty_offline_h5, type from activity
+  	<where>
+	  	wechat_id = #{wechatId} and id = #{id}
+  	</where>
+  </select>
+  
+  <select id="getById" parameterType="HashMap" resultMap="ActivityGetResultMap">
+	select id, name, created_at, share_pic, start_date, end_date, code, description, share_title, share_description, acty_h5, acty_offline_h5 from activity
+  	<where>
+	  	id = #{id}
+  	</where>
+  </select>
+  
+  <resultMap id="ActivityGetResultMap" type="com.d1m.wechat.dto.ActivityDto">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+	<result column="name" jdbcType="VARCHAR" property="name" />
+	<result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+	<result column="share_pic" jdbcType="VARCHAR" property="sharePic" />
+	<result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
+	<result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
+	<result column="code" jdbcType="VARCHAR" property="code" />
+	<result column="description" jdbcType="VARCHAR" property="description" />
+	<result column="share_title" jdbcType="VARCHAR" property="shareTitle" />
+	<result column="share_description" jdbcType="VARCHAR" property="shareDescription" />
+	<result column="acty_h5" jdbcType="LONGVARCHAR" property="actyH5" />
+	<result column="acty_offline_h5" jdbcType="VARCHAR" property="actyOfflineH5" />
+	<result column="type" jdbcType="TINYINT" property="activityType" />
+  </resultMap>
+  
+  <select id="countActivity" parameterType="HashMap" resultType="int">
+  	select count(*) from activity
+  	<where>
+  		wechat_id = #{wechatId} and status = 1
+  		<if test="start != null">
+  			<if test="end != null">
+  				and start_date &lt; #{end} and end_date &gt; #{start}
+  			</if>
+  		</if>
+  	</where>
+  </select>
+  
+  <resultMap id="CouponSettingResultMap" type="com.d1m.wechat.dto.CouponSettingDto" >
+  	<id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+  </resultMap>
+  
+  <select id="listVisibleCouponSetting" parameterType="HashMap" resultMap="CouponSettingResultMap">
+  	select cs.id as id, cs.name as name from activity_coupon_setting as acs left join coupon_setting as cs on acs.coupon_setting_id = cs.id
+  	<where>
+  		acs.activity_id = #{activityId}
+  	</where>
+  </select>
+  
+  <resultMap id="ActivityReportResultMap" type="com.d1m.wechat.dto.ActivityListDto">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+	<result column="name" jdbcType="VARCHAR" property="name" />
+  	<collection column="{activityId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.CouponSettingDto" property="list" select="listVisibleCouponSetting" />
+  </resultMap>
+  
+  <select id="getActivityList" parameterType="HashMap" resultMap="ActivityReportResultMap">
+  	select id, name from activity
+  	<where>
+  		wechat_id = #{wechatId} and status = 1
+  	</where>
+  
+  </select>
+  
+</mapper>

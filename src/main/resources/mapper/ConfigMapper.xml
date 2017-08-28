@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.ConfigMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.Config">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="cfg_group" jdbcType="VARCHAR" property="cfgGroup" />
+    <result column="cfg_group_label" jdbcType="VARCHAR" property="cfgGroupLabel" />
+    <result column="cfg_key_label" jdbcType="VARCHAR" property="cfgKeyLabel" />
+    <result column="cfg_key" jdbcType="VARCHAR" property="cfgKey" />
+    <result column="cfg_value" jdbcType="VARCHAR" property="cfgValue" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+  </resultMap>
+  
+  <select id="getConfig" parameterType="HashMap" resultMap="BaseResultMap">
+	SELECT
+		*
+	FROM
+		config
+	<where>
+          1=1
+        <if test="wechatId != null">
+            and wechat_id = #{wechatId}
+        </if>
+            AND
+                cfg_group = #{group}
+            AND
+                cfg_key = #{key}
+	</where>
+  </select>
+
+    <resultMap id="ConfigDto" type="com.d1m.wechat.dto.ConfigDto">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="cfg_key_label" jdbcType="VARCHAR" property="label" />
+        <result column="cfg_key" jdbcType="VARCHAR" property="key" />
+        <result column="cfg_value" jdbcType="VARCHAR" property="value" />
+    </resultMap>
+
+    <select id="getConfigDto" parameterType="HashMap" resultMap="ConfigDto">
+        SELECT
+        *
+        FROM
+        config
+        <where>
+            wechat_id = #{wechatId}
+            AND
+            cfg_group = #{group}
+            AND
+            cfg_key = #{key}
+        </where>
+    </select>
+
+    <select id="getConfigDtoList" parameterType="HashMap" resultMap="ConfigDto">
+        SELECT
+        *
+        FROM
+        config
+        <where>
+            wechat_id = #{wechatId}
+            AND
+            cfg_group = #{group}
+        </where>
+    </select>
+</mapper>

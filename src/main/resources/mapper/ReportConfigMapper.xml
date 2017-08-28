@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.ReportConfigMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.ReportConfig">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="report_key" jdbcType="VARCHAR" property="reportKey" />
+    <result column="report_name" jdbcType="VARCHAR" property="reportName" />
+    <result column="sheet_key" jdbcType="VARCHAR" property="sheetKey" />
+    <result column="sheet_name" jdbcType="VARCHAR" property="sheetName" />
+    <result column="report_sql" jdbcType="VARCHAR" property="reportSql" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+  </resultMap>
+</mapper>

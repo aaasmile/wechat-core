@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.BusinessPhotoMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.BusinessPhoto">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+    <result column="business_id" jdbcType="INTEGER" property="businessId" />
+    <result column="photo_url" jdbcType="VARCHAR" property="photoUrl" />
+    <result column="wx_url" jdbcType="VARCHAR" property="wxUrl" />
+  </resultMap>
+  
+  <select id="searchLike" resultMap="BaseResultMap">
+  	select * from business_photo
+  	<where>
+  		photo_url like CONCAT('%',#{str},'%')
+  	</where> 
+  </select>
+</mapper>

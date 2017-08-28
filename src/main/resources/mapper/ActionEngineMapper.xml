@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.ActionEngineMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.ActionEngine">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="creator_id" jdbcType="INTEGER" property="creatorId" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="start_at" jdbcType="TIMESTAMP" property="startAt" />
+    <result column="end_at" jdbcType="TIMESTAMP" property="endAt" />
+    <result column="run_type" jdbcType="TINYINT" property="runType" />
+    <result column="weight" jdbcType="INTEGER" property="weight" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+    <result column="conditions" jdbcType="LONGVARCHAR" property="conditions" />
+    <result column="condition_sql" jdbcType="LONGVARCHAR" property="conditionSql" />
+    <result column="effect" jdbcType="LONGVARCHAR" property="effect" />
+  </resultMap>
+</mapper>
