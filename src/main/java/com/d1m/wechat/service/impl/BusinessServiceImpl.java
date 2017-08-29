@@ -1,20 +1,25 @@
 package com.d1m.wechat.service.impl;
 
-import java.io.File;
-import java.util.*;
+import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tk.mybatis.mapper.common.Mapper;
 
+import tk.mybatis.mapper.common.Mapper;
 import cn.d1m.wechat.client.core.WxResponse;
 import cn.d1m.wechat.client.model.WxBusiness;
 import cn.d1m.wechat.client.model.WxBusinessPhoto;
 import cn.d1m.wechat.client.model.common.WxHolder;
-import com.d1m.wechat.wechatclient.WechatClientDelegate;
+
+import com.d1m.wechat.dto.BusinessAreaListDto;
 import com.d1m.wechat.dto.BusinessDto;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.AreaInfoMapper;
@@ -30,8 +35,9 @@ import com.d1m.wechat.service.AreaInfoService;
 import com.d1m.wechat.service.BusinessService;
 import com.d1m.wechat.util.BaiduLocationUtil;
 import com.d1m.wechat.util.Message;
-
-import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
+import com.d1m.wechat.wechatclient.WechatClientDelegate;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 
 @Service
 public class BusinessServiceImpl extends BaseService<Business> implements
@@ -42,13 +48,13 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 
 	@Autowired
 	private BusinessPhotoMapper businessPhotoMapper;
-	
+
 	@Autowired
 	private AreaInfoService areaInfoService;
-	
+
 	@Autowired
 	private BusinessResultMapper businessResultMapper;
-	
+
 	@Autowired
 	private AreaInfoMapper areaInfoMapper;
 
@@ -115,7 +121,7 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 	private void checkBusinessCodeRepeat(String businessCode) {
 		Business record = new Business();
 		record.setBusinessCode(businessCode);
-		record.setStatus((byte)1);
+		record.setStatus((byte) 1);
 		record = businessMapper.selectOne(record);
 		if (record != null) {
 			throw new WechatException(Message.BUSINESS_CODE_EXIST);
@@ -125,7 +131,7 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 	private void checkBusinessCodeRepeat(BusinessModel model) {
 		Business record = new Business();
 		record.setBusinessCode(model.getBusinessCode());
-		record.setStatus((byte)1);
+		record.setStatus((byte) 1);
 		record = businessMapper.selectOne(record);
 		if (record != null) {
 			if (!record.getId().equals(model.getId())) {
@@ -138,7 +144,7 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 		Business record = new Business();
 		record.setBusinessName(businessName);
 		record.setWechatId(wechatId);
-		record.setStatus((byte)1);
+		record.setStatus((byte) 1);
 		return businessMapper.selectOne(record);
 	}
 
@@ -153,7 +159,7 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 		return businessMapper.search(wechatId,
 				BusinessStatus.INUSED.getValue(), businessModel.getProvince(),
 				businessModel.getCity(), businessModel.getLng(),
-				businessModel.getLat(), businessModel.getQuery(), 
+				businessModel.getLat(), businessModel.getQuery(),
 				businessModel.getSortName(), businessModel.getSortDir());
 	}
 
@@ -164,18 +170,20 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 	}
 
 	@Override
-	public void delete(Integer wechatId, BusinessModel model) throws WechatException {
+	public void delete(Integer wechatId, BusinessModel model)
+			throws WechatException {
 		notBlank(model.getId(), Message.BUSINESS_ID_NOT_BLANK);
 		Business record = getBusiness(wechatId, model.getId());
 		record.setStatus(BusinessStatus.DELETED.getValue());
 		businessMapper.updateByPrimaryKeySelective(record);
-		if(record.getIsPush() == 1){
+		if (record.getIsPush() == 1) {
 			String poiId = businessMapper.searchByBusinessId(model.getId());
 
-            WxResponse result = WechatClientDelegate.deletePOI(wechatId, poiId);
+			WxResponse result = WechatClientDelegate.deletePOI(wechatId, poiId);
 
-			if(result.fail()){
-				throw new WechatException(Message.BUSINESS_WEXIN_DELETE_FAIL, result.getErrmsg());
+			if (result.fail()) {
+				throw new WechatException(Message.BUSINESS_WEXIN_DELETE_FAIL,
+						result.getErrmsg());
 			}
 		}
 	}
@@ -243,13 +251,13 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 		record.setWechatId(wechatId);
 		businessPhotoMapper.delete(record);
 		createBusinessPhoto(wechatId, model, business);
-		
-		if(model.getIsPush() == 1){
-			if(model.getPush()!=null){
+
+		if (model.getIsPush() == 1) {
+			if (model.getPush() != null) {
 				updateBusinessToWx(wechatId, business, model);
 			}
-		}else{
-			if(model.getPush()!=null){
+		} else {
+			if (model.getPush() != null) {
 				pushBusinessToWx(wechatId, business, model);
 			}
 		}
@@ -265,7 +273,7 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 		}
 		List<BusinessPhoto> businessPhotos = new ArrayList<BusinessPhoto>();
 		for (String photpUrl : photoList) {
-            BusinessPhoto businessPhoto = new BusinessPhoto();
+			BusinessPhoto businessPhoto = new BusinessPhoto();
 			businessPhoto.setBusinessId(business.getId());
 			businessPhoto.setPhotoUrl(photpUrl);
 			businessPhoto.setWechatId(wechatId);
@@ -289,33 +297,38 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 	}
 
 	@Override
-	public void pushBusinessToWx(Integer wechatId, Business business, BusinessModel model) {
-        WxBusiness baseInfo = new WxBusiness();
+	public void pushBusinessToWx(Integer wechatId, Business business,
+			BusinessModel model) {
+		WxBusiness baseInfo = new WxBusiness();
 		List<WxBusinessPhoto> photoList = new ArrayList<>();
 		List<String> absolutePhotoList = model.getAbsolutePhotoList();
 
-		if(absolutePhotoList != null && !absolutePhotoList.isEmpty()){
-			for(String absolutePhoto : absolutePhotoList){
-				WxHolder<String> uploadUrl = WechatClientDelegate.uploadImg(wechatId, new File(absolutePhoto));
-				if(uploadUrl.fail()){
-					throw new WechatException(Message.BUSINESS_WEIXIN_PHOTO_UPLOAD_FAIL);
+		if (absolutePhotoList != null && !absolutePhotoList.isEmpty()) {
+			for (String absolutePhoto : absolutePhotoList) {
+				WxHolder<String> uploadUrl = WechatClientDelegate.uploadImg(
+						wechatId, new File(absolutePhoto));
+				if (uploadUrl.fail()) {
+					throw new WechatException(
+							Message.BUSINESS_WEIXIN_PHOTO_UPLOAD_FAIL);
 				}
 				photoList.add(new WxBusinessPhoto(uploadUrl.get()));
 				String[] strs = absolutePhoto.split("/");
-				String str = strs[strs.length-1];
-				BusinessPhoto businessPhoto = businessPhotoMapper.searchLike(str);
+				String str = strs[strs.length - 1];
+				BusinessPhoto businessPhoto = businessPhotoMapper
+						.searchLike(str);
 				businessPhoto.setWxUrl(uploadUrl.get());
 				businessPhotoMapper.updateByPrimaryKeySelective(businessPhoto);
 			}
 		}
-		
-		if(business.getBusinessCode() != null){
+
+		if (business.getBusinessCode() != null) {
 			baseInfo.setSid(business.getBusinessCode());
 		}
 		baseInfo.setBusinessName(business.getBusinessName());
 		baseInfo.setBranchName(business.getBranchName());
-		String province = areaInfoService.selectNameById(business.getProvince());
-		String city =  areaInfoService.selectNameById(business.getCity());
+		String province = areaInfoService
+				.selectNameById(business.getProvince());
+		String city = areaInfoService.selectNameById(business.getCity());
 		baseInfo.setProvince(province);
 		baseInfo.setCity(city);
 		baseInfo.setDistrict(business.getDistrict());
@@ -325,33 +338,34 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 		baseInfo.setLongitude(business.getLongitude());
 		baseInfo.setLatitude(business.getLatitude());
 
-		if(!photoList.isEmpty()){
+		if (!photoList.isEmpty()) {
 			baseInfo.setPhotoList(photoList);
 		}
-		if(business.getRecommend()!=null){
+		if (business.getRecommend() != null) {
 			baseInfo.setRecommend(business.getRecommend());
 		}
-		if(business.getSpecial()!=null){
+		if (business.getSpecial() != null) {
 			baseInfo.setSpecial(business.getSpecial());
 		}
-		if(business.getIntroduction()!=null){
+		if (business.getIntroduction() != null) {
 			baseInfo.setIntroduction(business.getIntroduction());
 		}
-		if(business.getOpenTime()!=null){
+		if (business.getOpenTime() != null) {
 			baseInfo.setOpenTime(business.getOpenTime());
 		}
-		if(business.getAvgPrice()!=null){
+		if (business.getAvgPrice() != null) {
 			baseInfo.setAvgPrice(business.getAvgPrice());
 		}
 
 		List<String> categories = model.getCategories();
 		baseInfo.setCategories(categories);
 
-        WxResponse result = WechatClientDelegate.addPOI(wechatId, baseInfo);
+		WxResponse result = WechatClientDelegate.addPOI(wechatId, baseInfo);
 
-        if(result.fail()){
-            throw new WechatException(Message.BUSINESS_WEIXIN_PUBLISE_FAIL, result.getErrmsg());
-        }
+		if (result.fail()) {
+			throw new WechatException(Message.BUSINESS_WEIXIN_PUBLISE_FAIL,
+					result.getErrmsg());
+		}
 
 	}
 
@@ -361,91 +375,110 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 		List<WxBusinessPhoto> photo_list = new ArrayList<>();
 		List<String> absolutePhotoList = model.getAbsolutePhotoList();
 
-
-		if(absolutePhotoList != null && !absolutePhotoList.isEmpty()){
-			for(String absolutePhoto : absolutePhotoList){
+		if (absolutePhotoList != null && !absolutePhotoList.isEmpty()) {
+			for (String absolutePhoto : absolutePhotoList) {
 				String uploadUrl = null;
 				String[] strs = absolutePhoto.split("/");
-				String str = strs[strs.length-1];
-				BusinessPhoto businessPhoto = businessPhotoMapper.searchLike(str);
-				if(businessPhoto.getWxUrl() == null){
-                    WxHolder<String> wxURL = WechatClientDelegate.uploadImg(wechatId, new File(absolutePhoto));
-                    if(wxURL.fail()){
-						throw new WechatException(Message.BUSINESS_WEIXIN_PHOTO_UPLOAD_FAIL);
+				String str = strs[strs.length - 1];
+				BusinessPhoto businessPhoto = businessPhotoMapper
+						.searchLike(str);
+				if (businessPhoto.getWxUrl() == null) {
+					WxHolder<String> wxURL = WechatClientDelegate.uploadImg(
+							wechatId, new File(absolutePhoto));
+					if (wxURL.fail()) {
+						throw new WechatException(
+								Message.BUSINESS_WEIXIN_PHOTO_UPLOAD_FAIL);
 					}
-                    uploadUrl = wxURL.get();
+					uploadUrl = wxURL.get();
 					businessPhoto.setWxUrl(uploadUrl);
-					businessPhotoMapper.updateByPrimaryKeySelective(businessPhoto);
-				}else{
+					businessPhotoMapper
+							.updateByPrimaryKeySelective(businessPhoto);
+				} else {
 					uploadUrl = businessPhoto.getWxUrl();
 				}
 
-                photo_list.add(new WxBusinessPhoto(uploadUrl));
+				photo_list.add(new WxBusinessPhoto(uploadUrl));
 			}
 		}
 		baseInfo.setTelephone(business.getTelephone());
-		if(!photo_list.isEmpty()){
+		if (!photo_list.isEmpty()) {
 			baseInfo.setPhotoList(photo_list);
 		}
-		if(business.getRecommend()!=null){
+		if (business.getRecommend() != null) {
 			baseInfo.setRecommend(business.getRecommend());
 		}
-		if(business.getSpecial()!=null){
+		if (business.getSpecial() != null) {
 			baseInfo.setSpecial(business.getSpecial());
 		}
-		if(business.getIntroduction()!=null){
+		if (business.getIntroduction() != null) {
 			baseInfo.setIntroduction(business.getIntroduction());
 		}
-		if(business.getOpenTime()!=null){
+		if (business.getOpenTime() != null) {
 			baseInfo.setOpenTime(business.getOpenTime());
 		}
-		if(business.getAvgPrice()!=null){
+		if (business.getAvgPrice() != null) {
 			baseInfo.setAvgPrice(business.getAvgPrice());
 		}
 
-        WxResponse result = WechatClientDelegate.updatePOI(wechatId, baseInfo);
+		WxResponse result = WechatClientDelegate.updatePOI(wechatId, baseInfo);
 
-        if(result.fail()){
-            throw new WechatException(Message.BUSINESS_WEXIN_UPDATE_FAIL, result.getErrmsg());
-        }
+		if (result.fail()) {
+			throw new WechatException(Message.BUSINESS_WEXIN_UPDATE_FAIL,
+					result.getErrmsg());
+		}
 
 	}
 
 	@Override
 	public synchronized void initBusinessLatAndLng(Integer wechatId, User user) {
 		List<Business> list = businessMapper.getAll();
-		String[] directCity = {"北京市", "上海市", "重庆市", "天津市"};
+		String[] directCity = { "北京市", "上海市", "重庆市", "天津市" };
 		List<String> directCityList = Arrays.asList(directCity);
-		for(Business business:list){
-			if(business.getAddress()!=null){
-				Map<String, Double> map = BaiduLocationUtil.getLatAndLngByAddress(
-						business.getAddress());
-				if(map!=null){
-					Map<String, String> mapAddress = BaiduLocationUtil.getAddressByLatAndLng(
-							map.get("lat").toString(), map.get("lng").toString());
-					if(mapAddress!=null){
+		for (Business business : list) {
+			if (business.getAddress() != null) {
+				Map<String, Double> map = BaiduLocationUtil
+						.getLatAndLngByAddress(business.getAddress());
+				if (map != null) {
+					Map<String, String> mapAddress = BaiduLocationUtil
+							.getAddressByLatAndLng(map.get("lat").toString(),
+									map.get("lng").toString());
+					if (mapAddress != null) {
 						business.setLatitude(map.get("lat"));
 						business.setLongitude(map.get("lng"));
 						String country = mapAddress.get("country");
 						String province = mapAddress.get("province");
 						String city = mapAddress.get("city");
 						String district = mapAddress.get("district");
-						Integer countrycode = areaInfoMapper.selectIdByName(country, null);
-						Integer provincecode = areaInfoMapper.selectIdByName(province, countrycode);
+						Integer countrycode = areaInfoMapper.selectIdByName(
+								country, null);
+						Integer provincecode = areaInfoMapper.selectIdByName(
+								province, countrycode);
 						business.setProvince(provincecode);
 						business.setDistrict(district);
-						if(directCityList.contains(mapAddress.get("province"))){
-							business.setCity(areaInfoMapper.selectIdByName(district, provincecode));
-						}else{
-							business.setCity(areaInfoMapper.selectIdByName(city, provincecode));
+						if (directCityList.contains(mapAddress.get("province"))) {
+							business.setCity(areaInfoMapper.selectIdByName(
+									district, provincecode));
+						} else {
+							business.setCity(areaInfoMapper.selectIdByName(
+									city, provincecode));
 						}
-						
+
 						businessMapper.updateByPrimaryKeySelective(business);
 					}
 				}
 			}
 		}
-		
+
+	}
+
+	@Override
+	public List<BusinessAreaListDto> getProvinceList(Integer wechatId) {
+		return businessMapper.getProvinceList(wechatId);
+	}
+
+	@Override
+	public List<BusinessAreaListDto> getCityList(Integer wechatId) {
+		return businessMapper.getCityList(wechatId);
 	}
 
 }

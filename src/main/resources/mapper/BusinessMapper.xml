@@ -221,4 +221,39 @@
   		status = 1
   	</where>
   </select>
+  
+  <select id="getProvinceList" resultMap="BusinessProvinceResultMap">
+		select ai.id as id, ai.c_name as c_name from business as b
+		left join area_info as ai on ai.id = b.province
+		<where>
+			b.province is not NULL
+			<if test="wechatId != null">
+				AND b.wechat_id = #{wechatId}
+			</if>
+		</where>
+		group by b.province
+	</select>
+
+	<select id="getCityList" resultMap="BusinessCityResultMap">
+		select ai.id as id, ai.c_name as c_name, ai.parent_id as parent_id from business as b
+		left join area_info as ai on ai.id = b.city
+		<where>
+			b.city is not NULL
+			<if test="wechatId != null">
+				b.wechat_id = #{wechatId}
+			</if>
+		</where>
+		group by ai.id
+	</select>
+	
+	<resultMap id="BusinessProvinceResultMap" type="com.d1m.wechat.dto.BusinessAreaListDto">
+		<id column="id" jdbcType="INTEGER" property="value" />
+		<result column="c_name" jdbcType="VARCHAR" property="name" />
+	</resultMap>
+
+	<resultMap id="BusinessCityResultMap" type="com.d1m.wechat.dto.BusinessAreaListDto">
+		<id column="id" jdbcType="INTEGER" property="value" />
+		<result column="c_name" jdbcType="VARCHAR" property="name" />
+		<result column="parent_id" jdbcType="INTEGER" property="parent" />
+	</resultMap>
 </mapper>
