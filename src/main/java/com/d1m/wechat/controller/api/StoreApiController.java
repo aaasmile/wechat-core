@@ -1,5 +1,8 @@
 package com.d1m.wechat.controller.api;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
+import com.d1m.wechat.dto.BusinessAreaListDto;
 import com.d1m.wechat.dto.BusinessDto;
 import com.d1m.wechat.model.OauthUrl;
 import com.d1m.wechat.pamametermodel.BusinessModel;
@@ -79,6 +83,25 @@ public class StoreApiController extends ApiController {
 			return representation(Message.BUSINESS_LIST_SUCCESS,
 					page.getResult(), model.getPageNum(), model.getPageSize(),
 					page.getTotal());
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			return wrapException(e);
+		}
+	}
+
+	@RequestMapping(value = "area-list.json", method = RequestMethod.GET)
+	@ResponseBody
+	public JSONObject areaList(HttpSession session, HttpServletRequest request,
+			HttpServletResponse response) {
+		try {
+			List<BusinessAreaListDto> provinceList = businessService
+					.getProvinceList(null);
+			List<BusinessAreaListDto> cityList = businessService
+					.getCityList(null);
+			List<List<BusinessAreaListDto>> back = new ArrayList<List<BusinessAreaListDto>>();
+			back.add(provinceList);
+			back.add(cityList);
+			return representation(Message.SUCCESS, back);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			return wrapException(e);
