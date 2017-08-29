@@ -1,0 +1,60 @@
+stages:
+  - build
+  - push
+  - deploy
+
+build-dev:
+  stage: build
+  only:
+    - dev
+  tags:
+    - shell-dev
+  script:
+    - mvn -Dmaven.test.skip=true clean package
+
+push-dev:
+  stage: push
+  only:
+    - dev
+  tags:
+    - shell-dev
+  script:
+    - mvn docker:push
+
+deploy-dev:
+  stage: deploy
+  only:
+    - dev
+  tags:
+    - shell-dev
+  script:
+    - cd /root/docker-swarm/
+    - docker stack deploy -c wechat.yml wechat
+
+build-uat:
+  stage: build
+  only:
+    - uat
+  tags:
+    - shell-uat
+  script:
+    - mvn -Dmaven.test.skip=true clean package
+
+push-uat:
+  stage: push
+  only:
+    - uat
+  tags:
+    - shell-uat
+  script:
+    - mvn docker:push
+
+deploy-uat:
+  stage: deploy
+  only:
+    - uat
+  tags:
+    - shell-uat
+  script:
+    - cd /root/docker-swarm/
+    - docker stack deploy -c wechat.yml wechat
