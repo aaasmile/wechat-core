@@ -11,7 +11,7 @@ import com.d1m.wechat.configure.FeignClientConfiguration;
 public interface WechatCrmRestService {
 
 	@RequestMapping(value = "/api/member/{wechatId}/{memberId}/levels", method = RequestMethod.GET)
-	String getMemberLevels(@PathVariable("Integer wechatId") Integer wechatId,
-			@PathVariable("Integer memberId") Integer memberId);
+	String getMemberLevels(@PathVariable("wechatId") Integer wechatId,
+			@PathVariable("memberId") Integer memberId);
 
 }
