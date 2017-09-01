@@ -33,8 +33,8 @@ spring:
     password: ${REDIS_DEFAULT_PASS:redis}
     port: 6379
     pool:
-      max-active: 10
-      max-wait: 1
+      max-active: 1000
+      max-wait: 100
 
   cache:
     cache-names:
