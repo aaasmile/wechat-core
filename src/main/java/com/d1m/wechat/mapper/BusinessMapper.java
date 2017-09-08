@@ -25,6 +25,9 @@ public interface BusinessMapper extends MyMapper<Business> {
 
 	String searchByBusinessId(@Param("id") Integer id);
 
+	Page<BusinessDto> searchDirect(@Param("wechatId") Integer wechatId, @Param("province") Integer province,
+								   @Param("city") Integer city, @Param("sortName") String sortName, @Param("sortDir") String sortDir);
+
 	List<Business> getAll();
 
 }

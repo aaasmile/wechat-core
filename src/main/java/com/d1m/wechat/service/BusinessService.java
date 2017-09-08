@@ -29,7 +29,7 @@ public interface BusinessService extends IService<Business> {
 	List<BusinessDto> searchByLngLat(Integer wechatId, Double lng, Double lat,
 			Integer size) throws WechatException;
 
-	void pushBusinessToWx(Integer wechatId, Business business, BusinessModel model);
+	Business pushBusinessToWx(Integer wechatId, Business business, BusinessModel model);
 
 	void initBusinessLatAndLng(Integer wechatId, User user);
 

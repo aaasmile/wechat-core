@@ -3,6 +3,12 @@ package com.d1m.wechat.service.impl;
 import java.io.File;
 import java.util.*;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.d1m.wechat.dto.MaterialDto;
+import com.d1m.wechat.mapper.*;
+import com.d1m.wechat.model.*;
+import com.d1m.wechat.util.WeixinLocationUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -17,13 +23,6 @@ import cn.d1m.wechat.client.model.common.WxHolder;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.d1m.wechat.dto.BusinessDto;
 import com.d1m.wechat.exception.WechatException;
-import com.d1m.wechat.mapper.AreaInfoMapper;
-import com.d1m.wechat.mapper.BusinessMapper;
-import com.d1m.wechat.mapper.BusinessPhotoMapper;
-import com.d1m.wechat.mapper.BusinessResultMapper;
-import com.d1m.wechat.model.Business;
-import com.d1m.wechat.model.BusinessPhoto;
-import com.d1m.wechat.model.User;
 import com.d1m.wechat.model.enums.BusinessStatus;
 import com.d1m.wechat.pamametermodel.BusinessModel;
 import com.d1m.wechat.service.AreaInfoService;
@@ -52,6 +51,12 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 	@Autowired
 	private AreaInfoMapper areaInfoMapper;
 
+	@Autowired
+	private CouponBusinessMapper couponBusinessMapper;
+
+	@Autowired
+	private OfflineActivityBusinessMapper offlineActivityBusinessMapper;
+
 	public void setBusinessMapper(BusinessMapper businessMapper) {
 		this.businessMapper = businessMapper;
 	}
@@ -64,9 +69,12 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 	@Override
 	public Business create(Integer wechatId, User user, BusinessModel model)
 			throws WechatException {
+		notBlank(model.getBusinessCode(), Message.BUSINESS_CODE_NOT_BLANK);
 		notBlank(model.getBusinessName(), Message.BUSINESS_NAME_NOT_BLANK);
+		notBlank(model.getBranchName(), Message.BUSINESS_BRANCH_NAME_NOT_BLANK);
 		notBlank(model.getAddress(), Message.BUSINESS_ADDRESS_NOT_BLANK);
 		notBlank(model.getTelephone(), Message.BUSINESS_TELEPHONE_NOT_BLANK);
+		notBlank(model.getCategories(), Message.BUSINESS_CATEGORY_NAME_NOT_BLANK);
 
 		if (StringUtils.isNotBlank(model.getBranchName())
 				&& StringUtils.equals(model.getBusinessName(),
@@ -74,11 +82,42 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 			throw new WechatException(
 					Message.BUSINESS_NAME_NOT_EQUALS_BRANCH_NAME);
 		}
-		Business exist = getByBusinessName(wechatId, model.getBusinessName());
-		if (exist != null) {
-			throw new WechatException(Message.BUSINESS_NAME_EXIST);
-		}
+//		Business exist = getByBusinessName(wechatId, model.getBusinessName());
+//		if (exist != null) {
+//			throw new WechatException(Message.BUSINESS_NAME_EXIST);
+//		}
 
+//		Business business = new Business();
+//		business.setWechatId(wechatId);
+//		business.setBusinessName(model.getBusinessName());
+//		business.setBranchName(model.getBranchName());
+//		business.setProvince(model.getProvince());
+//		business.setCity(model.getCity());
+//		business.setDistrict(model.getDistrict());
+//		business.setAddress(model.getAddress());
+//		business.setTelephone(model.getTelephone());
+//		business.setLongitude(model.getLongitude());
+//		business.setLatitude(model.getLatitude());
+//		business.setRecommend(model.getRecommend());
+//		business.setSpecial(model.getSpecial());
+//		business.setIntroduction(model.getIntroduction());
+//		business.setOpenTime(model.getOpenStartTime() + "-"
+//				+ model.getOpenEndTime());
+//		business.setAvgPrice(model.getAvgPrice());
+//		business.setCreatedAt(new Date());
+//		business.setCreatorId(user.getId());
+//		business.setStatus(BusinessStatus.INUSED.getValue());
+//
+//		checkBusinessCodeRepeat(model.getBusinessCode());
+//		business.setBusinessCode(model.getBusinessCode());
+//		business.setBus(model.getBus());
+//		business.setIsPush(BusinessStatus.NOTPUSHED.getValue());
+//
+//		businessMapper.insertSelective(business);
+//
+//		createBusinessPhoto(wechatId, model, business);
+//
+//		return business;
 		Business business = new Business();
 		business.setWechatId(wechatId);
 		business.setBusinessName(model.getBusinessName());
@@ -86,10 +125,27 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 		business.setProvince(model.getProvince());
 		business.setCity(model.getCity());
 		business.setDistrict(model.getDistrict());
-		business.setAddress(model.getAddress());
+		if(model.getAddress().contains("区")){
+			business.setAddress(model.getAddress().split("区")[1]);
+		}else if(model.getAddress().contains("县")){
+			business.setAddress(model.getAddress().split("县")[1]);
+		}else{
+			business.setAddress(model.getAddress());
+		}
+
 		business.setTelephone(model.getTelephone());
 		business.setLongitude(model.getLongitude());
 		business.setLatitude(model.getLatitude());
+
+		/** get weixin location */
+		Map<String, Double> wxMap = WeixinLocationUtil.
+				getWxLatAndLngByBaiduLocation(model.getLatitude().toString(),
+						model.getLongitude().toString());
+		if(wxMap != null){
+			business.setWxlat(wxMap.get("wxlat"));
+			business.setWxlng(wxMap.get("wxlng"));
+		}
+
 		business.setRecommend(model.getRecommend());
 		business.setSpecial(model.getSpecial());
 		business.setIntroduction(model.getIntroduction());
@@ -104,6 +160,10 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 		business.setBusinessCode(model.getBusinessCode());
 		business.setBus(model.getBus());
 		business.setIsPush(BusinessStatus.NOTPUSHED.getValue());
+		business.setUpdateStatus(BusinessStatus.NOTUPDATE.getValue());
+		business.setCheckStatus(BusinessStatus.NOTUPLOAD.getValue());
+		business.setCheckMsg("微信未上传");
+		business.setCategories(model.getCategories());
 
 		businessMapper.insertSelective(business);
 
@@ -142,18 +202,41 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 		return businessMapper.selectOne(record);
 	}
 
+//	@Override
+//	public Page<BusinessDto> search(Integer wechatId,
+//			BusinessModel businessModel, boolean queryCount)
+//			throws WechatException {
+//		if (businessModel.pagable()) {
+//			PageHelper.startPage(businessModel.getPageNum(),
+//					businessModel.getPageSize(), queryCount);
+//		}
+//		return businessMapper.search(wechatId,
+//				BusinessStatus.INUSED.getValue(), businessModel.getProvince(),
+//				businessModel.getCity(), businessModel.getLng(),
+//				businessModel.getLat(), businessModel.getQuery(),
+//				businessModel.getSortName(), businessModel.getSortDir());
+//	}
+
 	@Override
 	public Page<BusinessDto> search(Integer wechatId,
-			BusinessModel businessModel, boolean queryCount)
+									BusinessModel businessModel, boolean queryCount)
 			throws WechatException {
 		if (businessModel.pagable()) {
 			PageHelper.startPage(businessModel.getPageNum(),
 					businessModel.getPageSize(), queryCount);
 		}
+		if(businessModel.getProvince() != null){
+			List<String> places = Arrays.asList("北京", "天津", "上海", "重庆");
+			String place = areaInfoMapper.selectNameById(businessModel.getProvince());
+			if(places.contains(place)){
+				return businessMapper.searchDirect(wechatId, businessModel.getProvince(),
+						businessModel.getCity(), businessModel.getSortName(), businessModel.getSortDir());
+			}
+		}
 		return businessMapper.search(wechatId,
 				BusinessStatus.INUSED.getValue(), businessModel.getProvince(),
 				businessModel.getCity(), businessModel.getLng(),
-				businessModel.getLat(), businessModel.getQuery(), 
+				businessModel.getLat(), businessModel.getQuery(),
 				businessModel.getSortName(), businessModel.getSortDir());
 	}
 
@@ -165,17 +248,50 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 
 	@Override
 	public void delete(Integer wechatId, BusinessModel model) throws WechatException {
+//		notBlank(model.getId(), Message.BUSINESS_ID_NOT_BLANK);
+//		Business record = getBusiness(wechatId, model.getId());
+//		record.setStatus(BusinessStatus.DELETED.getValue());
+//		businessMapper.updateByPrimaryKeySelective(record);
+//		if(record.getIsPush() == 1){
+//			String poiId = businessMapper.searchByBusinessId(model.getId());
+//
+//            WxResponse result = WechatClientDelegate.deletePOI(wechatId, poiId);
+//
+//			if(result.fail()){
+//				throw new WechatException(Message.BUSINESS_WEXIN_DELETE_FAIL, result.getErrmsg());
+//			}
+//		}
 		notBlank(model.getId(), Message.BUSINESS_ID_NOT_BLANK);
 		Business record = getBusiness(wechatId, model.getId());
+		if(record.getCheckStatus() == 0){
+			throw new WechatException(Message.BUSINESS_CHECKING_NOT_DELETE);
+		}
+
+		//关联优惠券不能删除
+		CouponBusiness couponBusiness = new CouponBusiness();
+		couponBusiness.setBusinessId(model.getId());
+		couponBusiness.setWechatId(wechatId);
+		if(couponBusinessMapper.selectCount(couponBusiness)>0){
+			throw new WechatException(Message.BUSINESS_COUPON_NOT_DELETE);
+		}
+
+		//关联线下活动不能删除
+		OfflineActivityBusiness offlineActivityBusiness = new OfflineActivityBusiness();
+		offlineActivityBusiness.setBusinessId(model.getId());
+		offlineActivityBusiness.setWechatId(wechatId);
+		if(offlineActivityBusinessMapper.selectCount(offlineActivityBusiness)>0){
+			throw new WechatException(Message.BUSINESS_OFFLINE_ACTIVITY_NOT_DELETE);
+		}
+
 		record.setStatus(BusinessStatus.DELETED.getValue());
 		businessMapper.updateByPrimaryKeySelective(record);
 		if(record.getIsPush() == 1){
-			String poiId = businessMapper.searchByBusinessId(model.getId());
-
-            WxResponse result = WechatClientDelegate.deletePOI(wechatId, poiId);
-
-			if(result.fail()){
-				throw new WechatException(Message.BUSINESS_WEXIN_DELETE_FAIL, result.getErrmsg());
+			String poiId = record.getPoiId();
+			if(poiId != null){
+				WxResponse result = WechatClientDelegate.deletePOI(wechatId, poiId);
+				if(!result.getErrmsg().equals("ok")){
+					throw new WechatException(Message.BUSINESS_WEXIN_DELETE_FAIL);
+				}
 			}
 		}
 	}
@@ -192,46 +308,131 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 		return record;
 	}
 
+//	@Override
+//	public Business update(Integer wechatId, BusinessModel model)
+//			throws WechatException {
+//		notBlank(model.getId(), Message.BUSINESS_ID_NOT_BLANK);
+//		notBlank(model.getBusinessName(), Message.BUSINESS_NAME_NOT_BLANK);
+//		notBlank(model.getAddress(), Message.BUSINESS_ADDRESS_NOT_BLANK);
+//		notBlank(model.getTelephone(), Message.BUSINESS_TELEPHONE_NOT_BLANK);
+//
+//		if (StringUtils.isNotBlank(model.getBranchName())
+//				&& StringUtils.equals(model.getBusinessName(),
+//						model.getBranchName())) {
+//			throw new WechatException(
+//					Message.BUSINESS_NAME_NOT_EQUALS_BRANCH_NAME);
+//		}
+//
+//		Business business = getBusiness(wechatId, model.getId());
+//		if (business == null) {
+//			throw new WechatException(Message.BUSINESS_NOT_EXIST);
+//		}
+//		Business exist = getByBusinessName(wechatId, model.getBusinessName());
+//		if (exist != null && !exist.getId().equals(model.getId())) {
+//			throw new WechatException(Message.BUSINESS_NAME_EXIST);
+//		}
+//
+//		business.setBusinessName(model.getBusinessName());
+//		business.setBranchName(model.getBranchName());
+//		business.setProvince(model.getProvince());
+//		business.setCity(model.getCity());
+//		business.setDistrict(model.getDistrict());
+//		business.setAddress(model.getAddress());
+//		business.setTelephone(model.getTelephone());
+//		business.setLongitude(model.getLongitude());
+//		business.setLatitude(model.getLatitude());
+//		business.setRecommend(model.getRecommend());
+//		business.setSpecial(model.getSpecial());
+//		business.setIntroduction(model.getIntroduction());
+//		business.setOpenTime(model.getOpenStartTime() + "-"
+//				+ model.getOpenEndTime());
+//		business.setAvgPrice(model.getAvgPrice());
+//
+//		checkBusinessCodeRepeat(model);
+//		business.setBusinessCode(model.getBusinessCode());
+//		business.setBus(model.getBus());
+//
+//		businessMapper.updateByPrimaryKeySelective(business);
+//
+//		BusinessPhoto record = new BusinessPhoto();
+//		record.setBusinessId(business.getId());
+//		record.setWechatId(wechatId);
+//		businessPhotoMapper.delete(record);
+//		createBusinessPhoto(wechatId, model, business);
+//
+//		if(model.getIsPush() == 1){
+//			if(model.getPush()!=null){
+//				updateBusinessToWx(wechatId, business, model);
+//			}
+//		}else{
+//			if(model.getPush()!=null){
+//				pushBusinessToWx(wechatId, business, model);
+//			}
+//		}
+//
+//		return business;
+//	}
+
 	@Override
 	public Business update(Integer wechatId, BusinessModel model)
 			throws WechatException {
 		notBlank(model.getId(), Message.BUSINESS_ID_NOT_BLANK);
-		notBlank(model.getBusinessName(), Message.BUSINESS_NAME_NOT_BLANK);
-		notBlank(model.getAddress(), Message.BUSINESS_ADDRESS_NOT_BLANK);
-		notBlank(model.getTelephone(), Message.BUSINESS_TELEPHONE_NOT_BLANK);
-
-		if (StringUtils.isNotBlank(model.getBranchName())
-				&& StringUtils.equals(model.getBusinessName(),
-						model.getBranchName())) {
-			throw new WechatException(
-					Message.BUSINESS_NAME_NOT_EQUALS_BRANCH_NAME);
-		}
-
 		Business business = getBusiness(wechatId, model.getId());
 		if (business == null) {
 			throw new WechatException(Message.BUSINESS_NOT_EXIST);
 		}
-		Business exist = getByBusinessName(wechatId, model.getBusinessName());
-		if (exist != null && !exist.getId().equals(model.getId())) {
-			throw new WechatException(Message.BUSINESS_NAME_EXIST);
+
+		if(model.getIsPush() == 0){
+			notBlank(model.getBusinessName(), Message.BUSINESS_NAME_NOT_BLANK);
+			notBlank(model.getAddress(), Message.BUSINESS_ADDRESS_NOT_BLANK);
+			notBlank(model.getTelephone(), Message.BUSINESS_TELEPHONE_NOT_BLANK);
+			notBlank(model.getBranchName(), Message.BUSINESS_BRANCH_NAME_NOT_BLANK);
+
+			if (org.apache.commons.lang.StringUtils.isNotBlank(model.getBranchName())
+					&& org.apache.commons.lang.StringUtils.equals(model.getBusinessName(),
+					model.getBranchName())) {
+				throw new WechatException(
+						Message.BUSINESS_NAME_NOT_EQUALS_BRANCH_NAME);
+			}
+			/*Business exist = getByBusinessName(wechatId, model.getBusinessName());
+			if (exist != null && !exist.getId().equals(model.getId())) {
+				throw new WechatException(Message.BUSINESS_NAME_EXIST);
+			}*/
+
+			business.setBusinessName(model.getBusinessName());
+			business.setBranchName(model.getBranchName());
+			business.setProvince(model.getProvince());
+			business.setCity(model.getCity());
+			business.setDistrict(model.getDistrict());
+//			if(model.getAddress().contains("区")){
+//				business.setAddress(model.getAddress().split("区")[1]);
+//			}else if(model.getAddress().contains("县")){
+//				business.setAddress(model.getAddress().split("县")[1]);
+//			}else{
+//				business.setAddress(model.getAddress());
+//			}
+			business.setAddress(model.getAddress());
+			business.setTelephone(model.getTelephone());
+			business.setLongitude(model.getLongitude());
+			business.setLatitude(model.getLatitude());
+			business.setCategories(model.getCategories());
+
+			/** get weixin location */
+			Map<String, Double> wxMap = WeixinLocationUtil.
+					getWxLatAndLngByBaiduLocation(model.getLatitude().toString(),
+							model.getLongitude().toString());
+			if(wxMap != null){
+				business.setWxlat(wxMap.get("wxlat"));
+				business.setWxlng(wxMap.get("wxlng"));
+			}
 		}
 
-		business.setBusinessName(model.getBusinessName());
-		business.setBranchName(model.getBranchName());
-		business.setProvince(model.getProvince());
-		business.setCity(model.getCity());
-		business.setDistrict(model.getDistrict());
-		business.setAddress(model.getAddress());
-		business.setTelephone(model.getTelephone());
-		business.setLongitude(model.getLongitude());
-		business.setLatitude(model.getLatitude());
 		business.setRecommend(model.getRecommend());
 		business.setSpecial(model.getSpecial());
 		business.setIntroduction(model.getIntroduction());
 		business.setOpenTime(model.getOpenStartTime() + "-"
 				+ model.getOpenEndTime());
 		business.setAvgPrice(model.getAvgPrice());
-
 		checkBusinessCodeRepeat(model);
 		business.setBusinessCode(model.getBusinessCode());
 		business.setBus(model.getBus());
@@ -243,14 +444,14 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 		record.setWechatId(wechatId);
 		businessPhotoMapper.delete(record);
 		createBusinessPhoto(wechatId, model, business);
-		
+
 		if(model.getIsPush() == 1){
-			if(model.getPush()!=null){
-				updateBusinessToWx(wechatId, business, model);
+			if(model.getPush()){
+				business = updateBusinessToWx(wechatId, business, model);
 			}
 		}else{
-			if(model.getPush()!=null){
-				pushBusinessToWx(wechatId, business, model);
+			if(model.getPush()){
+				business = pushBusinessToWx(wechatId, business, model);
 			}
 		}
 
@@ -289,26 +490,36 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 	}
 
 	@Override
-	public void pushBusinessToWx(Integer wechatId, Business business, BusinessModel model) {
+	public Business pushBusinessToWx(Integer wechatId, Business business, BusinessModel model) {
         WxBusiness baseInfo = new WxBusiness();
-		List<WxBusinessPhoto> photoList = new ArrayList<>();
-		List<String> absolutePhotoList = model.getAbsolutePhotoList();
+//		List<WxBusinessPhoto> photoList = new ArrayList<>();
+//		List<String> absolutePhotoList = model.getAbsolutePhotoList();
 
-		if(absolutePhotoList != null && !absolutePhotoList.isEmpty()){
-			for(String absolutePhoto : absolutePhotoList){
-				WxHolder<String> uploadUrl = WechatClientDelegate.uploadImg(wechatId, new File(absolutePhoto));
-				if(uploadUrl.fail()){
-					throw new WechatException(Message.BUSINESS_WEIXIN_PHOTO_UPLOAD_FAIL);
-				}
-				photoList.add(new WxBusinessPhoto(uploadUrl.get()));
-				String[] strs = absolutePhoto.split("/");
-				String str = strs[strs.length-1];
-				BusinessPhoto businessPhoto = businessPhotoMapper.searchLike(str);
-				businessPhoto.setWxUrl(uploadUrl.get());
-				businessPhotoMapper.updateByPrimaryKeySelective(businessPhoto);
+//		if(absolutePhotoList != null && !absolutePhotoList.isEmpty()){
+//			for(String absolutePhoto : absolutePhotoList){
+//				WxHolder<String> uploadUrl = WechatClientDelegate.uploadImg(wechatId, new File(absolutePhoto));
+//				if(uploadUrl.fail()){
+//					throw new WechatException(Message.BUSINESS_WEIXIN_PHOTO_UPLOAD_FAIL);
+//				}
+//				photoList.add(new WxBusinessPhoto(uploadUrl.get()));
+//				String[] strs = absolutePhoto.split("/");
+//				String str = strs[strs.length-1];
+//				BusinessPhoto businessPhoto = businessPhotoMapper.searchLike(str);
+//				businessPhoto.setWxUrl(uploadUrl.get());
+//				businessPhotoMapper.updateByPrimaryKeySelective(businessPhoto);
+//			}
+//		}
+
+		List<MaterialDto> materialList = model.getMaterialList();
+		List<WxBusinessPhoto> photoList = new ArrayList<WxBusinessPhoto>();
+		if(materialList != null){
+			for(MaterialDto materialDto : materialList){
+				WxBusinessPhoto photo = new WxBusinessPhoto();
+				photo.setPhotoUrl(materialDto.getWxPicUrl());
+				photoList.add(photo);
 			}
 		}
-		
+
 		if(business.getBusinessCode() != null){
 			baseInfo.setSid(business.getBusinessCode());
 		}
@@ -344,48 +555,69 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 			baseInfo.setAvgPrice(business.getAvgPrice());
 		}
 
-		List<String> categories = model.getCategories();
+//		List<String> categories = model.getCategories();
+//		baseInfo.setCategories(categories);
+		JSONArray categoryArray = JSONObject.parseArray(model.getCategories());
+		String categoriesStr = categoryArray.getString(0) + "," + categoryArray.getString(1);
+		List<String> categories  = new ArrayList<String>();
+		categories.add(categoriesStr);
 		baseInfo.setCategories(categories);
 
         WxResponse result = WechatClientDelegate.addPOI(wechatId, baseInfo);
 
-        if(result.fail()){
-            throw new WechatException(Message.BUSINESS_WEIXIN_PUBLISE_FAIL, result.getErrmsg());
-        }
-
+//        if(result.fail()){
+//            throw new WechatException(Message.BUSINESS_WEIXIN_PUBLISE_FAIL, result.getErrmsg());
+//        }
+		if(result.getErrmsg().equals("ok")){
+			business.setCheckStatus(BusinessStatus.CHECKING.getValue());
+			business.setCheckMsg("发布审核中");
+			business.setUpdateStatus(BusinessStatus.UPDATE.getValue());
+		}else {
+			business.setCheckStatus(BusinessStatus.CHECKFAIL.getValue());
+			business.setCheckMsg(result.getErrmsg());
+		}
+		return business;
 	}
 
-	private void updateBusinessToWx(Integer wechatId, Business business,
+	private Business updateBusinessToWx(Integer wechatId, Business business,
 			BusinessModel model) {
 		WxBusiness baseInfo = new WxBusiness();
-		List<WxBusinessPhoto> photo_list = new ArrayList<>();
-		List<String> absolutePhotoList = model.getAbsolutePhotoList();
-
-
-		if(absolutePhotoList != null && !absolutePhotoList.isEmpty()){
-			for(String absolutePhoto : absolutePhotoList){
-				String uploadUrl = null;
-				String[] strs = absolutePhoto.split("/");
-				String str = strs[strs.length-1];
-				BusinessPhoto businessPhoto = businessPhotoMapper.searchLike(str);
-				if(businessPhoto.getWxUrl() == null){
-                    WxHolder<String> wxURL = WechatClientDelegate.uploadImg(wechatId, new File(absolutePhoto));
-                    if(wxURL.fail()){
-						throw new WechatException(Message.BUSINESS_WEIXIN_PHOTO_UPLOAD_FAIL);
-					}
-                    uploadUrl = wxURL.get();
-					businessPhoto.setWxUrl(uploadUrl);
-					businessPhotoMapper.updateByPrimaryKeySelective(businessPhoto);
-				}else{
-					uploadUrl = businessPhoto.getWxUrl();
-				}
-
-                photo_list.add(new WxBusinessPhoto(uploadUrl));
-			}
+//		List<WxBusinessPhoto> photo_list = new ArrayList<>();
+//		List<String> absolutePhotoList = model.getAbsolutePhotoList();
+//		if(absolutePhotoList != null && !absolutePhotoList.isEmpty()){
+//			for(String absolutePhoto : absolutePhotoList){
+//				String uploadUrl = null;
+//				String[] strs = absolutePhoto.split("/");
+//				String str = strs[strs.length-1];
+//				BusinessPhoto businessPhoto = businessPhotoMapper.searchLike(str);
+//				if(businessPhoto.getWxUrl() == null){
+//                    WxHolder<String> wxURL = WechatClientDelegate.uploadImg(wechatId, new File(absolutePhoto));
+//                    if(wxURL.fail()){
+//						throw new WechatException(Message.BUSINESS_WEIXIN_PHOTO_UPLOAD_FAIL);
+//					}
+//                    uploadUrl = wxURL.get();
+//					businessPhoto.setWxUrl(uploadUrl);
+//					businessPhotoMapper.updateByPrimaryKeySelective(businessPhoto);
+//				}else{
+//					uploadUrl = businessPhoto.getWxUrl();
+//				}
+//
+//                photo_list.add(new WxBusinessPhoto(uploadUrl));
+//			}
+//		}
+		List<MaterialDto> materialList = model.getMaterialList();
+		List<WxBusinessPhoto> photoList = new ArrayList<WxBusinessPhoto>();
+		for(MaterialDto materialDto : materialList){
+			WxBusinessPhoto photo = new WxBusinessPhoto();
+			photo.setPhotoUrl(materialDto.getWxPicUrl());
+			photoList.add(photo);
 		}
+
 		baseInfo.setTelephone(business.getTelephone());
-		if(!photo_list.isEmpty()){
-			baseInfo.setPhotoList(photo_list);
+		baseInfo.setPoiId(business.getPoiId());
+		baseInfo.setSid(business.getBusinessCode());
+		if(!photoList.isEmpty()){
+			baseInfo.setPhotoList(photoList);
 		}
 		if(business.getRecommend()!=null){
 			baseInfo.setRecommend(business.getRecommend());
@@ -405,10 +637,20 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 
         WxResponse result = WechatClientDelegate.updatePOI(wechatId, baseInfo);
 
-        if(result.fail()){
-            throw new WechatException(Message.BUSINESS_WEXIN_UPDATE_FAIL, result.getErrmsg());
-        }
-
+//        if(result.fail()){
+//            throw new WechatException(Message.BUSINESS_WEXIN_UPDATE_FAIL, result.getErrmsg());
+//        }
+		if(!result.getErrmsg().equals("ok")){
+			business.setCheckStatus(BusinessStatus.CHECKFAIL.getValue());
+			business.setCheckMsg(result.getErrmsg());
+			business.setUpdateStatus(BusinessStatus.NOTUPDATE.getValue());
+		}else{
+			business.setCheckStatus(BusinessStatus.CHECKING.getValue());
+			business.setUpdateStatus(BusinessStatus.UPDATE.getValue());
+			business.setCheckMsg("修改审核中");
+		}
+		businessMapper.updateByPrimaryKeySelective(business);
+		return business;
 	}
 
 	@Override

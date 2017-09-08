@@ -42,8 +42,26 @@ public class BusinessDto {
 	private String bus;
 
 	private BigDecimal distance;
-	
+
 	private Integer isPush;
+
+	private List<MaterialDto> materialList;
+
+	private Integer checkStatus;
+
+	private String checkMsg;
+
+	private String categories;
+
+	private List<String> categoryList;
+
+	private String provinceStr;
+
+	private String cityStr;
+
+	private String PoiId;
+
+	private Byte updateStatus;
 
 	public BigDecimal getDistance() {
 		return distance;
@@ -204,5 +222,78 @@ public class BusinessDto {
 	public void setIsPush(Integer isPush) {
 		this.isPush = isPush;
 	}
+
+	public List<MaterialDto> getMaterialList() {
+		return materialList;
+	}
+
+	public void setMaterialList(List<MaterialDto> materialList) {
+		this.materialList = materialList;
+	}
+
+	public Integer getCheckStatus() {
+		return checkStatus;
+	}
+
+	public void setCheckStatus(Integer checkStatus) {
+		this.checkStatus = checkStatus;
+	}
+
+	public String getCheckMsg() {
+		return checkMsg;
+	}
+
+	public void setCheckMsg(String checkMsg) {
+		this.checkMsg = checkMsg;
+	}
+
+	public String getCategories() {
+		return categories;
+	}
+
+	public void setCategories(String categories) {
+		this.categories = categories;
+	}
+
+	public List<String> getCategoryList() {
+		return categoryList;
+	}
+
+	public void setCategoryList(List<String> categoryList) {
+		this.categoryList = categoryList;
+	}
+
+	public String getProvinceStr() {
+		return provinceStr;
+	}
+
+	public void setProvinceStr(String provinceStr) {
+		this.provinceStr = provinceStr;
+	}
+
+	public String getCityStr() {
+		return cityStr;
+	}
+
+	public void setCityStr(String cityStr) {
+		this.cityStr = cityStr;
+	}
+
+	public String getPoiId() {
+		return PoiId;
+	}
+
+	public void setPoiId(String poiId) {
+		PoiId = poiId;
+	}
+
+	public Byte getUpdateStatus() {
+		return updateStatus;
+	}
+
+	public void setUpdateStatus(Byte updateStatus) {
+		this.updateStatus = updateStatus;
+	}
+
 
 }

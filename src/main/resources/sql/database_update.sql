@@ -33,3 +33,7 @@ CREATE TABLE `mass_conversation_batch_member` (
 ALTER TABLE `member` ADD COLUMN `status` tinyint(2) NULL COMMENT '绑定状态(0:已解绑,1:已绑定)';
 ALTER TABLE `member` ADD COLUMN `pmcode` varchar(255) NULL COMMENT '卡号';
 ALTER TABLE `member` ADD COLUMN `levels` varchar(255) NULL COMMENT '卡级别';
+
+
+---2017-08-31 add material_id field on business_photo table by jovi
+ALTER TABLE `business_photo` ADD COLUMN `material_id` int(11) NULL;

@@ -64,16 +64,16 @@ public class StoreApiController extends ApiController {
 			}
 			model.disablePage();
 			Integer wechatId = null;
-			log.info("shortUrl : {}.", model.getShortUrl());
-			if (StringUtils.isNotBlank(model.getShortUrl())) {
-				OauthUrl urlObj = oauthUrlService.getByShortUrl(model
-						.getShortUrl());
-				log.info("urlObj : {}",
-						(urlObj != null ? urlObj.getId() : null));
-				if (urlObj != null) {
-					wechatId = urlObj.getWechatId();
-				}
-			}
+//			log.info("shortUrl : {}.", model.getShortUrl());
+//			if (StringUtils.isNotBlank(model.getShortUrl())) {
+//				OauthUrl urlObj = oauthUrlService.getByShortUrl(model
+//						.getShortUrl());
+//				log.info("urlObj : {}",
+//						(urlObj != null ? urlObj.getId() : null));
+//				if (urlObj != null) {
+//					wechatId = urlObj.getWechatId();
+//				}
+//			}
 			Page<BusinessDto> page = businessService.search(wechatId, model,
 					true);
 			return representation(Message.BUSINESS_LIST_SUCCESS,
