@@ -1,0 +1,62 @@
+spring:
+  aop:
+    proxy-target-class: true
+
+  cloud:
+    stream:
+      bindings:
+        input:
+          binder: rabbit1
+          destination: wechat.notify
+          group: notify1
+          consumer:
+            durableSubscription: true
+        output:
+          binder: rabbit1
+          destination: wechat.notify
+          group: notify1
+      binders:
+        rabbit1:
+          type: rabbit
+
+  rabbitmq:
+    host: ${RABBITMQ_DEFAULT_HOST:${ENV_HOST}}
+    port: 5672
+    username: ${RABBITMQ_DEFAULT_USER:admin}
+    password: ${RABBITMQ_DEFAULT_PASS:admin}
+    listener:
+      prefetch: 5
+      acknowledge-mode: auto
+
+  redis:
+    host: ${REDIS_DEFAULT_HOST:${ENV_HOST}}
+    password: ${REDIS_DEFAULT_PASS:redis}
+    port: 6379
+    pool:
+      max-active: 10
+      max-wait: 1
+
+  cache:
+    cache-names:
+      - storeCache
+  jackson:
+    date-format: 'yyyy-MM-dd HH:mm:ss'
+    serialization:
+
+  http:
+    multipart:
+      maxFileSize: 10MB
+      maxRequestSize: 100MB
+
+jdbc.driverClass: com.mysql.jdbc.Driver
+jdbc.url: jdbc:mysql://${MYSQL_HOST:${ENV_HOST}}:${MYSQL_PORT:3306}/${MYSQL_DB:d1m_wechat}?autoReconnect=true
+jdbc.user: ${MYSQL_USER:root}
+jdbc.password: ${MYSQL_PASSWORD:root}
+jdbc.enableDynamic: ${ENABLE_DYNAMIC:false}
+
+---
+#云环境配置
+spring:
+  profiles: cloud
+
+

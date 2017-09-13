@@ -68,16 +68,16 @@ public class StoreApiController extends ApiController {
 			}
 			model.disablePage();
 			Integer wechatId = null;
-			log.info("shortUrl : {}.", model.getShortUrl());
-			if (StringUtils.isNotBlank(model.getShortUrl())) {
-				OauthUrl urlObj = oauthUrlService.getByShortUrl(model
-						.getShortUrl());
-				log.info("urlObj : {}",
-						(urlObj != null ? urlObj.getId() : null));
-				if (urlObj != null) {
-					wechatId = urlObj.getWechatId();
-				}
-			}
+//			log.info("shortUrl : {}.", model.getShortUrl());
+//			if (StringUtils.isNotBlank(model.getShortUrl())) {
+//				OauthUrl urlObj = oauthUrlService.getByShortUrl(model
+//						.getShortUrl());
+//				log.info("urlObj : {}",
+//						(urlObj != null ? urlObj.getId() : null));
+//				if (urlObj != null) {
+//					wechatId = urlObj.getWechatId();
+//				}
+//			}
 			Page<BusinessDto> page = businessService.search(wechatId, model,
 					true);
 			return representation(Message.BUSINESS_LIST_SUCCESS,
@@ -94,13 +94,13 @@ public class StoreApiController extends ApiController {
 	public JSONObject areaList(HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
-			List<BusinessAreaListDto> provinceList = businessService
-					.getProvinceList(null);
-			List<BusinessAreaListDto> cityList = businessService
-					.getCityList(null);
+//			List<BusinessAreaListDto> provinceList = businessService
+//					.getProvinceList(null);
+//			List<BusinessAreaListDto> cityList = businessService
+//					.getCityList(null);
 			List<List<BusinessAreaListDto>> back = new ArrayList<List<BusinessAreaListDto>>();
-			back.add(provinceList);
-			back.add(cityList);
+//			back.add(provinceList);
+//			back.add(cityList);
 			return representation(Message.SUCCESS, back);
 		} catch (Exception e) {
 			log.error(e.getMessage());

@@ -2,6 +2,8 @@ package com.d1m.wechat.pamametermodel;
 
 import java.util.List;
 
+import com.d1m.wechat.dto.MaterialDto;
+
 public class BusinessModel extends BaseModel {
 
 	private Integer id;
@@ -56,11 +58,13 @@ public class BusinessModel extends BaseModel {
 
 	private Integer isPush;
 
-	private List<String> categories;
+	private String categories;
 
 	private String query;
 
-	private String shortUrl;
+	private List<MaterialDto> materialList;
+
+	private Integer updateStatus;
 
 	public List<String> getAbsolutePhotoList() {
 		return absolutePhotoList;
@@ -270,11 +274,11 @@ public class BusinessModel extends BaseModel {
 		this.isPush = isPush;
 	}
 
-	public List<String> getCategories() {
+	public String getCategories() {
 		return categories;
 	}
 
-	public void setCategories(List<String> categories) {
+	public void setCategories(String categories) {
 		this.categories = categories;
 	}
 
@@ -286,12 +290,20 @@ public class BusinessModel extends BaseModel {
 		this.query = query;
 	}
 
-	public String getShortUrl() {
-		return shortUrl;
+	public List<MaterialDto> getMaterialList() {
+		return materialList;
 	}
 
-	public void setShortUrl(String shortUrl) {
-		this.shortUrl = shortUrl;
+	public void setMaterialList(List<MaterialDto> materialList) {
+		this.materialList = materialList;
+	}
+
+	public Integer getUpdateStatus() {
+		return updateStatus;
+	}
+
+	public void setUpdateStatus(Integer updateStatus) {
+		this.updateStatus = updateStatus;
 	}
 
 }

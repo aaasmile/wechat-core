@@ -2,6 +2,7 @@ package com.d1m.wechat.controller.popup;
 
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
+import com.d1m.wechat.model.popup.dao.PopupPayConfig;
 import com.d1m.wechat.util.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.d1m.wechat.model.popup.PopupPayConfig;
 import com.d1m.wechat.service.IPopupPayService;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;

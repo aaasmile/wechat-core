@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.PopupOrderMapper">
+    <resultMap id="BaseResultMap" type="com.d1m.wechat.model.popup.dao.PopupOrder">
+        <!--
+          WARNING - @mbggenerated
+        -->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="member_id" jdbcType="BIGINT" property="memberId"/>
+        <result column="wechat_id" jdbcType="INTEGER" property="wechatId"/>
+        <result column="pay_type" jdbcType="TINYINT" property="payType"/>
+        <result column="pay_status" jdbcType="TINYINT" property="payStatus"/>
+        <result column="notify_status" jdbcType="TINYINT" property="notifyStatus"/>
+        <result column="notify_update_time" jdbcType="TIMESTAMP" property="notifyUpdateTime"/>
+        <result column="pay_order_no" jdbcType="VARCHAR" property="payOrderNo"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="ListResultMap" type="com.d1m.wechat.model.popup.PopupOrderList">
+        <result column="order_id" jdbcType="INTEGER" property="orderId"/>
+        <result column="goods_id" jdbcType="INTEGER" property="goodsId"/>
+        <result column="wechat_id" jdbcType="INTEGER" property="wechatId"/>
+        <result column="goods_name" jdbcType="VARCHAR" property="goodsName"/>
+        <result column="sku" jdbcType="VARCHAR" property="sku"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="order_create_time" jdbcType="TIMESTAMP" property="orderCreateTime"/>
+        <result column="delivery_create_time" jdbcType="TIMESTAMP" property="deliveryCreateTime"/>
+        <result column="company" jdbcType="VARCHAR" property="company"/>
+        <result column="province" jdbcType="VARCHAR" property="province"/>
+        <result column="city" jdbcType="VARCHAR" property="city"/>
+        <result column="area" jdbcType="VARCHAR" property="area"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="member_id" jdbcType="INTEGER" property="memberId"/>
+        <result column="open_id" jdbcType="VARCHAR" property="openId"/>
+        <result column="track_no" jdbcType="VARCHAR" property="trackNo"/>
+        <result column="pay_status" jdbcType="VARCHAR" property="payStatus"/>
+        <result column="pay_type" jdbcType="VARCHAR" property="payType"/>
+        <result column="price" jdbcType="INTEGER" property="price"/>
+        <result column="points" jdbcType="BIGINT" property="points"/>
+    </resultMap>
+
+    <select id="selectPopupOrderList" parameterType="HashMap" resultMap="ListResultMap">
+        select
+        a.id,
+        a.wechat_id,
+        group_concat(DISTINCT d.`name`) goods_name,
+        group_concat(DISTINCT b.goods_id) goods_id,
+        group_concat(b.sku) sku,
+        group_concat(e.title) title,
+        max(a.create_time) order_create_time,
+        max(c.create_time) delivery_create_time,
+        max(c.company) company,
+        max(h.province) province,
+        max(h.city) city,
+        max(h.area) area,
+        max(h.addr) addr,
+        max(a.member_id) member_id,
+        max(f.open_id) open_id,
+        max(c.track_no) track_no,
+        max(a.pay_status) pay_status,
+        max(a.pay_type) pay_type,
+        sum(b.price) price,
+        sum(b.points) points
+        from popup_order a
+        left join popup_order_goods_rel b on b.order_id = a.id
+        left join popup_order_express c on c.order_id = a.id
+        left join popup_goods d on d.id = b.goods_id
+        left join popup_goods_sku e on e.sku = b.sku
+        left join member_benefit f on f.id = a.member_id
+        left join popup_order_delivery_addr g on g.order_id = a.id and g.is_invoice = 0
+        left join popup_delivery_addr h on h.id = g.addr_id
+        where a.wechat_id = #{wechatId}
+        <if test="orderId != null">
+            and a.id like concat('%',#{orderId},'%')
+        </if>
+        <if test="startDate != null and endDate !=null">
+            and a.create_time between #{startDate} and #{endDate}
+        </if>
+        <if test="receiverName != null">
+            and h.receiver_name like concat('%',#{receiverName},'%')
+        </if>
+        <if test="receiverPhone != null">
+            and h.receiver_phone like concat('%',#{receiverPhone},'%')
+        </if>
+        <if test="payStatus != null">
+            and a.pay_status = #{payStatus}
+        </if>
+        <if test="payType != null">
+            and a.pay_type = #{payType}
+        </if>
+        group by a.id,a.wechat_id
+        order by a.id desc
+    </select>
+
+</mapper>
