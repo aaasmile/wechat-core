@@ -3,8 +3,8 @@ package com.d1m.wechat.service;
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.configure.FeignClientConfiguration;
 import com.d1m.wechat.model.popup.PopupOrderList;
-import com.d1m.wechat.model.popup.dao.PopupOrderDao;
-import com.d1m.wechat.model.popup.dao.PopupOrderGoodsDao;
+import com.d1m.wechat.model.popup.dao.PopupOrder;
+import com.d1m.wechat.model.popup.dao.PopupOrderGoodsRel;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,7 +20,7 @@ public interface IWechatPopupMApiService {
 
     @RequestMapping(value = "mapi/order/export", method = RequestMethod.POST,consumes = "application/json")
     @ResponseBody
-    List<PopupOrderDao> exportOrderList(PopupOrderList popupOrderList);
+    List<PopupOrder> exportOrderList(PopupOrderList popupOrderList);
 
     @RequestMapping(value = "mapi/order/search", method = RequestMethod.POST,consumes = "application/json")
     @ResponseBody

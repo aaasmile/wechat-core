@@ -10,17 +10,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSONObject;
-import com.d1m.wechat.mapper.PopupOrderGoodsMapper;
-import com.d1m.wechat.model.popup.PopupOrder;
 import com.d1m.wechat.model.popup.PopupOrderList;
-import com.d1m.wechat.model.popup.dao.PopupCountryAreaDao;
-import com.d1m.wechat.model.popup.dao.PopupOrderDao;
-import com.d1m.wechat.model.popup.dao.PopupOrderGoodsDao;
+import com.d1m.wechat.model.popup.dao.PopupCountryArea;
+import com.d1m.wechat.model.popup.dao.PopupOrder;
 import com.d1m.wechat.service.IPopupOrderService;
 import com.d1m.wechat.service.IPopupPayService;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.model.enums.OrderEnum;
 import com.d1m.wechat.service.MemberService;
+import com.github.pagehelper.Page;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -86,7 +84,7 @@ public class OrderController extends BaseController {
 //            PopupOrderList.setEndDate(end);
 //            if (StringUtils.isNotBlank(orderStatus))
 //                PopupOrderList.setOrderStatus(getEnumByName(orderStatus));
-            List<PopupOrderDao> data = wechatPopupMApiService.exportOrderList(PopupOrderList);
+            List<PopupOrder> data = wechatPopupMApiService.exportOrderList(PopupOrderList);
 //            orderStatus=ORDER_PAY_OFF"
             HSSFWorkbook xwb = new HSSFWorkbook();
 
@@ -100,17 +98,17 @@ public class OrderController extends BaseController {
             }
 
             HashMap<String,String> hmArea = new HashMap<String,String>();
-            List<PopupCountryAreaDao> liCountryArea = popupPayService.queryCountryArea();
-            for (PopupCountryAreaDao area : liCountryArea) {
+            List<PopupCountryArea> liCountryArea = popupPayService.queryCountryArea();
+            for (PopupCountryArea area : liCountryArea) {
                 hmArea.put(area.getCode(),area.getNameZh());
             }
 
             if(data.size() > 0){
                 for(int i =0; i < data.size(); i++){
-                    PopupOrderDao orderDao = data.get(i);
+                    PopupOrder orderDao = data.get(i);
                     log.debug(orderDao.toString());
-                    JSONObject addressJSON = JSONObject.parseObject(orderDao.getAddress());
-                    JSONObject invoiceJSON = JSONObject.parseObject(orderDao.getInvoiceInfo());
+//                    JSONObject addressJSON = JSONObject.parseObject(orderDao.getAddress());
+//                    JSONObject invoiceJSON = JSONObject.parseObject(orderDao.getInvoiceInfo());
 
 //                    Member member = memberService.getMember(wechatId, orderDao.getMemberId());
                     ArrayList<String> al = new ArrayList<String>();
@@ -118,50 +116,50 @@ public class OrderController extends BaseController {
                     al.add(DateUtil.formatDate(orderDao.getCreateTime(),"yyyy/MM/dd"));
                     al.add(orderDao.getId().toString());
 //                    "area":"310110","city":"310100","province":"310000",
-                    al.add(addressJSON.getString("receiverName"));
-                    String receiverPhone = addressJSON.getString("receiverPhone");
-                    al.add(receiverPhone);
-                    String province = addressJSON.getString("province");
-                    String city = addressJSON.getString("city");
-                    city = (hmArea.containsKey(city)) ? hmArea.get(city) : "";
-                    String area = addressJSON.getString("area");
-                    String desc = addressJSON.getString("desc");
-                    al.add(hmArea.get(province) +" "+ city +" "+ hmArea.get(area) +" "+ desc);
-                    String msmPhone = orderDao.getMsmPhone();
-                    String anotherPhone = msmPhone.equals(receiverPhone) ? "NO" : msmPhone;
-                    al.add(anotherPhone);
-                    String hasGift = orderDao.getGiftContent().equals("") ? "NO" : "YES";
-                    al.add(hasGift);
-                    al.add(orderDao.getGiftContent());
-                    String hasInvoice = orderDao.getInvoiceOpen() == 0 ? "NO" : "YES";
-                    al.add(hasInvoice);
-                    if(hasInvoice.equals("YES")) {
-                        al.add(orderDao.getInvoiceType().getDesc());
-                        al.add(invoiceJSON.getString("title"));
-                        String creditCode = invoiceJSON.getString("creditCode");
-                        if (!creditCode.equals("")) {
-                            creditCode = "creditCode:" + creditCode;
-                        }
-                        String personNo = invoiceJSON.getString("personNo");
-                        if (!personNo.equals("")) {
-                            personNo = "personNo:" + personNo;
-                        }
-                        if (!creditCode.equals("") || !personNo.equals(""))
-                            al.add(creditCode + personNo);
-                        else
-                            al.add("");
-                    } else {
-                        al.add("");
-                        al.add("");
-                        al.add("");
-                    }
-                    PopupOrderGoodsDao orderGoodsDao = popupOrderService.queryOrderGoodsByOrderId(orderDao.getId().intValue());
-                    al.add(orderGoodsDao.getPayType()==null?"":orderGoodsDao.getPayType().getDesc());
-                    HSSFRow rowi = sheet.createRow(i + 1);
-                    for (int k=0; k<al.size(); k++) {
-                        HSSFCell cell = rowi.createCell(k);
-                        cell.setCellValue(al.get(k));
-                    }
+//                    al.add(addressJSON.getString("receiverName"));
+//                    String receiverPhone = addressJSON.getString("receiverPhone");
+//                    al.add(receiverPhone);
+//                    String province = addressJSON.getString("province");
+//                    String city = addressJSON.getString("city");
+//                    city = (hmArea.containsKey(city)) ? hmArea.get(city) : "";
+//                    String area = addressJSON.getString("area");
+//                    String desc = addressJSON.getString("desc");
+//                    al.add(hmArea.get(province) +" "+ city +" "+ hmArea.get(area) +" "+ desc);
+//                    String msmPhone = orderDao.getMsmPhone();
+//                    String anotherPhone = msmPhone.equals(receiverPhone) ? "NO" : msmPhone;
+//                    al.add(anotherPhone);
+//                    String hasGift = orderDao.getGiftContent().equals("") ? "NO" : "YES";
+//                    al.add(hasGift);
+//                    al.add(orderDao.getGiftContent());
+//                    String hasInvoice = orderDao.getInvoiceOpen() == 0 ? "NO" : "YES";
+//                    al.add(hasInvoice);
+//                    if(hasInvoice.equals("YES")) {
+//                        al.add(orderDao.getInvoiceType().getDesc());
+//                        al.add(invoiceJSON.getString("title"));
+//                        String creditCode = invoiceJSON.getString("creditCode");
+//                        if (!creditCode.equals("")) {
+//                            creditCode = "creditCode:" + creditCode;
+//                        }
+//                        String personNo = invoiceJSON.getString("personNo");
+//                        if (!personNo.equals("")) {
+//                            personNo = "personNo:" + personNo;
+//                        }
+//                        if (!creditCode.equals("") || !personNo.equals(""))
+//                            al.add(creditCode + personNo);
+//                        else
+//                            al.add("");
+//                    } else {
+//                        al.add("");
+//                        al.add("");
+//                        al.add("");
+//                    }
+//                    PopupOrderGoodsDao orderGoodsDao = popupOrderService.queryOrderGoodsByOrderId(orderDao.getId().intValue());
+//                    al.add(orderGoodsDao.getPayType()==null?"":orderGoodsDao.getPayType().getDesc());
+//                    HSSFRow rowi = sheet.createRow(i + 1);
+//                    for (int k=0; k<al.size(); k++) {
+//                        HSSFCell cell = rowi.createCell(k);
+//                        cell.setCellValue(al.get(k));
+//                    }
                 }
             }
 
@@ -182,29 +180,29 @@ public class OrderController extends BaseController {
 
     }
 
-    /**
-     * 后台查看订单列表
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping(value = "search",method = RequestMethod.POST)
-    public JSONObject queryOrderList(@RequestBody(required = true) PopupOrderList orderListModel, @CookieValue(name="wechatId",required = false) Integer wechatId, HttpServletRequest request){
-        wechatId = debug?29:getWechatId(request.getSession());
-        if(orderListModel.getPageNum() < 0 || orderListModel.getPageSize() < 0) return representation(Message.ILLEGAL_REQUEST);
-        try{
-            orderListModel.setWechatId(wechatId);
-            log.debug("--------------------");
-            JSONObject jsonObject = wechatPopupMApiService.queryOrderList(orderListModel);
-
-            log.debug("[order][queryOrderList]" + jsonObject.toJSONString());
-
-            JSONObject data = jsonObject.getJSONObject("data");
-            return representation(Message. SUCCESS,data);
-        } catch (Exception e){
-            log.error(e.getMessage());
-            return wrapException(e);
-        }
-    }
+//    /**
+//     * 后台查看订单列表
+//     * @return
+//     */
+//    @ResponseBody
+//    @RequestMapping(value = "search",method = RequestMethod.POST)
+//    public JSONObject queryOrderList(@RequestBody(required = true) PopupOrderList orderListModel, @CookieValue(name="wechatId",required = false) Integer wechatId, HttpServletRequest request){
+//        wechatId = debug?29:getWechatId(request.getSession());
+//        if(orderListModel.getPageNum() < 0 || orderListModel.getPageSize() < 0) return representation(Message.ILLEGAL_REQUEST);
+//        try{
+//            orderListModel.setWechatId(wechatId);
+//            log.debug("--------------------");
+//            JSONObject jsonObject = wechatPopupMApiService.queryOrderList(orderListModel);
+//
+//            log.debug("[order][queryOrderList]" + jsonObject.toJSONString());
+//
+//            JSONObject data = jsonObject.getJSONObject("data");
+//            return representation(Message. SUCCESS,data);
+//        } catch (Exception e){
+//            log.error(e.getMessage());
+//            return wrapException(e);
+//        }
+//    }
 
     /**
      * 查询超卖订单列表
@@ -229,4 +227,34 @@ public class OrderController extends BaseController {
         }
     }
 
+    @ResponseBody
+    @RequestMapping(value = "list.json",method = RequestMethod.POST)
+    public JSONObject listProduct(@CookieValue(name="wechatId",required = false) Integer wechatId, HttpServletRequest request){
+        wechatId = debug?32:getWechatId(request.getSession());
+        try{
+            PopupOrderList popupOrderList = new PopupOrderList();
+            popupOrderList.setWechatId(wechatId);
+            Page<PopupOrderList> data = popupOrderService.selectOrderList(popupOrderList);
+            return representation(Message.SUCCESS,data);
+        } catch (Exception e){
+            log.error(e.getMessage());
+            return wrapException(e);
+        }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "search",method = RequestMethod.POST)
+    public JSONObject listProduct(@RequestBody(required = true) PopupOrderList popupOrderList, @CookieValue(name="wechatId",required = false) Integer wechatId, HttpServletRequest request){
+        wechatId = debug?32:getWechatId(request.getSession());
+        if(popupOrderList.getPageNum() < 0 || popupOrderList.getPageSize() < 0)
+            return representation(Message.ILLEGAL_REQUEST);
+        try{
+            popupOrderList.setWechatId(wechatId);
+            Page<PopupOrderList> data = popupOrderService.selectOrderList(popupOrderList);
+            return representation(Message.SUCCESS,data);
+        } catch (Exception e){
+            log.error(e.getMessage());
+            return wrapException(e);
+        }
+    }
 }

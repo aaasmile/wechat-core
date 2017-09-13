@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.d1m.wechat.mapper.PopupPayConfigMapper" >
-  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.popup.dao.PopupPayConfigDao" >
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.popup.dao.PopupPayConfig" >
     <!--
       WARNING - @mbggenerated
     -->

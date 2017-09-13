@@ -1,14 +1,16 @@
 package com.d1m.wechat.mapper;
 
-import com.d1m.wechat.model.popup.dao.PopupCountryAreaDao;
+import com.d1m.wechat.model.popup.dao.PopupCountryArea;
 import com.d1m.wechat.util.MyMapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-public interface PopupCountryAreaMapper extends MyMapper<PopupCountryAreaDao> {
+@Component
+public interface PopupCountryAreaMapper extends MyMapper<PopupCountryArea> {
 
-    List<PopupCountryAreaDao> selectAreaByLevel(@Param("level") int level);
+    List<PopupCountryArea> selectAreaByLevel(@Param("level") int level);
 
 
 }
