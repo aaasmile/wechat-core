@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import cn.d1m.wechat.client.model.WxUser;
@@ -26,6 +27,7 @@ import com.d1m.wechat.service.ConfigService;
 import com.d1m.wechat.service.MemberService;
 import com.d1m.wechat.util.Constants;
 import com.d1m.wechat.util.SessionCacheUtil;
+import com.d1m.wechat.wechatclient.WechatCrmRestService;
 
 @Component
 public class GetLacosteOpenIDOauthImpl implements IOauth {
@@ -37,6 +39,9 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 
 	@Resource
 	private ConfigService configService;
+
+	@Autowired
+	private WechatCrmRestService wechatCrmRestService;
 
 	@Override
 	public void execute(HttpServletRequest request,
@@ -92,11 +97,17 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 							String val = configService.getConfigValue(wechatId,
 									"LACOSTE_CRM", "LACOSTE_MEMBER_CENTER_URL");
 							JSONObject json = JSONObject.parseObject(val);
-							String url = getRedirectUrl(member.getLevels(),
-									json);
-							log.info("url : {}.", url);
-							if (StringUtils.isNotBlank(url)) {
-								redirectUrl = url;
+							String levels = wechatCrmRestService
+									.getMemberLevels(wechatId, member.getId());
+							log.info(
+									"wechatId : {}, memberId : {}, levels : {}.",
+									wechatId, member.getId(), levels);
+							if (StringUtils.isNotBlank(levels)) {
+								String url = getRedirectUrl(levels, json);
+								log.info("url : {}.", url);
+								if (StringUtils.isNotBlank(url)) {
+									redirectUrl = url;
+								}
 							}
 						}
 					} else {

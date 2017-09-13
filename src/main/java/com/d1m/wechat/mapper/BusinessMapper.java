@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.d1m.wechat.dto.BusinessAreaListDto;
 import com.d1m.wechat.dto.BusinessDto;
 import com.d1m.wechat.model.Business;
 import com.d1m.wechat.util.MyMapper;
@@ -29,5 +30,10 @@ public interface BusinessMapper extends MyMapper<Business> {
 								   @Param("city") Integer city, @Param("sortName") String sortName, @Param("sortDir") String sortDir);
 
 	List<Business> getAll();
+
+	List<BusinessAreaListDto> getProvinceList(
+			@Param("wechatId") Integer wechatId);
+
+	List<BusinessAreaListDto> getCityList(@Param("wechatId") Integer wechatId);
 
 }

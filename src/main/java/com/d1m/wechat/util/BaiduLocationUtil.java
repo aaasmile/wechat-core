@@ -27,7 +27,7 @@ public class BaiduLocationUtil {
 		}
 		String url = String
 				.format("http://api.map.baidu.com/geocoder/v2/?"
-					+ "ak=4rcKAZKG9OIl0wDkICSLx8BA&output=json&address=%s",
+					+ "ak=DEce9781adb6bb42507fff0ba4228ad6&output=json&address=%s",
 					address);
 		
 		String result = HttpRequestProxy.doGet(url, new HashMap(), "UTF-8");
@@ -53,7 +53,7 @@ public class BaiduLocationUtil {
 		String location = "";
 		String url = String
 				.format("http://api.map.baidu.com/geocoder/v2/?"
-					+ "ak=4rcKAZKG9OIl0wDkICSLx8BA&output=json&location=%s,%s",
+					+ "ak=DEce9781adb6bb42507fff0ba4228ad6&output=json&location=%s,%s",
 					lat, lng);
 		String result = HttpRequestProxy.doGet(url, new HashMap(), "UTF-8");
 		JSONObject json = JSONObject.parseObject(result);
