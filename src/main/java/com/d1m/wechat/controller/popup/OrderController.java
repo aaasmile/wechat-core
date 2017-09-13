@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSONObject;
+import com.d1m.wechat.model.popup.PopupOrderFilter;
 import com.d1m.wechat.model.popup.PopupOrderList;
 import com.d1m.wechat.model.popup.dao.PopupCountryArea;
 import com.d1m.wechat.model.popup.dao.PopupOrder;
@@ -228,14 +229,14 @@ public class OrderController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "list.json",method = RequestMethod.POST)
-    public JSONObject listProduct(@CookieValue(name="wechatId",required = false) Integer wechatId, HttpServletRequest request){
+    @RequestMapping(value = "list",method = RequestMethod.POST)
+    public JSONObject listOrder(@CookieValue(name="wechatId",required = false) Integer wechatId, HttpServletRequest request){
         wechatId = debug?32:getWechatId(request.getSession());
         try{
-            PopupOrderList popupOrderList = new PopupOrderList();
-            popupOrderList.setWechatId(wechatId);
-            Page<PopupOrderList> data = popupOrderService.selectOrderList(popupOrderList);
-            return representation(Message.SUCCESS,data);
+            PopupOrderFilter orderFilter = new PopupOrderFilter();
+            orderFilter.setWechatId(wechatId);
+            Page<PopupOrderList> data = popupOrderService.selectOrderList(orderFilter);
+            return representation(Message.SUCCESS,data,data.getPageSize(),data.getPageNum(),data.getTotal());
         } catch (Exception e){
             log.error(e.getMessage());
             return wrapException(e);
@@ -244,15 +245,32 @@ public class OrderController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "search",method = RequestMethod.POST)
-    public JSONObject listProduct(@RequestBody(required = true) PopupOrderList popupOrderList, @CookieValue(name="wechatId",required = false) Integer wechatId, HttpServletRequest request){
+    public JSONObject searchOrder(@RequestBody(required = true) PopupOrderFilter orderFilter, @CookieValue(name="wechatId",required = false) Integer wechatId, HttpServletRequest request){
         wechatId = debug?32:getWechatId(request.getSession());
-        if(popupOrderList.getPageNum() < 0 || popupOrderList.getPageSize() < 0)
+        if(orderFilter.getPageNum() < 0 || orderFilter.getPageSize() < 0)
             return representation(Message.ILLEGAL_REQUEST);
         try{
-            popupOrderList.setWechatId(wechatId);
-            Page<PopupOrderList> data = popupOrderService.selectOrderList(popupOrderList);
-            return representation(Message.SUCCESS,data);
+            orderFilter.setWechatId(wechatId);
+            Page<PopupOrderList> data = popupOrderService.selectOrderList(orderFilter);
+            return representation(Message.SUCCESS,data,data.getPageSize(),data.getPageNum(),data.getTotal());
         } catch (Exception e){
+            log.error(e.getMessage());
+            return wrapException(e);
+        }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "trackno/update",method = RequestMethod.POST)
+    public JSONObject updateTrackNo(@CookieValue(name="wechatId",required = false) Integer wechatId, HttpServletRequest request){
+        try {
+            String trackNo = request.getParameter("trackNo");
+            String orderId = request.getParameter("orderId");
+
+            if(StringUtils.isBlank(trackNo) || StringUtils.isBlank(orderId))
+                return representation(Message.ILLEGAL_REQUEST);
+            popupOrderService.updateTrackNo(trackNo, orderId);
+            return representation(Message.SUCCESS, "");
+        } catch (Exception e) {
             log.error(e.getMessage());
             return wrapException(e);
         }

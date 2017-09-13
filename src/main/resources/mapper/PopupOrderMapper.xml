@@ -16,14 +16,16 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
     </resultMap>
+
     <resultMap id="ListResultMap" type="com.d1m.wechat.model.popup.PopupOrderList">
         <result column="order_id" jdbcType="INTEGER" property="orderId"/>
         <result column="goods_id" jdbcType="INTEGER" property="goodsId"/>
         <result column="wechat_id" jdbcType="INTEGER" property="wechatId"/>
-        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="goods_name" jdbcType="VARCHAR" property="goodsName"/>
         <result column="sku" jdbcType="VARCHAR" property="sku"/>
         <result column="title" jdbcType="VARCHAR" property="title"/>
-        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="order_create_time" jdbcType="TIMESTAMP" property="orderCreateTime"/>
+        <result column="delivery_create_time" jdbcType="TIMESTAMP" property="deliveryCreateTime"/>
         <result column="company" jdbcType="VARCHAR" property="company"/>
         <result column="province" jdbcType="VARCHAR" property="province"/>
         <result column="city" jdbcType="VARCHAR" property="city"/>
@@ -35,29 +37,60 @@
         <result column="pay_status" jdbcType="VARCHAR" property="payStatus"/>
         <result column="pay_type" jdbcType="VARCHAR" property="payType"/>
         <result column="price" jdbcType="INTEGER" property="price"/>
+        <result column="points" jdbcType="BIGINT" property="points"/>
     </resultMap>
 
     <select id="selectPopupOrderList" parameterType="HashMap" resultMap="ListResultMap">
-            select order_id,goods_id,wechat_id,max(`name`) `name`,group_concat(sku) sku,group_concat(title) title,create_time,
-            max(company) company,max(province) province,max(city) city,max(area) area,max(addr) addr,
-            max(member_id) member_id, max(open_id) open_id, max(track_no) track_no,
-            max(pay_status) pay_status,max(pay_type) pay_type, sum(price) price
-            from (
-            select a.order_id, a.goods_id, b.wechat_id, d.name, e.sku, e.title, b.create_time, c.company,
-            h.province,h.city,h.area,h.addr,
-            b.member_id, f.open_id, c.track_no, b.pay_status, b.pay_type, a.price
-            from popup_order_goods_rel a
-            left join popup_order b on b.id = a.order_id
-            left join popup_order_express c on a.order_id = c.order_id
-            left join popup_goods d on d.id = a.goods_id
-            left join popup_goods_sku e on e.sku = a.sku
-            left join member_benefit f on f.id = b.member_id
-            left join popup_order_delivery_addr g on g.order_id = a.order_id and g.is_invoice = 0
-            left join popup_delivery_addr h on h.id = g.addr_id
-            where b.wechat_id = #{wechatId}
-            ) x
-            group by order_id,wechat_id,goods_id
-            order by order_id desc
+        select
+        a.id,
+        a.wechat_id,
+        group_concat(DISTINCT d.`name`) goods_name,
+        group_concat(DISTINCT b.goods_id) goods_id,
+        group_concat(b.sku) sku,
+        group_concat(e.title) title,
+        max(a.create_time) order_create_time,
+        max(c.create_time) delivery_create_time,
+        max(c.company) company,
+        max(h.province) province,
+        max(h.city) city,
+        max(h.area) area,
+        max(h.addr) addr,
+        max(a.member_id) member_id,
+        max(f.open_id) open_id,
+        max(c.track_no) track_no,
+        max(a.pay_status) pay_status,
+        max(a.pay_type) pay_type,
+        sum(b.price) price,
+        sum(b.points) points
+        from popup_order a
+        left join popup_order_goods_rel b on b.order_id = a.id
+        left join popup_order_express c on c.order_id = a.id
+        left join popup_goods d on d.id = b.goods_id
+        left join popup_goods_sku e on e.sku = b.sku
+        left join member_benefit f on f.id = a.member_id
+        left join popup_order_delivery_addr g on g.order_id = a.id and g.is_invoice = 0
+        left join popup_delivery_addr h on h.id = g.addr_id
+        where a.wechat_id = #{wechatId}
+        <if test="orderId != null">
+            and a.id like concat('%',#{orderId},'%')
+        </if>
+        <if test="startDate != null and endDate !=null">
+            and a.create_time between #{startDate} and #{endDate}
+        </if>
+        <if test="receiverName != null">
+            and h.receiver_name like concat('%',#{receiverName},'%')
+        </if>
+        <if test="receiverPhone != null">
+            and h.receiver_phone like concat('%',#{receiverPhone},'%')
+        </if>
+        <if test="payStatus != null">
+            and a.pay_status = #{payStatus}
+        </if>
+        <if test="payType != null">
+            and a.pay_type = #{payType}
+        </if>
+        group by a.id,a.wechat_id
+        order by a.id desc
     </select>
 
 </mapper>

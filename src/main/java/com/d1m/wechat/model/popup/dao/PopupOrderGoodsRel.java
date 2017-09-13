@@ -24,6 +24,8 @@ public class PopupOrderGoodsRel {
      */
     private Integer price;
 
+    private Long points;
+
     @Column(name = "create_time")
     private Date createTime;
 
@@ -116,6 +118,15 @@ public class PopupOrderGoodsRel {
      */
     public void setPrice(Integer price) {
         this.price = price;
+    }
+
+    public Long getPoints() {
+        return points;
+    }
+
+
+    public void setPoints(Long points) {
+        this.points = points;
     }
 
     /**

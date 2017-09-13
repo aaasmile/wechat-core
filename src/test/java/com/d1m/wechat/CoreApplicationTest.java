@@ -30,7 +30,7 @@ import java.util.List;
 public class CoreApplicationTest {
     private Logger log = LoggerFactory.getLogger(CoreApplicationTest.class);
     public Integer wechatId = 32;
-    public Long memberId = 114L;
+    public Long memberId = 316L;
     public Long goodsId = 70L;
 
     @Resource
@@ -60,11 +60,15 @@ public class CoreApplicationTest {
     @Test
     public void contextLoads() {
 //        insert();
-        select();
-        selectById();
+//        select();
+//        selectById();
 //        selectGoodsSku();
 //        createOrder();
-//        selectOrder();
+        selectOrder();
+    }
+
+    public void searchOrder() {
+
     }
 
 //    @Transactional
@@ -86,7 +90,8 @@ public class CoreApplicationTest {
         orderGoodsRel.setOrderId(orderBase.getId());
         orderGoodsRel.setGoodsId(goodsId.longValue());
         orderGoodsRel.setSum(1);
-        orderGoodsRel.setPrice(1);
+        orderGoodsRel.setPrice(0);
+        orderGoodsRel.setPoints(1L);
         orderGoodsRel.setCreateTime(new Date());
         orderGoodsRel.setSku("AA660");
         popupOrderGoodsRelMapper.insert(orderGoodsRel);
@@ -96,7 +101,8 @@ public class CoreApplicationTest {
         orderGoodsRel.setOrderId(orderBase.getId());
         orderGoodsRel.setGoodsId(goodsId.longValue());
         orderGoodsRel.setSum(1);
-        orderGoodsRel.setPrice(1);
+        orderGoodsRel.setPrice(0);
+        orderGoodsRel.setPoints(1L);
         orderGoodsRel.setCreateTime(new Date());
         orderGoodsRel.setSku("AA661");
         popupOrderGoodsRelMapper.insert(orderGoodsRel);
@@ -156,6 +162,25 @@ public class CoreApplicationTest {
         object.put("data", orderEntity);
         log.info(object.toJSONString());
 
+    }
+
+    //    @Test
+    public void selectOrder() {
+        PopupOrderFilter model = new PopupOrderFilter();
+        model.setWechatId(wechatId);
+        model.setPageNum(1);
+        model.setPageSize(10);
+        model.setStartDate("2017-09-10");
+        model.setEndDate("2017-10-10");
+        model.setPayStatus((byte)1);
+        model.setPayType((byte)4);
+        model.setReceiverPhone("13817006428");
+        log.info(JSONObject.toJSONString(model));
+        Page<PopupOrderList> data = orderService.selectOrderList(model);
+
+        JSONObject object = new JSONObject();
+        object.put("data", data);
+        log.info(object.toJSONString());
     }
 
 //    @Test
@@ -260,18 +285,6 @@ public class CoreApplicationTest {
         log.info(object.toJSONString());
     }
 
-//    @Test
-    public void selectOrder() {
-        PopupOrderList model = new PopupOrderList();
-        model.setWechatId(wechatId);
-        model.setPageNum(1);
-        model.setPageSize(2);
-        Page<PopupOrderList> data = orderService.selectOrderList(model);
-
-        JSONObject object = new JSONObject();
-        object.put("data", data);
-        log.info(object.toJSONString());
-    }
 
 //    @Test
     public void selectById() {

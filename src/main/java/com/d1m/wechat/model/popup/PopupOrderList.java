@@ -17,18 +17,17 @@ public class PopupOrderList {
 
     private String endDate;
     private String startDate;
-    private Short orderStatus;
     private String receiverName;
     private String receiverPhone;
-    private String keys;
 
     private Integer orderId;
     private Integer wechatId;
     private Integer goodsId;
-    private String name;
+    private String goodsName;
     private String sku;
     private String title;
-    private Date createTime;
+    private Date orderCreateTime;
+    private Date deliveryCreateTime;
     private String company;
     private String province;
     private String city;
@@ -40,7 +39,6 @@ public class PopupOrderList {
     private Short payStatus;
     private Short payType;
     private Integer price;
+    private Long points;
 
-    Integer pageSize = 10;
-    Integer pageNum = 1;
 }

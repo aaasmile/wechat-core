@@ -1,8 +1,10 @@
 
 package com.d1m.wechat.service.impl;
 
+import com.d1m.wechat.mapper.PopupOrderExpressMapper;
 import com.d1m.wechat.mapper.PopupOrderGoodsRelMapper;
 import com.d1m.wechat.mapper.PopupOrderMapper;
+import com.d1m.wechat.model.popup.PopupOrderFilter;
 import com.d1m.wechat.model.popup.PopupOrderList;
 import com.d1m.wechat.model.popup.dao.PopupOrderGoodsRel;
 import com.d1m.wechat.service.IPopupOrderService;
@@ -20,15 +22,22 @@ public class PopupOrderServiceImpl implements IPopupOrderService {
     PopupOrderMapper popupOrderMapper;
     @Autowired
     PopupOrderGoodsRelMapper orderGoodsRelMapper;
+    @Autowired
+    PopupOrderExpressMapper orderExpressMapper;
 
     @Override
-    public Page<PopupOrderList> selectOrderList(PopupOrderList popupOrderList) {
-        PageHelper.startPage(popupOrderList.getPageNum(),popupOrderList.getPageSize(),true);
-        return (Page<PopupOrderList>) popupOrderMapper.selectPopupOrderList(popupOrderList);
+    public Page<PopupOrderList> selectOrderList(PopupOrderFilter orderFilter) {
+        PageHelper.startPage(orderFilter.getPageNum(),orderFilter.getPageSize(),true);
+        return (Page<PopupOrderList>) popupOrderMapper.selectPopupOrderList(orderFilter);
     }
 
     @Override
     public PopupOrderGoodsRel queryOrderGoodsByOrderId(Long orderId) {
         return orderGoodsRelMapper.selectByOrderId(orderId);
+    }
+
+    @Override
+    public void updateTrackNo(String trackNo, String orderId){
+        orderExpressMapper.updateTrackNo(trackNo, orderId);
     }
 }

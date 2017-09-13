@@ -10,12 +10,16 @@
     <result column="track_no" jdbcType="VARCHAR" property="trackNo" />
     <result column="company" jdbcType="VARCHAR" property="company" />
     <result column="status" jdbcType="TINYINT" property="status" />
-    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
 
 
   <select id="selectPopupExpressByOrderId" parameterType="HashMap" resultMap="BaseResultMap">
     select * from popup_order_express where order_id = #{orderId}
   </select>
+
+  <update id="updateTrackNo" parameterType="HashMap" >
+    update popup_order_express set track_no = ${trackNo} where order_id = ${orderId}
+  </update>
 
 </mapper>

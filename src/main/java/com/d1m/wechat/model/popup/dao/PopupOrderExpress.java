@@ -26,10 +26,10 @@ public class PopupOrderExpress {
      */
     private String company;
 
-    private Byte status;
+    private Byte status = 0;
 
-    @Column(name = "create_date")
-    private Date createDate;
+    @Column(name = "create_time")
+    private Date createTime = new Date();
 
     /**
      * @return id
@@ -117,13 +117,13 @@ public class PopupOrderExpress {
      * @return create_date
      */
     public Date getCreateDate() {
-        return createDate;
+        return createTime;
     }
 
     /**
-     * @param createDate
+     * @param createTime
      */
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
+    public void setCreateDate(Date createTime) {
+        this.createTime = createTime;
     }
 }
