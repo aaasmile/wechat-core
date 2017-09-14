@@ -19,6 +19,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.common.Mapper;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -78,14 +79,16 @@ public class MassConversationBatchResultServiceImpl extends
     }
 
     private void insertBatchMassMessageMember(Integer wechatId, Integer batchId, Page<MemberDto> list) {
+        List<MassConversationBatchMember> batchMembers = new ArrayList<MassConversationBatchMember>();
         for (MemberDto member:list){
             MassConversationBatchMember massConversationBatchMember = new MassConversationBatchMember();
             massConversationBatchMember.setBatchId(batchId);
             massConversationBatchMember.setMemberId(member.getId());
             massConversationBatchMember.setOpenId(member.getOpenId());
             massConversationBatchMember.setWechatId(wechatId);
-            massConversationBatchMemberMapper.insert(massConversationBatchMember);
+            batchMembers.add(massConversationBatchMember);
         }
+        massConversationBatchMemberMapper.insertList(batchMembers);
     }
 
     @Override

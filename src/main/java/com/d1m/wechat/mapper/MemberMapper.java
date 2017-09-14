@@ -242,4 +242,6 @@ public interface MemberMapper extends MyMapper<Member> {
 			@Param("pageSize") Integer pageSize);
 
 	Page<MemberDto> searchByIds(@Param("ids") List<Integer> ids, @Param("size") int size);
+
+	void updateBatchSendMonth(@Param("idList") List<Integer> idList);
 }
