@@ -111,6 +111,9 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 								}
 							}
 						}
+						if (StringUtils.isNotBlank(campaign)) {
+							redirectUrl += ("?campaign=" + campaign);
+						}
 					} else {
 						redirectUrl = configService.getConfigValue(wechatId,
 								"LACOSTE_CRM", "LACOSTE_MEMBER_REGISTER_URL");
