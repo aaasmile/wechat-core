@@ -33,3 +33,20 @@ CREATE TABLE `mass_conversation_batch_member` (
 ALTER TABLE `member` ADD COLUMN `status` tinyint(2) NULL COMMENT '绑定状态(0:已解绑,1:已绑定)';
 ALTER TABLE `member` ADD COLUMN `pmcode` varchar(255) NULL COMMENT '卡号';
 ALTER TABLE `member` ADD COLUMN `levels` varchar(255) NULL COMMENT '卡级别';
+
+---拆分repo service时更新的表结构
+RENAME TABLE reply_words TO reply_word;
+ALTER TABLE `conversation_image_text_detail` ADD COLUMN `wechat_id` int(11) NOT NULL COMMENT '微信ID';
+CREATE TABLE `spi_config` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `wechat_id` int(11) NOT NULL,
+  `event` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `action` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `params` varchar(1000) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `creator_id` int(11) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `status` tinyint(4) DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+---部分表迁移到tenancydb
+

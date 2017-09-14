@@ -12,7 +12,7 @@
   </resultMap>
   
   <select id="getReplyWordByReplyId" resultType="java.lang.String">
-  	select reply_word from reply_words
+  	select reply_word from reply_word
   	<where>
 		reply_id = #{replyId}  	
   	</where>

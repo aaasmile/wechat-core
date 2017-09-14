@@ -56,7 +56,7 @@
   </resultMap>
   
   <select id="getReplyWords" resultType="java.lang.String">
-  	select reply_word from reply_words
+  	select reply_word from reply_word
   	<where>
   		reply_id = #{replyId}
   	</where>
@@ -96,7 +96,7 @@
   
   <select id="searchMatchReply" parameterType="HashMap" resultMap="ReplyDtoResultMap">
 	(SELECT r.id, r.reply_key, DATE_FORMAT(r.created_at,'%Y-%m-%d %T') as created_at, r.reply_type, r.match_mode, r.wechat_id, r.weight from reply as r
-		left join reply_words as rw on rw.reply_id = r.id
+		left join reply_word as rw on rw.reply_id = r.id
 	<where>
 		r.wechat_id = #{wechatId} and r.status = 1 and r.reply_type = 2 and r.match_mode = 2
 		<if test="content != null">
@@ -107,7 +107,7 @@
 	)
 	union
   	(SELECT r.id, r.reply_key, DATE_FORMAT(r.created_at,'%Y-%m-%d %T') as created_at, r.reply_type, r.match_mode, r.wechat_id, r.weight from reply as r
-  		left join reply_words as rw on rw.reply_id = r.id
+  		left join reply_word as rw on rw.reply_id = r.id
 	<where>
 		r.wechat_id = #{wechatId} and r.status = 1 and r.reply_type = 2 and r.match_mode = 1
 		<if test="content != null">
