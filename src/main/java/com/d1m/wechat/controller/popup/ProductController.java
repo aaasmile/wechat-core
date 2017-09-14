@@ -87,7 +87,7 @@ public class ProductController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "list",method = RequestMethod.POST)
+    @RequestMapping(value = "list")
     public JSONObject listProduct(@CookieValue(name="wechatId",required = false) Integer wechatId, HttpServletRequest request){
         wechatId = debug?32:getWechatId(request.getSession());
         try{
