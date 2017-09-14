@@ -1,10 +1,10 @@
 
 package com.d1m.wechat.service.impl;
 
-import com.d1m.wechat.model.popup.PopupCountryArea;
 import com.d1m.wechat.mapper.PopupCountryAreaMapper;
 import com.d1m.wechat.mapper.PopupPayConfigMapper;
-import com.d1m.wechat.model.popup.PopupPayConfig;
+import com.d1m.wechat.model.popup.dao.PopupCountryArea;
+import com.d1m.wechat.model.popup.dao.PopupPayConfig;
 import com.d1m.wechat.service.IPopupPayService;
 import java.util.List;
 import org.slf4j.Logger;

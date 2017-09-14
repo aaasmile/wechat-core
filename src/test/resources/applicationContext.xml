@@ -38,22 +38,17 @@
        http://www.springframework.org/schema/context
        http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/task
-       http://www.springframework.org/schema/task/spring-task.xsd"
-    default-lazy-init="true">
+       http://www.springframework.org/schema/task/spring-task.xsd">
 
-    <context:component-scan base-package="com.d1m.wechat.service, com.d1m.wechat.migrate">
+    <!--<context:component-scan base-package="com.d1m.wechat">
         <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
-    </context:component-scan>
+    </context:component-scan>-->
 
-    <context:property-placeholder location="classpath:config.properties"/>
-
-    <bean id="dataSourceDefault" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+    <bean id="dataSourceDefault" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close" primary="true">
         <property name="driverClassName" value="${jdbc.driverClass}"/>
         <property name="url" value="${jdbc.url}"/>
         <property name="username" value="${jdbc.user}"/>
         <property name="password" value="${jdbc.password}"/>
-
-        <property name="filters" value="stat"/>
 
         <property name="maxActive" value="800"/>
         <property name="initialSize" value="1"/>
@@ -67,16 +62,31 @@
         <property name="testWhileIdle" value="true"/>
         <property name="testOnBorrow" value="false"/>
         <property name="testOnReturn" value="false"/>
+
+        <property name="poolPreparedStatements" value="true"/>
+        <property name="maxPoolPreparedStatementPerConnectionSize" value="20"/>
+        <property name="filters" value="stat"/>
+        <property name="connectionProperties" value="druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000"/>
+    </bean>
+
+    <!-- 动态数据源 -->
+    <bean id="dynamicDataSource" class="com.d1m.common.ds.DynamicDataSource">
+        <property name="enable" value="${jdbc.enableDynamic}"></property>
+        <property name="targetDataSources">
+            <map key-type="java.lang.String"></map>
+        </property>
+        <!-- 默认数据源-主数据源 -->
+        <property name="defaultDataSource" ref="dataSourceDefault"/>
     </bean>
 
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="dataSourceDefault"/>
+        <property name="dataSource" ref="dynamicDataSource"/>
         <property name="mapperLocations">
             <array>
                 <value>classpath:mapper/*.xml</value>
             </array>
         </property>
-        <property name="typeAliasesPackage" value="com.isea533.mybatis.model"/>
+        <property name="typeAliasesPackage" value="com.d1m.wechat.model"/>
         <property name="plugins">
             <array>
                 <bean class="com.github.pagehelper.PageHelper">
@@ -113,7 +123,7 @@
         <constructor-arg index="0" ref="sqlSessionFactory"/>
     </bean>
 
-    <!--<aop:aspectj-autoproxy/>
+    <aop:aspectj-autoproxy/>
 
     <aop:config>
         <aop:pointcut id="appService" expression="execution(* com.d1m.wechat.service.*.*(..))"/>
@@ -125,28 +135,45 @@
             <tx:method name="select*" read-only="true"/>
             <tx:method name="find*" read-only="true"/>
             <tx:method name="get*" read-only="true"/>
+            <tx:method name="query*" read-only="true"/>
             <tx:method name="*"/>
         </tx:attributes>
-    </tx:advice>-->
+    </tx:advice>
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="dataSourceDefault"/>
+        <property name="dataSource" ref="dynamicDataSource"/>
     </bean>
 
-    <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" />
-
-    <bean id="appContextUtils" class="com.d1m.wechat.util.AppContextUtils" lazy-init="false"/>
+    <bean id="appContextUtils" class="com.d1m.wechat.util.AppContextUtils"/>
 
     <bean id="taskContext" class="com.d1m.wechat.service.engine.EngineContext"/>
 
     <!--<bean id="initDataService" class="com.d1m.wechat.service.InitDataService"/>-->
 
     <!-- Spring线程池管理 -->
+    <!--
     <task:annotation-driven executor="callerRunsExecutor" scheduler="scheduler"/>
     <task:scheduler id="scheduler"/>
-    <task:executor id="callerRunsExecutor" pool-size="5-50" queue-capacity="1000" keep-alive="60" rejection-policy="CALLER_RUNS"/>
+    -->
+    <task:executor id="callerRunsExecutor" pool-size="10-500" queue-capacity="20" keep-alive="60" rejection-policy="CALLER_RUNS"/>
 
-    <import resource="classpath:applicationContext-redis.xml"/>
     <import resource="classpath:applicationContext-shiro.xml"/>
+    <import resource="classpath:applicationContext-job.xml"/>
+
+    <!--国际化-->
+    <bean id="messageSource"
+          class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="useCodeAsDefaultMessage" value="true"/>
+        <property name="basenames">
+            <list>
+                <value>messages/global</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+        <property name="defaultLocale" value="zh_CN"/>
+    </bean>
 
 </beans>

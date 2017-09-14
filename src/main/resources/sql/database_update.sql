@@ -34,6 +34,10 @@ ALTER TABLE `member` ADD COLUMN `status` tinyint(2) NULL COMMENT '绑定状态(0
 ALTER TABLE `member` ADD COLUMN `pmcode` varchar(255) NULL COMMENT '卡号';
 ALTER TABLE `member` ADD COLUMN `levels` varchar(255) NULL COMMENT '卡级别';
 
+
+---2017-08-31 add material_id field on business_photo table by jovi
+ALTER TABLE `business_photo` ADD COLUMN `material_id` int(11) NULL;
+
 ---拆分repo service时更新的表结构
 RENAME TABLE reply_words TO reply_word;
 ALTER TABLE `conversation_image_text_detail` ADD COLUMN `wechat_id` int(11) NOT NULL COMMENT '微信ID';

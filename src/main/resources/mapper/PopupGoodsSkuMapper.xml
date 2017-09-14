@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.PopupGoodsSkuMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.popup.dao.PopupGoodsSku">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <id column="sku" jdbcType="VARCHAR" property="sku" />
+    <result column="goods_id" jdbcType="BIGINT" property="goodsId" />
+    <result column="stock" jdbcType="INTEGER" property="stock" />
+    <result column="title" jdbcType="VARCHAR" property="shade" />
+    <result column="color" jdbcType="VARCHAR" property="color" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="img_urls" jdbcType="LONGVARCHAR" property="imgUrls" />
+  </resultMap>
+
+  <select id="selectPopupGoodsSkuByGoodsId" parameterType="HashMap" resultMap="BaseResultMap">
+    select * from popup_goods_sku
+    where goods_id = #{goodsId}
+    order by id
+  </select>
+
+  <delete id="deletePopupGoodsSkuByGoodsId" parameterType="HashMap">
+    delete from popup_goods_sku
+    where goods_id = #{goodsId}
+  </delete>
+</mapper>
