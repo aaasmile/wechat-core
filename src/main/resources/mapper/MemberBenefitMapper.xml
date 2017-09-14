@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.MemberBenefitMapper">
+	<resultMap id="MemberBenefitListDtoResultMap" type="com.d1m.wechat.dto.benefit.MemberBenefitDto">
+
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="union_id" jdbcType="VARCHAR" property="unionId" />
+		<result column="open_id" jdbcType="VARCHAR" property="openId" />
+		<result column="nickname" jdbcType="VARCHAR" property="nickname" />
+		<result column="sex" jdbcType="TINYINT" property="sex" />
+		<result column="city" jdbcType="INTEGER" property="city" />
+		<result column="province" jdbcType="INTEGER" property="province" />
+		<result column="country" jdbcType="INTEGER" property="country" />
+		<result column="head_img_url" jdbcType="INTEGER" property="headImgUrl" />
+		<result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+		<result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+		<result column="mobile" jdbcType="VARCHAR" property="mobile" />
+		<result column="is_subscribe" jdbcType="BOOLEAN" property="isSubscribe" />
+		<result column="register_over" jdbcType="BOOLEAN" property="registerOver" />
+		<result column="birthday" jdbcType="VARCHAR" property="birthday" />
+		<result column="survey_over" jdbcType="BOOLEAN" property="surveyOver" />
+		<result column="badges" jdbcType="BOOLEAN" property="badges" />
+		<result column="manual_country" jdbcType="INTEGER" property="manualCountry" />
+		<result column="manual_province" jdbcType="INTEGER" property="manualProvince" />
+		<result column="manual_city" jdbcType="INTEGER" property="manualCity" />
+		<result column="points_balance" jdbcType="INTEGER" property="pointsBalance" />
+		
+		<!-- benefit add -->
+		<result column="points_balance" jdbcType="INTEGER" property="pointsBalance" />
+		<result column="binding_over" jdbcType="INTEGER" property="bindingOver" />
+		<!-- benefit end -->
+	</resultMap>
+  	
+  	<select id="search" parameterType="HashMap" resultMap="MemberBenefitListDtoResultMap">
+			select a.id,
+				   a.union_id,
+				   a.open_id,
+			       a.nickname,
+			       a.sex,
+				   a.country,
+				   a.province,
+			       a.city,
+				   a.head_img_url,
+			       a.created_at,
+			       a.wechat_id,
+			       a.mobile,
+			       a.is_subscribe,
+			       b.binding_over,
+			       b.register_over,
+			       b.birthday,
+			       b.survey_over,
+			       b.badges,
+			       b.manual_country,
+			       b.manual_province,
+			       b.manual_city,
+			       b.points_balance,
+			       a.activity,
+			       a.subscribe_at,
+			       a.last_conversation_at
+			  from member a
+			left join member_benefit b
+			   on a.open_id = b.open_id
+	   	<where>
+	   		a.wechat_id = #{wechatId} 
+			<if test="nickname != null">
+				and a.nickname like CONCAT('%',#{nickname},'%')
+			</if>
+			<if test="sex != null">
+				and a.sex = #{sex}
+			</if>
+			<if test="country != null">
+				and a.country = #{country}
+			</if>
+			<if test="province != null">
+				and a.province = #{province}
+			</if>
+			<if test="city != null">
+				and a.city = #{city}
+			</if>
+			<if test="subscribe != null">
+				<if test="subscribe == true">
+					and a.is_subscribe = 1
+				</if>
+				<if test="subscribe == false">
+					and a.is_subscribe = 0
+				</if>
+			</if>
+			<if test="activityStartAt != null">
+				and a.activity &gt;= #{activityStartAt}
+			</if>
+			<if test="activityEndAt != null">
+				and a.activity &lt;= #{activityEndAt}
+			</if>
+			<if test="batchSendOfMonthStartAt != null">
+				and a.batchsend_month &gt;= #{batchSendOfMonthStartAt}
+			</if>
+			<if test="batchSendOfMonthEndAt != null">
+				and a.batchsend_month &lt;= #{batchSendOfMonthEndAt}
+			</if>
+			<if test="attentionStartAt != null">
+				and a.subscribe_at &gt;= #{attentionStartAt}
+			</if>
+			<if test="attentionEndAt != null">
+				and a.subscribe_at &lt;= #{attentionEndAt}
+			</if>
+			<if test="cancelSubscribeStartAt != null">
+				and a.unsubscribe_at &gt;= #{cancelSubscribeStartAt}
+			</if>
+			<if test="cancelSubscribeEndAt != null">
+				and a.unsubscribe_at &lt;= #{cancelSubscribeEndAt}
+			</if>
+			<if test="mobile != null">
+				and a.mobile like CONCAT('%',#{mobile},'%')
+			</if>
+			<if test="isOnline != null">
+				<if test="isOnline == true">
+					<if test="daytime == null">
+						and (a.is_subscribe = 1 and now() <![CDATA[ <= ]]> DATE_ADD(a.last_conversation_at, INTERVAL 48 DAY_HOUR))
+					</if>
+					<if test="daytime != null">
+						and (a.is_subscribe = 1 and a.last_conversation_at &gt;= #{daytime})
+					</if>
+				</if>
+				<if test="isOnline == false">
+					<if test="daytime == null">
+						and (a.is_subscribe = 0 or a.last_conversation_at is null or (a.is_subscribe = 1 and now() <![CDATA[ > ]]> DATE_ADD(a.last_conversation_at, INTERVAL 48 DAY_HOUR)))
+					</if>
+					<if test="daytime != null">
+						and (a.is_subscribe = 0 or a.last_conversation_at is null or (a.is_subscribe = 1 and a.last_conversation_at &lt; #{daytime}))
+					</if>
+				</if>
+			</if>
+	    </where>
+		<!-- 
+		<include refid="searchM"></include>
+		 -->
+		<if test="sortName != null">
+			<if test="sortName == 'bind_status'.toString()">
+				order by a.${sortName}
+				<if test="sortDir != null">
+					${sortDir}
+				</if>
+				<if test="sortDir == null">
+					desc
+				</if> 
+			</if>
+			<if test="sortName != 'bind_status'.toString()">
+				order by a.${sortName}
+				<if test="sortDir != null">
+					${sortDir}
+				</if>
+				<if test="sortDir == null">
+					desc
+				</if>
+			</if>
+		</if>
+		<if test="sortName == null">
+			order by a.id desc
+		</if>
+		LIMIT ${offset},${pageSize}
+	</select>
+
+	<select id="count" parameterType="HashMap" resultType="long">
+			select count(a.id)
+			  from member a
+			left join member_benefit b
+			   on a.open_id = b.open_id
+	   	<where>
+	   		a.wechat_id = #{wechatId} 
+			<if test="nickname != null">
+				and a.nickname like CONCAT('%',#{nickname},'%')
+			</if>
+			<if test="sex != null">
+				and a.sex = #{sex}
+			</if>
+			<if test="country != null">
+				and a.country = #{country}
+			</if>
+			<if test="province != null">
+				and a.province = #{province}
+			</if>
+			<if test="city != null">
+				and a.city = #{city}
+			</if>
+			<if test="subscribe != null">
+				<if test="subscribe == true">
+					and a.is_subscribe = 1
+				</if>
+				<if test="subscribe == false">
+					and a.is_subscribe = 0
+				</if>
+			</if>
+			<if test="activityStartAt != null">
+				and a.activity &gt;= #{activityStartAt}
+			</if>
+			<if test="activityEndAt != null">
+				and a.activity &lt;= #{activityEndAt}
+			</if>
+			<if test="batchSendOfMonthStartAt != null">
+				and a.batchsend_month &gt;= #{batchSendOfMonthStartAt}
+			</if>
+			<if test="batchSendOfMonthEndAt != null">
+				and a.batchsend_month &lt;= #{batchSendOfMonthEndAt}
+			</if>
+			<if test="attentionStartAt != null">
+				and a.subscribe_at &gt;= #{attentionStartAt}
+			</if>
+			<if test="attentionEndAt != null">
+				and a.subscribe_at &lt;= #{attentionEndAt}
+			</if>
+			<if test="cancelSubscribeStartAt != null">
+				and a.unsubscribe_at &gt;= #{cancelSubscribeStartAt}
+			</if>
+			<if test="cancelSubscribeEndAt != null">
+				and a.unsubscribe_at &lt;= #{cancelSubscribeEndAt}
+			</if>
+			<if test="mobile != null">
+				and a.mobile like CONCAT('%',#{mobile},'%')
+			</if>
+			<if test="isOnline != null">
+				<if test="isOnline == true">
+					<if test="daytime == null">
+						and (a.is_subscribe = 1 and now() <![CDATA[ <= ]]> DATE_ADD(a.last_conversation_at, INTERVAL 48 DAY_HOUR))
+					</if>
+					<if test="daytime != null">
+						and (a.is_subscribe = 1 and a.last_conversation_at &gt;= #{daytime})
+					</if>
+				</if>
+				<if test="isOnline == false">
+					<if test="daytime == null">
+						and (a.is_subscribe = 0 or a.last_conversation_at is null or (a.is_subscribe = 1 and now() <![CDATA[ > ]]> DATE_ADD(a.last_conversation_at, INTERVAL 48 DAY_HOUR)))
+					</if>
+					<if test="daytime != null">
+						and (a.is_subscribe = 0 or a.last_conversation_at is null or (a.is_subscribe = 1 and a.last_conversation_at &lt; #{daytime}))
+					</if>
+				</if>
+			</if>
+	    </where>
+	</select>
+	
+	<select id="getById" resultType="com.d1m.wechat.dto.benefit.MemberBenefitDto">
+			select a.id,
+				   a.union_id,
+				   a.open_id,
+			       a.nickname,
+			       a.sex,
+				   a.country,
+				   a.province,
+			       a.city,
+				   a.head_img_url,
+			       a.created_at,
+			       a.wechat_id,
+			       a.mobile,
+			       a.is_subscribe,
+			       b.binding_over,
+			       b.register_over,
+			       b.birthday,
+			       b.survey_over,
+			       b.badges,
+			       b.manual_country,
+			       b.manual_province,
+			       b.manual_city,
+			       b.points_balance,
+			       a.activity,
+			       a.subscribe_at,
+			       a.last_conversation_at
+			  from member a
+			left join member_benefit b
+			   on a.open_id = b.open_id
+	   	<where>
+	   		a.wechat_id = #{wechatId} 
+	   		and a.id = #{id}
+	    </where>
+	</select>
+</mapper>
