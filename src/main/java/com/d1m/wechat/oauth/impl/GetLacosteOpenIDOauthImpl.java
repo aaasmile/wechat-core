@@ -64,6 +64,7 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 			String needBind = sourceJson.getString("needBind");
 			String toMemberCenterIfBind = sourceJson
 					.getString("toMemberCenterIfBind");
+			String campaign = sourceJson.getString("campaign");
 
 			Member member = memberService.getMemberByOpenId(wechatId,
 					wuser.getOpenid());
@@ -113,6 +114,9 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 					} else {
 						redirectUrl = configService.getConfigValue(wechatId,
 								"LACOSTE_CRM", "LACOSTE_MEMBER_REGISTER_URL");
+						if (StringUtils.isNotBlank(campaign)) {
+							redirectUrl += ("?campaign=" + campaign);
+						}
 					}
 				}
 
