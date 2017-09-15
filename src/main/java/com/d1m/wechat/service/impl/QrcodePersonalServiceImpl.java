@@ -44,9 +44,9 @@ public class QrcodePersonalServiceImpl extends BaseService<QrcodePersonal> imple
 
 	private boolean isExpire(Date createAt,int expireSeconds){
 		if ((new Date().getTime() - createAt.getTime())/1000 > expireSeconds) {
-			return false;
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	public QrcodePersonal create(Integer wechatId, Integer memberId,
@@ -54,7 +54,7 @@ public class QrcodePersonalServiceImpl extends BaseService<QrcodePersonal> imple
 		QrcodePersonal qrcodeByScene = null;
 		try {
 			if (expireSeconds > EXPIRE_SECONDS) {
-                expireSeconds = expireSeconds;
+                expireSeconds = EXPIRE_SECONDS;
             }
 
 			qrcodeByScene = qrcodeMapper.getQrcodeByScene(wechatId, qrcodeModel.getScene());
@@ -80,6 +80,7 @@ public class QrcodePersonalServiceImpl extends BaseService<QrcodePersonal> imple
                 qrcode.setScene(scenestr);
                 qrcode.setExpireSeconds(expireSeconds);
                 if (qrcodeByScene != null && qrcodeByScene.getId() != null) {
+                	qrcode.setId(qrcodeByScene.getId());
                     qrcodeMapper.updateByPrimaryKey(qrcode);
                 } else {
                     qrcodeMapper.insert(qrcode);
