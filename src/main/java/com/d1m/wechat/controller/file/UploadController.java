@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSONObject;
+import com.d1m.wechat.model.enums.FileType;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,11 +138,14 @@ public class UploadController extends BaseController {
 			throw new WechatException(Message.FILE_IS_TOO_BIG);
 		}
 		String fileName = FilenameUtils.getName(fileUrl.getPath());
-		if (filePath.startsWith("https://mmbiz.qlogo.cn/")) {
+		if (filePath.startsWith("https://mmbiz")) {
 			fileName = FileUtils.generateWxFileName(filePath);
 		}
-		String fileExt = fileName.substring(fileName.lastIndexOf(".") + 1)
-				.toLowerCase();
+		FileType fileType = FileTypeUtil.getType(fileUrl.openStream());
+		String fileExt = null;
+		if(fileType!=null){
+			fileExt = fileType.name().toLowerCase();
+		}
 		String imgExt = config.getValue(null, type + "_ext");
 		if (!imgExt.contains(fileExt)) {
 			throw new WechatException(Message.FILE_EXT_NOT_SUPPORT);
