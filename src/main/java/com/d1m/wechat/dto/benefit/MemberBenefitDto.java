@@ -64,6 +64,11 @@ public class MemberBenefitDto {
 	
 	private Boolean isOnline = false;
 	
+	private Boolean invited = false;
+	
+	@Column(name = "invited_by")
+	private Integer invitedByMemberId = 0;
+	
     public Boolean getOnline() {
       return (this.getIsSubscribe() != null && this.getIsSubscribe())
     		  && (this.getLastConversationAt() != null && 

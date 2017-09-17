@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
+import com.d1m.wechat.dto.benefit.MemberBenefitDetailDto;
 import com.d1m.wechat.dto.benefit.MemberBenefitDto;
 import com.d1m.wechat.pamametermodel.MemberBenefitListModel;
 import com.d1m.wechat.service.MemberBenefitService;
@@ -62,7 +63,7 @@ public class MemberBenefitController extends BaseController {
 			log.info("id:{}", id);
 			Integer wechatId = getWechatId(session);
 			
-			MemberBenefitDto memberDto = memberBenefitService.getMemberBenefitDto(
+			MemberBenefitDetailDto memberDto = memberBenefitService.getMemberBenefitDetailDto(
 					wechatId, id);
 			return representation(Message.MEMBER_GET_SUCCESS, memberDto);
 		} catch (Exception e) {

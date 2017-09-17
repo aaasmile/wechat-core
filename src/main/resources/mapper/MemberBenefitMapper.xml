@@ -28,6 +28,8 @@
 		<!-- benefit add -->
 		<result column="points_balance" jdbcType="INTEGER" property="pointsBalance" />
 		<result column="binding_over" jdbcType="INTEGER" property="bindingOver" />
+		<result column="invited" jdbcType="BOOLEAN" property="invited" />
+		<result column="invited_by" jdbcType="INTEGER" property="invitedByMemberId" />
 		<!-- benefit end -->
 	</resultMap>
   	
@@ -56,7 +58,9 @@
 			       b.points_balance,
 			       a.activity,
 			       a.subscribe_at,
-			       a.last_conversation_at
+			       a.last_conversation_at,
+	               b.invited,
+       			   b.invited_by
 			  from member a
 			left join member_benefit b
 			   on a.open_id = b.open_id
@@ -263,7 +267,9 @@
 			       b.points_balance,
 			       a.activity,
 			       a.subscribe_at,
-			       a.last_conversation_at
+			       a.last_conversation_at,
+	               b.invited,
+       			   b.invited_by
 			  from member a
 			left join member_benefit b
 			   on a.open_id = b.open_id

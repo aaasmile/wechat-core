@@ -3,6 +3,7 @@ package com.d1m.wechat.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.d1m.wechat.dto.benefit.MemberBenefitDetailDto;
 import com.d1m.wechat.dto.benefit.MemberBenefitDto;
 import com.d1m.wechat.mapper.MemberBenefitMapper;
 import com.d1m.wechat.pamametermodel.MemberBenefitListModel;
@@ -89,9 +90,16 @@ public class MemberBenefitServiceImpl extends BaseService<MemberBenefitDto> impl
 	}
 
 	@Override
-	public MemberBenefitDto getMemberBenefitDto(Integer wechatId, Integer id) {
+	public MemberBenefitDetailDto getMemberBenefitDetailDto(Integer wechatId, Integer id) {
+		MemberBenefitDto primaryMember = memberBenefitMapper.getById(wechatId, id);
+		Integer invitedByMemberId = primaryMember.getInvitedByMemberId();
+		MemberBenefitDto invitedMemeber = null;
+		if(invitedByMemberId!=null && invitedByMemberId.intValue()>0) {
+			invitedMemeber = memberBenefitMapper.getById(wechatId, invitedByMemberId);
+		} 
 		
-		return memberBenefitMapper.getById(wechatId, id);
+		MemberBenefitDetailDto detailDto = new MemberBenefitDetailDto(primaryMember, invitedMemeber);
+		return detailDto;
 	}
 
 	
