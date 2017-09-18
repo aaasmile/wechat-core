@@ -11,6 +11,7 @@ import com.d1m.wechat.model.popup.dao.*;
 import com.d1m.wechat.service.IPopupGoodsService;
 import com.d1m.wechat.service.IPopupOrderService;
 import com.github.pagehelper.Page;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
@@ -64,7 +66,13 @@ public class CoreApplicationTest {
 //        selectById();
 //        selectGoodsSku();
 //        createOrder();
-        selectOrder();
+//        selectOrder();
+        Long[] g = {69L, 70L};
+        String[] s = {"AA215", "AA216"};
+        String gg = "69,70";
+        String ss = "AA215,AA216";
+        List<HashMap<String, Object>> list = popupGoodsMapper.selectPopupGoodsByGoodsIdAndSku(
+                gg, ss);
     }
 
     public void searchOrder() {
@@ -197,7 +205,7 @@ public class CoreApplicationTest {
         goods.setDesc("");
         goods.setGoodsNo("");
         goods.setLimitCount(1);
-        goods.setPermit(1);
+        goods.setPermit("1,2,3");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String curDateTime = sdf.format(new Date());
         goods.setCreateTime(new Date());
@@ -245,7 +253,7 @@ public class CoreApplicationTest {
         goods.setDesc("");
         goods.setGoodsNo("");
         goods.setLimitCount(1);
-        goods.setPermit(1);
+        goods.setPermit("1,2,3");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String curDateTime = sdf.format(new Date());
         goods.setCreateTime(new Date());

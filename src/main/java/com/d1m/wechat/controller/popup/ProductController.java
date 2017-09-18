@@ -121,6 +121,8 @@ public class ProductController extends BaseController {
     @RequestMapping(value = "add",method = RequestMethod.POST)
     public JSONObject addProduct(@RequestBody(required = true) PopupGoodsEntity goodsEntity, @CookieValue(name="wechatId",required = false) Integer wechatId, HttpServletRequest request){
         try{
+            wechatId = debug?32:this.getWechatId(request.getSession()).intValue();
+            goodsEntity.getGoods().setWechatId(wechatId);
             popupGoodsService.updatePopupGoods(goodsEntity, "add");
             return representation(Message.SUCCESS,"");
         } catch (Exception e){
@@ -133,6 +135,8 @@ public class ProductController extends BaseController {
     @RequestMapping(value = "edit",method = RequestMethod.POST)
     public JSONObject editProduct(@RequestBody(required = true) PopupGoodsEntity goodsEntity, @CookieValue(name="wechatId",required = false) Integer wechatId, HttpServletRequest request){
         try{
+            wechatId = debug?32:this.getWechatId(request.getSession()).intValue();
+            goodsEntity.getGoods().setWechatId(wechatId);
             popupGoodsService.updatePopupGoods(goodsEntity, "edit");
             return representation(Message.SUCCESS,"");
         } catch (Exception e){
