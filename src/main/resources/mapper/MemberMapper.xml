@@ -757,4 +757,14 @@
 		<result column="last_conversation_at" jdbcType="TIMESTAMP" property="lastConversationAt" />
 		<result column="bindStatus" jdbcType="INTEGER" property="bindStatus" />
 	</resultMap>
+
+	<update id="updateBatchSendMonth">
+		update member set `batchsend_month` = if(`batchsend_month` is not null,`batchsend_month`+1,1)
+		<where>
+			id in
+			<foreach close=")" collection="idList" index="index" item="item" open="(" separator=",">
+				#{item, jdbcType=NUMERIC}
+			</foreach>
+		</where>
+	</update>
 </mapper>

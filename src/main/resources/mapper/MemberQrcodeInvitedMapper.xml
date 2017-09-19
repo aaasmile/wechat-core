@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.d1m.wechat.mapper.MemberQrcodeInvitedMapper" >
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.MemberQrcodeInvited" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="member_id" property="memberId" jdbcType="INTEGER" />
+    <result column="invited_by" property="invitedBy" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="wechat_id" property="wechatId" jdbcType="INTEGER" />
+    <result column="scene" property="scene" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+
+  <select id="getListOrderByCreatedAt" resultMap="BaseResultMap">
+      select * from member_qrcode_invited t
+      where t.wechat_id = #{wechatId} and t.member_id = #{memberId}
+      order by t.created_at DESC
+  </select>
+</mapper>

@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.bouncycastle.asn1.x500.style.RFC4519Style.cn;
+
 /**
  * WechatClientDelegate
  *
@@ -333,6 +335,9 @@ public class WechatClientDelegate {
 
     public static WxQRCode createQRCode(Serializable key, int expire_seconds, Integer scene_id) {
         return get(key).createQRCode(expire_seconds, scene_id);
+    }
+    public static WxQRCode createQRCode(Serializable key, int expire_seconds, String scene_str) {
+        return get(key).createQRCode(expire_seconds, scene_str);
     }
 
     public static WxHolder<String> shortURL(Serializable key, String long_url) {

@@ -3,14 +3,13 @@ package com.d1m.wechat.schedule.job;
 import cn.d1m.wechat.client.model.WxMessage;
 import com.d1m.wechat.mapper.MassConversationBatchMemberMapper;
 import com.d1m.wechat.mapper.MassConversationBatchResultMapper;
+import com.d1m.wechat.mapper.MemberMapper;
 import com.d1m.wechat.model.MassConversationBatchMember;
 import com.d1m.wechat.model.MassConversationBatchResult;
-import com.d1m.wechat.model.Member;
 import com.d1m.wechat.model.enums.MassConversationResultStatus;
 import com.d1m.wechat.model.enums.MsgType;
 import com.d1m.wechat.schedule.BaseJobHandler;
 import com.d1m.wechat.service.ConfigService;
-import com.d1m.wechat.service.MemberService;
 import com.d1m.wechat.util.ParamUtil;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.xxl.job.core.biz.model.ReturnT;
@@ -37,7 +36,7 @@ public class BatchMassConversationJob extends BaseJobHandler {
 	private MassConversationBatchMemberMapper massConversationBatchMemberMapper;
 
 	@Resource
-	private MemberService memberService;
+	private MemberMapper memberMapper;
 
 	@Resource
 	private ConfigService configService;
@@ -76,27 +75,21 @@ public class BatchMassConversationJob extends BaseJobHandler {
 					massConversationBatchResultMapper.updateByPrimaryKey(batchResult);
 
 					// 分组推送时，更新会员本月群发数
-					Member member = null;
+					List<Integer> idList = new ArrayList<Integer>();
 					for(MassConversationBatchMember bm:list){
-						member = memberService.getMember(wechatId,bm.getMemberId());
-						if (member != null) {
-							if (member.getBatchsendMonth() == null) {
-								member.setBatchsendMonth(0);
-							}
-							Member update = new Member();
-							update.setId(member.getId());
-							update.setBatchsendMonth(member.getBatchsendMonth() + 1);
-							memberService.updateNotNull(update);
-						}
+						idList.add(bm.getMemberId());
+					}
+					if(!idList.isEmpty()){
+						memberMapper.updateBatchSendMonth(idList);
 					}
 				}
 
-				int batchInterval = 3;
+				int batchInterval = 10;//秒为单位
 				String batchIntervalStr = configService.getConfigValue(wechatId, "MASS_CONVERSATION", "BATCH_INTERVAL");
 				if(StringUtils.isNotBlank(batchIntervalStr)){
 					batchInterval = Integer.parseInt(batchIntervalStr);
 				}
-				TimeUnit.MINUTES.sleep(batchInterval);
+				TimeUnit.SECONDS.sleep(batchInterval);
 			}
 			return ReturnT.SUCCESS;
 		} catch (Exception e) {

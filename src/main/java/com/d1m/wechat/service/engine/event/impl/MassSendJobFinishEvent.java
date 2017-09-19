@@ -1,6 +1,7 @@
 package com.d1m.wechat.service.engine.event.impl;
 
 import com.d1m.wechat.anno.EventCode;
+import com.d1m.wechat.mapper.MemberMapper;
 import com.d1m.wechat.model.*;
 import com.d1m.wechat.model.enums.Event;
 import com.d1m.wechat.model.enums.MassConversationResultStatus;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +40,8 @@ public class MassSendJobFinishEvent implements IEvent {
 	private MassConversationService massConversationService;
 	@Autowired
 	private MemberService memberService;
+	@Autowired
+	private MemberMapper memberMapper;
 
 	@Override
 	public Map<String, Object> handle(Conversation conversation, Member member) {
@@ -133,18 +137,12 @@ public class MassSendJobFinishEvent implements IEvent {
 			massConversationModel.setConversationId(conversationId);
 			massConversationModel.disablePage();
 			List<MassConversation> massConversations = massConversationService.search(wechatId, massConversationModel, false);
-			Member massMember = null;
+			List<Integer> idList = new ArrayList<Integer>();
 			for (MassConversation massConversation : massConversations) {
-				massMember = memberService.getMember(wechatId,massConversation.getMemberId());
-				if (massMember != null) {
-					if (massMember.getBatchsendMonth() == null) {
-						massMember.setBatchsendMonth(0);
-					}
-					Member update = new Member();
-					update.setId(massMember.getId());
-					update.setBatchsendMonth(massMember.getBatchsendMonth() + 1);
-					memberService.updateNotNull(update);
-				}
+				idList.add(massConversation.getMemberId());
+			}
+			if(!idList.isEmpty()){
+				memberMapper.updateBatchSendMonth(idList);
 			}
 		}
 		return null;
