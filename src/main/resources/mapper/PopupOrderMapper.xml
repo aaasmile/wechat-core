@@ -23,7 +23,7 @@
         <result column="wechat_id" jdbcType="INTEGER" property="wechatId"/>
         <result column="goods_name" jdbcType="VARCHAR" property="goodsName"/>
         <result column="sku" jdbcType="VARCHAR" property="sku"/>
-        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="shade" jdbcType="VARCHAR" property="shade"/>
         <result column="order_create_time" jdbcType="TIMESTAMP" property="orderCreateTime"/>
         <result column="delivery_create_time" jdbcType="TIMESTAMP" property="deliveryCreateTime"/>
         <result column="company" jdbcType="VARCHAR" property="company"/>
@@ -47,7 +47,7 @@
         group_concat(DISTINCT d.`name`) goods_name,
         group_concat(DISTINCT b.goods_id) goods_id,
         group_concat(b.sku) sku,
-        group_concat(e.title) title,
+        group_concat(e.shade) shade,
         max(a.create_time) order_create_time,
         max(c.create_time) delivery_create_time,
         max(c.company) company,

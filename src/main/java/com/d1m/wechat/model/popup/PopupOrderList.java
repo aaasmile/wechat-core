@@ -25,7 +25,7 @@ public class PopupOrderList {
     private Integer goodsId;
     private String goodsName;
     private String sku;
-    private String title;
+    private String shade;
     private Date orderCreateTime;
     private Date deliveryCreateTime;
     private String company;
