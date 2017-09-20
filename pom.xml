@@ -61,6 +61,7 @@
 
         <start-class>com.d1m.wechat.CoreApplication</start-class>
         <docker.expose>8090</docker.expose>
+        <docker.image.base>openjdk:8u121-jdk-alpine</docker.image.base>
     </properties>
 
     <dependencies>
