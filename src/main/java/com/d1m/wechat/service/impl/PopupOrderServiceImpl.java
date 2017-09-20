@@ -7,6 +7,8 @@ import com.d1m.wechat.mapper.PopupOrderGoodsRelMapper;
 import com.d1m.wechat.mapper.PopupOrderMapper;
 import com.d1m.wechat.model.popup.PopupOrderFilter;
 import com.d1m.wechat.model.popup.PopupOrderList;
+import com.d1m.wechat.model.popup.dao.PopupOrder;
+import com.d1m.wechat.model.popup.dao.PopupOrderExpress;
 import com.d1m.wechat.model.popup.dao.PopupOrderGoodsRel;
 import com.d1m.wechat.service.IPopupOrderService;
 import com.github.pagehelper.Page;
@@ -57,8 +59,21 @@ public class PopupOrderServiceImpl implements IPopupOrderService {
     }
 
     @Override
-    public void updateTrackNo(String trackNo, String orderId){
-        orderExpressMapper.updateTrackNo(trackNo, orderId);
+    public void updateTrackNo(String trackNo, Long orderId){
+        PopupOrderExpress orderExpress = new PopupOrderExpress();
+        orderExpress.setOrderId(orderId);
+        PopupOrderExpress orderExpressNew = orderExpressMapper.selectPopupExpressByOrderId(orderId);
+        if (orderExpressNew != null) {
+            orderExpressMapper.updateTrackNo(trackNo, orderId);
+        } else {
+            orderExpress.setStatus((byte)1);
+            orderExpress.setTrackNo(trackNo);
+            orderExpressMapper.insertSelective(orderExpress);
+        }
+        PopupOrder orderBase = new PopupOrder();
+        orderBase.setPayStatus((byte)4);
+        orderBase.setId(orderId);
+        popupOrderMapper.updateByPrimaryKeySelective(orderBase);
     }
 
     public List<HashMap<Integer,String>> getAllAreaMap(){

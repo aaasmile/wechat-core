@@ -8,5 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public interface PopupOrderExpressMapper extends MyMapper<PopupOrderExpress> {
 
-    void updateTrackNo(@Param("trackNo") String trackNo,@Param("orderId") String orderId);
+    void updateTrackNo(@Param("trackNo") String trackNo,@Param("orderId") Long orderId);
+
+    PopupOrderExpress selectPopupExpressByOrderId(@Param("orderId") Long orderId);
 }

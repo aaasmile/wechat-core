@@ -14,5 +14,5 @@ IPopupOrderService {
 
     PopupOrderGoodsRel queryOrderGoodsByOrderId(Long orderId);
 
-    void updateTrackNo(String trackNo, String orderId);
+    void updateTrackNo(String trackNo, Long orderId);
 }

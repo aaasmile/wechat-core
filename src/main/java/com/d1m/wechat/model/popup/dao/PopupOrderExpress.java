@@ -29,7 +29,7 @@ public class PopupOrderExpress {
     private Byte status = 0;
 
     @Column(name = "create_time")
-    private Date createTime = new Date();
+    private Date createTime;
 
     /**
      * @return id
