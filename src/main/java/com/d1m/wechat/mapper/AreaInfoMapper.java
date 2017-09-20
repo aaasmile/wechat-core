@@ -15,8 +15,6 @@ public interface AreaInfoMapper extends MyMapper<AreaInfo> {
 
 	String selectNameById(@Param("id") Integer id, @Param("lang") String lang);
 
-	String selectNameById(@Param("id") Integer id);
-
 	Integer selectIdByName(@Param("cName") String cName, 
 			@Param("parentId") Integer parentId);
 

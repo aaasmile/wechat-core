@@ -1,4 +1,4 @@
-package com.d1m.wechat.model.enums;
+package com.d1m.wechat.model.popup;
 
 /**
  * Created by Owen Jia on 2017/6/14.

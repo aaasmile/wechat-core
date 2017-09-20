@@ -39,8 +39,6 @@ public interface Constants {
 
 	String MATERIAL = "material";
 
-	String GOODS = "goods";
-
 	String VIDEO = "video";
 
 	String VOICE = "voice";
