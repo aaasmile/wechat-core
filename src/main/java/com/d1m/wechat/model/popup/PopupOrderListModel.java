@@ -1,5 +1,8 @@
 package com.d1m.wechat.model.popup;
 
+import com.d1m.wechat.model.enums.OrderEnum;
+import com.d1m.wechat.model.enums.PayTypeEnum;
+
 /**
  * Created by Owen Jia on 2017/6/12.
  */

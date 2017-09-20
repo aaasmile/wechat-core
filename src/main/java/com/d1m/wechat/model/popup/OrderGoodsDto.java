@@ -2,6 +2,8 @@ package com.d1m.wechat.model.popup;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.d1m.wechat.model.enums.OrderEnum;
+import com.d1m.wechat.model.enums.PayTypeEnum;
 
 import java.util.Date;
 
