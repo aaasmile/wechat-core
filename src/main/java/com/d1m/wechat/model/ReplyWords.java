@@ -2,7 +2,7 @@ package com.d1m.wechat.model;
 
 import javax.persistence.*;
 
-@Table(name = "reply_words")
+@Table(name = "reply_word")
 public class ReplyWords {
     /**
      * 主键ID
