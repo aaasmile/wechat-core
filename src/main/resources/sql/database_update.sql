@@ -79,3 +79,17 @@ CREATE TABLE `member_qrcode_invited` (
   `created_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户临时二维码分享后，邀请者和被邀请者的关系记录表'
+
+
+-- 2017-09-19 add，增加授权链接统计表
+CREATE TABLE `oauth_url_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `open_id` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '授权用户OPENID',
+  `oauth_url_id` int(11) NOT NULL COMMENT '授权ID',
+  `wechat_id` int(11) NOT NULL COMMENT '公众号ID',
+  `created_at` datetime NOT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`),
+  KEY `open_id` (`open_id`),
+  KEY `oauth_url_id` (`oauth_url_id`),
+  KEY `wechat_id` (`wechat_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
