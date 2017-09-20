@@ -61,6 +61,6 @@ public interface MemberBenefitMapper extends MyMapper<MemberBenefitDto> {
 			@Param("sortName") String sortName, 
 			@Param("sortDir") String sortDir);
 	
-	MemberBenefitDto getById(@Param("wechatId")Integer wechatId, @Param("id") Integer id);
+	MemberBenefitDto getByMemberId(@Param("wechatId")Integer wechatId, @Param("id") Integer id);
 
 }
