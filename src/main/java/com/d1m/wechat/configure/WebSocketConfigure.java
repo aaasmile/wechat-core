@@ -15,7 +15,6 @@ import org.springframework.web.socket.config.annotation.AbstractWebSocketMessage
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
-import com.d1m.wechat.customservice.controller.CustomServiceController;
 import com.d1m.wechat.integration.spring.FastJsonMessageConverter;
 
 @Configuration
@@ -47,8 +46,4 @@ public class WebSocketConfigure extends AbstractWebSocketMessageBrokerConfigurer
         return true;
     }
 
-    //@Bean
-    public CustomServiceController configCustomServiceController() {
-        return new CustomServiceController();
-    }
 }

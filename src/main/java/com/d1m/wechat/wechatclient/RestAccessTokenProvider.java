@@ -1,14 +1,15 @@
 package com.d1m.wechat.wechatclient;
 
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import cn.d1m.wechat.client.core.AccessTokenProvider;
 import cn.d1m.wechat.client.util.HashUtil;
-import com.d1m.common.rest.RestResponse;
-import com.d1m.wechat.util.AppContextUtils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import com.d1m.common.rest.RestResponse;
+import com.d1m.wechat.util.AppContextUtils;
 
 /**
  * RestAccessTokenProvider
