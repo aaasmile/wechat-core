@@ -7,7 +7,7 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
-    <result column="img_urls" jdbcType="VARCHAR" property="imgUrls" />
+    <result column="img_urls" jdbcType="VARCHAR" property="imgUrls" typeHandler="com.d1m.wechat.util.mybatis.JsonTypeHandler"/>
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="price" jdbcType="INTEGER" property="price" />
     <result column="count" jdbcType="INTEGER" property="count" />
@@ -35,7 +35,7 @@
     <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="sku" jdbcType="VARCHAR" property="sku" />
-    <result column="img_urls" jdbcType="VARCHAR" property="imgUrls" />
+    <result column="img_urls" jdbcType="VARCHAR" property="imgUrls" typeHandler="com.d1m.wechat.util.mybatis.JsonTypeHandler"/>
     <result column="points" jdbcType="INTEGER" property="points" />
     <result column="redeem" jdbcType="INTEGER" property="redeem" />
     <result column="status" jdbcType="VARCHAR" property="status" />

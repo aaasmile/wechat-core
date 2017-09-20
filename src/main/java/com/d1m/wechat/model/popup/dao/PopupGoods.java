@@ -1,5 +1,6 @@
 package com.d1m.wechat.model.popup.dao;
 
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.text.SimpleDateFormat;
@@ -19,7 +20,7 @@ public class PopupGoods {
      * 商品图片集，json格式：[{bigImg:'',img:''},]
      */
     @Column(name = "img_urls")
-    private String imgUrls;
+    private JSONObject imgUrls;
 
     /**
      * 简称
@@ -139,7 +140,7 @@ public class PopupGoods {
      *
      * @return img_urls - 商品图片集，json格式：[{bigImg:'',img:''},]
      */
-    public String getImgUrls() {
+    public JSONObject getImgUrls() {
         return imgUrls;
     }
 
@@ -148,8 +149,8 @@ public class PopupGoods {
      *
      * @param imgUrls 商品图片集，json格式：[{bigImg:'',img:''},]
      */
-    public void setImgUrls(String imgUrls) {
-        this.imgUrls = imgUrls == null ? null : imgUrls.trim();
+    public void setImgUrls(JSONObject imgUrls) {
+        this.imgUrls = imgUrls == null ? null : imgUrls;
     }
 
     /**

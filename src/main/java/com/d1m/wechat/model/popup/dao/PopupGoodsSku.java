@@ -1,5 +1,7 @@
 package com.d1m.wechat.model.popup.dao;
 
+import com.alibaba.fastjson.JSONObject;
+
 import javax.persistence.*;
 
 @Table(name = "popup_goods_sku")
@@ -28,7 +30,7 @@ public class PopupGoodsSku {
      * sku的图片
      */
     @Column(name = "img_urls")
-    private String imgUrls;
+    private JSONObject imgUrls;
 
     /**
      * @return id
@@ -137,7 +139,7 @@ public class PopupGoodsSku {
      *
      * @return img_urls - sku的图片
      */
-    public String getImgUrls() {
+    public JSONObject getImgUrls() {
         return imgUrls;
     }
 
@@ -146,7 +148,7 @@ public class PopupGoodsSku {
      *
      * @param imgUrls sku的图片
      */
-    public void setImgUrls(String imgUrls) {
-        this.imgUrls = imgUrls == null ? null : imgUrls.trim();
+    public void setImgUrls(JSONObject imgUrls) {
+        this.imgUrls = imgUrls == null ? null : imgUrls;
     }
 }
