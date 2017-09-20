@@ -54,7 +54,7 @@
   </resultMap>
   
   <select id="getBindNumber" resultType="int">
-  	select count(status) from member_profile 
+  	select count(status) from member
   		<where>
   			wechat_id = #{wechatId} and status = 1
   			<if test="start!=null">
@@ -66,7 +66,7 @@
   </select>
   
   <select id="getUnBindNumber" resultType="int">
-  	select count(status) from member_profile 
+  	select count(status) from member
   		<where>
   			wechat_id = #{wechatId} and status = 0
   			<if test="start!=null">
