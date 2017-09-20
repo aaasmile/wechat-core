@@ -10,6 +10,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.annotation.Resource;
 
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.handler.annotation.*;
+import org.springframework.stereotype.Controller;
+
 import com.d1m.common.ds.TenantContext;
 import com.d1m.common.ds.TenantHelper;
 import com.d1m.wechat.customservice.CustomerServiceRepresentative;
@@ -20,10 +24,6 @@ import com.d1m.wechat.model.enums.Event;
 import com.d1m.wechat.service.UserService;
 import com.d1m.wechat.service.WechatService;
 import com.d1m.wechat.util.DateUtil;
-import com.esotericsoftware.minlog.Log;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.handler.annotation.*;
-import org.springframework.stereotype.Controller;
 
 /**
  * CustomServiceController 客户服务
@@ -31,9 +31,11 @@ import org.springframework.stereotype.Controller;
  * 处理客服人员
  *
  * @author f0rb on 2017-03-14.
+ * @deprecated livechat迁移到微服务wechat-customservice
  */
 @Slf4j
 @Controller
+@Deprecated
 public class CustomServiceController {
 
     /* 公众号在线客服 */
@@ -72,7 +74,7 @@ public class CustomServiceController {
         String domain = tenantHelper.getTenantByWechatId(wechatId);
         if (domain!=null){
             TenantContext.setCurrentTenant(domain);
-            Log.info("mq domain: "+domain);
+            log.info("mq domain: "+domain);
         }
         UserDto user = userService.getById(userId);
         if (user == null) {
@@ -201,7 +203,7 @@ public class CustomServiceController {
         String domain = tenantHelper.getTenantByWechatId(wechatId);
         if (domain!=null){
             TenantContext.setCurrentTenant(domain);
-            Log.info("mq domain: "+domain);
+            log.info("mq domain: "+domain);
         }
         //TODO 处理并发
         Map<Serializable, CustomerServiceRepresentative> csrMap = wechatCsrMap.get(wechatId);
@@ -236,7 +238,7 @@ public class CustomServiceController {
         String domain = tenantHelper.getTenantByWechatId(wechatId);
         if (domain!=null){
             TenantContext.setCurrentTenant(domain);
-            Log.info("mq domain: "+domain);
+            log.info("mq domain: "+domain);
         }
         Integer toMemberId = Integer.valueOf(conversation.getMemberId());
 
