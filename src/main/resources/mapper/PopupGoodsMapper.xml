@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.PopupGoodsMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.popup.dao.PopupGoods">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+    <result column="img_urls" jdbcType="VARCHAR" property="imgUrls" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="price" jdbcType="INTEGER" property="price" />
+    <result column="count" jdbcType="INTEGER" property="count" />
+    <result column="limit_count" jdbcType="INTEGER" property="limitCount" />
+    <result column="desc" jdbcType="VARCHAR" property="desc" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="category_id" jdbcType="BIGINT" property="categoryId" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="goods_no" jdbcType="VARCHAR" property="goodsNo" />
+    <result column="safety_stock" jdbcType="INTEGER" property="safetyStock" />
+    <result column="points" jdbcType="INTEGER" property="points" />
+    <result column="sku" jdbcType="VARCHAR" property="sku" />
+    <result column="permit" jdbcType="VARCHAR" property="permit" />
+    <result column="shade_open" jdbcType="TINYINT" property="shadeOpen" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+  </resultMap>
+
+  <resultMap id="ListResultMap" type="com.d1m.wechat.model.popup.PopupGoodsList" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="sku" jdbcType="VARCHAR" property="sku" />
+    <result column="img_urls" jdbcType="VARCHAR" property="imgUrls" />
+    <result column="points" jdbcType="INTEGER" property="points" />
+    <result column="redeem" jdbcType="INTEGER" property="redeem" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="sort_best_sell" jdbcType="INTEGER" property="sortBestSell" />
+  </resultMap>
+
+
+  <select id="selectPopupGoodsByOrderId" parameterType="HashMap" resultMap="BaseResultMap">
+    select * from popup_goods where id = #{goodsId}
+  </select>
+
+  <select id="selectPopupGoodsList" parameterType="HashMap" resultMap="ListResultMap">
+    select a.id, a.wechat_id, a.`name`, a.sku, a.img_urls, a.points,
+    a.status, a.sort, a.sort_best_sell, a.count-sum(b.stock) redeem
+    from popup_goods a
+    left join popup_goods_sku b on a.id = b.goods_id
+    where a.wechat_id = #{wechatId}
+    <if test="name != null">
+      and a.`name` LIKE concat('%',#{name},'%')
+    </if>
+    <if test="sku != null">
+      and a.sku LIKE concat('%',#{sku},'%')
+    </if>
+    <if test="status != null">
+      and a.status = #{status}
+    </if>
+    group by a.id
+    order by a.id desc,a.sort desc
+  </select>
+
+  <select id="selectPopupGoodsByGoodsIdAndSku" parameterType="HashMap" resultType="HashMap">
+    select b.id goodsId, a.sku, b.name, b.permit, a.stock, a.status skuStatus, b.status, b.limit_count limitCount from popup_goods_sku a
+    left join popup_goods b on b.id = a.goods_id
+    where 1=1
+    and FIND_IN_SET( b.id, #{goodsIds}) <![CDATA[<>]]> 0
+    and FIND_IN_SET( a.sku, #{goodsSku}) <![CDATA[<>]]> 0
+  </select>
+
+</mapper>
