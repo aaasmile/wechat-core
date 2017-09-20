@@ -87,6 +87,7 @@
             </array>
         </property>
         <property name="typeAliasesPackage" value="com.d1m.wechat.model"/>
+        <property name="typeHandlersPackage" value="com.d1m.wechat.util.mybatis"/>
         <property name="plugins">
             <array>
                 <bean class="com.github.pagehelper.PageHelper">

@@ -1,5 +1,6 @@
 package com.d1m.wechat.model.popup;
 
+import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.model.enums.GoodsEnum;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +15,7 @@ public class PopupGoodsList {
     Integer wechatId;
     String name;
     String sku;
-    String imgUrls;
+    JSONObject imgUrls;
     Integer points;
     Short status;
     Integer sort;

@@ -19,7 +19,7 @@
   </select>
 
   <update id="updateTrackNo" parameterType="HashMap" >
-    update popup_order_express set track_no = ${trackNo} where order_id = ${orderId}
+    update popup_order_express set status=1, track_no = ${trackNo} where order_id = ${orderId}
   </update>
 
 </mapper>

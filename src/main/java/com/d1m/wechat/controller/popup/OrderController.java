@@ -261,15 +261,15 @@ public class OrderController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "trackno/update",method = RequestMethod.POST)
-    public JSONObject updateTrackNo(@CookieValue(name="wechatId",required = false) Integer wechatId, HttpServletRequest request){
+    public JSONObject updateTrackNo(@RequestBody(required = true) JSONObject params, @CookieValue(name="wechatId",required = false) Integer wechatId, HttpServletRequest request){
         try {
-            String trackNo = request.getParameter("trackNo");
-            String orderId = request.getParameter("orderId");
+            Long orderId = params.getLong("orderId");
+            String trackNo = params.getString("trackNo");
 
-            if(StringUtils.isBlank(trackNo) || StringUtils.isBlank(orderId))
+            if(StringUtils.isBlank(trackNo) || StringUtils.isBlank(String.valueOf(orderId)))
                 return representation(Message.ILLEGAL_REQUEST);
             popupOrderService.updateTrackNo(trackNo, orderId);
-            return representation(Message.SUCCESS, "");
+            return representation(Message.SUCCESS);
         } catch (Exception e) {
             log.error(e.getMessage());
             return wrapException(e);
