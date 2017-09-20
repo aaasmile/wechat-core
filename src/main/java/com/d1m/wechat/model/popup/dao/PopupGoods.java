@@ -86,20 +86,13 @@ public class PopupGoods {
     /**
      * 购买权限
      */
-    private Integer permit;
+    private String permit;
 
     /**
      * 是否打开子sku
      */
     @Column(name = "shade_open")
     private Byte shadeOpen;
-
-    /**
-     * 初始库存
-     */
-    @Column(name = "init_stock")
-    private Integer initStock;
-
 
     /**
      * 排序
@@ -396,7 +389,7 @@ public class PopupGoods {
      *
      * @return permit - 购买权限
      */
-    public Integer getPermit() {
+    public String getPermit() {
         return permit;
     }
 
@@ -405,7 +398,7 @@ public class PopupGoods {
      *
      * @param permit 购买权限
      */
-    public void setPermit(Integer permit) {
+    public void setPermit(String permit) {
         this.permit = permit;
     }
 
@@ -464,21 +457,4 @@ public class PopupGoods {
     }
 
 
-    /**
-     * 获取初始库存
-     *
-     * @return init_stock - 初始库存
-     */
-    public Integer getInitStock() {
-        return initStock;
-    }
-
-    /**
-     * 设置初始库存
-     *
-     * @param initStock 初始库存
-     */
-    public void setInitStock(Integer initStock) {
-        this.initStock = initStock;
-    }
 }

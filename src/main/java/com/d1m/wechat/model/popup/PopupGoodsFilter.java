@@ -12,7 +12,7 @@ public class PopupGoodsFilter {
     Integer wechatId;
     String name;
     String sku;
-    Short status = 1;
+    Short status;
 
     Integer pageSize = 10;
     Integer pageNum = 1;

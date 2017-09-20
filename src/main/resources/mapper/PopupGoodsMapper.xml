@@ -22,10 +22,9 @@
     <result column="safety_stock" jdbcType="INTEGER" property="safetyStock" />
     <result column="points" jdbcType="INTEGER" property="points" />
     <result column="sku" jdbcType="VARCHAR" property="sku" />
-    <result column="permit" jdbcType="INTEGER" property="permit" />
+    <result column="permit" jdbcType="VARCHAR" property="permit" />
     <result column="shade_open" jdbcType="TINYINT" property="shadeOpen" />
     <result column="sort" jdbcType="INTEGER" property="sort" />
-    <result column="init_stock" jdbcType="INTEGER" property="initStock" />
   </resultMap>
 
   <resultMap id="ListResultMap" type="com.d1m.wechat.model.popup.PopupGoodsList" >
@@ -65,8 +64,15 @@
       and a.status = #{status}
     </if>
     group by a.id
-    order by a.sort desc,a.id desc
+    order by a.id desc,a.sort desc
   </select>
 
+  <select id="selectPopupGoodsByGoodsIdAndSku" parameterType="HashMap" resultType="HashMap">
+    select b.id goodsId, a.sku, b.name, b.permit, a.stock, a.status skuStatus, b.status, b.limit_count limitCount from popup_goods_sku a
+    left join popup_goods b on b.id = a.goods_id
+    where 1=1
+    and FIND_IN_SET( b.id, #{goodsIds}) <![CDATA[<>]]> 0
+    and FIND_IN_SET( a.sku, #{goodsSku}) <![CDATA[<>]]> 0
+  </select>
 
 </mapper>

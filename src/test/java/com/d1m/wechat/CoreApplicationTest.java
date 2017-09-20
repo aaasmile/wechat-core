@@ -11,6 +11,7 @@ import com.d1m.wechat.model.popup.dao.*;
 import com.d1m.wechat.service.IPopupGoodsService;
 import com.d1m.wechat.service.IPopupOrderService;
 import com.github.pagehelper.Page;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
@@ -64,7 +66,30 @@ public class CoreApplicationTest {
 //        selectById();
 //        selectGoodsSku();
 //        createOrder();
-        selectOrder();
+//        selectOrder();
+        Long[] g = {69L, 70L};
+        String[] s = {"AA215", "AA216"};
+        String gg = "69,70";
+        String ss = "AA215,AA216";
+        List<HashMap<String, Object>> list = popupGoodsMapper.selectPopupGoodsByGoodsIdAndSku(
+                gg, ss);
+
+//        popupGoodsSku.setGoodsId(68L);
+//        popupGoodsSku.setSku("AA660");
+//        popupGoodsSku.setStatus((byte)1);
+//        popupGoodsSku.setStock(10);
+//        popupGoodsSku.setColor("FF0000");
+//        popupGoodsSku.setShade("Light311111");
+        PopupGoods popupGoods = new PopupGoods();
+        popupGoods.setId(68L);
+        popupGoods = popupGoodsMapper.selectByPrimaryKey(popupGoods);
+        log.info(JSONObject.toJSONString(popupGoods));
+
+        PopupGoodsSku popupGoodsSku = new PopupGoodsSku();
+        popupGoodsSku.setId(212L);
+        PopupGoodsSku popupGoodsSkuNew = popupGoodsSkuMapper.selectByPrimaryKey(popupGoodsSku);
+//        int state = popupGoodsSkuMapper.updateByPrimaryKey(popupGoodsSku);
+        log.info(JSONObject.toJSONString(popupGoodsSkuNew));
     }
 
     public void searchOrder() {
@@ -197,7 +222,7 @@ public class CoreApplicationTest {
         goods.setDesc("");
         goods.setGoodsNo("");
         goods.setLimitCount(1);
-        goods.setPermit(1);
+        goods.setPermit("1,2,3");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String curDateTime = sdf.format(new Date());
         goods.setCreateTime(new Date());
@@ -245,7 +270,7 @@ public class CoreApplicationTest {
         goods.setDesc("");
         goods.setGoodsNo("");
         goods.setLimitCount(1);
-        goods.setPermit(1);
+        goods.setPermit("1,2,3");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String curDateTime = sdf.format(new Date());
         goods.setCreateTime(new Date());

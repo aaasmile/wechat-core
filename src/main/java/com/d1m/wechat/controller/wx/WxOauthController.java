@@ -3,6 +3,7 @@ package com.d1m.wechat.controller.wx;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import cn.d1m.wechat.client.model.WxUser;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.d1m.wechat.model.OauthUrlLog;
+import com.d1m.wechat.service.OauthUrlLogService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +51,8 @@ public class WxOauthController {
 	private OauthUrlService oauthUrlService;
 	@Autowired
 	private WechatService wechatService;
+	@Autowired
+	private OauthUrlLogService oauthUrlLogService;
 
 	/**
 	 * 短地址转发地址
@@ -186,8 +191,19 @@ public class WxOauthController {
 						object = clazz.newInstance();
 					}
 					if (object instanceof IOauth) {
-						((IOauth) object).execute(request, response, wuser,
-								params);
+						// 异步批量插入访问日志
+						try {
+							OauthUrlLog oauthUrlLog = new OauthUrlLog();
+							oauthUrlLog.setCreatedAt(new Date());
+							oauthUrlLog.setOauthUrlId(urlObj.getId());
+							oauthUrlLog.setOpenId(wuser.getOpenid());
+							oauthUrlLog.setWechatId(wechat.getId());
+							oauthUrlLogService.batchInsertLog(oauthUrlLog);
+						} catch (Exception e){
+							log.error("batch insert oauth log error!",e);
+						}
+						// 执行oauth实现类
+						((IOauth) object).execute(request, response, wuser, params);
 					} else {
 						log.error("Bean must implements IOauth!");
 					}

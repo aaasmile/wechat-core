@@ -29,8 +29,6 @@
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 
 <generatorConfiguration>
-  <properties resource="config.properties"/>
-
   <context id="Mysql" targetRuntime="MyBatis3Simple" defaultModelType="flat">
     <property name="beginningDelimiter" value="`"/>
     <property name="endingDelimiter" value="`"/>
@@ -46,7 +44,7 @@
  	</commentGenerator>
 
     <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                    connectionURL="jdbc:mysql://10.60.1.69:3306/d1m_wechat"
+                    connectionURL="jdbc:mysql://10.60.1.60:3306/d1m_wechat"
                     userId="root"
                     password="root">
     </jdbcConnection>
@@ -59,11 +57,8 @@
 
     <javaClientGenerator targetPackage="${targetMapperPackage}" targetProject="${targetJavaProject}" type="XMLMAPPER" />
 
-    <table tableName="popup_delivery_addr" >
+    <table tableName="oauth_url_log%" >
       <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
     </table>
-      <table tableName="popup_goods%" >
-          <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
-      </table>
   </context>
 </generatorConfiguration>

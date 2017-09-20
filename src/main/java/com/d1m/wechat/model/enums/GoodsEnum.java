@@ -4,10 +4,9 @@ package com.d1m.wechat.model.enums;
  * Created by Owen Jia on 2017/6/14.
  */
 public enum GoodsEnum {
-    NEW_CREATE(1, "新建商品"),
-    SALING(2,"在售中"),
-    OFF_SALING(3,"已下架"),
-    REAL_GOODS(4,"实物商品");
+    SALING(0,"在售中"),
+    OFF_SALING(1,"已下架"),
+    REAL_GOODS(1,"实物商品");
 
     private Integer code;
     private String desc;
@@ -33,11 +32,11 @@ public enum GoodsEnum {
         this.desc = desc;
     }
 
-    public Integer getCodeByName(GoodsEnum name){
-        if(name == null) return null;
-        for(GoodsEnum t: GoodsEnum.values()){
-            if(t == name) return t.getCode();
-        }
-        return null;
-    }
+//    public Integer getCodeByName(GoodsEnum name){
+//        if(name == null) return null;
+//        for(GoodsEnum t: GoodsEnum.values()){
+//            if(t == name) return t.getCode();
+//        }
+//        return null;
+//    }
 }

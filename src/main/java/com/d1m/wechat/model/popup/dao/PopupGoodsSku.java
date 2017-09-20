@@ -8,18 +8,20 @@ public class PopupGoodsSku {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Id
-    private String sku;
-
     @Column(name = "goods_id")
     private Long goodsId;
 
+    private String sku;
+
     private Integer stock;
 
-    private String title;
+    private String shade;
 
     private String color;
 
+    /**
+     * 商品状态：1在售，0下架
+     */
     private Byte status;
 
     /**
@@ -43,20 +45,6 @@ public class PopupGoodsSku {
     }
 
     /**
-     * @return sku
-     */
-    public String getSku() {
-        return sku;
-    }
-
-    /**
-     * @param sku
-     */
-    public void setSku(String sku) {
-        this.sku = sku == null ? null : sku.trim();
-    }
-
-    /**
      * @return goods_id
      */
     public Long getGoodsId() {
@@ -68,6 +56,20 @@ public class PopupGoodsSku {
      */
     public void setGoodsId(Long goodsId) {
         this.goodsId = goodsId;
+    }
+
+    /**
+     * @return sku
+     */
+    public String getSku() {
+        return sku;
+    }
+
+    /**
+     * @param sku
+     */
+    public void setSku(String sku) {
+        this.sku = sku == null ? null : sku.trim();
     }
 
     /**
@@ -85,17 +87,17 @@ public class PopupGoodsSku {
     }
 
     /**
-     * @return title
+     * @return shade
      */
     public String getShade() {
-        return title;
+        return shade;
     }
 
     /**
-     * @param title
+     * @param shade
      */
-    public void setShade(String title) {
-        this.title = title == null ? null : title.trim();
+    public void setShade(String shade) {
+        this.shade = shade == null ? null : shade.trim();
     }
 
     /**
@@ -113,14 +115,18 @@ public class PopupGoodsSku {
     }
 
     /**
-     * @return status
+     * 获取商品状态：1在售，0下架
+     *
+     * @return status - 商品状态：1在售，0下架
      */
     public Byte getStatus() {
         return status;
     }
 
     /**
-     * @param status
+     * 设置商品状态：1在售，0下架
+     *
+     * @param status 商品状态：1在售，0下架
      */
     public void setStatus(Byte status) {
         this.status = status;

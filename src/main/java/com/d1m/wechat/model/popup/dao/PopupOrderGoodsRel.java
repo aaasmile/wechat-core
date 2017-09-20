@@ -17,7 +17,7 @@ public class PopupOrderGoodsRel {
 
     private String sku;
 
-    private Integer sum;
+    private Integer quantity;
 
     /**
      * 单位：分
@@ -89,17 +89,17 @@ public class PopupOrderGoodsRel {
     }
 
     /**
-     * @return sum
+     * @return quantity
      */
     public Integer getSum() {
-        return sum;
+        return quantity;
     }
 
     /**
-     * @param sum
+     * @param quantity
      */
-    public void setSum(Integer sum) {
-        this.sum = sum;
+    public void setSum(Integer quantity) {
+        this.quantity = quantity;
     }
 
     /**

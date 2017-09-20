@@ -68,7 +68,7 @@
         left join popup_goods d on d.id = b.goods_id
         left join popup_goods_sku e on e.sku = b.sku
         left join member_benefit f on f.id = a.member_id
-        left join popup_order_delivery_addr g on g.order_id = a.id and g.is_invoice = 0
+        left join popup_order_delivery_addr g on g.order_id = a.id
         left join popup_delivery_addr h on h.id = g.addr_id
         where a.wechat_id = #{wechatId}
         <if test="orderId != null">

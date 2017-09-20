@@ -35,4 +35,12 @@
      </choose>
     </where>
   </select>
+
+  <select id="selectAllAreaMap" parameterType="HashMap" resultType="HashMap">
+    select code,name_zh from popup_country_area
+    where 1=1
+    <if test="codes != null">
+      and FIND_IN_SET( code, #{codes}) <![CDATA[<>]]> 0
+    </if>
+  </select>
 </mapper>

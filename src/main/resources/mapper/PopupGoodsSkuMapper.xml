@@ -6,10 +6,10 @@
       WARNING - @mbggenerated
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
-    <id column="sku" jdbcType="VARCHAR" property="sku" />
     <result column="goods_id" jdbcType="BIGINT" property="goodsId" />
+    <result column="sku" jdbcType="VARCHAR" property="sku" />
     <result column="stock" jdbcType="INTEGER" property="stock" />
-    <result column="title" jdbcType="VARCHAR" property="shade" />
+    <result column="shade" jdbcType="VARCHAR" property="shade" />
     <result column="color" jdbcType="VARCHAR" property="color" />
     <result column="status" jdbcType="TINYINT" property="status" />
     <result column="img_urls" jdbcType="LONGVARCHAR" property="imgUrls" />
