@@ -66,8 +66,7 @@ public class MemberBenefitDto {
 	
 	private Boolean invited = false;
 	
-	@Column(name = "invited_by")
-	private Integer invitedByMemberId = 0;
+	private Integer invitedById;
 	
     public Boolean getOnline() {
       return (this.getIsSubscribe() != null && this.getIsSubscribe())

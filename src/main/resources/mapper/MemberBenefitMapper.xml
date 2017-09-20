@@ -29,7 +29,7 @@
 		<result column="points_balance" jdbcType="INTEGER" property="pointsBalance" />
 		<result column="binding_over" jdbcType="INTEGER" property="bindingOver" />
 		<result column="invited" jdbcType="BOOLEAN" property="invited" />
-		<result column="invited_by" jdbcType="INTEGER" property="invitedByMemberId" />
+		<result column="invited_by" jdbcType="INTEGER" property="invitedById" />
 		<!-- benefit end -->
 	</resultMap>
   	
@@ -63,7 +63,7 @@
        			   b.invited_by
 			  from member a
 			left join member_benefit b
-			   on a.open_id = b.open_id
+			   on a.id = b.member_id
 	   	<where>
 	   		a.wechat_id = #{wechatId} 
 			<if test="nickname != null">
@@ -168,7 +168,7 @@
 			select count(a.id)
 			  from member a
 			left join member_benefit b
-			   on a.open_id = b.open_id
+			   on a.id = b.member_id
 	   	<where>
 	   		a.wechat_id = #{wechatId} 
 			<if test="nickname != null">
@@ -242,7 +242,7 @@
 	    </where>
 	</select>
 	
-	<select id="getById" resultType="com.d1m.wechat.dto.benefit.MemberBenefitDto">
+	<select id="getByMemberId" parameterType="HashMap" resultMap="MemberBenefitListDtoResultMap">
 			select a.id,
 				   a.union_id,
 				   a.open_id,
@@ -272,7 +272,7 @@
        			   b.invited_by
 			  from member a
 			left join member_benefit b
-			   on a.open_id = b.open_id
+			   on a.id = b.member_id
 	   	<where>
 	   		a.wechat_id = #{wechatId} 
 	   		and a.id = #{id}

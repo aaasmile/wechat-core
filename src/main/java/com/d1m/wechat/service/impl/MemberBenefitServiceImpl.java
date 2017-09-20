@@ -90,12 +90,16 @@ public class MemberBenefitServiceImpl extends BaseService<MemberBenefitDto> impl
 	}
 
 	@Override
-	public MemberBenefitDetailDto getMemberBenefitDetailDto(Integer wechatId, Integer id) {
-		MemberBenefitDto primaryMember = memberBenefitMapper.getById(wechatId, id);
-		Integer invitedByMemberId = primaryMember.getInvitedByMemberId();
+	public MemberBenefitDetailDto getMemberBenefitDetailDto(Integer wechatId, Integer memberId) {
+		MemberBenefitDto primaryMember = memberBenefitMapper.getByMemberId(wechatId, memberId);
+		if(primaryMember==null) return null;
+		
+		//invited by member logic
 		MemberBenefitDto invitedMemeber = null;
-		if(invitedByMemberId!=null && invitedByMemberId.intValue()>0) {
-			invitedMemeber = memberBenefitMapper.getById(wechatId, invitedByMemberId);
+		Integer invitedByMemberId = primaryMember.getInvitedById();
+		
+		if(invitedByMemberId != null && invitedByMemberId.intValue() > 0) {
+			invitedMemeber = memberBenefitMapper.getByMemberId(wechatId, invitedByMemberId);
 		} 
 		
 		MemberBenefitDetailDto detailDto = new MemberBenefitDetailDto(primaryMember, invitedMemeber);

@@ -55,16 +55,16 @@ public class MemberBenefitController extends BaseController {
 		
 	}
 	
-	@RequestMapping(value = "{id}/get.json", method = RequestMethod.GET)
+	@RequestMapping(value = "{memberId}/get.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("member:list")
-	public JSONObject get(@PathVariable Integer id, HttpSession session) {
+	public JSONObject get(@PathVariable Integer memberId, HttpSession session) {
 		try {
-			log.info("id:{}", id);
+			log.info("memberId:{}", memberId);
 			Integer wechatId = getWechatId(session);
 			
 			MemberBenefitDetailDto memberDto = memberBenefitService.getMemberBenefitDetailDto(
-					wechatId, id);
+					wechatId, memberId);
 			return representation(Message.MEMBER_GET_SUCCESS, memberDto);
 		} catch (Exception e) {
 			log.error(e.getMessage());
