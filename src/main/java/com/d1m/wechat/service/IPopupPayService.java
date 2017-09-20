@@ -1,9 +1,8 @@
 
 package com.d1m.wechat.service;
 
-import com.d1m.wechat.model.popup.dao.PopupCountryArea;
-import com.d1m.wechat.model.popup.dao.PopupPayConfig;
-
+import com.d1m.wechat.model.popup.PopupCountryArea;
+import com.d1m.wechat.model.popup.PopupPayConfig;
 import java.util.List;
 
 public interface IPopupPayService {

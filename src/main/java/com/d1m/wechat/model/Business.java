@@ -1,6 +1,5 @@
 package com.d1m.wechat.model;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.*;
 
@@ -51,11 +50,6 @@ public class Business {
      * 电话
      */
     private String telephone;
-
-    /**
-     * 门店类型
-     */
-    private String categories;
 
     /**
      * 地理位置的经度
@@ -123,40 +117,6 @@ public class Business {
      */
     @Column(name = "is_push")
     private Byte isPush;
-
-    /**
-     * 地理位置腾讯经度
-     */
-    private Double wxlng;
-
-    /**
-     * 地理位置腾讯纬度
-     */
-    private Double wxlat;
-
-    /**
-     * 微信门店ID
-     */
-    @Column(name = "poi_id")
-    private String poiId;
-
-    /**
-     * 审核状态（0-审核中，1-审核成功，2-审核失败）
-     */
-    @Column(name = "check_status")
-    private Byte checkStatus;
-
-    /**
-     * 审核消息
-     */
-    @Column(name = "check_msg")
-    private String checkMsg;
-
-    /**
-     * 更新状态（0-未更新，1-更新中）
-     */
-    @Column(name = "update_status")
-    private Byte updateStatus;
 
     /**
      * 商户简介，主要介绍商户信息等
@@ -324,24 +284,6 @@ public class Business {
      */
     public void setTelephone(String telephone) {
         this.telephone = telephone == null ? null : telephone.trim();
-    }
-
-    /**
-     * 获取门店类型
-     *
-     * @return categories - 门店类型
-     */
-    public String getCategories() {
-        return categories;
-    }
-
-    /**
-     * 设置门店类型
-     *
-     * @param categories 门店类型
-     */
-    public void setCategories(String categories) {
-        this.categories = categories == null ? null : categories.trim();
     }
 
     /**
@@ -558,114 +500,6 @@ public class Business {
      */
     public void setIsPush(Byte isPush) {
         this.isPush = isPush;
-    }
-
-    /**
-     * 获取地理位置腾讯经度
-     *
-     * @return wxlng - 地理位置腾讯经度
-     */
-    public Double getWxlng() {
-        return wxlng;
-    }
-
-    /**
-     * 设置地理位置腾讯经度
-     *
-     * @param wxlng 地理位置腾讯经度
-     */
-    public void setWxlng(Double wxlng) {
-        this.wxlng = wxlng;
-    }
-
-    /**
-     * 获取地理位置腾讯纬度
-     *
-     * @return wxlat - 地理位置腾讯纬度
-     */
-    public Double getWxlat() {
-        return wxlat;
-    }
-
-    /**
-     * 设置地理位置腾讯纬度
-     *
-     * @param wxlat 地理位置腾讯纬度
-     */
-    public void setWxlat(Double wxlat) {
-        this.wxlat = wxlat;
-    }
-
-    /**
-     * 获取微信门店ID
-     *
-     * @return poi_id - 微信门店ID
-     */
-    public String getPoiId() {
-        return poiId;
-    }
-
-    /**
-     * 设置微信门店ID
-     *
-     * @param poiId 微信门店ID
-     */
-    public void setPoiId(String poiId) {
-        this.poiId = poiId == null ? null : poiId.trim();
-    }
-
-    /**
-     * 获取审核状态（0-审核中，1-审核成功，2-审核失败）
-     *
-     * @return check_status - 审核状态（0-审核中，1-审核成功，2-审核失败）
-     */
-    public Byte getCheckStatus() {
-        return checkStatus;
-    }
-
-    /**
-     * 设置审核状态（0-审核中，1-审核成功，2-审核失败）
-     *
-     * @param checkStatus 审核状态（0-审核中，1-审核成功，2-审核失败）
-     */
-    public void setCheckStatus(Byte checkStatus) {
-        this.checkStatus = checkStatus;
-    }
-
-    /**
-     * 获取审核消息
-     *
-     * @return check_msg - 审核消息
-     */
-    public String getCheckMsg() {
-        return checkMsg;
-    }
-
-    /**
-     * 设置审核消息
-     *
-     * @param checkMsg 审核消息
-     */
-    public void setCheckMsg(String checkMsg) {
-        this.checkMsg = checkMsg == null ? null : checkMsg.trim();
-    }
-
-    /**
-     * 获取更新状态（0-未更新，1-更新中）
-     *
-     * @return update_status - 更新状态（0-未更新，1-更新中）
-     */
-    public Byte getUpdateStatus() {
-        return updateStatus;
-    }
-
-    /**
-     * 设置更新状态（0-未更新，1-更新中）
-     *
-     * @param updateStatus 更新状态（0-未更新，1-更新中）
-     */
-    public void setUpdateStatus(Byte updateStatus) {
-        this.updateStatus = updateStatus;
     }
 
     /**

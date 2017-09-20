@@ -173,8 +173,6 @@ public enum Message {
 
 	BUSINESS_NAME_NOT_BLANK(15001, "门店名称不能为空"),
 
-	BUSINESS_CODE_NOT_BLANK(15020, "门店编码不能为空"),
-
 	BUSINESS_BRANCH_NAME_NOT_BLANK(15002, "门店分店名称不能为空"),
 
 	BUSINESS_ADDRESS_NOT_BLANK(15003, "门店地址不能为空"),
@@ -184,12 +182,6 @@ public enum Message {
 	BUSINESS_NAME_NOT_EQUALS_BRANCH_NAME(15005, "门店名称不能和分店名称一样"),
 
 	BUSINESS_ID_NOT_BLANK(15006, "门店ID不能为空"),
-
-	BUSINESS_CHECKING_NOT_DELETE(15021, "审核中的门店不能删除"),
-
-	BUSINESS_COUPON_NOT_DELETE(15026, "门店已关联优惠券"),
-
-	BUSINESS_OFFLINE_ACTIVITY_NOT_DELETE(15027, "门店已关联线下活动"),
 
 	BUSINESS_NOT_EXIST(15007, "门店不存在"),
 
@@ -217,9 +209,6 @@ public enum Message {
 
 	BUSINESS_WEXIN_DELETE_FAIL(15017, "微信门店删除失败"),
 
-	BUSINESS_LAT_NOT_BLANK(15018, "门店纬度不能为空"),
-
-	BUSINESS_LNG_NOT_BLANK(15019, "门店经度不能为空"),
 	/**
 	 * material
 	 */
