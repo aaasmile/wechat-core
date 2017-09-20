@@ -1,277 +1,259 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.d1m.wechat.mapper.BusinessMapper">
-    <resultMap id="BaseResultMap" type="com.d1m.wechat.model.Business">
-        <!--
-          WARNING - @mbggenerated
-        -->
-        <id column="id" jdbcType="INTEGER" property="id"/>
-        <result column="business_code" jdbcType="VARCHAR" property="businessCode"/>
-        <result column="business_name" jdbcType="VARCHAR" property="businessName"/>
-        <result column="branch_name" jdbcType="VARCHAR" property="branchName"/>
-        <result column="province" jdbcType="INTEGER" property="province"/>
-        <result column="city" jdbcType="INTEGER" property="city"/>
-        <result column="district" jdbcType="VARCHAR" property="district"/>
-        <result column="address" jdbcType="VARCHAR" property="address"/>
-        <result column="telephone" jdbcType="VARCHAR" property="telephone"/>
-        <result column="categories" jdbcType="VARCHAR" property="categories"/>
-        <result column="longitude" jdbcType="DOUBLE" property="longitude"/>
-        <result column="latitude" jdbcType="DOUBLE" property="latitude"/>
-        <result column="special" jdbcType="VARCHAR" property="special"/>
-        <result column="open_time" jdbcType="VARCHAR" property="openTime"/>
-        <result column="avg_price" jdbcType="DECIMAL" property="avgPrice"/>
-        <result column="created_at" jdbcType="TIMESTAMP" property="createdAt"/>
-        <result column="creator_id" jdbcType="INTEGER" property="creatorId"/>
-        <result column="wechat_id" jdbcType="INTEGER" property="wechatId"/>
-        <result column="modify_at" jdbcType="TIMESTAMP" property="modifyAt"/>
-        <result column="status" jdbcType="TINYINT" property="status"/>
-        <result column="bus" jdbcType="VARCHAR" property="bus"/>
-        <result column="is_push" jdbcType="TINYINT" property="isPush"/>
-        <result column="wxlng" jdbcType="DOUBLE" property="wxlng"/>
-        <result column="wxlat" jdbcType="DOUBLE" property="wxlat"/>
-        <result column="poi_id" jdbcType="VARCHAR" property="poiId"/>
-        <result column="check_status" jdbcType="TINYINT" property="checkStatus"/>
-        <result column="check_msg" jdbcType="VARCHAR" property="checkMsg"/>
-        <result column="update_status" jdbcType="TINYINT" property="updateStatus"/>
-        <result column="introduction" jdbcType="LONGVARCHAR" property="introduction"/>
-        <result column="recommend" jdbcType="LONGVARCHAR" property="recommend"/>
-    </resultMap>
-
-    <select id="get" resultMap="BusinessGetResultMap">
-        select id, address, avg_price, branch_name, business_name, city, district, introduction, latitude, longitude,
-        province, special, telephone, wechat_id, open_time, business_code, bus, is_push from business
-        <where>
-            id = #{id}
-            <if test="wechatId != null">
-                and wechat_id = #{wechatId}
-            </if>
-        </where>
-    </select>
-
-    <resultMap id="BusinessGetResultMap" type="com.d1m.wechat.dto.BusinessDto">
-        <id column="id" jdbcType="INTEGER" property="id"/>
-        <result column="address" jdbcType="VARCHAR" property="address"/>
-        <result column="avg_price" jdbcType="DECIMAL" property="avgPrice"/>
-        <result column="branch_name" jdbcType="VARCHAR" property="branchName"/>
-        <result column="business_name" jdbcType="VARCHAR" property="businessName"/>
-        <result column="city" jdbcType="INTEGER" property="city"/>
-        <result column="district" jdbcType="VARCHAR" property="district"/>
-        <result column="introduction" jdbcType="LONGVARCHAR" property="introduction"/>
-        <result column="latitude" jdbcType="DOUBLE" property="latitude"/>
-        <result column="longitude" jdbcType="DOUBLE" property="longitude"/>
-        <result column="open_time" jdbcType="VARCHAR" property="openTime"/>
-        <result column="province" jdbcType="INTEGER" property="province"/>
-        <result column="special" jdbcType="VARCHAR" property="special"/>
-        <result column="telephone" jdbcType="VARCHAR" property="telephone"/>
-        <result column="business_code" jdbcType="VARCHAR" property="businessCode"/>
-        <result column="bus" jdbcType="VARCHAR" property="bus"/>
-        <result column="is_push" jdbcType="TINYINT" property="isPush"/>
-        <collection column="{businessId=id}" javaType="ArrayList" ofType="java.lang.String" property="photoList"
-                    select="getBusinessPhoto"/>
-    </resultMap>
-    <select id="getBusinessPhoto" resultMap="BusinessPhotoResultMap">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.Business">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="business_code" jdbcType="VARCHAR" property="businessCode" />
+    <result column="business_name" jdbcType="VARCHAR" property="businessName" />
+    <result column="branch_name" jdbcType="VARCHAR" property="branchName" />
+    <result column="province" jdbcType="INTEGER" property="province" />
+    <result column="city" jdbcType="INTEGER" property="city" />
+    <result column="district" jdbcType="VARCHAR" property="district" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="telephone" jdbcType="VARCHAR" property="telephone" />
+    <result column="longitude" jdbcType="DOUBLE" property="longitude" />
+    <result column="latitude" jdbcType="DOUBLE" property="latitude" />
+    <result column="special" jdbcType="VARCHAR" property="special" />
+    <result column="open_time" jdbcType="VARCHAR" property="openTime" />
+    <result column="avg_price" jdbcType="DECIMAL" property="avgPrice" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="creator_id" jdbcType="INTEGER" property="creatorId" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
+    <result column="modify_at" jdbcType="TIMESTAMP" property="modifyAt" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="bus" jdbcType="VARCHAR" property="bus" />
+    <result column="is_push" jdbcType="TINYINT" property="isPush" />
+    <result column="introduction" jdbcType="LONGVARCHAR" property="introduction" />
+    <result column="recommend" jdbcType="LONGVARCHAR" property="recommend" />
+  </resultMap>
+  
+  <select id="get" resultMap="BusinessGetResultMap">
+ 	select id, address, avg_price, branch_name, business_name, city, district, introduction, latitude, longitude, province, special, telephone, wechat_id, open_time, business_code, bus, is_push from business
+   	<where>
+   		id = #{id}
+   		<if test="wechatId != null">
+   			and wechat_id = #{wechatId}
+   		</if>
+    </where>
+  </select>
+  
+  <resultMap id="BusinessGetResultMap" type="com.d1m.wechat.dto.BusinessDto">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+	<result column="address" jdbcType="VARCHAR" property="address" />
+	<result column="avg_price" jdbcType="DECIMAL" property="avgPrice" />
+	<result column="branch_name" jdbcType="VARCHAR" property="branchName" />
+	<result column="business_name" jdbcType="VARCHAR" property="businessName" />
+	<result column="city" jdbcType="INTEGER" property="city" />
+	<result column="district" jdbcType="VARCHAR" property="district" />
+	<result column="introduction" jdbcType="LONGVARCHAR" property="introduction" />
+	<result column="latitude" jdbcType="DOUBLE" property="latitude" />
+	<result column="longitude" jdbcType="DOUBLE" property="longitude" />
+	<result column="open_time" jdbcType="VARCHAR" property="openTime" />
+	<result column="province" jdbcType="INTEGER" property="province" />
+	<result column="special" jdbcType="VARCHAR" property="special" />
+	<result column="telephone" jdbcType="VARCHAR" property="telephone" />
+	<result column="business_code" jdbcType="VARCHAR" property="businessCode" />
+	<result column="bus" jdbcType="VARCHAR" property="bus" />
+	<result column="is_push" jdbcType="TINYINT" property="isPush" />
+	<collection column="{businessId=id}" javaType="ArrayList" ofType="java.lang.String" property="photoList" select="getBusinessPhoto" />
+  </resultMap>
+  <select id="getBusinessPhoto" resultMap="BusinessPhotoResultMap">
   	select photo_url from business_photo where business_id = #{businessId}
   </select>
-    <resultMap id="BusinessPhotoResultMap" type="java.lang.String">
-        <result column="photo_url" jdbcType="VARCHAR" property="url"/>
-    </resultMap>
+  <resultMap id="BusinessPhotoResultMap" type="java.lang.String">
+	<result column="photo_url" jdbcType="VARCHAR" property="url" />
+  </resultMap>
+  
+  <select id="search" resultMap="BusinessListResultMap">
+   	<if test="lat != null and lng != null">
+   		SELECT
+		*,
+		ROUND(
+			6378.138 * 2 * ASIN(
+				SQRT(
+					POW(
+						SIN(
+							(
+								#{lat} * PI() / 180 - latitude * PI() / 180
+							) / 2
+						),
+						2
+					) + COS(#{lat} * PI() / 180) * COS(latitude * PI() / 180) * POW(
+						SIN(
+							(
+								#{lng} * PI() / 180 - longitude * PI() / 180
+							) / 2
+						),
+						2
+					)
+				)
+			) * 1000
+		) as distance
+		from
+			business
+		<where>
+			latitude is not null and status = 1
+			<if test="wechatId != null">
+				and wechat_id = #{wechatId}
+			</if>
+			<if test="status != null">
+	   			 and status = #{status}
+	   		</if>
+	   		<if test="province != null">
+	   			and province = #{province}
+	   		</if>
+	   		<if test="city != null">
+	   			and city = #{city}
+	   		</if>
+	   		<if test="query != null">
+	   			and (business_name like CONCAT('%',#{query},'%')
+	   			or business_code like CONCAT('%',#{query},'%')
+	   			or address like CONCAT('%',#{query},'%'))
+	   		</if>
+		</where>
+		order by distance
+   	</if>
+   	<if test="lat == null or lng == null">
+   		select * from business
+	   	<where>
+			status = 1
+			<if test="wechatId != null">
+				and wechat_id = #{wechatId}
+			</if>
+	   		<if test="status != null">
+	   			 and status = #{status}
+	   		</if>
+	   		<if test="province != null">
+	   			and province = #{province}
+	   		</if>
+	   		<if test="city != null">
+	   			and city = #{city}
+	   		</if>
+	   		<if test="query != null">
+	   			and (business_name like CONCAT('%',#{query},'%')
+	   			or business_code like CONCAT('%',#{query},'%')  
+	   			or address like CONCAT('%',#{query},'%'))
+	   		</if>
+	    </where>
+	    <if test="sortName != null">
+			order by ${sortName}
+			<if test="sortDir != null">
+				${sortDir}
+			</if>
+			<if test="sortDir == null">
+				desc
+			</if>
+		</if>
+		<if test="sortName == null">
+			order by id desc
+		</if>
+   	</if>
+  </select>
+  
+  <select id="searchByLngLat" resultMap="BusinessListResultMap">
+   	SELECT
+	*,
+	ROUND(
+		6378.138 * 2 * ASIN(
+			SQRT(
+				POW(
+					SIN(
+						(
+							#{lat} * PI() / 180 - latitude * PI() / 180
+						) / 2
+					),
+					2
+				) + COS(#{lat} * PI() / 180) * COS(latitude * PI() / 180) * POW(
+					SIN(
+						(
+							#{lng} * PI() / 180 - longitude * PI() / 180
+						) / 2
+					),
+					2
+				)
+			)
+		) * 1000
+	) AS distance
+	FROM
+		business
+	WHERE
+		latitude IS NOT NULL AND `status`=1 and wechat_id = #{wechatId}
+	ORDER BY
+		distance
+	LIMIT 0,#{size};
+  </select>
+  
+  <resultMap id="BusinessListResultMap" type="com.d1m.wechat.dto.BusinessDto">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+	<result column="address" jdbcType="VARCHAR" property="address" />
+	<result column="avg_price" jdbcType="DECIMAL" property="avgPrice" />
+	<result column="branch_name" jdbcType="VARCHAR" property="branchName" />
+	<result column="business_name" jdbcType="VARCHAR" property="businessName" />
+	<result column="city" jdbcType="INTEGER" property="city" />
+	<result column="district" jdbcType="VARCHAR" property="district" />
+	<result column="introduction" jdbcType="LONGVARCHAR" property="introduction" />
+	<result column="latitude" jdbcType="DOUBLE" property="latitude" />
+	<result column="longitude" jdbcType="DOUBLE" property="longitude" />
+	<result column="open_time" jdbcType="VARCHAR" property="openTime" />
+	<result column="province" jdbcType="INTEGER" property="province" />
+	<result column="special" jdbcType="VARCHAR" property="special" />
+	<result column="telephone" jdbcType="VARCHAR" property="telephone" />
+	<result column="business_code" jdbcType="VARCHAR" property="businessCode" />
+	<result column="bus" jdbcType="VARCHAR" property="bus" />
+  	<result column="distance" jdbcType="DECIMAL" property="distance" />
+  	<result column="is_push" jdbcType="INTEGER" property="isPush" />
+	<collection column="{businessId=id}" javaType="ArrayList" ofType="java.lang.String" property="photoList" select="getBusinessPhoto" />
+  </resultMap>
+  
+  <select id="searchByBusinessId" resultType="java.lang.String">
+  	select br.poi_id from business_result as br left join business as b on b.business_code = br.uniq_id
+  	<where>
+  		b.id = #{id} and b.status = 1
+  	</where>
+  </select>
+  
+  <select id="getAll" resultMap="BaseResultMap">
+  	select * from business
+  	<where>
+  		status = 1
+  	</where>
+  </select>
+  
+  <select id="getProvinceList" resultMap="BusinessProvinceResultMap">
+		select ai.id as id, ai.c_name as c_name from business as b
+		left join area_info as ai on ai.id = b.province
+		<where>
+			b.province is not NULL
+			<if test="wechatId != null">
+				AND b.wechat_id = #{wechatId}
+			</if>
+		</where>
+		group by b.province
+	</select>
 
-    <select id="search" resultMap="BusinessListResultMap">
-        <if test="lat != null and lng != null">
-            SELECT
-            *,
-            ROUND(
-            6378.138 * 2 * ASIN(
-            SQRT(
-            POW(
-            SIN(
-            (
-            #{lat} * PI() / 180 - latitude * PI() / 180
-            ) / 2
-            ),
-            2
-            ) + COS(#{lat} * PI() / 180) * COS(latitude * PI() / 180) * POW(
-            SIN(
-            (
-            #{lng} * PI() / 180 - longitude * PI() / 180
-            ) / 2
-            ),
-            2
-            )
-            )
-            ) * 1000
-            ) as distance
-            from
-            business
-            <where>
-                wechat_id = #{wechatId} and latitude is not null and status = 1
-                <if test="status != null">
-                    and status = #{status}
-                </if>
-                <if test="province != null">
-                    and province = #{province}
-                </if>
-                <if test="city != null">
-                    and city = #{city}
-                </if>
-                <if test="query != null">
-                    and (business_name like CONCAT('%',#{query},'%')
-                    or business_code like CONCAT('%',#{query},'%')
-                    or address like CONCAT('%',#{query},'%')
-                    or branch_name like CONCAT('%',#{query},'%'))
-                </if>
-            </where>
-            order by distance
-        </if>
-        <if test="lat == null or lng == null">
-            select * from business
-            <where>
-                wechat_id = #{wechatId}
-                <if test="status != null">
-                    and status = #{status}
-                </if>
-                <if test="province != null">
-                    and province = #{province}
-                </if>
-                <if test="city != null">
-                    and city = #{city}
-                </if>
-                <if test="query != null">
-                    and (business_name like CONCAT('%',#{query},'%')
-                    or business_code like CONCAT('%',#{query},'%')
-                    or address like CONCAT('%',#{query},'%')
-                    or branch_name like CONCAT('%',#{query},'%'))
-                </if>
-            </where>
-            <if test="sortName != null">
-                order by ${sortName}
-                <if test="sortDir != null">
-                    ${sortDir}
-                </if>
-                <if test="sortDir == null">
-                    desc
-                </if>
-            </if>
-            <if test="sortName == null">
-                order by check_status asc
-            </if>
-        </if>
-    </select>
+	<select id="getCityList" resultMap="BusinessCityResultMap">
+		select ai.id as id, ai.c_name as c_name, ai.parent_id as parent_id from business as b
+		left join area_info as ai on ai.id = b.city
+		<where>
+			b.city is not NULL
+			<if test="wechatId != null">
+				b.wechat_id = #{wechatId}
+			</if>
+		</where>
+		group by ai.id
+	</select>
+	
+	<resultMap id="BusinessProvinceResultMap" type="com.d1m.wechat.dto.BusinessAreaListDto">
+		<id column="id" jdbcType="INTEGER" property="value" />
+		<result column="c_name" jdbcType="VARCHAR" property="name" />
+	</resultMap>
 
-    <select id="searchByLngLat" resultMap="BusinessListResultMap">
-        SELECT
-        *,
-        ROUND(
-        6378.138 * 2 * ASIN(
-        SQRT(
-        POW(
-        SIN(
-        (
-        #{lat} * PI() / 180 - latitude * PI() / 180
-        ) / 2
-        ),
-        2
-        ) + COS(#{lat} * PI() / 180) * COS(latitude * PI() / 180) * POW(
-        SIN(
-        (
-        #{lng} * PI() / 180 - longitude * PI() / 180
-        ) / 2
-        ),
-        2
-        )
-        )
-        ) * 1000
-        ) AS distance
-        FROM
-        business
-        WHERE
-        latitude IS NOT NULL AND `status`=1 and wechat_id = #{wechatId}
-        ORDER BY
-        distance
-        LIMIT 0,#{size};
-    </select>
-
-    <resultMap id="BusinessListResultMap" type="com.d1m.wechat.dto.BusinessDto">
-        <id column="id" jdbcType="INTEGER" property="id"/>
-        <result column="address" jdbcType="VARCHAR" property="address"/>
-        <result column="avg_price" jdbcType="DECIMAL" property="avgPrice"/>
-        <result column="branch_name" jdbcType="VARCHAR" property="branchName"/>
-        <result column="business_name" jdbcType="VARCHAR" property="businessName"/>
-        <result column="city" jdbcType="INTEGER" property="city"/>
-        <result column="district" jdbcType="VARCHAR" property="district"/>
-        <result column="introduction" jdbcType="LONGVARCHAR" property="introduction"/>
-        <result column="latitude" jdbcType="DOUBLE" property="latitude"/>
-        <result column="longitude" jdbcType="DOUBLE" property="longitude"/>
-        <result column="open_time" jdbcType="VARCHAR" property="openTime"/>
-        <result column="province" jdbcType="INTEGER" property="province"/>
-        <result column="special" jdbcType="VARCHAR" property="special"/>
-        <result column="telephone" jdbcType="VARCHAR" property="telephone"/>
-        <result column="business_code" jdbcType="VARCHAR" property="businessCode"/>
-        <result column="bus" jdbcType="VARCHAR" property="bus"/>
-        <result column="distance" jdbcType="DECIMAL" property="distance"/>
-        <result column="is_push" jdbcType="INTEGER" property="isPush"/>
-        <result column="check_status" jdbcType="INTEGER" property="checkStatus"/>
-        <result column="check_msg" jdbcType="VARCHAR" property="checkMsg"/>
-        <result column="categories" jdbcType="VARCHAR" property="categories"/>
-        <!--<collection column="{businessId=id}" javaType="ArrayList" ofType="java.lang.String" property="photoList"-->
-                    <!--select="getBusinessPhoto"/>-->
-        <collection column="{businessId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.MaterialDto" property="materialList" select="getOutletImage" />
-    </resultMap>
-
-    <select id="searchByBusinessId" resultType="java.lang.String">
-        select br.poi_id from business_result as br left join business as b on b.business_code = br.uniq_id
-        <where>
-            b.id = #{id} and b.status = 1
-        </where>
-    </select>
-
-    <select id="getAll" resultMap="BaseResultMap">
-        select * from business
-        <where>
-            status = 1
-        </where>
-    </select>
-
-    <select id="getByBusinessCode" resultMap="BaseResultMap">
-        select * from business
-        <where>
-            business_code = #{sid}
-        </where>
-    </select>
-
-    <select id="getOutletImage" resultMap="OutletImageResultMap">
-        select m.id as id, m.pic_url as pic_url, m.wx_pic_url as wx_pic_url from business_photo as bp left join material
-        as m on bp.material_id = m.id
-        <where>
-            bp.business_id = #{businessId}
-        </where>
-    </select>
-    <resultMap id="OutletImageResultMap" type="com.d1m.wechat.dto.MaterialDto">
-        <result column="id" jdbcType="INTEGER" property="id"/>
-        <result column="pic_url" jdbcType="VARCHAR" property="picUrl"/>
-        <result column="wx_pic_url" jdbcType="VARCHAR" property="wxPicUrl"/>
-    </resultMap>
-
-    <select id="searchDirect" resultMap="BusinessListResultMap">
-        select * from business as b
-        left join area_info as ai on ai.c_name = SUBSTRING(b.district, 1, CHAR_LENGTH(b.district)-1)
-        <where>
-            b.wechat_id = #{wechatId} and b.province = b.city and b.province = #{province}
-            <if test="city != null">
-                and ai.id = #{city}
-            </if>
-        </where>
-        <if test="sortName != null">
-            order by ${sortName}
-            <if test="sortDir != null">
-                ${sortDir}
-            </if>
-            <if test="sortDir == null">
-                desc
-            </if>
-        </if>
-        <if test="sortName == null">
-            order by b.check_status asc
-        </if>
-    </select>
+	<resultMap id="BusinessCityResultMap" type="com.d1m.wechat.dto.BusinessAreaListDto">
+		<id column="id" jdbcType="INTEGER" property="value" />
+		<result column="c_name" jdbcType="VARCHAR" property="name" />
+		<result column="parent_id" jdbcType="INTEGER" property="parent" />
+	</resultMap>
 </mapper>

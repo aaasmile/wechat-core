@@ -2,6 +2,7 @@ package com.d1m.wechat.service;
 
 import java.util.List;
 
+import com.d1m.wechat.dto.BusinessAreaListDto;
 import com.d1m.wechat.dto.BusinessDto;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.model.Business;
@@ -25,12 +26,17 @@ public interface BusinessService extends IService<Business> {
 			throws WechatException;
 
 	Business getBusinessByCode(Integer wechatId, String code);
-	
+
 	List<BusinessDto> searchByLngLat(Integer wechatId, Double lng, Double lat,
 			Integer size) throws WechatException;
 
-	Business pushBusinessToWx(Integer wechatId, Business business, BusinessModel model);
+	void pushBusinessToWx(Integer wechatId, Business business,
+			BusinessModel model);
 
 	void initBusinessLatAndLng(Integer wechatId, User user);
+
+	List<BusinessAreaListDto> getProvinceList(Integer wechatId);
+
+	List<BusinessAreaListDto> getCityList(Integer wechatId);
 
 }
