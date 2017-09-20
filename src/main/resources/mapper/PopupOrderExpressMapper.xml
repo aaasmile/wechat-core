@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.PopupOrderExpressMapper">
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.popup.dao.PopupOrderExpress">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="track_no" jdbcType="VARCHAR" property="trackNo" />
+    <result column="company" jdbcType="VARCHAR" property="company" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+
+
+  <select id="selectPopupExpressByOrderId" parameterType="HashMap" resultMap="BaseResultMap">
+    select * from popup_order_express where order_id = #{orderId}
+  </select>
+
+  <update id="updateTrackNo" parameterType="HashMap" >
+    update popup_order_express set track_no = ${trackNo} where order_id = ${orderId}
+  </update>
+
+</mapper>
