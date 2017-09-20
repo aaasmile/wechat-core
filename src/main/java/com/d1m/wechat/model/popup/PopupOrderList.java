@@ -29,9 +29,12 @@ public class PopupOrderList {
     private Date orderCreateTime;
     private Date deliveryCreateTime;
     private String company;
-    private String province;
-    private String city;
-    private String area;
+    private Integer province;
+    private String provinceName;
+    private Integer city;
+    private String cityName;
+    private Integer area;
+    private String areaName;
     private String address;
     private Integer memberId;
     private String openId;

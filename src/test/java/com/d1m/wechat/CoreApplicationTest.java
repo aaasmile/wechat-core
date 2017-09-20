@@ -73,6 +73,23 @@ public class CoreApplicationTest {
         String ss = "AA215,AA216";
         List<HashMap<String, Object>> list = popupGoodsMapper.selectPopupGoodsByGoodsIdAndSku(
                 gg, ss);
+
+//        popupGoodsSku.setGoodsId(68L);
+//        popupGoodsSku.setSku("AA660");
+//        popupGoodsSku.setStatus((byte)1);
+//        popupGoodsSku.setStock(10);
+//        popupGoodsSku.setColor("FF0000");
+//        popupGoodsSku.setShade("Light311111");
+        PopupGoods popupGoods = new PopupGoods();
+        popupGoods.setId(68L);
+        popupGoods = popupGoodsMapper.selectByPrimaryKey(popupGoods);
+        log.info(JSONObject.toJSONString(popupGoods));
+
+        PopupGoodsSku popupGoodsSku = new PopupGoodsSku();
+        popupGoodsSku.setId(212L);
+        PopupGoodsSku popupGoodsSkuNew = popupGoodsSkuMapper.selectByPrimaryKey(popupGoodsSku);
+//        int state = popupGoodsSkuMapper.updateByPrimaryKey(popupGoodsSku);
+        log.info(JSONObject.toJSONString(popupGoodsSkuNew));
     }
 
     public void searchOrder() {

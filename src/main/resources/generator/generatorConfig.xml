@@ -59,10 +59,7 @@
 
     <javaClientGenerator targetPackage="${targetMapperPackage}" targetProject="${targetJavaProject}" type="XMLMAPPER" />
 
-    <table tableName="popup_delivery_addr" >
-      <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
-    </table>
-      <table tableName="popup_goods%" >
+      <table tableName="popup_goods_sku" >
           <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
       </table>
   </context>

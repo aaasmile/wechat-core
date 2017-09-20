@@ -64,7 +64,7 @@
       and a.status = #{status}
     </if>
     group by a.id
-    order by a.sort desc,a.id desc
+    order by a.id desc,a.sort desc
   </select>
 
   <select id="selectPopupGoodsByGoodsIdAndSku" parameterType="HashMap" resultType="HashMap">

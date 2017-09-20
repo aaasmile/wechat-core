@@ -229,7 +229,7 @@ public class OrderController extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "list",method = RequestMethod.POST)
+    @RequestMapping(value = "list")
     public JSONObject listOrder(@CookieValue(name="wechatId",required = false) Integer wechatId, HttpServletRequest request){
         wechatId = debug?32:getWechatId(request.getSession());
         try{

@@ -39,13 +39,13 @@ public class PopupGoodsServiceImpl implements IPopupGoodsService {
     @Override
     public void updatePopupGoods(PopupGoodsEntity goodsEntity, String action) {
         PopupGoods popupGoodsDao = goodsEntity.getGoods();
-        if (popupGoodsDao.getCategoryId() == null) popupGoodsDao.setCategoryId(0L);
-        if (popupGoodsDao.getImgUrls() == null) popupGoodsDao.setImgUrls("");
-        if (popupGoodsDao.getLimitCount() == null) popupGoodsDao.setLimitCount(0);
-        if (popupGoodsDao.getStatus() == null) popupGoodsDao.setStatus((byte)1);
-        if (popupGoodsDao.getType() == null) popupGoodsDao.setType((byte)1);
-        if (popupGoodsDao.getSort() == null) popupGoodsDao.setSort(0);
-        if (popupGoodsDao.getSortBestSell() == null) popupGoodsDao.setSortBestSell(0);
+//        if (popupGoodsDao.getCategoryId() == null) popupGoodsDao.setCategoryId(0L);
+//        if (popupGoodsDao.getImgUrls() == null) popupGoodsDao.setImgUrls("");
+//        if (popupGoodsDao.getLimitCount() == null) popupGoodsDao.setLimitCount(0);
+//        if (popupGoodsDao.getStatus() == null) popupGoodsDao.setStatus((byte)1);
+//        if (popupGoodsDao.getType() == null) popupGoodsDao.setType((byte)1);
+//        if (popupGoodsDao.getSort() == null) popupGoodsDao.setSort(0);
+//        if (popupGoodsDao.getSortBestSell() == null) popupGoodsDao.setSortBestSell(0);
         Integer totalStock = 0;
         List<PopupGoodsSku> list = goodsEntity.getLiGoodsSku();
         for (PopupGoodsSku popupGoodsSku: list) {
@@ -55,17 +55,17 @@ public class PopupGoodsServiceImpl implements IPopupGoodsService {
         popupGoodsDao.setUpdateTime(new Date());
         if (action.equals("add")) {
             popupGoodsDao.setCreateTime(new Date());
-            popupGoodsMapper.insert(popupGoodsDao);
+            popupGoodsMapper.insertSelective(popupGoodsDao);
         } else {
-            popupGoodsMapper.updateByPrimaryKey(popupGoodsDao);
+            popupGoodsMapper.updateByPrimaryKeySelective(popupGoodsDao);
         }
         for (PopupGoodsSku popupGoodsSku: list) {
             if (action.equals("add")) {
                 if (popupGoodsSku.getStatus() == null) popupGoodsSku.setStatus((byte)1);
                 popupGoodsSku.setGoodsId(popupGoodsDao.getId());
-                popupGoodsSkuMapper.insert(popupGoodsSku);
+                popupGoodsSkuMapper.insertSelective(popupGoodsSku);
             } else {
-                popupGoodsSkuMapper.updateByPrimaryKey(popupGoodsSku);
+                popupGoodsSkuMapper.updateByPrimaryKeySelective(popupGoodsSku);
             }
         }
     }
