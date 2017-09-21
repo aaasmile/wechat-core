@@ -1,11 +1,9 @@
 package com.d1m.wechat.configure;
 
-import com.d1m.wechat.Intercepter.PopupInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
 /**
  * WebappConfig
@@ -46,7 +44,6 @@ public class WebMvcConfigure extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
 //        registry.addInterceptor(new LocaleChangeInterceptor());
-        registry.addInterceptor(new PopupInterceptor()).addPathPatterns("**/*");
     }
     //
     //@Bean
