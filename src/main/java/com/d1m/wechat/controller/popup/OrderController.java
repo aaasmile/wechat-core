@@ -141,7 +141,7 @@ public class OrderController extends BaseController {
                     arrayList.add("");
                 }
                 for (OrderEnum m : OrderEnum.values()) {
-                    if (m.getDesc().startsWith("ORDER_") && m.getCode().equals(orderList.getPayStatus())) {
+                    if (m.name().startsWith("ORDER_") && m.getCode().equals(orderList.getPayStatus())) {
                         arrayList.add(m.getDesc());
                         break;
                     }
