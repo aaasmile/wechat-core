@@ -72,6 +72,7 @@ public class ProductController extends BaseController {
      */
     @RequestMapping(value = "image/add", method = RequestMethod.POST)
     @ResponseBody
+    @RequiresPermissions("product:list")
     public JSONObject uploadImage(
             @RequestParam(required = false) MultipartFile file,
             HttpServletRequest request, HttpServletResponse response,
@@ -88,6 +89,7 @@ public class ProductController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "list")
+    @RequiresPermissions("product:list")
     public JSONObject listProduct(@CookieValue(name="wechatId",required = false) Integer wechatId, HttpServletRequest request){
         wechatId = debug?32:getWechatId(request.getSession());
         try{
@@ -103,6 +105,7 @@ public class ProductController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "search",method = RequestMethod.POST)
+    @RequiresPermissions("popup-store:product-list")
     public JSONObject searchProduct(@RequestBody(required = true) PopupGoodsFilter popupGoodsFilter, @CookieValue(name="wechatId",required = false) Integer wechatId, HttpServletRequest request){
         wechatId = debug?32:getWechatId(request.getSession());
         if(popupGoodsFilter.getPageNum() < 0 || popupGoodsFilter.getPageSize() < 0)
@@ -119,6 +122,7 @@ public class ProductController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "add",method = RequestMethod.POST)
+    @RequiresPermissions("popup-store:product-list")
     public JSONObject addProduct(@RequestBody(required = true) PopupGoodsEntity goodsEntity, @CookieValue(name="wechatId",required = false) Integer wechatId, HttpServletRequest request){
         try{
             wechatId = debug?32:this.getWechatId(request.getSession()).intValue();
@@ -133,6 +137,7 @@ public class ProductController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "edit",method = RequestMethod.POST)
+    @RequiresPermissions("popup-store:product-list")
     public JSONObject editProduct(@RequestBody(required = true) PopupGoodsEntity goodsEntity, @CookieValue(name="wechatId",required = false) Integer wechatId, HttpServletRequest request){
         try{
             wechatId = debug?32:this.getWechatId(request.getSession()).intValue();
@@ -147,6 +152,7 @@ public class ProductController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "delete/{id}")
+    @RequiresPermissions("popup-store:product-list")
     public JSONObject deleteProduct(@PathVariable(name = "id") Long id, @CookieValue(name="wechatId",required = false) Integer wechatId, HttpServletRequest request){
         try{
             popupGoodsService.deletePopupGoods(id);
@@ -159,6 +165,7 @@ public class ProductController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "get/{id}")
+    @RequiresPermissions("popup-store:product-list")
     public JSONObject getProduct(@PathVariable(name = "id") Long id, @CookieValue(name="wechatId",required = false) Integer wechatId, HttpServletRequest request){
         try{
             PopupGoodsEntity goodsEntity = popupGoodsService.getPopupGoods(id);

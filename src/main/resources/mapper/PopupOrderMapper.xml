@@ -41,6 +41,13 @@
         <result column="pay_type" jdbcType="VARCHAR" property="payType"/>
         <result column="price" jdbcType="INTEGER" property="price"/>
         <result column="points" jdbcType="BIGINT" property="points"/>
+        <result column="msm_phone" jdbcType="VARCHAR" property="msmPhone"/>
+        <result column="gift_content" jdbcType="VARCHAR" property="giftContent"/>
+        <result column="credit_code" jdbcType="VARCHAR" property="creditCode"/>
+        <result column="person_no" jdbcType="VARCHAR" property="personNo"/>
+        <result column="invoice_title" jdbcType="VARCHAR" property="invoiceTitle"/>
+        <result column="invoice_type" jdbcType="TINYINT" property="invoiceType"/>
+        <result column="invoice_prop" jdbcType="TINYINT" property="invoiceProp"/>
     </resultMap>
 
     <select id="selectPopupOrderList" parameterType="HashMap" resultMap="ListResultMap">
@@ -67,7 +74,14 @@
         max(a.pay_status) pay_status,
         max(a.pay_type) pay_type,
         sum(b.price) price,
-        sum(b.points) points
+        sum(b.points) points,
+        max(g.msm_phone) msm_phone,
+        max(i.gift_content) gift_content,
+        max(j.credit_code) credit_code,
+        max(j.person_no) person_no,
+        max(j.title) invoice_title,
+        max(j.type) invoice_type,
+        max(j.prop) invoice_prop
         from popup_order a
         left join popup_order_goods_rel b on b.order_id = a.id
         left join popup_order_express c on c.order_id = a.id
@@ -76,6 +90,8 @@
         left join member f on f.id = a.member_id and f.wechat_id = #{wechatId}
         left join popup_order_delivery_addr g on g.order_id = a.id
         left join popup_delivery_addr h on h.id = g.addr_id
+        left join popup_order_extra_attr i on i.order_id = a.id
+        left join popup_order_invoice j on j.order_id = a.id
         where a.wechat_id = #{wechatId}
         <if test="orderId != null">
             and a.id like concat('%',#{orderId},'%')

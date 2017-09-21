@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.model.popup.dao.PopupPayConfig;
 import com.d1m.wechat.util.Message;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ public class PopupController extends BaseController {
             value = {"pay/config/{id}"},
             method = {RequestMethod.POST}
     )
+    @RequiresPermissions("popup-store:pay-config")
     public JSONObject updatePayConfig(@PathVariable(name = "id") long id, @RequestBody(required = false) PopupPayConfig model) {
         boolean state = true;
         if (model.getCompanyId().intValue() == 0) {
@@ -57,6 +59,7 @@ public class PopupController extends BaseController {
             value = {"pay/config"},
             method = {RequestMethod.GET}
     )
+    @RequiresPermissions("popup-store:pay-config")
     public JSONObject getPayConfig(HttpServletRequest request) {
         int wechatId = debug?29:this.getWechatId(request.getSession()).intValue();
         List<PopupPayConfig> results = this.popupPayServiceImpl.queryPopupPayConfig(wechatId);

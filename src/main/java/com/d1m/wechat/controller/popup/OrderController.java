@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSONObject;
+import com.d1m.wechat.mapper.PopupOrderMapper;
 import com.d1m.wechat.model.popup.PopupOrderFilter;
 import com.d1m.wechat.model.popup.PopupOrderList;
 import com.d1m.wechat.model.popup.dao.PopupCountryArea;
@@ -25,6 +26,7 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +56,8 @@ public class OrderController extends BaseController {
     IPopupPayService popupPayService;
     @Autowired
     IPopupOrderService popupOrderService;
+    @Autowired
+    PopupOrderMapper popupOrderMapper;
 
     public OrderEnum getEnumByName(String name) {
         if (StringUtils.isBlank(name)) {
@@ -66,9 +70,108 @@ public class OrderController extends BaseController {
         }
         return null;
     }
+
     /**
      * 导出订单列表数据
      */
+    @ResponseBody
+    @RequestMapping(value = "export",method = {RequestMethod.POST})
+    @RequiresPermissions("popup-store:order-manage")
+    public void exportOrderList(@RequestBody(required = true) PopupOrderFilter orderFilter, HttpServletRequest request, HttpServletResponse response){
+
+        response.reset();
+        response.setHeader("Content-disposition","attachment; filename=OrderList-"+ DateUtil.getCurrentyyyyMMdd()+".xls");
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        try {
+            orderFilter.setWechatId(debug?32:getWechatId(request.getSession()));
+            List<PopupOrderList> listOrderList = popupOrderMapper.selectPopupOrderList(orderFilter);
+            HSSFWorkbook xwb = new HSSFWorkbook();
+
+            HSSFSheet sheet = xwb.createSheet("订单");
+            HSSFRow row = sheet.createRow(0);
+            String[] tabs = {"序号", "日期", "订单编号", "姓名", "手机号码", "配送地址", "配送信息发送至另一个手机", "礼品卡", "礼品卡内容", "发票", "发票类型", "发票抬头", "税号", "支付方式"};
+            for (int i = 0; i< tabs.length; i++) {
+                HSSFCell cell = row.createCell(i);
+                cell.setCellValue(tabs[i]);
+            }
+
+            HashMap<Integer,String> hmArea = new HashMap<>();
+            List<PopupCountryArea> liCountryArea = popupPayService.queryCountryArea();
+            for (PopupCountryArea area : liCountryArea) {
+                hmArea.put(Integer.parseInt(area.getCode()),area.getNameZh());
+            }
+
+            int i = 0;
+            for (PopupOrderList orderList: listOrderList ) {
+                    ArrayList<String> al = new ArrayList<>();
+                    al.add(i+1+"");
+                    al.add(DateUtil.formatDate(orderList.getOrderCreateTime(),"yyyy/MM/dd"));
+                    al.add(String.valueOf(orderList.getOrderId()));
+                    al.add(orderList.getReceiverName());
+                    al.add(orderList.getReceiverPhone());
+                    String province = hmArea.get(orderList.getProvince());
+                    String city = hmArea.get(orderList.getCity());
+                    String area = hmArea.get(orderList.getArea());
+                    String addr = orderList.getAddress();
+                    al.add(province +" "+ city +" "+ area +" "+ addr);
+                    String msmPhone = orderList.getMsmPhone();
+                    String anotherPhone = msmPhone.equals(orderList.getReceiverPhone()) ? "NO" : msmPhone;
+                    al.add(anotherPhone);
+                    String hasGift = orderList.getGiftContent() != null && !orderList.getGiftContent().equals("") ? "YES" : "NO";
+                    al.add(hasGift);
+                    al.add(orderList.getGiftContent());
+                    String hasInvoice = orderList.getInvoiceType() != null && orderList.getInvoiceType() > 0 ? "YES" : "NO";
+                    al.add(hasInvoice);
+                    if(hasInvoice.equals("YES")) {
+                        String invoiceType = orderList.getInvoiceType() == 1 ? OrderEnum.PERSONAL.getDesc() : OrderEnum.COMPANY.getDesc();
+                        al.add(invoiceType);
+                        al.add(orderList.getInvoiceTitle());
+                        String creditCode = orderList.getCreditCode();
+                        if (creditCode != null && !creditCode.equals("")) {
+                            creditCode = "creditCode:" + creditCode;
+                        }
+                        String personNo = orderList.getPersonNo();
+                        if (personNo != null && !personNo.equals("")) {
+                            personNo = "personNo:" + personNo;
+                        }
+                        if (!creditCode.equals("") || !personNo.equals(""))
+                            al.add(creditCode + personNo);
+                        else
+                            al.add("");
+                    } else {
+                        al.add("");
+                        al.add("");
+                        al.add("");
+                    }
+                    for(OrderEnum m : OrderEnum.values()) {
+                        if (m.getDesc().startsWith("ORDER_") && m.getCode().equals(orderList.getPayStatus())) {
+                            al.add(m.getDesc());
+                            break;
+                        }
+                    }
+                    HSSFRow rowi = sheet.createRow(i + 1);
+                    for (int k=0; k<al.size(); k++) {
+                        HSSFCell cell = rowi.createCell(k);
+                        cell.setCellValue(al.get(k));
+                    }
+                i++;
+            }
+            OutputStream os = response.getOutputStream();
+            xwb.write(os);
+            os.flush();
+            os.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                response.getOutputStream().write(Message.SYSTEM_ERROR.toString().getBytes(Charset.forName("UTF-8")));
+                response.getOutputStream().flush();
+                response.getOutputStream().close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
 //    @RequestMapping(value = "export",method = {RequestMethod.GET})
 //    public void exportOrderList(@RequestParam(name = "startDate") String start, @RequestParam(name = "endDate") String end,
 //                                @RequestParam(name = "orderStatus", required=false) String orderStatus,
@@ -230,6 +333,7 @@ public class OrderController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "list")
+    @RequiresPermissions("popup-store:order-manage")
     public JSONObject listOrder(@CookieValue(name="wechatId",required = false) Integer wechatId, HttpServletRequest request){
         wechatId = debug?32:getWechatId(request.getSession());
         try{
@@ -261,6 +365,7 @@ public class OrderController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "trackno/update",method = RequestMethod.POST)
+    @RequiresPermissions("popup-store:order-manage")
     public JSONObject updateTrackNo(@RequestBody(required = true) JSONObject params, @CookieValue(name="wechatId",required = false) Integer wechatId, HttpServletRequest request){
         try {
             Long orderId = params.getLong("orderId");

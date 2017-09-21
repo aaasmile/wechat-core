@@ -40,9 +40,18 @@ public class PopupOrderList {
     private Integer memberId;
     private String openId;
     private String trackNo;
-    private Short payStatus;
-    private Short payType;
+    private Byte payStatus;
+    private Byte payType;
     private Integer price;
     private Long points;
+
+    private String msmPhone;
+    private String giftContent;
+
+    private String creditCode;
+    private String personNo;
+    private String invoiceTitle;
+    private Byte invoiceType;
+    private Byte invoiceProp;
 
 }
