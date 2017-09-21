@@ -218,10 +218,10 @@
 			</if>
 			<if test="bindStatus != null">
 				<if test="bindStatus != 2">
-					and mp.status = #{bindStatus}
+					and m.status = #{bindStatus}
 				</if>
 				<if test="bindStatus == 2">
-					and mp.id is null
+					and m.status is null
 				</if>
 			</if>
 		</where>
@@ -236,7 +236,7 @@
 
 	<select id="search" parameterType="HashMap" resultMap="MemberBindListDtoResultMap">
 		select
-			m.*, IF(ISNULL(mp.status),2,mp.status) as bindStatus
+			m.*, IF(ISNULL(m.status),2,m.status) as bindStatus
 		from member as m
 		<if test="bindStatus == null">
 			left join member_profile as mp on m.id = mp.member_id
@@ -244,7 +244,7 @@
 		<include refid="searchM"></include>
 		<if test="sortName != null">
 			<if test="sortName == 'bind_status'.toString()">
-				order by mp.status
+				order by m.status
 				<if test="sortDir != null">
 					${sortDir}
 				</if>
@@ -275,7 +275,7 @@
 		<include refid="searchM"></include>
 		<if test="sortName != null">
 			<if test="sortName == 'bind_status'.toString()">
-				order by mp.status
+				order by m.status
 				<if test="sortDir != null">
 					${sortDir}
 				</if>
@@ -301,7 +301,7 @@
 	
 	<select id="searchByIds" resultMap="MemberBindListDtoResultMap">
 		select
-			m.*, IF(ISNULL(mp.status),2,mp.status) as bindStatus
+			m.*, IF(ISNULL(m.status),2,m.status) as bindStatus
 		from member m left join member_profile mp on m.id = mp.member_id
 		<where>
 			<if test="ids != null and size &gt; 0">
@@ -318,12 +318,12 @@
 	
 	<select id="massMembersSearch" parameterType="HashMap" resultMap="MassMembersSearchDtoResultMap">
 		select
-			m.*, IF(ISNULL(mp.status),2,mp.status) as bindStatus
+			m.*, IF(ISNULL(m.status),2,m.status) as bindStatus
 		from member m left join member_profile mp on m.id = mp.member_id
 		<include refid="searchM"></include>
 		<if test="sortName != null">
 			<if test="sortName == 'bind_status'.toString()">
-				order by mp.status
+				order by m.status
 				<if test="sortDir != null">
 					${sortDir}
 				</if>
