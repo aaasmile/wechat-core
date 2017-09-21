@@ -40,8 +40,8 @@ public class PopupController extends BaseController {
     @RequiresPermissions("popup-store:pay-config")
     public JSONObject updatePayConfig(@PathVariable(name = "id") long id, @RequestBody(required = false) PopupPayConfig model) {
         boolean state = true;
-        if (model.getCompanyId().intValue() == 0) {
-            model.setCompanyId((Integer)null);
+        if (model.getCompanyId() == 0) {
+            model.setCompanyId(null);
         }
 
         if (id == 0L) {
@@ -61,16 +61,16 @@ public class PopupController extends BaseController {
     )
     @RequiresPermissions("popup-store:pay-config")
     public JSONObject getPayConfig(HttpServletRequest request) {
-        int wechatId = debug?29:this.getWechatId(request.getSession()).intValue();
+        int wechatId = debug ? 29 : getWechatId(request.getSession());
         List<PopupPayConfig> results = this.popupPayServiceImpl.queryPopupPayConfig(wechatId);
-        List<PopupPayConfig> list = new ArrayList();
+        List<PopupPayConfig> list = new ArrayList<>();
         if (results == null) {
             return this.representation(Message.SYSTEM_ERROR);
         } else {
             Iterator var5 = results.iterator();
 
-            while(var5.hasNext()) {
-                PopupPayConfig result = (PopupPayConfig)var5.next();
+            while (var5.hasNext()) {
+                PopupPayConfig result = (PopupPayConfig) var5.next();
                 String config = result.getConfig().replaceAll("'", "\"");
                 result.setConfig(config);
                 list.add(result);
