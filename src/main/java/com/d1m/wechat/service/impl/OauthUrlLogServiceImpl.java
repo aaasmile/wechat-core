@@ -19,7 +19,7 @@ import java.util.List;
 @Service
 public class OauthUrlLogServiceImpl extends BaseService<OauthUrlLog> implements OauthUrlLogService{
     // 每批插入条数
-    private static final int batch_size = 100;
+    private static final int batch_size = 10;
     private static List<OauthUrlLog> tmpList = new ArrayList<OauthUrlLog>();
 
     @Autowired
