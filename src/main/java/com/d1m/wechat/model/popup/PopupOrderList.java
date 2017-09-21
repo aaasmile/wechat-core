@@ -24,6 +24,7 @@ public class PopupOrderList {
     private Integer wechatId;
     private Integer goodsId;
     private String goodsName;
+    private String goodsDesc;
     private String sku;
     private String shade;
     private Date orderCreateTime;

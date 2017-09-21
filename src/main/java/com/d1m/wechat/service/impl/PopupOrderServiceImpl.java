@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,19 +37,27 @@ public class PopupOrderServiceImpl implements IPopupOrderService {
 
     @Override
     public Page<PopupOrderList> selectOrderList(PopupOrderFilter orderFilter) {
-        PageHelper.startPage(orderFilter.getPageNum(),orderFilter.getPageSize(),true);
-        List<HashMap<Integer,String>> listCodesMap = getAllAreaMap();
+        List<HashMap<String,String>> listCodesMap = countryAreaMapper.selectAllAreaMap(null);
         HashMap<Integer,String> addrMap = new HashMap<>(listCodesMap.size());
-        for (HashMap<Integer,String> map : listCodesMap) {
-            for (Map.Entry<Integer, String> entry : map.entrySet()) {
-                addrMap.put(entry.getKey(), entry.getValue());
+        Integer areaCode = 0;
+        String areaName = "";
+        for (HashMap<String,String> map : listCodesMap) {
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                if (entry.getKey().equals("code"))
+                    areaCode = Integer.parseInt(entry.getValue());
+                else if (entry.getKey().equals("name_zh"))
+                    areaName = entry.getValue();
             }
+            addrMap.put(areaCode, areaName);
         }
+        PageHelper.startPage(orderFilter.getPageNum(),orderFilter.getPageSize(),true);
         List<PopupOrderList> listOrderList = popupOrderMapper.selectPopupOrderList(orderFilter);
+        int i = 0;
         for (PopupOrderList orderList: listOrderList ) {
-            orderList.setProvinceName(addrMap.get(orderList.getProvince()));
-            orderList.setCityName(addrMap.get(orderList.getCity()));
-            orderList.setAreaName(addrMap.get(orderList.getArea()));
+            listOrderList.get(i).setProvinceName(addrMap.get(orderList.getProvince()));
+            listOrderList.get(i).setCityName(addrMap.get(orderList.getCity()));
+            listOrderList.get(i).setAreaName(addrMap.get(orderList.getArea()));
+            i++;
         }
         return (Page<PopupOrderList>) listOrderList;
     }
@@ -76,7 +85,4 @@ public class PopupOrderServiceImpl implements IPopupOrderService {
         popupOrderMapper.updateByPrimaryKeySelective(orderBase);
     }
 
-    public List<HashMap<Integer,String>> getAllAreaMap(){
-        return countryAreaMapper.selectAllAreaMap(null);
-    }
 }

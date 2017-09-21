@@ -22,11 +22,14 @@
         <result column="goods_id" jdbcType="INTEGER" property="goodsId"/>
         <result column="wechat_id" jdbcType="INTEGER" property="wechatId"/>
         <result column="goods_name" jdbcType="VARCHAR" property="goodsName"/>
+        <result column="goods_desc" jdbcType="VARCHAR" property="goodsDesc"/>
         <result column="sku" jdbcType="VARCHAR" property="sku"/>
         <result column="shade" jdbcType="VARCHAR" property="shade"/>
         <result column="order_create_time" jdbcType="TIMESTAMP" property="orderCreateTime"/>
         <result column="delivery_create_time" jdbcType="TIMESTAMP" property="deliveryCreateTime"/>
         <result column="company" jdbcType="VARCHAR" property="company"/>
+        <result column="receiver_name" jdbcType="VARCHAR" property="receiverName"/>
+        <result column="receiver_phone" jdbcType="VARCHAR" property="receiverPhone"/>
         <result column="province" jdbcType="VARCHAR" property="province"/>
         <result column="city" jdbcType="VARCHAR" property="city"/>
         <result column="area" jdbcType="VARCHAR" property="area"/>
@@ -42,19 +45,22 @@
 
     <select id="selectPopupOrderList" parameterType="HashMap" resultMap="ListResultMap">
         select
-        a.id,
+        a.id order_id,
         a.wechat_id,
         group_concat(DISTINCT d.`name`) goods_name,
         group_concat(DISTINCT b.goods_id) goods_id,
         group_concat(b.sku) sku,
         group_concat(e.shade) shade,
+        max(d.desc) goods_desc,
         max(a.create_time) order_create_time,
         max(c.create_time) delivery_create_time,
         max(c.company) company,
+        max(h.receiver_name) receiver_name,
+        max(h.receiver_phone) receiver_phone,
         max(h.province) province,
         max(h.city) city,
         max(h.area) area,
-        max(h.addr) addr,
+        max(h.addr) address,
         max(a.member_id) member_id,
         max(f.open_id) open_id,
         max(c.track_no) track_no,
@@ -67,7 +73,7 @@
         left join popup_order_express c on c.order_id = a.id
         left join popup_goods d on d.id = b.goods_id
         left join popup_goods_sku e on e.sku = b.sku
-        left join member_benefit f on f.id = a.member_id
+        left join member f on f.id = a.member_id and f.wechat_id = #{wechatId}
         left join popup_order_delivery_addr g on g.order_id = a.id
         left join popup_delivery_addr h on h.id = g.addr_id
         where a.wechat_id = #{wechatId}
