@@ -27,4 +27,8 @@
         <setting name="returnInstanceForEmptyRow" value="true"/>
         <setting name="logImpl" value="LOG4J"/>
     </settings>
+    <typeHandlers>
+        <typeHandler handler="com.d1m.wechat.util.mybatis.JsonTypeHandler"/>
+        <typeHandler handler="com.d1m.wechat.util.mybatis.JsonArrayHandler"/>
+    </typeHandlers>
 </configuration>

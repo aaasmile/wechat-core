@@ -22,11 +22,14 @@
         <result column="goods_id" jdbcType="INTEGER" property="goodsId"/>
         <result column="wechat_id" jdbcType="INTEGER" property="wechatId"/>
         <result column="goods_name" jdbcType="VARCHAR" property="goodsName"/>
+        <result column="goods_desc" jdbcType="VARCHAR" property="goodsDesc"/>
         <result column="sku" jdbcType="VARCHAR" property="sku"/>
         <result column="shade" jdbcType="VARCHAR" property="shade"/>
         <result column="order_create_time" jdbcType="TIMESTAMP" property="orderCreateTime"/>
         <result column="delivery_create_time" jdbcType="TIMESTAMP" property="deliveryCreateTime"/>
         <result column="company" jdbcType="VARCHAR" property="company"/>
+        <result column="receiver_name" jdbcType="VARCHAR" property="receiverName"/>
+        <result column="receiver_phone" jdbcType="VARCHAR" property="receiverPhone"/>
         <result column="province" jdbcType="VARCHAR" property="province"/>
         <result column="city" jdbcType="VARCHAR" property="city"/>
         <result column="area" jdbcType="VARCHAR" property="area"/>
@@ -38,38 +41,57 @@
         <result column="pay_type" jdbcType="VARCHAR" property="payType"/>
         <result column="price" jdbcType="INTEGER" property="price"/>
         <result column="points" jdbcType="BIGINT" property="points"/>
+        <result column="msm_phone" jdbcType="VARCHAR" property="msmPhone"/>
+        <result column="gift_content" jdbcType="VARCHAR" property="giftContent"/>
+        <result column="credit_code" jdbcType="VARCHAR" property="creditCode"/>
+        <result column="person_no" jdbcType="VARCHAR" property="personNo"/>
+        <result column="invoice_title" jdbcType="VARCHAR" property="invoiceTitle"/>
+        <result column="invoice_type" jdbcType="TINYINT" property="invoiceType"/>
+        <result column="invoice_prop" jdbcType="TINYINT" property="invoiceProp"/>
     </resultMap>
 
     <select id="selectPopupOrderList" parameterType="HashMap" resultMap="ListResultMap">
         select
-        a.id,
+        a.id order_id,
         a.wechat_id,
         group_concat(DISTINCT d.`name`) goods_name,
         group_concat(DISTINCT b.goods_id) goods_id,
         group_concat(b.sku) sku,
         group_concat(e.shade) shade,
+        max(d.desc) goods_desc,
         max(a.create_time) order_create_time,
         max(c.create_time) delivery_create_time,
         max(c.company) company,
+        max(h.receiver_name) receiver_name,
+        max(h.receiver_phone) receiver_phone,
         max(h.province) province,
         max(h.city) city,
         max(h.area) area,
-        max(h.addr) addr,
+        max(h.addr) address,
         max(a.member_id) member_id,
         max(f.open_id) open_id,
         max(c.track_no) track_no,
         max(a.pay_status) pay_status,
         max(a.pay_type) pay_type,
         sum(b.price) price,
-        sum(b.points) points
+        sum(b.points) points,
+        max(g.msm_phone) msm_phone,
+        max(i.gift_content) gift_content,
+        max(j.credit_code) credit_code,
+        max(j.person_no) person_no,
+        max(j.title) invoice_title,
+        max(j.type) invoice_type,
+        max(j.prop) invoice_prop
         from popup_order a
         left join popup_order_goods_rel b on b.order_id = a.id
         left join popup_order_express c on c.order_id = a.id
         left join popup_goods d on d.id = b.goods_id
         left join popup_goods_sku e on e.sku = b.sku
-        left join member_benefit f on f.id = a.member_id
+        left join member f on f.id = a.member_id and f.wechat_id = #{wechatId}
         left join popup_order_delivery_addr g on g.order_id = a.id
         left join popup_delivery_addr h on h.id = g.addr_id
+        left join popup_order_extra_attr i on i.order_id = a.id
+        left join popup_order_invoice j on j.order_id = a.id
         where a.wechat_id = #{wechatId}
         <if test="orderId != null">
             and a.id like concat('%',#{orderId},'%')

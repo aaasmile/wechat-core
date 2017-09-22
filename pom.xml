@@ -61,6 +61,7 @@
 
         <start-class>com.d1m.wechat.CoreApplication</start-class>
         <docker.expose>8090</docker.expose>
+        <docker.image.base>openjdk:8u121-jdk-alpine</docker.image.base>
     </properties>
 
     <dependencies>
@@ -582,12 +583,17 @@
             <plugin>
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <!-- 解决Windows环境下Connect to localhost:2375的问题 start-->
-                <!--<configuration>-->
+                <configuration>
+                    <runs>
+                        <run>jar xvf /${project.build.finalName}.jar</run>
+                        <run>rm -f /${project.build.finalName}.jar</run>
+                    </runs>
+                    <entryPoint>[ "sh", "-c", "java -Duser.timezone=GMT+08 $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -cp /BOOT-INF/classes:/BOOT-INF/lib/* ${start-class}"]</entryPoint>
+                    <!-- 解决Windows环境下Connect to localhost:2375的问题 start-->
                     <!--<dockerHost>https://192.168.99.100:2376</dockerHost>-->
                     <!--<dockerCertPath>C:\Users\d1m\.docker\machine\machines\default</dockerCertPath>-->
-                <!--</configuration>-->
-                <!-- 解决Windows环境下Connect to localhost:2375的问题 end-->
+                    <!-- 解决Windows环境下Connect to localhost:2375的问题 end-->
+                </configuration>
             </plugin>
         </plugins>
     </build>

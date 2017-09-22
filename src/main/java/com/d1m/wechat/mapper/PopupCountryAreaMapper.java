@@ -13,5 +13,5 @@ public interface PopupCountryAreaMapper extends MyMapper<PopupCountryArea> {
 
     List<PopupCountryArea> selectAreaByLevel(@Param("level") int level);
 
-    List<HashMap<Integer,String>> selectAllAreaMap(@Param("codes") String codes);
+    List<HashMap<String,String>> selectAllAreaMap(@Param("codes") String codes);
 }

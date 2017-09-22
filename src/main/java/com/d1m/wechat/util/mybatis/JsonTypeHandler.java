@@ -3,6 +3,7 @@ package com.d1m.wechat.util.mybatis;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.type.MappedJdbcTypes;
 
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
@@ -12,6 +13,7 @@ import java.sql.SQLException;
 /**
  * Created by d1m on 2016/10/19.
  */
+@MappedJdbcTypes(JdbcType.VARCHAR)
 public class JsonTypeHandler extends BaseTypeHandler<JSONObject> {
     @Override
     public void setNonNullParameter(PreparedStatement preparedStatement, int i, JSONObject jsonObject, JdbcType jdbcType) throws SQLException {
