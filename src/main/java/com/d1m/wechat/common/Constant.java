@@ -15,4 +15,13 @@ public interface Constant {
 
     String AC_KEY =  "ackey";
 
+    interface Cache {
+        String storeCache = "storeCache";
+        String accessedMember = "accessedMember";
+        String customerServiceConfig = "customerServiceConfig";
+
+        String memberSession = "member-session";
+        String tokenMember = "token-member";
+        String memberToken = "member-token";
+    }
 }
