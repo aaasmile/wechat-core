@@ -432,6 +432,11 @@
             <artifactId>mybatis-spring-boot-autoconfigure</artifactId>
             <version>1.2.0</version>
         </dependency>
+        <dependency>
+            <groupId>biz.paluch.redis</groupId>
+            <artifactId>lettuce</artifactId>
+            <version>4.3.3.Final</version>
+        </dependency>
 
         <!-- fastdfs -->
         <!--<dependency>
