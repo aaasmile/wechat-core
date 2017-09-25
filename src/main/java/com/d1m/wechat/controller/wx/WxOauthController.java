@@ -176,10 +176,11 @@ public class WxOauthController {
 					}
 					params.put("short_url", urlObj.getShortUrl());
 					params.put("wechatId", urlObj.getWechatId());
+					JSONObject jo = null;
 					if(StringUtils.isNotBlank(bs)){
 						bs = Base64Util.getFromBase64(bs);
 						log.info("response-bs, {}", bs);
-						JSONObject jo = JSON.parseObject(bs);
+						jo = JSON.parseObject(bs);
 						params.put("redirectUrl", jo.getString("redirectUrl"));
 						params.put("token", jo.getString("token"));
 						params.put("source", jo.getString("source"));
@@ -197,6 +198,8 @@ public class WxOauthController {
 							oauthUrlLog.setCreatedAt(new Date());
 							oauthUrlLog.setOauthUrlId(urlObj.getId());
 							oauthUrlLog.setOpenId(wuser.getOpenid());
+							oauthUrlLog.setRedirectUrl(jo.getString("redirectUrl"));
+							oauthUrlLog.setSource(jo.getString("source"));
 							oauthUrlLog.setWechatId(wechat.getId());
 							oauthUrlLogService.batchInsertLog(oauthUrlLog);
 						} catch (Exception e){
