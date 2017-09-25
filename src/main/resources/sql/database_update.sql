@@ -96,4 +96,4 @@ CREATE TABLE `oauth_url_log` (
 
 -- 2017-09-25 add，增加跳转链接和来源字段
 ALTER TABLE `oauth_url_log` ADD COLUMN `redirect_url` varchar(255) NULL COMMENT '跳转URL';
-ALTER TABLE `oauth_url_log` ADD COLUMN `source` varchar(30) NULL COMMENT '来源';
+ALTER TABLE `oauth_url_log` ADD COLUMN `source` varchar(255) NULL COMMENT '来源';
