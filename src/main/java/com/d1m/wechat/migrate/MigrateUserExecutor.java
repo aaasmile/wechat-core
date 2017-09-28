@@ -4,19 +4,19 @@ import java.util.*;
 import java.util.concurrent.Future;
 import javax.annotation.Resource;
 
-import com.d1m.common.ds.TenantContext;
+import cn.d1m.wechat.client.model.WxUser;
+import cn.d1m.wechat.client.model.common.WxList;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 
-import cn.d1m.wechat.client.model.WxUser;
-import cn.d1m.wechat.client.model.common.WxList;
-import com.d1m.wechat.wechatclient.WechatClientDelegate;
+import com.d1m.common.ds.TenantContext;
 import com.d1m.wechat.dto.MemberDto;
 import com.d1m.wechat.mapper.MemberMapper;
 import com.d1m.wechat.model.Member;
 import com.d1m.wechat.service.MemberService;
+import com.d1m.wechat.wechatclient.WechatClientDelegate;
 
 /**
  * 类描述
@@ -72,7 +72,7 @@ public class MigrateUserExecutor {
                     // 数据转换
                     Member newMember = memberService.getMemberByWxUser(wxUser, wechatId, current);
                     newMember.setId(openId2memberId.get(newMember.getOpenId()));
-                    memberService.updateAll(newMember);
+                    memberService.updateNotNull(newMember);
                 } catch (Exception e) {
                     errorList.add(wxUser);
                     log.error("会员更新失败:" + wxUser.getOpenid(), e);
