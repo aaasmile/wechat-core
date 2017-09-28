@@ -16,6 +16,8 @@ import com.d1m.wechat.service.MemberService;
 import com.d1m.wechat.util.Message;
 import com.d1m.wechat.util.SessionCacheUtil;
 
+import java.util.Map;
+
 /**
  * Created on 16/11/25.
  */
@@ -37,15 +39,16 @@ public class ApiController extends BaseController {
 	protected Member getMember(String cookie) {
 		log.info("cookie : {}", cookie);
 		if (StringUtils.isNotBlank(cookie)) {
-			Member member = SessionCacheUtil.getMember(cookie);
-			log.info("token member : {}", (member != null ? member.getId()
+			Member member = null;
+			Map<String,Object> mapMember = SessionCacheUtil.getMember(cookie);
+			log.info("token member : {}", (mapMember != null ? mapMember.get("id")
 					: null));
-			if (member != null) {
+			if (mapMember != null) {
 				log.info("wechatId : {}, openId : {}, memberId : {}",
-						member.getWechatId(), member.getOpenId(),
-						member.getId());
-				member = memberService.getMember(member.getWechatId(),
-						member.getId());
+						mapMember.get("wechatId"), mapMember.get("openId"),
+						mapMember.get("id"));
+				member = memberService.getMember((Integer) mapMember.get("wechatId"),
+						(Integer) mapMember.get("id"));
 				return member;
 			}
 		}

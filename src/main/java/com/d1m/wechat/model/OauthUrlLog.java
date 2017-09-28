@@ -25,6 +25,18 @@ public class OauthUrlLog {
     private Integer oauthUrlId;
 
     /**
+     * 跳转URL
+     */
+    @Column(name = "redirect_url")
+    private String redirectUrl;
+
+    /**
+     * 来源
+     */
+    @Column(name = "source")
+    private String source;
+
+    /**
      * 公众号ID
      */
     @Column(name = "wechat_id")
@@ -124,5 +136,21 @@ public class OauthUrlLog {
      */
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getRedirectUrl() {
+        return redirectUrl;
+    }
+
+    public void setRedirectUrl(String redirectUrl) {
+        this.redirectUrl = redirectUrl;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 }

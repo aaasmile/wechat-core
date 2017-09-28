@@ -93,3 +93,7 @@ CREATE TABLE `oauth_url_log` (
   KEY `oauth_url_id` (`oauth_url_id`),
   KEY `wechat_id` (`wechat_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- 2017-09-25 add，增加跳转链接和来源字段
+ALTER TABLE `oauth_url_log` ADD COLUMN `redirect_url` varchar(255) NULL COMMENT '跳转URL';
+ALTER TABLE `oauth_url_log` ADD COLUMN `source` varchar(255) NULL COMMENT '来源';

@@ -37,8 +37,12 @@ spring:
       max-wait: 100
 
   cache:
+    type: redis
     cache-names:
       - storeCache
+      - member-session
+      - token-member
+      - member-token
   jackson:
     date-format: 'yyyy-MM-dd HH:mm:ss'
     serialization:

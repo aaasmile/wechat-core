@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.d1m.wechat.model.Member;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/member")
 public class MemberApiController extends ApiController {
@@ -25,9 +27,9 @@ public class MemberApiController extends ApiController {
 			HttpServletRequest request, HttpServletResponse response) {
 		String result = null;
 		try {
-			Member member = SessionCacheUtil.getMember(cookie);
-			if(member!=null){
-				result = member.getWechatId() + "#" + member.getId();
+			Map<String,Object> mapMember = SessionCacheUtil.getMember(cookie);
+			if(mapMember!=null){
+				result = mapMember.get("wechatId") + "#" + mapMember.get("id");
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage());
