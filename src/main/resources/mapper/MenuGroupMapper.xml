@@ -50,14 +50,20 @@
 	</resultMap>
 	
 	<select id="getRootMenus" parameterType="HashMap" resultMap="MenuResultMap">
-		SELECT * FROM menu WHERE menu_group_id=#{menuGroupId} and status = 1 and parent_id is null order by seq asc
+		SELECT a.*,b.app_id,b.page_path,b.app_url FROM menu a
+		left join menu_extra_attr b on b.menu_id = a.id
+		WHERE menu_group_id=#{menuGroupId} and status = 1 and parent_id is null order by seq asc
 	</select>
 	
 	<resultMap id="MenuResultMap" type="com.d1m.wechat.dto.MenuDto">
 	    <id column="id" jdbcType="INTEGER" property="id" />
 	    <result column="type" jdbcType="TINYINT" property="type" />
+		<result column="seq" jdbcType="INTEGER" property="seq" />
 	    <result column="name" jdbcType="VARCHAR" property="name" />
 	    <result column="url" jdbcType="VARCHAR" property="url" />
+		<result column="app_id" jdbcType="VARCHAR" property="appId" />
+		<result column="page_path" jdbcType="VARCHAR" property="pagePath" />
+		<result column="app_url" jdbcType="VARCHAR" property="appUrl" />
 		<association column="{materialId=menu_key}" javaType="com.d1m.wechat.dto.MaterialDto" property="material" select="getMaterial" />
 	    <collection column="{parentId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.MenuDto" property="children" select="getChildrenMenus" />
 	</resultMap>
@@ -89,7 +95,9 @@
 	 	<result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
 	</resultMap>
 	<select id="getChildrenMenus" parameterType="HashMap" resultMap="MenuResultMap">
-		SELECT * FROM menu WHERE parent_id=#{parentId} and status = 1 order by seq asc
+		SELECT a.*,b.app_id,b.page_path,b.app_url FROM menu a
+		left join menu_extra_attr b on b.menu_id = a.id
+		WHERE parent_id=#{parentId} and status = 1 order by seq asc
 	</select>
 	<!-- get -->
 
@@ -127,17 +135,24 @@
 	</resultMap>
 
 	<select id="getSimpleRootMenus" parameterType="HashMap" resultMap="SimpleMenuResultMap">
-		SELECT id, name FROM menu WHERE menu_group_id=#{menuGroupId} and status = 1 and parent_id is null order by seq asc
+		SELECT a.id,name,b.app_id,b.page_path,b.app_url FROM menu a
+		left join menu_extra_attr b on b.menu_id = a.id
+		WHERE menu_group_id=#{menuGroupId} and status = 1 and parent_id is null order by seq asc
 	</select>
 	
 	<resultMap id="SimpleMenuResultMap" type="com.d1m.wechat.dto.MenuDto">
 	    <id column="id" jdbcType="INTEGER" property="id" />
 	    <result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="app_id" jdbcType="VARCHAR" property="appId" />
+		<result column="page_path" jdbcType="VARCHAR" property="pagePath" />
+		<result column="app_url" jdbcType="VARCHAR" property="appUrl" />
 	    <collection column="{parentId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.MenuDto" property="children" select="getSimpleChildrenMenus" />
 	</resultMap>
 	
 	<select id="getSimpleChildrenMenus" parameterType="HashMap" resultMap="SimpleMenuResultMap">
-		SELECT id, name FROM menu WHERE parent_id=#{parentId} and status = 1 order by seq asc
+		SELECT a.id,name,b.app_id,b.page_path,b.app_url FROM menu a
+		left join menu_extra_attr b on b.menu_id = a.id
+		WHERE parent_id=#{parentId} and status = 1 order by seq asc
 	</select>
 	<!-- search -->
 	

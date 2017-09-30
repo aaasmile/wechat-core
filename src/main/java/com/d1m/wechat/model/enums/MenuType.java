@@ -38,6 +38,7 @@ public enum MenuType {
     LOCATION_SELECT((byte) 8),
     MEDIA_ID((byte) 9),
     VIEW_LIMITED((byte) 10),
+	MINIPROGRAM((byte) 11),
 
     UNSUPPORTED((byte) -1);
 

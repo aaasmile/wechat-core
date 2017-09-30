@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.common.Mapper;
 
 import cn.d1m.wechat.client.core.WxResponse;
@@ -44,6 +45,9 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 
 	@Autowired
 	private MenuMapper menuMapper;
+
+	@Autowired
+	private MenuExtraAttrMapper menuExtraAttrMapper;
 
 	@Autowired
 	private MaterialTextDetailMapper materialTextDetailMapper;
@@ -121,9 +125,9 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 		menuRule.setCreatedAt(current);
 		menuRule.setCreatorId(user.getId());
 		menuRule.setWechatId(wechatId);
-		menuRuleMapper.insert(menuRule);
+		menuRuleMapper.insertSelective(menuRule);
 		menuGroup.setMenuRuleId(menuRule.getId());
-		menuGroupMapper.updateByPrimaryKey(menuGroup);
+		menuGroupMapper.updateByPrimaryKeySelective(menuGroup);
 	}
 
     /**
@@ -141,11 +145,12 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
         }
 		menuGroup.setWechatId(wechatId);
 		menuGroup.setStatus(MenuGroupStatus.INUSED.getValue());
-		menuGroupMapper.insert(menuGroup);
+		menuGroupMapper.insertSelective(menuGroup);
 		return menuGroup;
 	}
 
-	private Menu create(User user, Integer wechatId, Date current,
+	@Transactional
+	Menu create(User user, Integer wechatId, Date current,
 			MenuGroup menuGroup, Integer parentId, MenuDto menuDto) {
 		Menu menu = new Menu();
 		menu.setCreatedAt(current);
@@ -164,7 +169,18 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 		menu.setWechatId(wechatId);
 		menu.setMenuGroupId(menuGroup.getId());
 		menu.setParentId(parentId);
-		menuMapper.insert(menu);
+		menu.setSeq(menuDto.getSeq());
+		menuMapper.insertSelective(menu);
+		MenuExtraAttr menuExtraAttr = new MenuExtraAttr();
+		menuExtraAttr.setMenuId((long)menu.getId());
+		if (menuDto.getAppId() != null)
+			menuExtraAttr.setAppId(menuDto.getAppId());
+		if (menuDto.getPagePath() != null)
+			menuExtraAttr.setPagePath(menuDto.getPagePath());
+		if (menuDto.getAppUrl() != null)
+			menuExtraAttr.setAppUrl(menuDto.getAppUrl());
+		if (menuDto.getAppId() != null && menuDto.getPagePath() != null)
+			menuExtraAttrMapper.insertSelective(menuExtraAttr);
 		return menu;
 	}
 
@@ -199,6 +215,14 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 				menuDto.setName(menuModel.getName());
 				menuDto.setSeq(seq);
 				menuDto.setType((byte)0); //对于父菜单,重置type为null
+				if (menuModel.getUrl() != null)
+					menuDto.setUrl(menuModel.getUrl());
+				if (menuModel.getAppId() != null)
+					menuDto.setAppId(menuModel.getAppId());
+				if (menuModel.getPagePath() != null)
+					menuDto.setPagePath(menuModel.getPagePath());
+				if (menuModel.getAppUrl() != null)
+					menuDto.setAppUrl(menuModel.getAppUrl());
 				menuList.add(menuDto);
 				childrenMenuDtos = new ArrayList<MenuDto>();
 				Integer subSeq = 1;
@@ -269,13 +293,13 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 					material.setStatus(MaterialStatus.INUSED.getValue());
 					material.setMaterialType(MaterialType.TEXT.getValue());
 					material.setWechatId(wechatId);
-					materialMapper.insert(material);
+					materialMapper.insertSelective(material);
 
 					MaterialTextDetail materialTextDetail = new MaterialTextDetail();
 					materialTextDetail.setContent(content);
 					materialTextDetail.setMaterialId(material.getId());
 					materialTextDetail.setWechatId(wechatId);
-					materialTextDetailMapper.insert(materialTextDetail);
+					materialTextDetailMapper.insertSelective(materialTextDetail);
 					materialId = material.getId();
 				} else {
 					materialId = record.getMaterialId();
@@ -290,9 +314,15 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 				}
 			}
 		} else {
-            if (menuType == MenuType.VIEW) {//只有view有url, f0rb
+            if (menuType == MenuType.VIEW ) {//只有view有url, f0rb
                 notBlank(menuModel.getUrl(), Message.MENU_URL_NOT_BLANK);
-            }
+            } else if ( menuType == MenuType.MINIPROGRAM ) {
+				notBlank(menuModel.getAppUrl(), Message.MENU_URL_NOT_BLANK);
+			}
+			if (menuType == MenuType.MINIPROGRAM) {
+				notBlank(menuModel.getAppId(), Message.MINIPROGRAM_APPID_NOT_BLANK);
+				notBlank(menuModel.getPagePath(), Message.MINIPROGRAM_PAGEPATH_NOT_BLANK);
+			}
 			url = menuModel.getUrl();
 			if (materialModel != null) {
 				materialId = materialModel.getId();
@@ -315,6 +345,9 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 		menu.setName(menuModel.getName());
 		menu.setSeq(menuModel.getSeq());
 		menu.setType(menuType.getValue());
+		if (menuModel.getAppId() != null) menu.setAppId(menuModel.getAppId());
+		if (menuModel.getPagePath() != null) menu.setPagePath(menuModel.getPagePath());
+		if (menuModel.getAppUrl() != null) menu.setAppUrl(menuModel.getAppUrl());
 		MaterialDto material = new MaterialDto();
 		material.setId(materialId);
 		material.setUrl(url);
@@ -456,7 +489,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 
 		menuGroup.setModifyAt(current);
 		menuGroup.setName(menuGroupModel.getMenuGroupName());
-		menuGroupMapper.updateByPrimaryKey(menuGroup);
+		menuGroupMapper.updateByPrimaryKeySelective(menuGroup);
 
 		return menuGroup;
 	}
@@ -470,7 +503,8 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 		return menuGroup;
 	}
 
-	private Menu createdOrUpdated(User user, Integer wechatId,
+	@Transactional
+	Menu createdOrUpdated(User user, Integer wechatId,
 			MenuGroup menuGroup, Date current, MenuDto m, Integer parentId) {
 		Menu menu = null;
 		MaterialDto material = m.getMaterial();
@@ -483,6 +517,8 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 			}else{
 				menu.setMenuKey(null);
 			}
+			if (m.getUrl() != null)
+				menu.setUrl(m.getUrl());
 			menu.setName(m.getName());
 			MenuType menuType = MenuType.getByValue(m.getType());
 			if (menuType != null) {
@@ -493,7 +529,16 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 			menu.setModifyAt(current);
 			menu.setParentId(parentId);
 			menu.setSeq(m.getSeq());
-			menuMapper.updateByPrimaryKey(menu);
+			menuMapper.updateByPrimaryKeySelective(menu);
+			MenuExtraAttr menuExtraAttr = new MenuExtraAttr();
+			menuExtraAttr.setMenuId((long)menu.getId());
+			if (m.getAppId() != null)
+				menuExtraAttr.setAppId(m.getAppId());
+			if (m.getPagePath() != null)
+				menuExtraAttr.setPagePath(m.getPagePath());
+			if (m.getAppUrl() != null)
+				menuExtraAttr.setAppUrl(m.getAppUrl());
+			menuExtraAttrMapper.updateByPrimaryKeySelective(menuExtraAttr);
 		} else {
 			/** create */
 			menu = new Menu();
@@ -504,6 +549,8 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 				menu.setMenuKey(material.getId());
 				menu.setUrl(material.getUrl());
 			}
+			if (m.getUrl() != null)
+				menu.setUrl(m.getUrl());
 			menu.setName(m.getName());
 			menu.setStatus(MenuStatus.INUSED.getValue());
 			MenuType menuType = MenuType.getByValue(m.getType());
@@ -515,7 +562,16 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 			menu.setWechatId(wechatId);
 			menu.setParentId(parentId);
 			menu.setSeq(m.getSeq());
-			menuMapper.insert(menu);
+			menuMapper.insertSelective(menu);
+			MenuExtraAttr menuExtraAttr = new MenuExtraAttr();
+			menuExtraAttr.setMenuId((long)menu.getId());
+			if (m.getAppId() != null)
+				menuExtraAttr.setAppId(m.getAppId());
+			if (m.getPagePath() != null)
+				menuExtraAttr.setPagePath(m.getPagePath());
+			if (m.getAppUrl() != null)
+				menuExtraAttr.setAppUrl(m.getAppUrl());
+			menuExtraAttrMapper.insertSelective(menuExtraAttr);
 		}
 		return menu;
 	}
@@ -537,7 +593,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 			m.setStatus(MenuStatus.DELETED.getValue());
 			m.setDeletedAt(current);
 			m.setDeletorId(user.getId());
-			menuMapper.updateByPrimaryKey(m);
+			menuMapper.updateByPrimaryKeySelective(m);
 		}
 	}
 
@@ -580,7 +636,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 		menuGroup.setDeletorId(user.getId());
 		menuGroup.setStatus(MenuGroupStatus.DELETED.getValue());
 
-		menuGroupMapper.updateByPrimaryKey(menuGroup);
+		menuGroupMapper.updateByPrimaryKeySelective(menuGroup);
 		/**
 		 * TODO synchronized weixin
 		 */
@@ -703,8 +759,13 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 					.toLowerCase() : null);
 			if (menuType == MenuType.CLICK) {
 				weixinButton.setKey(menuDto.getId().toString());
-			} else {
+			} else if (menuDto.getType().equals(MenuType.MINIPROGRAM.getValue())
+					|| menuDto.getType().equals(MenuType.VIEW.getValue())) {
 				weixinButton.setUrl(menuDto.getUrl());
+				if (menuDto.getType().equals(MenuType.MINIPROGRAM.getValue())) {
+					weixinButton.setAppid(menuDto.getAppId());
+					weixinButton.setPagepath(menuDto.getPagePath());
+				}
 			}
 			weixinButton.setName(menuDto.getName());
 			menuDtos = menuDto.getChildren();

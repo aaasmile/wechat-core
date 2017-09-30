@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.d1m.wechat.mapper.MenuExtraAttrMapper" >
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.MenuExtraAttr" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <id column="menu_id" property="menuId" jdbcType="BIGINT" />
+    <result column="app_id" property="appId" jdbcType="VARCHAR" />
+    <result column="page_path" property="pagePath" jdbcType="VARCHAR" />
+    <result column="app_url" property="appUrl" jdbcType="VARCHAR" />
+  </resultMap>
+</mapper>

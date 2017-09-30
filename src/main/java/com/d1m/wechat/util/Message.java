@@ -343,6 +343,10 @@ public enum Message {
 
 	MENU_NOT_EXIST(19006, "菜单不存在"),
 
+	MINIPROGRAM_APPID_NOT_BLANK(19007, "小程序APPID不能为空"),
+
+	MINIPROGRAM_PAGEPATH_NOT_BLANK(19008, "小程序的页面路径不能为空"),
+
 	/**
 	 * conversation
 	 */
