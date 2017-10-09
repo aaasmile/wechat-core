@@ -97,3 +97,7 @@ CREATE TABLE `oauth_url_log` (
 -- 2017-09-25 add，增加跳转链接和来源字段
 ALTER TABLE `oauth_url_log` ADD COLUMN `redirect_url` varchar(255) NULL COMMENT '跳转URL';
 ALTER TABLE `oauth_url_log` ADD COLUMN `source` varchar(255) NULL COMMENT '来源';
+
+-- 2017-10-09 add，增加微信标签id
+ALTER TABLE `member_tag`
+ADD COLUMN `wx_id`  int(11) NULL AFTER `id`;
