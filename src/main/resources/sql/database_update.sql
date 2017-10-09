@@ -101,3 +101,13 @@ ALTER TABLE `oauth_url_log` ADD COLUMN `source` varchar(255) NULL COMMENT '来�
 -- 2017-10-09 add，增加微信标签id
 ALTER TABLE `member_tag`
 ADD COLUMN `wx_id`  int(11) NULL AFTER `id`;
+
+-- 2017-10-09 add，增加菜单扩展表
+CREATE TABLE `menu_extra_attr` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `menu_id` bigint(20) NOT NULL DEFAULT '0',
+  `app_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `page_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `app_url` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`,`menu_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
