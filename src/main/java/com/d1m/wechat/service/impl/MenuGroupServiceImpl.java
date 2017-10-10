@@ -700,6 +700,9 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 		} else {
             //创建自定义菜单
             WxResponse wxResponse = WechatClientDelegate.createMenu(wechatId, getWeiXinButton(menuGroup));
+            if (wxResponse.getErrcode() != 0) {
+            	throw new WechatException(Message.MENU_GROUP_PUSH_WX_FAILURE, JSONObject.toJSONString(wxResponse));
+			}
         }
 		menuGroup.setPushAt(current);
 		menuGroup.setModifyAt(current);

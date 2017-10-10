@@ -209,6 +209,11 @@ public enum Message {
 
 	BUSINESS_WEXIN_DELETE_FAIL(15017, "微信门店删除失败"),
 
+	BUSINESS_FETCH_BAIDU_GEOAPI_FAIL(15018, "百度GEO API异常"),
+
+	BUSINESS_FETCH_BAIDU_ADDRAPI_FAIL(15019, "百度ADDR API异常"),
+
+	BUSINESS_TRANSFER_QQ_GEOAPI_FAIL(15020, "QQ GEO 转换异常"),
 	/**
 	 * material
 	 */
@@ -317,6 +322,8 @@ public enum Message {
 			"个性化菜单存在时不允许删除默认菜单"),
 
 	MENU_GROUP_PUSH_WX_SUCCESS(1, "菜单组推送微信成功"),
+
+	MENU_GROUP_PUSH_WX_FAILURE(2, "菜单组推送微信失败"),
 
 	MENU_GROUP_DEFAULT_NOT_EXIST_IN_WEIXIN(18012, "默认菜单在微信中不存在"),
 
