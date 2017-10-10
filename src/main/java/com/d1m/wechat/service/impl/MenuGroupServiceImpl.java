@@ -769,6 +769,8 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 				weixinButton.setAppid(menuDto.getAppId());
 				weixinButton.setPagepath(menuDto.getPagePath());
 				weixinButton.setUrl(menuDto.getAppUrl());
+			} else if (menuType == MenuType.LOCATION_SELECT) {
+				weixinButton.setKey(menuDto.getId()+"_SEND_LOCATION");
 			}
 			weixinButton.setName(menuDto.getName());
 			menuDtos = menuDto.getChildren();
@@ -787,6 +789,8 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 						subWxMenu.setAppid(child.getAppId());
 						subWxMenu.setPagepath(child.getPagePath());
 						subWxMenu.setUrl(child.getAppUrl());
+					} else if (menuType == MenuType.LOCATION_SELECT) {
+						subWxMenu.setKey(child.getId()+"_SEND_LOCATION");
 					}
 					subWxMenu.setName(child.getName());
 					subWxMenus.add(subWxMenu);
