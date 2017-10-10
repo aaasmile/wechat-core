@@ -687,7 +687,8 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
         createMenu(menuGroup, current, wechatId, true);
 	}
 
-	private void createMenu(MenuGroup menuGroup, Date current, Integer wechatId, boolean deleteConditionalMenu) {
+	private void createMenu(MenuGroup menuGroup, Date current, Integer wechatId, boolean deleteConditionalMenu)
+			throws WechatException{
         if (StringUtils.isNotBlank(menuGroup.getWxMenuId()) && deleteConditionalMenu) {
             WechatClientDelegate.deleteConditionalMenu(wechatId, menuGroup.getWxMenuId());
         }
