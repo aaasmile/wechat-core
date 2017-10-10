@@ -532,6 +532,10 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 			menuMapper.updateByPrimaryKeySelective(menu);
 			MenuExtraAttr menuExtraAttr = new MenuExtraAttr();
 			menuExtraAttr.setMenuId((long)menu.getId());
+			MenuExtraAttr menuExtraAttrNew = menuExtraAttrMapper.selectOne(menuExtraAttr);
+			if (menuExtraAttrNew != null) {
+				menuExtraAttr = menuExtraAttrNew;
+			}
 			if (m.getAppId() != null)
 				menuExtraAttr.setAppId(m.getAppId());
 			if (m.getPagePath() != null)
@@ -759,13 +763,12 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 					.toLowerCase() : null);
 			if (menuType == MenuType.CLICK) {
 				weixinButton.setKey(menuDto.getId().toString());
-			} else if (menuDto.getType().equals(MenuType.MINIPROGRAM.getValue())
-					|| menuDto.getType().equals(MenuType.VIEW.getValue())) {
+			} else if (menuType == MenuType.VIEW) {
 				weixinButton.setUrl(menuDto.getUrl());
-				if (menuDto.getType().equals(MenuType.MINIPROGRAM.getValue())) {
-					weixinButton.setAppid(menuDto.getAppId());
-					weixinButton.setPagepath(menuDto.getPagePath());
-				}
+			} else if (menuType == MenuType.MINIPROGRAM) {
+				weixinButton.setAppid(menuDto.getAppId());
+				weixinButton.setPagepath(menuDto.getPagePath());
+				weixinButton.setUrl(menuDto.getAppUrl());
 			}
 			weixinButton.setName(menuDto.getName());
 			menuDtos = menuDto.getChildren();
@@ -778,8 +781,12 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 							.toLowerCase() : null);
 					if (menuType == MenuType.CLICK) {
 						subWxMenu.setKey(child.getId().toString());
-					} else {
+					} else if (menuType == MenuType.VIEW) {
 						subWxMenu.setUrl(child.getUrl());
+					} else if (menuType == MenuType.MINIPROGRAM) {
+						subWxMenu.setAppid(child.getAppId());
+						subWxMenu.setPagepath(child.getPagePath());
+						subWxMenu.setUrl(child.getAppUrl());
 					}
 					subWxMenu.setName(child.getName());
 					subWxMenus.add(subWxMenu);
