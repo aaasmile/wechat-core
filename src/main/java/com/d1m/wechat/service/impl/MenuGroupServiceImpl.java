@@ -542,7 +542,9 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 				menuExtraAttr.setPagePath(m.getPagePath());
 			if (m.getAppUrl() != null)
 				menuExtraAttr.setAppUrl(m.getAppUrl());
-			menuExtraAttrMapper.updateByPrimaryKeySelective(menuExtraAttr);
+			if (menuExtraAttr.getId() != null) {
+				menuExtraAttrMapper.updateByPrimaryKeySelective(menuExtraAttr);
+			}
 		} else {
 			/** create */
 			menu = new Menu();
