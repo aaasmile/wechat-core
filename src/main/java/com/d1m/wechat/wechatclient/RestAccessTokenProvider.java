@@ -104,7 +104,7 @@ public class RestAccessTokenProvider implements AccessTokenProvider {
      */
     protected String getAccessTokenFromWechat() {
         RestResponse<String> restResponse = wechatTokenRestService.refreshAccessToken(appid, secret);
-        if (!restResponse.getSuccess()) {
+        if (!restResponse.isSuccess()) {
             throw new RuntimeException("AccessToken获取失败[appid=" + appid + ",secret=" + secret + "]:" + restResponse.getInfo());
         }
         return restResponse.getData();
