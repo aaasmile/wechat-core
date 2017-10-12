@@ -16,6 +16,8 @@
     <result column="telephone" jdbcType="VARCHAR" property="telephone" />
     <result column="longitude" jdbcType="DOUBLE" property="longitude" />
     <result column="latitude" jdbcType="DOUBLE" property="latitude" />
+	  <result column="wxlat" jdbcType="DOUBLE" property="wxlat" />
+	  <result column="wxlng" jdbcType="DOUBLE" property="wxlng" />
     <result column="special" jdbcType="VARCHAR" property="special" />
     <result column="open_time" jdbcType="VARCHAR" property="openTime" />
     <result column="avg_price" jdbcType="DECIMAL" property="avgPrice" />
@@ -31,7 +33,7 @@
   </resultMap>
   
   <select id="get" resultMap="BusinessGetResultMap">
- 	select id, address, avg_price, branch_name, business_name, city, district, introduction, latitude, longitude, province, special, telephone, wechat_id, open_time, business_code, bus, is_push from business
+ 	select id, address, avg_price, branch_name, business_name, city, district, introduction, latitude, longitude,wxlat,wxlng, province, special, telephone, wechat_id, open_time, business_code, bus, is_push from business
    	<where>
    		id = #{id}
    		<if test="wechatId != null">
@@ -51,6 +53,8 @@
 	<result column="introduction" jdbcType="LONGVARCHAR" property="introduction" />
 	<result column="latitude" jdbcType="DOUBLE" property="latitude" />
 	<result column="longitude" jdbcType="DOUBLE" property="longitude" />
+	  <result column="wxlat" jdbcType="DOUBLE" property="wxlat" />
+	  <result column="wxlng" jdbcType="DOUBLE" property="wxlng" />
 	<result column="open_time" jdbcType="VARCHAR" property="openTime" />
 	<result column="province" jdbcType="INTEGER" property="province" />
 	<result column="special" jdbcType="VARCHAR" property="special" />
@@ -197,6 +201,8 @@
 	<result column="introduction" jdbcType="LONGVARCHAR" property="introduction" />
 	<result column="latitude" jdbcType="DOUBLE" property="latitude" />
 	<result column="longitude" jdbcType="DOUBLE" property="longitude" />
+	  <result column="wxlat" jdbcType="DOUBLE" property="wxlat" />
+	  <result column="wxlng" jdbcType="DOUBLE" property="wxlng" />
 	<result column="open_time" jdbcType="VARCHAR" property="openTime" />
 	<result column="province" jdbcType="INTEGER" property="province" />
 	<result column="special" jdbcType="VARCHAR" property="special" />
@@ -226,7 +232,7 @@
 		select ai.id as id, ai.c_name as c_name from business as b
 		left join area_info as ai on ai.id = b.province
 		<where>
-			b.province is not NULL
+			b.province is not NULL and b.`status`=1
 			<if test="wechatId != null">
 				AND b.wechat_id = #{wechatId}
 			</if>
@@ -238,9 +244,9 @@
 		select ai.id as id, ai.c_name as c_name, ai.parent_id as parent_id from business as b
 		left join area_info as ai on ai.id = b.city
 		<where>
-			b.city is not NULL
+			b.city is not NULL and b.`status`=1
 			<if test="wechatId != null">
-				b.wechat_id = #{wechatId}
+				and b.wechat_id = #{wechatId}
 			</if>
 		</where>
 		group by ai.id
@@ -256,4 +262,34 @@
 		<result column="c_name" jdbcType="VARCHAR" property="name" />
 		<result column="parent_id" jdbcType="INTEGER" property="parent" />
 	</resultMap>
+
+
+	<select id="searchDirect" resultMap="BusinessListResultMap">
+		select * from business as b
+		left join area_info as ai on ai.c_name = SUBSTRING(b.district, 1, CHAR_LENGTH(b.district)-1)
+		<where>
+			1=1 and b.province = b.city
+			<if test="wechatId != null">
+				b.wechat_id = #{wechatId}
+			</if>
+			<if test="province != null">
+				and b.province = #{province}
+			</if>
+			<if test="city != null">
+				and ai.id = #{city}
+			</if>
+		</where>
+		<if test="sortName != null">
+			order by ${sortName}
+			<if test="sortDir != null">
+				${sortDir}
+			</if>
+			<if test="sortDir == null">
+				desc
+			</if>
+		</if>
+		<if test="sortName == null">
+			order by b.check_status asc
+		</if>
+	</select>
 </mapper>

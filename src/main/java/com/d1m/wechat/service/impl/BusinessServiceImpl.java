@@ -3,13 +3,12 @@ package com.d1m.wechat.service.impl;
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,9 +57,14 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 	@Autowired
 	private AreaInfoMapper areaInfoMapper;
 
+	@Autowired
+	private BaiduLocationUtil baiduLocationUtil;
+
 	public void setBusinessMapper(BusinessMapper businessMapper) {
 		this.businessMapper = businessMapper;
 	}
+
+	private Logger log = LoggerFactory.getLogger(BusinessServiceImpl.class);
 
 	@Override
 	public Mapper<Business> getGenericMapper() {
@@ -432,44 +436,122 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 	@Override
 	public synchronized void initBusinessLatAndLng(Integer wechatId, User user) {
 		List<Business> list = businessMapper.getAll();
-		String[] directCity = { "北京市", "上海市", "重庆市", "天津市" };
+		String[] directCity = {"北京市", "上海市", "重庆市", "天津市"};
 		List<String> directCityList = Arrays.asList(directCity);
+		Boolean flagBaidu;
+		Boolean flagQQ;
 		for (Business business : list) {
 			if (business.getAddress() != null) {
-				Map<String, Double> map = BaiduLocationUtil
-						.getLatAndLngByAddress(business.getAddress());
-				if (map != null) {
-					Map<String, String> mapAddress = BaiduLocationUtil
-							.getAddressByLatAndLng(map.get("lat").toString(),
-									map.get("lng").toString());
-					if (mapAddress != null) {
-						business.setLatitude(map.get("lat"));
-						business.setLongitude(map.get("lng"));
+				flagBaidu = false;
+				flagQQ = false;
+				if (business.getLatitude() != null && business.getLongitude() != null) {
+					flagBaidu = true;
+				}
+				if (business.getWxlat() != null && business.getWxlng() != null) {
+					flagQQ = true;
+				}
+				if (flagBaidu && flagQQ) {
+					continue;
+				}
+				if (!flagBaidu) {
+					Map<String, Double> map = baiduLocationUtil.getLatAndLngByAddress(wechatId,
+							business.getAddress());
+					if (map != null) {
+						log.debug(JSONObject.toJSONString(map));
+						Map<String, String> mapAddress = baiduLocationUtil.getAddressByLatAndLng(wechatId,
+								map.get("lat").toString(), map.get("lng").toString());
+						log.debug(JSONObject.toJSONString(mapAddress));
+						if (mapAddress != null) {
+							if (map.get("lat") != null && !"".equals(map.get("lat")))
+								business.setLatitude(map.get("lat"));
+							if (map.get("lng") != null && !"".equals(map.get("lng")))
+								business.setLongitude(map.get("lng"));
+						} else {
+							throw new WechatException(Message.BUSINESS_FETCH_BAIDU_ADDRAPI_FAIL);
+						}
 						String country = mapAddress.get("country");
 						String province = mapAddress.get("province");
 						String city = mapAddress.get("city");
 						String district = mapAddress.get("district");
-						Integer countrycode = areaInfoMapper.selectIdByName(
-								country, null);
-						Integer provincecode = areaInfoMapper.selectIdByName(
-								province, countrycode);
+						Integer countrycode = areaInfoMapper.selectIdByName(country, null);
+						Integer provincecode = areaInfoMapper.selectIdByName(province, countrycode);
 						business.setProvince(provincecode);
 						business.setDistrict(district);
 						if (directCityList.contains(mapAddress.get("province"))) {
-							business.setCity(areaInfoMapper.selectIdByName(
-									district, provincecode));
+							business.setCity(areaInfoMapper.selectIdByName(district, provincecode));
 						} else {
-							business.setCity(areaInfoMapper.selectIdByName(
-									city, provincecode));
+							business.setCity(areaInfoMapper.selectIdByName(city, provincecode));
 						}
-
-						businessMapper.updateByPrimaryKeySelective(business);
+					} else {
+						throw new WechatException(Message.BUSINESS_FETCH_BAIDU_GEOAPI_FAIL);
 					}
 				}
+				if (!flagQQ) {
+					Double lat = business.getLatitude();
+					Double lng = business.getLongitude();
+					JSONObject object = baiduLocationUtil.transforLatAndLng(wechatId, lat + "," + lng);
+					log.debug(JSONObject.toJSONString(object));
+					if (object != null) {
+						lat = object.getJSONArray("locations").getJSONObject(0).getDouble("lat");
+						lng = object.getJSONArray("locations").getJSONObject(0).getDouble("lng");
+					} else {
+						throw new WechatException(Message.BUSINESS_TRANSFER_QQ_GEOAPI_FAIL);
+					}
+					business.setWxlat(lat);
+					business.setWxlng(lng);
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+
+				log.info(JSONObject.toJSONString(business));
+				businessMapper.updateByPrimaryKeySelective(business);
+
 			}
 		}
-
 	}
+//	public synchronized void initBusinessLatAndLng(Integer wechatId, User user) {
+//		List<Business> list = businessMapper.getAll();
+//		String[] directCity = { "北京市", "上海市", "重庆市", "天津市" };
+//		List<String> directCityList = Arrays.asList(directCity);
+//		for (Business business : list) {
+//			if (business.getAddress() != null) {
+//				Map<String, Double> map = BaiduLocationUtil
+//						.getLatAndLngByAddress(business.getAddress());
+//				if (map != null) {
+//					Map<String, String> mapAddress = BaiduLocationUtil
+//							.getAddressByLatAndLng(map.get("lat").toString(),
+//									map.get("lng").toString());
+//					if (mapAddress != null) {
+//						business.setLatitude(map.get("lat"));
+//						business.setLongitude(map.get("lng"));
+//						String country = mapAddress.get("country");
+//						String province = mapAddress.get("province");
+//						String city = mapAddress.get("city");
+//						String district = mapAddress.get("district");
+//						Integer countrycode = areaInfoMapper.selectIdByName(
+//								country, null);
+//						Integer provincecode = areaInfoMapper.selectIdByName(
+//								province, countrycode);
+//						business.setProvince(provincecode);
+//						business.setDistrict(district);
+//						if (directCityList.contains(mapAddress.get("province"))) {
+//							business.setCity(areaInfoMapper.selectIdByName(
+//									district, provincecode));
+//						} else {
+//							business.setCity(areaInfoMapper.selectIdByName(
+//									city, provincecode));
+//						}
+//
+//						businessMapper.updateByPrimaryKeySelective(business);
+//					}
+//				}
+//			}
+//		}
+//
+//	}
 
 	@Override
 	public List<BusinessAreaListDto> getProvinceList(Integer wechatId) {
