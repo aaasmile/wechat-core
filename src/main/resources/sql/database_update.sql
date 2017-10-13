@@ -14,7 +14,7 @@ ALTER TABLE `material` ADD COLUMN `comment` tinyint DEFAULT '0' COMMENT '0:不�
 ALTER TABLE `material` DROP COLUMN `comment`;
 ALTER TABLE `material_image_text_detail` ADD COLUMN `comment` tinyint DEFAULT '0' COMMENT '0:不能评论,1:所有人可以评论，2：仅有粉丝可以评论';
 
---20170816 add , 优化分组群发
+-- 20170816 add , 优化分组群发
 ALTER TABLE `mass_conversation_batch_result` ADD COLUMN `msg_type` tinyint DEFAULT NULL COMMENT '群发消息类型' AFTER `status`;
 ALTER TABLE `mass_conversation_batch_result` ADD COLUMN `msg_content` text DEFAULT NULL COMMENT '群发消息内容' AFTER `msg_type`;
 CREATE TABLE `mass_conversation_batch_member` (
@@ -29,12 +29,12 @@ CREATE TABLE `mass_conversation_batch_member` (
   KEY `wechat_id` (`wechat_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='分批群发用户表';
 
----2017-08-22 add lacoste crm
+-- 2017-08-22 add lacoste crm
 ALTER TABLE `member` ADD COLUMN `status` tinyint(2) NULL COMMENT '绑定状态(0:已解绑,1:已绑定)';
 ALTER TABLE `member` ADD COLUMN `pmcode` varchar(255) NULL COMMENT '卡号';
 ALTER TABLE `member` ADD COLUMN `levels` varchar(255) NULL COMMENT '卡级别';
 
----拆分repo service时更新的表结构
+-- 拆分repo service时更新的表结构
 RENAME TABLE reply_words TO reply_word;
 ALTER TABLE `conversation_image_text_detail` ADD COLUMN `wechat_id` int(11) NOT NULL COMMENT '微信ID';
 CREATE TABLE `spi_config` (
@@ -48,10 +48,8 @@ CREATE TABLE `spi_config` (
   `status` tinyint(4) DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
----部分表迁移到tenancydb
 
-
----2017-09-14 add
+-- 2017-09-14 add
 CREATE TABLE `qrcode_personal` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `wechat_id` int(11) NOT NULL COMMENT '公众号ID',
@@ -79,7 +77,6 @@ CREATE TABLE `member_qrcode_invited` (
   `created_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户临时二维码分享后，邀请者和被邀请者的关系记录表'
-
 
 -- 2017-09-19 add，增加授权链接统计表
 CREATE TABLE `oauth_url_log` (
@@ -112,8 +109,7 @@ CREATE TABLE `menu_extra_attr` (
   PRIMARY KEY (`id`,`menu_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---2017-10-13 会话中的url以及event_key字段长度增加到500
+-- 2017-10-13 会话中的url以及event_key字段长度增加到500
 ALTER TABLE `conversation`
 	MODIFY COLUMN `url` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL COMMENT '消息链接' AFTER `description`,
 	MODIFY COLUMN `event_key` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL COMMENT '事件KEY值' AFTER `url`;
-
