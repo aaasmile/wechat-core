@@ -277,28 +277,30 @@ public class MemberServiceImpl extends BaseService<Member> implements
 			memberMemberDeleteTags = new ArrayList<MemberTagDto>();
 			existMemberTags = memberDto.getMemberTags();
 			// 补全批量删除时用户已有标签
-			for (MemberTagDto existMemberTag : existMemberTags) {
-				if (!contains(memberTags, existMemberTag)) {
-					MemberTag tag = new MemberTag();
-					tag.setId(existMemberTag.getId());
-					tag.setName(existMemberTag.getName());
-					tag.setWechatId(existMemberTag.getWechatId());
-					memberTags.add(tag);
+			if(null!=existMemberTags){
+				for (MemberTagDto existMemberTag : existMemberTags) {
+					if (!contains(memberTags, existMemberTag)) {
+						MemberTag tag = new MemberTag();
+						tag.setId(existMemberTag.getId());
+						tag.setName(existMemberTag.getName());
+						tag.setWechatId(existMemberTag.getWechatId());
+						memberTags.add(tag);
+					}
 				}
-			}
-			for (MemberTag memberTag : memberTags) {
-				if (!contains(existMemberTags, memberTag)) {
-					memberMemberTag = new MemberMemberTag();
-					memberMemberTag.setMemberId(memberDto.getId());
-					memberMemberTag.setMemberTagId(memberTag.getId());
-					memberMemberTag.setWechatId(wechatId);
-					memberMemberTag.setCreatedAt(current);
-					memberMemberAddTags.add(memberMemberTag);
+				for (MemberTag memberTag : memberTags) {
+					if (!contains(existMemberTags, memberTag)) {
+						memberMemberTag = new MemberMemberTag();
+						memberMemberTag.setMemberId(memberDto.getId());
+						memberMemberTag.setMemberTagId(memberTag.getId());
+						memberMemberTag.setWechatId(wechatId);
+						memberMemberTag.setCreatedAt(current);
+						memberMemberAddTags.add(memberMemberTag);
+					}
 				}
-			}
-			for (MemberTagDto existMemberTag : existMemberTags) {
-				if (!contains(memberTags, existMemberTag)) {
-					memberMemberDeleteTags.add(existMemberTag);
+				for (MemberTagDto existMemberTag : existMemberTags) {
+					if (!contains(memberTags, existMemberTag)) {
+						memberMemberDeleteTags.add(existMemberTag);
+					}
 				}
 			}
 			if (!memberMemberAddTags.isEmpty()) {
