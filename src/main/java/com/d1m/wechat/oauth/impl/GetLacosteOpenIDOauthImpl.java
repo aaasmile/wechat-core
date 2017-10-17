@@ -104,10 +104,20 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 									"wechatId : {}, memberId : {}, levels : {}.",
 									wechatId, member.getId(), levels);
 							if (StringUtils.isNotBlank(levels)) {
-								String url = getRedirectUrl(levels, json);
-								log.info("url : {}.", url);
-								if (StringUtils.isNotBlank(url)) {
-									redirectUrl = url;
+								if (StringUtils.equals(levels, "-1")) {
+									log.info("runsa api error.");
+									redirectUrl = configService.getConfigValue(
+											wechatId, "LACOSTE_CRM",
+											"SERVER_BUSY_URL");
+									log.info("server busy callbackUrl OK : {}",
+											redirectUrl);
+									response.sendRedirect(redirectUrl);
+								} else {
+									String url = getRedirectUrl(levels, json);
+									log.info("url : {}.", url);
+									if (StringUtils.isNotBlank(url)) {
+										redirectUrl = url;
+									}
 								}
 							}
 						}
