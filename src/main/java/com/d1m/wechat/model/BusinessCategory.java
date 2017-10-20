@@ -11,6 +11,9 @@ public class BusinessCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "wechat_id")
+    private Integer wechatId;
+
     /**
      * 名称
      */
@@ -38,6 +41,14 @@ public class BusinessCategory {
      */
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getWechatId() {
+        return wechatId;
+    }
+
+    public void setWechatId(Integer wechatId) {
+        this.wechatId = wechatId;
     }
 
     /**

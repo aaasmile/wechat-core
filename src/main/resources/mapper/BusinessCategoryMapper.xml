@@ -8,6 +8,7 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="parent_id" jdbcType="INTEGER" property="parentId" />
+    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
   </resultMap>
 
 	<select id="countDuplicateName" resultType="int">

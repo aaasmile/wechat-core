@@ -6,6 +6,8 @@ public class ImageTextDto {
 
 	private Integer id;
 
+	private Integer wechatId;
+
 	private String title;
 
 	private String author;
@@ -30,8 +32,15 @@ public class ImageTextDto {
 
 	private Integer comment;
 
+    public Integer getWechatId() {
+        return wechatId;
+    }
 
-	public String getAuthor() {
+    public void setWechatId(Integer wechatId) {
+        this.wechatId = wechatId;
+    }
+
+    public String getAuthor() {
 		return author;
 	}
 

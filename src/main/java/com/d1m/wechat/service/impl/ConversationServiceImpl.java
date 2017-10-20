@@ -6,8 +6,6 @@ import cn.d1m.wechat.client.model.WxMessage;
 import cn.d1m.wechat.client.model.request.WxArticleMessage;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.d1m.common.ds.TenantContext;
-import com.d1m.wechat.schedule.SchedulerRestService;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.xxl.job.core.biz.model.ReturnT;
@@ -19,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.common.Mapper;
 
+import com.d1m.common.ds.TenantContext;
 import com.d1m.wechat.dto.*;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.*;
@@ -27,8 +26,12 @@ import com.d1m.wechat.model.enums.*;
 import com.d1m.wechat.pamametermodel.ConversationModel;
 import com.d1m.wechat.pamametermodel.MassConversationModel;
 import com.d1m.wechat.pamametermodel.MemberModel;
+import com.d1m.wechat.schedule.SchedulerRestService;
 import com.d1m.wechat.service.*;
-import com.d1m.wechat.util.*;
+import com.d1m.wechat.util.Constants;
+import com.d1m.wechat.util.DateUtil;
+import com.d1m.wechat.util.IllegalArgumentUtil;
+import com.d1m.wechat.util.Message;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
 
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
@@ -420,6 +423,7 @@ public class ConversationServiceImpl extends BaseService<Conversation>
 					JSONObject itemJson = null;
 					for (ImageTextDto imageTextDto : items) {
 						conversationImageTextDetail = new ConversationImageTextDetail();
+                        conversationImageTextDetail.setWechatId(imageTextDto.getWechatId());
 						conversationImageTextDetail.setAuthor(imageTextDto
 								.getAuthor());
 						conversationImageTextDetail.setContent(imageTextDto
@@ -916,6 +920,7 @@ public class ConversationServiceImpl extends BaseService<Conversation>
 				JSONObject itemJson = null;
 				for (ImageTextDto imageTextDto : items) {
 					conversationImageTextDetail = new ConversationImageTextDetail();
+                    conversationImageTextDetail.setWechatId(imageTextDto.getWechatId());
 					conversationImageTextDetail.setAuthor(imageTextDto
 							.getAuthor());
 					conversationImageTextDetail.setContent(imageTextDto

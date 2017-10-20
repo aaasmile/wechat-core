@@ -8,6 +8,9 @@ public class ConversationImageTextDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "wechat_id")
+    private Integer wechatId;
+
     /**
      * 标题
      */
@@ -70,6 +73,14 @@ public class ConversationImageTextDetail {
      */
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getWechatId() {
+        return wechatId;
+    }
+
+    public void setWechatId(Integer wechatId) {
+        this.wechatId = wechatId;
     }
 
     /**
