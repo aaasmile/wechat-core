@@ -125,9 +125,9 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 		menuRule.setCreatedAt(current);
 		menuRule.setCreatorId(user.getId());
 		menuRule.setWechatId(wechatId);
-		menuRuleMapper.insertSelective(menuRule);
+		menuRuleMapper.insert(menuRule);
 		menuGroup.setMenuRuleId(menuRule.getId());
-		menuGroupMapper.updateByPrimaryKeySelective(menuGroup);
+		menuGroupMapper.updateByPrimaryKey(menuGroup);
 	}
 
     /**
@@ -145,12 +145,11 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
         }
 		menuGroup.setWechatId(wechatId);
 		menuGroup.setStatus(MenuGroupStatus.INUSED.getValue());
-		menuGroupMapper.insertSelective(menuGroup);
+		menuGroupMapper.insert(menuGroup);
 		return menuGroup;
 	}
 
-	@Transactional
-	Menu create(User user, Integer wechatId, Date current,
+	private Menu create(User user, Integer wechatId, Date current,
 			MenuGroup menuGroup, Integer parentId, MenuDto menuDto) {
 		Menu menu = new Menu();
 		menu.setCreatedAt(current);
@@ -293,13 +292,13 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 					material.setStatus(MaterialStatus.INUSED.getValue());
 					material.setMaterialType(MaterialType.TEXT.getValue());
 					material.setWechatId(wechatId);
-					materialMapper.insertSelective(material);
+					materialMapper.insert(material);
 
 					MaterialTextDetail materialTextDetail = new MaterialTextDetail();
 					materialTextDetail.setContent(content);
 					materialTextDetail.setMaterialId(material.getId());
 					materialTextDetail.setWechatId(wechatId);
-					materialTextDetailMapper.insertSelective(materialTextDetail);
+					materialTextDetailMapper.insert(materialTextDetail);
 					materialId = material.getId();
 				} else {
 					materialId = record.getMaterialId();
@@ -489,7 +488,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 
 		menuGroup.setModifyAt(current);
 		menuGroup.setName(menuGroupModel.getMenuGroupName());
-		menuGroupMapper.updateByPrimaryKeySelective(menuGroup);
+		menuGroupMapper.updateByPrimaryKey(menuGroup);
 
 		return menuGroup;
 	}
@@ -503,8 +502,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 		return menuGroup;
 	}
 
-	@Transactional
-	Menu createdOrUpdated(User user, Integer wechatId,
+	private Menu createdOrUpdated(User user, Integer wechatId,
 			MenuGroup menuGroup, Date current, MenuDto m, Integer parentId) {
 		Menu menu = null;
 		MaterialDto material = m.getMaterial();
@@ -517,8 +515,6 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 			}else{
 				menu.setMenuKey(null);
 			}
-			if (m.getUrl() != null)
-				menu.setUrl(m.getUrl());
 			menu.setName(m.getName());
 			MenuType menuType = MenuType.getByValue(m.getType());
 			if (menuType != null) {
@@ -555,8 +551,6 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 				menu.setMenuKey(material.getId());
 				menu.setUrl(material.getUrl());
 			}
-			if (m.getUrl() != null)
-				menu.setUrl(m.getUrl());
 			menu.setName(m.getName());
 			menu.setStatus(MenuStatus.INUSED.getValue());
 			MenuType menuType = MenuType.getByValue(m.getType());
@@ -568,7 +562,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 			menu.setWechatId(wechatId);
 			menu.setParentId(parentId);
 			menu.setSeq(m.getSeq());
-			menuMapper.insertSelective(menu);
+			menuMapper.insert(menu);
 			MenuExtraAttr menuExtraAttr = new MenuExtraAttr();
 			menuExtraAttr.setMenuId((long)menu.getId());
 			if (m.getAppId() != null)
@@ -599,7 +593,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 			m.setStatus(MenuStatus.DELETED.getValue());
 			m.setDeletedAt(current);
 			m.setDeletorId(user.getId());
-			menuMapper.updateByPrimaryKeySelective(m);
+			menuMapper.updateByPrimaryKey(m);
 		}
 	}
 
@@ -642,7 +636,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 		menuGroup.setDeletorId(user.getId());
 		menuGroup.setStatus(MenuGroupStatus.DELETED.getValue());
 
-		menuGroupMapper.updateByPrimaryKeySelective(menuGroup);
+		menuGroupMapper.updateByPrimaryKey(menuGroup);
 		/**
 		 * TODO synchronized weixin
 		 */
