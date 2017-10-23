@@ -113,3 +113,7 @@ CREATE TABLE `menu_extra_attr` (
 ALTER TABLE `conversation`
 	MODIFY COLUMN `url` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL COMMENT '消息链接' AFTER `description`,
 	MODIFY COLUMN `event_key` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL COMMENT '事件KEY值' AFTER `url`;
+
+-- 2017-10-23
+ALTER TABLE conversation_image_text_detail ADD wechat_id INT DEFAULT 0 NOT NULL;
+ALTER TABLE business_category ADD wechat_id INT DEFAULT 0 NOT NULL;
