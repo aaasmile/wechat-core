@@ -45,7 +45,7 @@
         <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
     </context:component-scan>
 
-    <context:property-placeholder location="classpath:config.properties"/>
+    <!--<context:property-placeholder location="classpath:config.properties"/>-->
 
     <bean id="dataSourceDefault" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
         <property name="driverClassName" value="${jdbc.driverClass}"/>
@@ -146,7 +146,7 @@
     <task:scheduler id="scheduler"/>
     <task:executor id="callerRunsExecutor" pool-size="5-50" queue-capacity="1000" keep-alive="60" rejection-policy="CALLER_RUNS"/>
 
-    <import resource="classpath:applicationContext-redis.xml"/>
+    <!--<import resource="classpath:applicationContext-redis.xml"/>-->
     <import resource="classpath:applicationContext-shiro.xml"/>
 
 </beans>
