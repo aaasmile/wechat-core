@@ -25,9 +25,4 @@ public class FileConfigure {
     public Properties fileUploadProp() throws IOException {
         return PropertiesLoaderUtils.loadProperties(new ClassPathResource("/fileupload.properties"));
     }
-
-    @Bean
-    public Properties fileContentTypeProp() throws IOException {
-        return PropertiesLoaderUtils.loadProperties(new ClassPathResource("/file-content-type.properties"));
-    }
 }

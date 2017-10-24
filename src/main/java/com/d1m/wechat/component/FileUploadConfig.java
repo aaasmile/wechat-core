@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 @PropertySource("classpath:fileupload.properties")
 public class FileUploadConfig {
     private static Properties fileUploadProp;
-    private static Properties fileContentTypeProp;
 
     private static String uploadUrl;
     private static String uploadPath;
@@ -59,20 +58,6 @@ public class FileUploadConfig {
     @Resource
     public void setFileUploadProp(Properties fileUploadProp) {
         FileUploadConfig.fileUploadProp = fileUploadProp;
-    }
-
-    @Resource
-    public void setFileContentTypeProp(Properties fileContentTypeProp) {
-        FileUploadConfig.fileContentTypeProp = fileContentTypeProp;
-    }
-
-    public static String resolveExtFromContentType(String contentType) {
-        for (Map.Entry<Object, Object> entry : fileContentTypeProp.entrySet()) {
-            if (entry.getValue().equals(contentType)) {
-                return entry.getKey().toString();
-            }
-        }
-        return "";
     }
 
     @Value("${upload_url_base}")
