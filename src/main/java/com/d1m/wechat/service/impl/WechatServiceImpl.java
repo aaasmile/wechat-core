@@ -142,7 +142,7 @@ public class WechatServiceImpl extends BaseService<Wechat> implements
 		if (wechatTagModel == null) {
 			wechatTagModel = new WechatTagModel();
 		}
-		
+		wechatTagModel.setId(id);
 		notBlank(wechatTagModel.getName(), Message.WECHAT_NAME_NOT_BLANK);
 		notBlank(wechatTagModel.getAppid(), Message.WECHAT_APP_ID_NOT_BLANK);
 		notBlank(wechatTagModel.getAppscret(), Message.WECHAT_APP_SECRET_NOT_BLANK);
