@@ -1,7 +1,12 @@
 package com.d1m.wechat.pamametermodel;
 
-public class TemplateEncryptModel {
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
+@ApiModel("模板加密参数")
+public class TemplateEncryptModel {
+	
+	@ApiModelProperty("数据")
 	private String data;
 
 	public String getData() {

@@ -2,14 +2,22 @@ package com.d1m.wechat.pamametermodel;
 
 import java.util.Date;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel("增加会员标签任务参数")
 public class AddMemberTagTaskModel extends BaseModel{
 	
+	@ApiModelProperty("任务")
 	private String task;
 	
+	@ApiModelProperty("开始时间")
 	private Date start;
 	
+	@ApiModelProperty("结束时间")
 	private Date end;
 	
+	@ApiModelProperty("状态")
 	private Integer status;
 
 	public String getTask() {

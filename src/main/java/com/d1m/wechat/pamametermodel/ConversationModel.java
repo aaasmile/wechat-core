@@ -3,38 +3,55 @@ package com.d1m.wechat.pamametermodel;
 import java.util.Date;
 import java.util.List;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel("会话参数")
 public class ConversationModel extends BaseModel {
-
+	
+	@ApiModelProperty("")
 	private Long time;
-
+	
+	@ApiModelProperty("会员ID")
 	private Integer memberId;
-
+	
+	@ApiModelProperty("素材ID")
 	private Integer materialId;
-
+	
+	@ApiModelProperty("内容")
 	private String content;
 
 	/**
 	 * 方向
 	 */
+	@ApiModelProperty("方向")
 	private Integer dir;
 
 	/**
 	 * 0:进,1:出
 	 */
+	@ApiModelProperty("0:进,1:出")
 	private Byte type;
-
+	
+	@ApiModelProperty("起始时间")
 	private Date startAt;
-
+	
+	@ApiModelProperty("结束时间")
 	private Date endAt;
 
+	@ApiModelProperty("状态(0:未回复,1:已回复)")
 	private Byte status;
-
+	
+	@ApiModelProperty("结束时间")
 	private boolean updateRead;
-
+	
+	@ApiModelProperty("消息类型")
 	private Byte msgType;
-
+	
+	@ApiModelProperty("消息类型")
 	private String keyWords;
-
+	
+	@ApiModelProperty("消息类型")
 	private String start;
 
 	private List<Byte> msgTypes;

@@ -2,12 +2,19 @@ package com.d1m.wechat.pamametermodel;
 
 import java.util.List;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel("会员标签参数")
 public class MemberTagModel extends BaseModel{
-
+	
+	@ApiModelProperty("会员标签ID")
 	private Integer id;
-
+	
+	@ApiModelProperty("会员标签名称")
 	private String name;
-
+	
+	@ApiModelProperty("会员标签类型")
 	private Integer memberTagTypeId;
 	
 	private List<Integer> ids;

@@ -1,27 +1,42 @@
 package com.d1m.wechat.pamametermodel;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel("优惠券设置")
 public class CouponSettingModel extends BaseModel {
-
+	
+	@ApiModelProperty("主键ID")
 	private Integer id;
-
+	
+	@ApiModelProperty("活动名称")
 	private String name;
-
+	
+	@ApiModelProperty("活动名称")
 	private String shortName;
-
+	
+	@ApiModelProperty("使用条件")
 	private String conditions;
-
+	
+	@ApiModelProperty("优惠券背景颜色")
 	private String couponBgcolor;
-
+	
+	@ApiModelProperty("优惠券标题背景颜色")
 	private String couponTitleBgcolor;
-
+	
+	@ApiModelProperty("优惠券标题背景颜色")
 	private Integer winProbability;
 
+	@ApiModelProperty("每人参与次数")
 	private Integer timesOfJoin;
-
+	
+	@ApiModelProperty("每人中奖次数上限")
 	private Integer timesOfWin;
-
+	
+	@ApiModelProperty("优惠券描述")
 	private String couponDescription;
-
+	
+	@ApiModelProperty("优惠券图片")
 	private String couponPic;
 
 	/** 门店类型 */

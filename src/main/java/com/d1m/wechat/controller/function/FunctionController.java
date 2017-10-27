@@ -23,9 +23,15 @@ import com.d1m.wechat.pamametermodel.FunctionModel;
 import com.d1m.wechat.service.FunctionService;
 import com.d1m.wechat.util.Message;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
 
 @Controller
 @RequestMapping("/function")
+@Api(value="功能API", tags="功能接口")
 public class FunctionController extends BaseController{
 	
 	private Logger log = LoggerFactory.getLogger(WechatController.class);
@@ -33,10 +39,13 @@ public class FunctionController extends BaseController{
 	@Autowired
 	private FunctionService functionService;
 	
+	@ApiOperation(value="获取功能列表", tags="功能接口")
+	@ApiResponse(code=200, message="1-功能列表成功")
 	@RequestMapping(value = "list.json", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject list(
-			@RequestBody(required = false) FunctionModel functionModel,
+			@ApiParam(name="FunctionModel",required=false)
+				@RequestBody(required = false) FunctionModel functionModel,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {

@@ -4,40 +4,44 @@ import java.util.List;
 
 import com.d1m.wechat.model.Wechat;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel("用户参数")
 public class UserModel extends BaseModel {
-
+	@ApiModelProperty("用户名")
 	private String username;
-
+	@ApiModelProperty("头像")
 	private String avatar;
-
+	@ApiModelProperty("密码")
 	private String password;
-
+	@ApiModelProperty("确认密码")
 	private String confirmPassword;
-
+	@ApiModelProperty("邮箱")
 	private String email;
-
+	@ApiModelProperty("手机")
 	private String mobile;
-
+	@ApiModelProperty("职位")
 	private String position;
-
+	@ApiModelProperty("微信公众号ID")
 	private List<Integer> wechatIds;
-	
+	@ApiModelProperty("微信公众号")
 	private List<Wechat> wechats;
-	
+	@ApiModelProperty("状态")
 	private Byte status;
-	
+	@ApiModelProperty("权限ID")
 	private Integer roleId;
-	
+	@ApiModelProperty("用户ID")
 	private Integer userId;
-	
+	@ApiModelProperty("默认微信公号ID")
 	private Integer defaultWechatId;
-	
+	@ApiModelProperty("公司ID")
 	private Integer companyId;
-	
+	@ApiModelProperty("ID")
 	private Integer id;
-	
+	@ApiModelProperty("开始时间")
 	private String start;
-	
+	@ApiModelProperty("结束时间")
 	private String end;
 
 	public String getUsername() {

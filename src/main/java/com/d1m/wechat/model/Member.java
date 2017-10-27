@@ -7,10 +7,16 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiParam;
+
+@ApiModel(value="Member", description="会员")
 public class Member {
 	/**
 	 * 主键ID
 	 */
+	@ApiModelProperty("主键ID")
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
@@ -18,148 +24,175 @@ public class Member {
 	/**
 	 * unionId
 	 */
+	@ApiModelProperty("unionId")
 	@Column(name = "union_id")
 	private String unionId;
 
 	/**
 	 * openId
 	 */
+	@ApiModelProperty("openId")
 	@Column(name = "open_id")
 	private String openId;
 
 	/**
 	 * 昵称
 	 */
+	@ApiModelProperty("昵称")
 	private String nickname;
 
 	/**
 	 * 性别
 	 */
+	@ApiModelProperty("性别")
 	private Byte sex;
 
 	/**
 	 * 语言
 	 */
+	@ApiModelProperty("语言")
 	private Byte language;
 
 	/**
 	 * 城市
 	 */
+	@ApiModelProperty("城市")
 	private Integer city;
 
 	/**
 	 * 省份
 	 */
+	@ApiModelProperty("省份")
 	private Integer province;
 
 	/**
 	 * 国家
 	 */
+	@ApiModelProperty("国家")
 	private Integer country;
 
 	/**
 	 * 本地头像地址
 	 */
+	@ApiModelProperty("本地头像地址")
 	@Column(name = "local_head_img_url")
 	private String localHeadImgUrl;
 
 	/**
 	 * 微信头像地址
 	 */
+	@ApiModelProperty("微信头像地址")
 	@Column(name = "head_img_url")
 	private String headImgUrl;
 
 	/**
 	 * 创建时间
 	 */
+	@ApiModelProperty("创建时间")
 	@Column(name = "created_at")
 	private Date createdAt;
 
 	/**
 	 * 所属公众号ID
 	 */
+	@ApiModelProperty("所属公众号ID")
 	@Column(name = "wechat_id")
 	private Integer wechatId;
 
 	/**
 	 * 用户分组ID
 	 */
+	@ApiModelProperty("用户分组ID")
 	@Column(name = "member_group_id")
 	private Integer memberGroupId;
 
 	/**
 	 * 活跃度
 	 */
+	@ApiModelProperty("活跃度")
 	private Byte activity;
 
 	/**
 	 * 本月群发数量
 	 */
+	@ApiModelProperty("本月群发数量")
 	@Column(name = "batchsend_month")
 	private Integer batchsendMonth;
 
 	/**
 	 * 关注时间
 	 */
+	@ApiModelProperty("关注时间")
 	@Column(name = "subscribe_at")
 	private Date subscribeAt;
 
 	/**
 	 * 取消关注时间
 	 */
+	@ApiModelProperty("取消关注时间")
 	@Column(name = "unsubscribe_at")
 	private Date unsubscribeAt;
 
 	/**
 	 * 来源
 	 */
+	@ApiModelProperty("来源")
 	private Byte fromwhere;
 
 	/**
 	 * 手机号
 	 */
+	@ApiModelProperty("手机号")
 	private String mobile;
 
 	/**
 	 * 备注
 	 */
+	@ApiModelProperty("备注")
 	private String remark;
 
 	/**
 	 * 是否关注(1:关注,0:取消关注)
 	 */
+	@ApiModelProperty("是否关注(1:关注,0:取消关注)")
 	@Column(name = "is_subscribe")
 	private Boolean isSubscribe;
 
 	/**
 	 * 最后一次会话时间
 	 */
+	@ApiModelProperty("最后一次会话时间")
 	@Column(name = "last_conversation_at")
 	private Date lastConversationAt;
 
 	/**
 	 * 来源
 	 */
+	@ApiModelProperty("来源")
 	private String source;
 
 	/**
 	 * 关键词
 	 */
+	@ApiModelProperty("关键词")
 	private String keyword;
 
 	/**
 	 * 绑定状态(0:已解绑,1:已绑定)
 	 */
+	@ApiModelProperty("绑定状态(0:已解绑,1:已绑定)")
 	private Byte status;
 
 	/**
 	 * 卡号
 	 */
+	@ApiModelProperty("卡号")
 	private String pmcode;
 
 	/**
 	 * 卡级别
 	 */
+	@ApiModelProperty("卡级别")
 	private String levels;
 
 	/**

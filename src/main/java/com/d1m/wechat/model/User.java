@@ -4,6 +4,11 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel("用户")
 public class User implements Serializable {
 
     private static final long serialVersionUID = 8121060670969148764L;
@@ -16,6 +21,7 @@ public class User implements Serializable {
     /**
      * 主键ID
      */
+    @ApiModelProperty("主键ID")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -23,107 +29,126 @@ public class User implements Serializable {
     /**
      * 用户名
      */
+    @ApiModelProperty("用户名")
     private String username;
 
     /**
      * 密码
      */
+    @ApiModelProperty("密码")
     private String password;
 
     /**
      * 邮箱
      */
+    @ApiModelProperty("邮箱")
     private String email;
 
     /**
      * 昵称
      */
+    @ApiModelProperty("昵称")
     private String nickname;
 
     /**
      * 客服工号
      */
+    @ApiModelProperty("客服工号")
     @Column(name = "kf_id")
     private String kfId;
 
     /**
      * 微信头像地址
      */
+    @ApiModelProperty("微信头像地址")
     @Column(name = "head_img_url")
     private String headImgUrl;
 
     /**
      * 本地头像地址
      */
+    @ApiModelProperty("本地头像地址")
     @Column(name = "local_head_img_url")
     private String localHeadImgUrl;
 
     /**
      * 创建时间
      */
+    @ApiModelProperty("创建时间")
     @Column(name = "created_at")
     private Date createdAt;
 
     /**
      * 创建用户ID
      */
+    @ApiModelProperty("创建用户ID")
     @Column(name = "creator_id")
     private Integer creatorId;
 
     /**
      * 更新时间
      */
+    @ApiModelProperty("更新时间")
     @Column(name = "modify_at")
     private Date modifyAt;
 
     /**
      * 微信同步推送时间
      */
+    @ApiModelProperty("微信同步推送时间")
     @Column(name = "push_at")
     private Date pushAt;
 
     /**
      * 公众号ID
      */
+    @ApiModelProperty("公众号ID")
     @Column(name = "wechat_id")
     private Integer wechatId;
 
     /**
      * 职位
      */
+    @ApiModelProperty("职位")
     private String position;
 
     /**
      * 手机号码
      */
+    @ApiModelProperty("手机号码")
     private String mobile;
 
     /**
      * 最后一次登录时间
      */
+    @ApiModelProperty("最后一次登录时间")
     @Column(name = "last_login_at")
     private Date lastLoginAt;
 
     /**
      * 用户存在-1，用户删除-0
      */
+    @ApiModelProperty("用户存在-1，用户删除-0")
     private Byte status;
 
     /**
      * 角色ID
      */
+    @ApiModelProperty("角色ID")
     @Column(name = "role_id")
     private Integer roleId;
 
     /**
      * 公司ID
      */
+    @ApiModelProperty("公司ID")
     @Column(name = "company_id")
     private Integer companyId;
 
     /**
      * 登录失败计数器
      */
+    @ApiModelProperty("登录失败计数器")
     private Integer counter;
 
     /**

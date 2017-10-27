@@ -1,25 +1,39 @@
 package com.d1m.wechat.pamametermodel;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel("素材参数")
 public class MassConversationModel extends AddMemberTagModel {
-
+	
+	@ApiModelProperty("素材ID")
 	private Integer materialId;
-
+	
+	@ApiModelProperty("内容")
 	private String content;
-
+	
+	@ApiModelProperty("是否发送给所有人")
 	private Boolean sendToAll;
-
+	
+	@ApiModelProperty("状态(0:删除,1:使用)")
 	private String status;
-
+	
+	@ApiModelProperty("是否发送给所有人")
 	private String reason;
-
+	
+	@ApiModelProperty("群发会话主键ID")
 	private Integer id;
 
+	@ApiModelProperty("执行时间")
 	private String runAt;
-
+	
+	@ApiModelProperty("会话ID")
 	private Integer conversationId;
-
+	
+	@ApiModelProperty("公众号ID")
 	private Integer wechatId;
 	
+	@ApiModelProperty("是否强制发送")
 	private Boolean isForce;
 
 	public String getContent() {

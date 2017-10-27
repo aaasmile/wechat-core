@@ -13,6 +13,12 @@ import com.d1m.wechat.service.MemberService;
 import com.d1m.wechat.util.Constants;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * Created by Jovi gu on 2017/9/6.
  */
+@Api(value="产品API", tags="产品接口")
 @RequestMapping("/product")
 @Controller
 public class ProductController extends BaseController {
@@ -47,11 +54,14 @@ public class ProductController extends BaseController {
      * @param file
      * @return
      */
+	@ApiOperation(value="上传文件", tags="产品接口")
+	@ApiResponse(code=200, message="上传文件成功")
     @RequestMapping(value = "image/add", method = RequestMethod.POST)
     @ResponseBody
     @RequiresPermissions("product:list")
     public JSONObject uploadImage(
-            @RequestParam(required = false) MultipartFile file, HttpServletRequest request) {
+    		@ApiParam("上传文件")
+            	@RequestParam(required = false) MultipartFile file, HttpServletRequest request) {
         try {
             Upload upload = UploadController.upload(getWechatId(request.getSession()), file, Constants.IMAGE,
                     Constants.GOODS);
@@ -61,7 +71,9 @@ public class ProductController extends BaseController {
             return wrapException(e);
         }
     }
-
+	
+	@ApiOperation(value="获取产品列表", tags="产品接口")
+	@ApiResponse(code=200, message="1-操作成功")
     @ResponseBody
     @RequestMapping(value = "list")
     @RequiresPermissions("product:list")
@@ -77,11 +89,15 @@ public class ProductController extends BaseController {
             return wrapException(e);
         }
     }
-
+	
+	@ApiOperation(value="查询产品", tags="产品接口")
+	@ApiResponse(code=200, message="1-操作成功")
     @ResponseBody
     @RequestMapping(value = "search", method = RequestMethod.POST)
     @RequiresPermissions("popup-store:product-list")
-    public JSONObject searchProduct(@RequestBody(required = true) PopupGoodsFilter popupGoodsFilter, HttpServletRequest request) {
+    public JSONObject searchProduct(
+    		@ApiParam(name="PopupGoodsFilter", required=true)
+    			@RequestBody(required = true) PopupGoodsFilter popupGoodsFilter, HttpServletRequest request) {
         Integer wechatId = debug ? 32 : getWechatId(request.getSession());
         if (popupGoodsFilter.getPageNum() < 0 || popupGoodsFilter.getPageSize() < 0)
             return representation(Message.ILLEGAL_REQUEST);
@@ -94,11 +110,15 @@ public class ProductController extends BaseController {
             return wrapException(e);
         }
     }
-
+	
+	@ApiOperation(value="新增产品", tags="产品接口")
+	@ApiResponse(code=200, message="1-操作成功")
     @ResponseBody
     @RequestMapping(value = "add", method = RequestMethod.POST)
     @RequiresPermissions("popup-store:product-list")
-    public JSONObject addProduct(@RequestBody(required = true) PopupGoodsEntity goodsEntity, HttpServletRequest request) {
+    public JSONObject addProduct(
+    		@ApiParam(name="PopupGoodsEntity", required=true)
+    			@RequestBody(required = true) PopupGoodsEntity goodsEntity, HttpServletRequest request) {
         try {
             Integer wechatId = debug ? 32 : getWechatId(request.getSession());
             goodsEntity.getGoods().setWechatId(wechatId);
@@ -109,11 +129,15 @@ public class ProductController extends BaseController {
             return wrapException(e);
         }
     }
-
+	
+	@ApiOperation(value="编辑产品", tags="产品接口")
+	@ApiResponse(code=200, message="1-操作成功")
     @ResponseBody
     @RequestMapping(value = "edit", method = RequestMethod.POST)
     @RequiresPermissions("popup-store:product-list")
-    public JSONObject editProduct(@RequestBody(required = true) PopupGoodsEntity goodsEntity, HttpServletRequest request) {
+    public JSONObject editProduct(
+    		@ApiParam(name="PopupGoodsEntity", required=true)
+    			@RequestBody(required = true) PopupGoodsEntity goodsEntity, HttpServletRequest request) {
         try {
             Integer wechatId = debug ? 32 : getWechatId(request.getSession());
             goodsEntity.getGoods().setWechatId(wechatId);
@@ -124,11 +148,15 @@ public class ProductController extends BaseController {
             return wrapException(e);
         }
     }
-
+	
+	@ApiOperation(value="删除产品", tags="产品接口")
+	@ApiResponse(code=200, message="1-操作成功")
     @ResponseBody
     @RequestMapping(value = "delete/{id}")
     @RequiresPermissions("popup-store:product-list")
-    public JSONObject deleteProduct(@PathVariable(name = "id") Long id) {
+    public JSONObject deleteProduct(
+    		@ApiParam("商品ID")
+    			@PathVariable(name = "id") Long id) {
         try {
             popupGoodsService.deletePopupGoods(id);
             return representation(Message.SUCCESS);
@@ -137,11 +165,15 @@ public class ProductController extends BaseController {
             return wrapException(e);
         }
     }
-
+	
+	@ApiOperation(value="根据ID获取产品信息", tags="产品接口")
+	@ApiResponse(code=200, message="1-操作成功")
     @ResponseBody
     @RequestMapping(value = "get/{id}")
     @RequiresPermissions("popup-store:product-list")
-    public JSONObject getProduct(@PathVariable(name = "id") Long id) {
+    public JSONObject getProduct(
+    		@ApiParam("商品ID")
+    			@PathVariable(name = "id") Long id) {
         try {
             PopupGoodsEntity goodsEntity = popupGoodsService.getPopupGoods(id);
             return representation(Message.SUCCESS, JSONObject.toJSONString(goodsEntity));

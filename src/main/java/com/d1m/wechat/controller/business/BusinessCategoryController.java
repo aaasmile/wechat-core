@@ -20,8 +20,13 @@ import com.d1m.wechat.dto.BusinessCategoryDto;
 import com.d1m.wechat.service.BusinessCategoryService;
 import com.d1m.wechat.util.Message;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+
 @Controller
 @RequestMapping("/business-category")
+@Api(value="门店类别API", tags="门店类别接口")
 public class BusinessCategoryController extends BaseController {
 
 	private Logger log = LoggerFactory
@@ -76,6 +81,8 @@ public class BusinessCategoryController extends BaseController {
 	 *               wrapException(e); } }
 	 */
 	
+	@ApiOperation(value="获取所有门店类别信息列表", tags="门店类别接口")
+	@ApiResponse(code=200, message="返回门店类别信息列表")
 	@RequestMapping(value = "business-category-list.json", method = RequestMethod.GET)
 	@ResponseBody
 	public JSONObject list(HttpServletRequest request,

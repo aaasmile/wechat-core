@@ -7,6 +7,13 @@ import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -40,6 +47,7 @@ import com.d1m.wechat.util.CookieUtils;
 import com.d1m.wechat.util.Message;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
 
+@Api(value="用户API", tags="用户接口")
 @Controller
 @RequestMapping("/user")
 public class UserController extends BaseController {
@@ -60,10 +68,18 @@ public class UserController extends BaseController {
 	
 	@Autowired
 	private WechatService wechatService;
-
+	
+	@ApiOperation(value="登录", tags="用户接口")
+	@ApiResponses({
+		@ApiResponse(code=200, message="1-用户登录成功"),
+		@ApiResponse(code=200, message="401-未登录"),
+		@ApiResponse(code=200, message="23003-用户名或者密码错误")
+	})
 	@RequestMapping(value = "login", method = RequestMethod.POST)
 	@ResponseBody
-	public JSONObject login(@RequestBody(required = false) UserModel userModel,
+	public JSONObject login(
+			@ApiParam("UserModel")
+				@RequestBody(required = false) UserModel userModel,
 		HttpServletRequest request,HttpServletResponse response, HttpSession session) {
 		UsernamePasswordToken token = new UsernamePasswordToken(userModel.getUsername(), DigestUtils.sha256Hex(userModel.getPassword()));  
 	    //token.setRememberMe(true);  
@@ -140,7 +156,9 @@ public class UserController extends BaseController {
 //			return wrapException(e);
 //		}
 	}
-
+	
+	@ApiOperation(value="注销", tags="用户接口")
+	@ApiResponse(code=200, message="1-退出成功")
 	@RequestMapping(value = "logout.json", method = RequestMethod.GET)
 	@ResponseBody
 	public JSONObject logout(HttpServletRequest request,
@@ -162,7 +180,9 @@ public class UserController extends BaseController {
 //		}
 		return representation(Message.LOGOUT_SUCCESS);
 	}
-
+	
+	@ApiOperation(value="获取用户信息", tags="用户接口")
+	@ApiResponse(code=200, message="1-获取成功")
 	@RequestMapping(value = "profile.json", method = RequestMethod.GET)
 	@ResponseBody
 	public JSONObject getProfile(HttpServletRequest request,
@@ -182,14 +202,17 @@ public class UserController extends BaseController {
 		FunctionModel functionModel = new FunctionModel();
 		List<FunctionDto> functionDtos = functionService.search(functionModel);
 		profile.setFunctionDtos(functionDtos);
-		return representation(Message.LOGOUT_SUCCESS, profile);
+		return representation(Message.MEMBER_PROFILE_GET_SUCCESS, profile);
 	}
-
+	
+	@ApiOperation(value="获取用户列表", tags="用户接口")
+	@ApiResponse(code=200, message="1-获取用户列表成功")
 	@RequestMapping(value = "list.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("system-setting:user-list")
 	public JSONObject listUser(
-			@RequestBody(required = false) UserModel userModel,
+			@ApiParam("UserModel")
+				@RequestBody(required = false) UserModel userModel,
 			HttpServletResponse response, HttpSession session) {
 		try {
 			if (userModel == null) {
@@ -207,12 +230,15 @@ public class UserController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="获取用户列表", tags="用户接口")
+	@ApiResponse(code=200, message="1-获取用户列表成功")
 	@RequestMapping(value = "avatar/upload.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("system-setting:user-list")
 	public JSONObject uploadAvatar(
-			@RequestParam(required = false) MultipartFile file,
+			@ApiParam("上传文件")
+				@RequestParam(required = false) MultipartFile file,
 			HttpServletResponse response, HttpSession session) {
 		try {
 			Upload upload = UploadController.upload(getWechatId(), file, Constants.IMAGE,
@@ -225,7 +251,9 @@ public class UserController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="获取用户公众号列表", tags="用户接口")
+	@ApiResponse(code=200, message="1-获取用户公众号列表成功")
 	@RequestMapping(value = "wechat/list.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("system-setting:user-list")
@@ -241,6 +269,8 @@ public class UserController extends BaseController {
 		}
 	}
 	
+	@ApiOperation(value="获取角色列表", tags="用户接口")
+	@ApiResponse(code=200, message="1-获取角色列表成功")
 	@RequestMapping(value = "role/list.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("system-setting:user-list")
@@ -255,12 +285,15 @@ public class UserController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="创建用户", tags="用户接口")
+	@ApiResponse(code=200, message="1-创建用户成功")
 	@RequestMapping(value = "new.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("system-setting:user-list")
 	public JSONObject create(
-			@RequestBody(required = false) UserModel userModel,
+			@ApiParam("UserModel")
+				@RequestBody(required = false) UserModel userModel,
 			HttpSession session) {
 		try {
 			userService.create(getUser(session), userModel);
@@ -272,10 +305,14 @@ public class UserController extends BaseController {
 
 	}
 	
+	@ApiOperation(value="获取用户", tags="用户接口")
+	@ApiResponse(code=200, message="1-获取用户成功")
 	@RequestMapping(value = "{id}/get.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("system-setting:user-list")
-	public JSONObject get(@PathVariable Integer id){
+	public JSONObject get(
+			@ApiParam("用户ID")
+				@PathVariable Integer id){
 		try {
 			UserDto userDto = userService.getById(id);
 			return representation(Message.USER_GET_SUCCESS, userDto);
@@ -285,11 +322,16 @@ public class UserController extends BaseController {
 		}
 	}
 	
+	@ApiOperation(value="更新用户", tags="用户接口")
+	@ApiResponse(code=200, message="1-更新用户成功")
 	@RequestMapping(value = "{id}/update.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("system-setting:user-list")
-	public JSONObject update(@PathVariable Integer id,
-			@RequestBody(required = false) UserModel userModel,
+	public JSONObject update(
+			@ApiParam("用户ID")
+				@PathVariable Integer id,
+			@ApiParam("UserModel")
+				@RequestBody(required = false) UserModel userModel,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response){
 		try {
@@ -302,10 +344,14 @@ public class UserController extends BaseController {
 		
 	}
 	
+	@ApiOperation(value="删除用户", tags="用户接口")
+	@ApiResponse(code=200, message="1-删除用户成功")
 	@RequestMapping(value = "{id}/delete.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("system-setting:user-list")
-	public JSONObject delete(@PathVariable Integer id, HttpSession session){
+	public JSONObject delete(
+			@ApiParam("用户ID")
+				@PathVariable Integer id, HttpSession session){
 		try {
 			int resultCode = userService.deleteById(id, getCompanyId(session));
 			return representation(Message.USER_DELETE_SUCCESS, resultCode);
@@ -315,10 +361,14 @@ public class UserController extends BaseController {
 		}
 	}
 	
+	@ApiOperation(value="用户修改密码", tags="用户接口")
+	@ApiResponse(code=200, message="1-用户修改密码成功")
 	@RequestMapping(value = "resetPassword.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("system-setting:user-list")
-	public JSONObject updatePwd(@RequestBody(required = false) UserModel userModel,
+	public JSONObject updatePwd(
+			@ApiParam("UserModel")
+				@RequestBody(required = false) UserModel userModel,
 			HttpSession session, HttpServletRequest request){
 		try {
 			int resultCode = userService.updatePwd(userModel.getUserId(), userModel.getPassword());
@@ -329,9 +379,13 @@ public class UserController extends BaseController {
 		}
 	}
 	
+	@ApiOperation(value="用户切换公众号", tags="用户接口")
+	@ApiResponse(code=200, message="1-用户切换公众号成功")
 	@RequestMapping(value = "change-wechat.json", method = RequestMethod.GET)
 	@ResponseBody
-	public JSONObject changeWechat(@RequestParam(required = true) Integer wechatId, 
+	public JSONObject changeWechat(
+			@ApiParam(name="公众号ID", required=true)
+				@RequestParam(required = true) Integer wechatId, 
 			HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		try {
@@ -361,9 +415,14 @@ public class UserController extends BaseController {
 		
 	}
 	
+	@ApiOperation(value="数据初始化", tags="用户接口")
+	@ApiResponse(code=200, message="1-数据初始化成功")
 	@RequestMapping(value = "init.json", method = RequestMethod.GET)
-	public JSONObject init(@RequestParam(required = true) String company,
-			@RequestParam(required = true) String wechat,
+	public JSONObject init(
+			@ApiParam(name="送死", required=true)
+				@RequestParam(required = true) String company,
+			@ApiParam(name="公众号", required=true)
+				@RequestParam(required = true) String wechat,
 			HttpServletRequest request, HttpServletResponse response){
 		try {
 			userService.init(company, wechat);

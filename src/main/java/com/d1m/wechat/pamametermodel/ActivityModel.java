@@ -2,36 +2,54 @@ package com.d1m.wechat.pamametermodel;
 
 import java.util.List;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel(value="ActivityModel", description="活动Model")
 public class ActivityModel extends BaseModel {
-
+	
+	@ApiModelProperty(value="名字或描述")
 	private String query;
-
+	
+	@ApiModelProperty(value="活动ID")
 	private Integer id;
 
+	@ApiModelProperty(value="活动名称")
 	private String name;
-
+	
+	@ApiModelProperty(value="开始时间")
 	private String startDate;
-
+	
+	@ApiModelProperty(value="结束时间")
 	private String endDate;
-
+	
+	@ApiModelProperty(value="描述")
 	private String description;
-
+	
+	@ApiModelProperty(value="活动编号")
 	private String code;
-
+	
+	@ApiModelProperty(value="分享封面")
 	private String sharePic;
-
+	
+	@ApiModelProperty(value="分享标题")
 	private String shareTitle;
-
+	
+	@ApiModelProperty(value="分享描述")
 	private String shareDescription;
-
+	
+	@ApiModelProperty(value="活动H5页面")
 	private String actyH5;
-
+	
+	@ApiModelProperty(value="活动下线H5页面")
 	private String actyOfflineH5;
 
 	private List<Integer> couponSettings;
-
+	
+	@ApiModelProperty(value="类型")
 	private Byte activityType;
-
+	
+	@ApiModelProperty(value="状态(0:删除,1:使用)")
 	private Byte activityStatus;
 
 	public Byte getActivityStatus() {

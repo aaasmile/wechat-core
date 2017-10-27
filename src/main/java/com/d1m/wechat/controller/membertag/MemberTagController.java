@@ -7,6 +7,12 @@ import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
@@ -35,6 +41,7 @@ import com.d1m.wechat.util.Message;
 
 @Controller
 @RequestMapping("/member-tag")
+@Api(value="会员标签API", tags="会员标签接口")
 public class MemberTagController extends BaseController {
 
 	private Logger log = LoggerFactory.getLogger(MemberTagController.class);
@@ -44,10 +51,14 @@ public class MemberTagController extends BaseController {
 	
 	@Autowired
 	private MemberTagCsvService memberTagCsvService;
-
+	
+	@ApiOperation(value="创建会员标签", tags="会员标签接口")
+	@ApiResponse(code=200, message="1-创建会员标签成功")
 	@RequestMapping(value = "new.json", method = RequestMethod.POST)
 	@ResponseBody
-	public JSONObject create(@RequestBody AddMemberTagModel tags,
+	public JSONObject create(
+			@ApiParam("AddMemberTagModel")
+				@RequestBody AddMemberTagModel tags,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
@@ -60,9 +71,13 @@ public class MemberTagController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="删除会员标签", tags="会员标签接口")
+	@ApiResponse(code=200, message="1-删除会员标签成功")
 	@RequestMapping(value = "{id}/delete.json", method = RequestMethod.DELETE)
-	public JSONObject delete(@PathVariable Integer id, HttpSession session,
+	public JSONObject delete(
+			@ApiParam("会员标签ID")
+				@PathVariable Integer id, HttpSession session,
 			HttpServletRequest request, HttpServletResponse response) {
 		try {
 			memberTagService.delete(getUser(session), getWechatId(session), id);
@@ -72,12 +87,15 @@ public class MemberTagController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="获取会员标签列表", tags="会员标签接口")
+	@ApiResponse(code=200, message="1-获取会员标签列表成功")
 	@RequestMapping(value = "list.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions(value={"member:list","system-setting:auto-reply"},logical=Logical.OR)
 	public JSONObject list(
-			@RequestBody(required = false) MemberTagModel model,
+			@ApiParam(name="MemberTagModel", required=false)
+				@RequestBody(required = false) MemberTagModel model,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		Page<MemberTag> memberTags = memberTagService.search(
@@ -101,11 +119,16 @@ public class MemberTagController extends BaseController {
 		dto.setMemberTagTypeId(memberTag.getMemberTagTypeId());
 		return dto;
 	}
-
+	
+	@ApiOperation(value="更新会员标签", tags="会员标签接口")
+	@ApiResponse(code=200, message="1-更新会员标签成功")
 	@RequestMapping(value = "{id}/update.json", method = RequestMethod.POST)
 	@ResponseBody
-	public JSONObject update(@PathVariable Integer id,
-			@RequestBody(required = false) MemberTagModel model, HttpSession session,
+	public JSONObject update(
+			@ApiParam("会员标签ID")
+				@PathVariable Integer id,
+			@ApiParam(name="MemberTagModel", required=false)
+				@RequestBody(required = false) MemberTagModel model, HttpSession session,
 			HttpServletRequest request, HttpServletResponse response) {
 		try {
 			if(model == null){
@@ -120,9 +143,12 @@ public class MemberTagController extends BaseController {
 		}
 	}
 	
+	@ApiOperation(value="csv导入文件上传", tags="会员标签接口")
+	@ApiResponse(code=200, message="1-csv导入文件上传成功")
 	@RequestMapping(value = "addtag-csv.json", method = RequestMethod.POST)
 	public JSONObject addMemberTagByCSV(
-			@RequestParam(required = false) MultipartFile file,
+			@ApiParam(name="上传文件", required=false)
+				@RequestParam(required = false) MultipartFile file,
 			HttpServletResponse response, HttpSession session) {
 		try {
 			Upload upload = UploadController.upload(getWechatId(), file, Constants.ADD_MEMBER_TAG_BY_CSV,
@@ -149,10 +175,13 @@ public class MemberTagController extends BaseController {
 		}
 	}
 	
+	@ApiOperation(value="会员标签CSV批量导入", tags="会员标签接口")
+	@ApiResponse(code=200, message="1-会员标签CSV批量导入成功")
 	@RequestMapping(value = "tag-task.json", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject addMemberTagTaskList(
-			@RequestBody(required = false) AddMemberTagTaskModel tagTask,
+			@ApiParam(name="AddMemberTagTaskModel", required=false)
+				@RequestBody(required = false) AddMemberTagTaskModel tagTask,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		if(tagTask == null){
@@ -164,10 +193,13 @@ public class MemberTagController extends BaseController {
 				tagTask.getPageNum(), tagTask.getPageSize(), memberTagCsvs.getTotal());
 	}
 	
+	@ApiOperation(value="会员标签移动", tags="会员标签接口")
+	@ApiResponse(code=200, message="1-会员标签移动成功")
 	@RequestMapping(value = "move-tag.json", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject moveTag(
-			@RequestBody(required = false) MemberTagModel model,
+			@ApiParam(name="MemberTagModel", required=false)
+				@RequestBody(required = false) MemberTagModel model,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		if(model == null){
@@ -177,11 +209,14 @@ public class MemberTagController extends BaseController {
 		return representation(Message.MEMBER_TAG_MOVE_SUCCESS);
 	}
 	
+	@ApiOperation(value="会员标签查询", tags="会员标签接口")
+	@ApiResponse(code=200, message="1-会员标签查询成功")
 	@RequestMapping(value = "search.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions(value={"member:list","system-setting:auto-reply"},logical=Logical.OR)
 	public JSONObject search(
-			@RequestBody(required = false) MemberTagModel model,
+			@ApiParam(name="MemberTagModel", required=false)
+				@RequestBody(required = false) MemberTagModel model,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		List<MemberTagDto> dtos = memberTagService.searchName(

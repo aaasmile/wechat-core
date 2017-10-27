@@ -40,6 +40,12 @@ import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
+@Api(value="自动回复API", tags="自动回复接口")
 @Controller
 @RequestMapping("/reply")
 public class ReplyController extends BaseController {
@@ -54,12 +60,15 @@ public class ReplyController extends BaseController {
 
 	@Autowired
 	private MaterialService materialService;
-
+	
+	@ApiOperation(value="创建自动回复", tags="自动回复接口")
+	@ApiResponse(code=200, message="1-创建自动回复成功")
 	@RequestMapping(value = "new.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("system-setting:auto-reply")
 	public JSONObject create(
-			@RequestBody(required = false) ReplyModel replyModel,
+			@ApiParam("ReplyModel")
+				@RequestBody(required = false) ReplyModel replyModel,
 			HttpSession session) {
 		try {
 			Reply reply = replyService.create(getWechatId(session),
@@ -72,11 +81,15 @@ public class ReplyController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="删除自动回复", tags="自动回复接口")
+	@ApiResponse(code=200, message="1-删除自动回复成功")
 	@RequestMapping(value = "{id}/delete.json", method = RequestMethod.DELETE)
 	@ResponseBody
 	@RequiresPermissions("system-setting:auto-reply")
-	public JSONObject delete(@PathVariable Integer id, HttpSession session) {
+	public JSONObject delete(
+			@ApiParam("回复ID")
+				@PathVariable Integer id, HttpSession session) {
 		try {
 			replyService.delete(getWechatId(session), id);
 			return representation(Message.REPLY_DELETE_SUCCESS);
@@ -85,11 +98,15 @@ public class ReplyController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="获取自动回复详情", tags="自动回复接口")
+	@ApiResponse(code=200, message="1-获取自动回复详情成功")
 	@RequestMapping(value = "{id}/get.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("system-setting:auto-reply")
-	public JSONObject get(@PathVariable Integer id, HttpSession session) {
+	public JSONObject get(
+			@ApiParam("回复ID")
+				@PathVariable Integer id, HttpSession session) {
 		try {
 			Integer wechatId = getWechatId(session);
 			ReplyDto replyDto = replyService.get(getWechatId(session), id);
@@ -120,12 +137,15 @@ public class ReplyController extends BaseController {
 		json.put("keyWords", replyDto.getKeyWords());
 		return json;
 	}
-
+	
+	@ApiOperation(value="更新自动回复", tags="自动回复接口")
+	@ApiResponse(code=200, message="1-更新自动回复成功")
 	@RequestMapping(value = "list.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("system-setting:auto-reply")
 	public JSONObject list(
-			@RequestBody(required = false) ReplyModel replyModel,
+			@ApiParam("ReplyModel")
+				@RequestBody(required = false) ReplyModel replyModel,
 			HttpSession session) {
 		try {
 			if (replyModel == null) {
@@ -240,7 +260,9 @@ public class ReplyController extends BaseController {
 		}
 		return json;
 	}
-
+	
+	@ApiOperation(value="更新自动回复", tags="自动回复接口")
+	@ApiResponse(code=200, message="1-更新自动回复成功")
 	@RequestMapping(value = "update.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("system-setting:auto-reply")
@@ -256,7 +278,9 @@ public class ReplyController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="获取自动回复详情", tags="自动回复接口")
+	@ApiResponse(code=200, message="1-获取自动回复详情成功")
 	@RequestMapping(value = "getsubscribe.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("system-setting:auto-reply")

@@ -29,6 +29,12 @@ import com.d1m.wechat.service.QrcodeService;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
+@Api(value="二维码API", tags="二维码接口")
 @Controller
 @RequestMapping("/qrcode")
 public class QrcodeController extends BaseController {
@@ -37,9 +43,13 @@ public class QrcodeController extends BaseController {
 
 	@Autowired
 	private QrcodeService qrcodeService;
-
+	
+	@ApiOperation(value="二维码下载", tags="二维码接口")
+	@ApiResponse(code=200, message="二维码下载")
 	@RequestMapping(value = "{id}/download.json", method = RequestMethod.GET)
-	public void download(@PathVariable Integer id,
+	public void download(
+			@ApiParam("二维码ID")
+				@PathVariable Integer id,
 			HttpServletResponse response, HttpSession session) {
 		response.setCharacterEncoding("utf-8");
 		response.setContentType("multipart/form-data");
@@ -84,12 +94,15 @@ public class QrcodeController extends BaseController {
 			}
 		}
 	}
-
+	
+	@ApiOperation(value="创建二维码", tags="二维码接口")
+	@ApiResponse(code=200, message="1-创建二维码成功")
 	@RequestMapping(value = "new.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("qrCode:list")
 	public JSONObject create(
-			@RequestBody(required = false) QrcodeModel qrcodeModel,
+			@ApiParam("QrcodeModel")
+				@RequestBody(required = false) QrcodeModel qrcodeModel,
 			HttpSession session) {
 		try {
 			Qrcode qrcode = qrcodeService.create(getWechatId(session),
@@ -102,11 +115,15 @@ public class QrcodeController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="删除二维码", tags="二维码接口")
+	@ApiResponse(code=200, message="1-删除二维码成功")
 	@RequestMapping(value = "{id}/delete.json", method = RequestMethod.DELETE)
 	@ResponseBody
 	@RequiresPermissions("qrCode:list")
-	public JSONObject delete(@PathVariable Integer id, HttpSession session) {
+	public JSONObject delete(
+			@ApiParam("二维码ID")
+				@PathVariable Integer id, HttpSession session) {
 		try {
 			qrcodeService.delete(getWechatId(session), id);
 			return representation(Message.QRCODE_DELETE_SUCCESS);
@@ -115,11 +132,15 @@ public class QrcodeController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="获取二维码详情", tags="二维码接口")
+	@ApiResponse(code=200, message="1-获取二维码详情成功")
 	@RequestMapping(value = "{id}/get.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("qrCode:list")
-	public JSONObject get(@PathVariable Integer id, HttpSession session) {
+	public JSONObject get(
+			@ApiParam("二维码ID")
+				@PathVariable Integer id, HttpSession session) {
 		try {
 			QrcodeDto qrcode = qrcodeService.get(getWechatId(session), id);
 			return representation(Message.QRCODE_GET_SUCCESS, qrcode);
@@ -128,12 +149,15 @@ public class QrcodeController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="获取二维码列表", tags="二维码接口")
+	@ApiResponse(code=200, message="1-获取二维码列表成功")
 	@RequestMapping(value = "list.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("qrCode:list")
 	public JSONObject list(
-			@RequestBody(required = false) QrcodeModel qrcodeModel,
+			@ApiParam("QrcodeModel")
+				@RequestBody(required = false) QrcodeModel qrcodeModel,
 			HttpSession session) {
 		try {
 			Page<QrcodeDto> page = qrcodeService.list(getWechatId(session),
@@ -146,12 +170,17 @@ public class QrcodeController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="更新二维码", tags="二维码接口")
+	@ApiResponse(code=200, message="1-更新二维码成功")
 	@RequestMapping(value = "{id}/update.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("qrCode:list")
-	public JSONObject update(@PathVariable Integer id,
-			@RequestBody(required = false) QrcodeModel qrcodeModel,
+	public JSONObject update(
+			@ApiParam("二维码ID")
+				@PathVariable Integer id,
+			@ApiParam("QrcodeModel")
+				@RequestBody(required = false) QrcodeModel qrcodeModel,
 			HttpSession session) {
 		try {
 			qrcodeService.update(getWechatId(session), id, qrcodeModel);
@@ -162,6 +191,8 @@ public class QrcodeController extends BaseController {
 		}
 	}
 	
+	@ApiOperation(value="二维码初始化", tags="二维码接口")
+	@ApiResponse(code=200, message="1-二维码初始化成功")
 	@RequestMapping(value = "init-qrcode.json", method = RequestMethod.GET)
 	@ResponseBody
 	public JSONObject initQrcode(HttpSession session) {

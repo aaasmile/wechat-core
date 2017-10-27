@@ -37,6 +37,12 @@ import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
+@Api(value="二维码行为API", tags="二维码行为接口")
 @Controller
 @RequestMapping("/qrcode-action-engine")
 public class QrcodeActionEngineController extends BaseController {
@@ -51,11 +57,14 @@ public class QrcodeActionEngineController extends BaseController {
 
 	@Autowired
 	private MaterialService materialService;
-
+	
+	@ApiOperation(value="创建二维码行为规则", tags="二维码行为接口")
+	@ApiResponse(code=200, message="1-创建二维码行为规则成功")
 	@RequestMapping(value = "new.json", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject create(
-			@RequestBody(required = false) QrcodeModel qrcodeModel,
+			@ApiParam("QrcodeModel")
+				@RequestBody(required = false) QrcodeModel qrcodeModel,
 			HttpSession session) {
 		try {
 			QrcodeActionEngine qae = qrcodeActionEngineService.create(
@@ -69,11 +78,14 @@ public class QrcodeActionEngineController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="更新二维码行为规则", tags="二维码行为接口")
+	@ApiResponse(code=200, message="1-更新二维码行为规则成功")
 	@RequestMapping(value = "update.json", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject update(
-			@RequestBody(required = false) QrcodeModel qrcodeModel,
+			@ApiParam("QrcodeModel")
+				@RequestBody(required = false) QrcodeModel qrcodeModel,
 			HttpSession session) {
 		try {
 			qrcodeActionEngineService.update(getWechatId(session),
@@ -84,10 +96,14 @@ public class QrcodeActionEngineController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="删除二维码行为规则", tags="二维码行为接口")
+	@ApiResponse(code=200, message="1-删除二维码行为规则成功")
 	@RequestMapping(value = "{qrcodeActionEngineId}/delete.json", method = RequestMethod.DELETE)
 	@ResponseBody
-	public JSONObject delete(@PathVariable Integer qrcodeActionEngineId,
+	public JSONObject delete(
+			@ApiParam("二维码行为规则ID")
+				@PathVariable Integer qrcodeActionEngineId,
 			HttpSession session) {
 		try {
 			qrcodeActionEngineService.delete(getWechatId(session),
@@ -99,10 +115,13 @@ public class QrcodeActionEngineController extends BaseController {
 		}
 	}
 
+	@ApiOperation(value="获取二维码行为规则列表", tags="二维码行为接口")
+	@ApiResponse(code=200, message="1-获取二维码行为规则列表成功")
 	@RequestMapping(value = "list.json", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject list(
-			@RequestBody(required = false) ActionEngineModel actionEngineModel,
+			@ApiParam("ActionEngineModel")
+				@RequestBody(required = false) ActionEngineModel actionEngineModel,
 			HttpSession session) {
 		try {
 			if (actionEngineModel == null) {

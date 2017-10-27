@@ -13,6 +13,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.d1m.wechat.controller.BaseController;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 /**
  * ReportController
  *
@@ -20,6 +26,7 @@ import com.d1m.wechat.controller.BaseController;
  */
 @Controller
 @RequestMapping("/report")
+@Api(value="报表通用API", tags="报表通用接口")
 public class ReportController extends BaseController {
 
     /**
@@ -29,9 +36,13 @@ public class ReportController extends BaseController {
      * @param data      查询数据
      * @return xls的View
      */
+	@ApiOperation(value="导出xls文件", tags="报表通用接口")
+	@ApiResponse(code=200, message="导出xls文件")
     @RequestMapping(value = "{key}.xls", method = RequestMethod.POST)
     @RequiresPermissions("data-report")
-    public String report(Model model, @PathVariable("key") String reportKey, String data) {
+    public String report(Model model, 
+    		@ApiParam("key")
+    			@PathVariable("key") String reportKey, String data) {
         model.addAttribute(ReportXlsView.REPORT_KEY, reportKey);
         model.addAttribute(ReportXlsView.WECHAT_ID, getWechatId());
         if (StringUtils.isNotBlank(data)) {

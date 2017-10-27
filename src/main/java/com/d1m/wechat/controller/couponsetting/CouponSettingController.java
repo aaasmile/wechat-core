@@ -25,15 +25,22 @@ import com.d1m.wechat.service.CouponSettingService;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+
 @Controller
 @RequestMapping("/coupon-setting")
+@Api(value="优惠券设置API", tags="优惠券设置接口")
 public class CouponSettingController extends BaseController {
 
 	private Logger log = LoggerFactory.getLogger(CouponSettingController.class);
 
 	@Autowired
 	private CouponSettingService couponSettingService;
-
+	
+	@ApiOperation(value="获取优惠券列表", tags="优惠券设置接口")
+	@ApiResponse(code=200, message="1-优惠券列表成功")
 	@RequestMapping(value = "list.json", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject list(
@@ -54,7 +61,9 @@ public class CouponSettingController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="根据ID获取优惠券", tags="优惠券设置接口")
+	@ApiResponse(code=200, message="1-优惠券获取成功")
 	@RequestMapping(value = "{id}/get.json", method = RequestMethod.GET)
 	@ResponseBody
 	public JSONObject get(@PathVariable Integer id, HttpSession session,
@@ -69,7 +78,9 @@ public class CouponSettingController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="活动优惠券创建", tags="优惠券设置接口")
+	@ApiResponse(code=200, message="1-活动优惠券创建成功")
 	@RequestMapping(value = "update.json", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject update(

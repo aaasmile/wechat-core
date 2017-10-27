@@ -28,18 +28,28 @@ import com.d1m.wechat.model.Material;
 import com.d1m.wechat.service.MaterialService;
 import com.d1m.wechat.util.*;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import springfox.documentation.annotations.ApiIgnore;
+
 @Controller
 @RequestMapping("/upload")
+@Api(value="上传API", tags="上传接口")
 public class UploadController extends BaseController {
 
 	private static Logger log = LoggerFactory.getLogger(UploadController.class);
 
 	@Autowired
 	private MaterialService materialService;
-
+	
+	@ApiOperation(value="上传文件", tags="上传接口")
+	@ApiResponse(code=200, message="1-上传文件成功")
 	@RequestMapping(value = "image/new.json", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject uploadImage(
+			@ApiParam("上传文件")
 			@RequestParam(required = false) MultipartFile file,
 			HttpServletResponse response, HttpSession session) {
 		try {
@@ -56,10 +66,13 @@ public class UploadController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiIgnore
 	@RequestMapping(value = "video/new.json", method = RequestMethod.POST)
 	@ResponseBody
-	public JSONObject uploadVideo(@RequestParam MultipartFile file,
+	public JSONObject uploadVideo(
+			@ApiParam("上传文件")
+				@RequestParam MultipartFile file,
 			HttpServletResponse response, HttpSession session) {
 		try {
 			// Upload upload = upload(file, Constants.VIDEO);
@@ -73,7 +86,7 @@ public class UploadController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
 	public static Upload upload(Integer wechatId, MultipartFile file, String type,
                                 String subType) throws Exception {
 		if (file.isEmpty()) {

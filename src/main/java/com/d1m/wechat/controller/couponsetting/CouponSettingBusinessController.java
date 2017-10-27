@@ -21,8 +21,14 @@ import com.d1m.wechat.service.CouponSettingBusinessService;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
 @Controller
 @RequestMapping("/coupon-setting-business")
+@Api(value="优惠券门店API", tags="优惠券门店接口")
 public class CouponSettingBusinessController extends BaseController {
 
 	private Logger log = LoggerFactory
@@ -30,11 +36,14 @@ public class CouponSettingBusinessController extends BaseController {
 
 	@Autowired
 	private CouponSettingBusinessService couponSettingBusinessService;
-
+	
+	@ApiOperation(value="获取优惠券门店列表", tags="优惠券门店接口")
+	@ApiResponse(code=200, message="1-优惠券门店列表成功")
 	@RequestMapping(value = "list.json", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject list(
-			@RequestBody(required = false) CouponSettingModel model,
+			@ApiParam("CouponSettingModel")
+				@RequestBody(required = false) CouponSettingModel model,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
