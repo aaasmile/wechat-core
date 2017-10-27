@@ -2,60 +2,76 @@ package com.d1m.wechat.pamametermodel;
 
 import java.util.Date;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel("微信公众号标签参数")
 public class WechatTagModel extends BaseModel{
 	
+	@ApiModelProperty("微信公众号ID")
 	private Integer id;
 	
 	/**
      * 公众号名称
      */
+	@ApiModelProperty("公众号名称")
     private String name;
 	
 	/**
      * App ID
      */
+	@ApiModelProperty("App ID")
     private String appid;
 
     /**
      * App Secret
      */
+	@ApiModelProperty("App Secret")
     private String appscret;
 
     /**
      * 公众号描述
      */
+	@ApiModelProperty("公众号描述")
     private String remark;
 
     /**
      * Token
      */
+	@ApiModelProperty("Token")
     private String token;
 
     /**
      * URL
      */
+	@ApiModelProperty("URL")
     private String url;
 
     /**
      * Encoding AES Key
      */
+	@ApiModelProperty("Encoding AES Key")
     private String encodingAesKey;
 
     /**
      * Open ID
      */
+	@ApiModelProperty("Open ID")
     private String openId;
 
     /**
      * 状态
      */
+	@ApiModelProperty("状态")
     private Byte status;
     
     /**
      * 创建时间
      */
+	@ApiModelProperty("创建时间")
     private Date createdAt;
     
+	@ApiModelProperty("头像URL")
     private String headImgUrl;
     
 

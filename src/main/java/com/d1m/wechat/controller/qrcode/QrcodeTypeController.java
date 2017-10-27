@@ -22,6 +22,11 @@ import com.d1m.wechat.service.QrcodeTypeService;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+
+@Api(value="二维码类型API", tags="二维码类型接口")
 @Controller
 @RequestMapping("/qrcode-type")
 public class QrcodeTypeController extends BaseController {
@@ -30,7 +35,9 @@ public class QrcodeTypeController extends BaseController {
 
 	@Autowired
 	QrcodeTypeService qrcodeTypeService;
-
+	
+	@ApiOperation(value="创建二维码类型", tags="二维码类型接口")
+	@ApiResponse(code=200, message="1-创建二维码类型成功")
 	@RequestMapping(value = "new.json", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject create(
@@ -48,7 +55,9 @@ public class QrcodeTypeController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="删除二维码类型", tags="二维码类型接口")
+	@ApiResponse(code=200, message="1-删除二维码类型成功")
 	@RequestMapping(value = "{id}/delete.json", method = RequestMethod.DELETE)
 	@ResponseBody
 	public JSONObject delete(@PathVariable Integer id, HttpSession session) {
@@ -60,7 +69,9 @@ public class QrcodeTypeController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="获取二维码类型列表", tags="二维码类型接口")
+	@ApiResponse(code=200, message="1-获取二维码类型列表成功")
 	@RequestMapping(value = "list.json", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject list(
@@ -80,7 +91,9 @@ public class QrcodeTypeController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="更新二维码类型", tags="二维码类型接口")
+	@ApiResponse(code=200, message="1-更新二维码类型成功")
 	@RequestMapping(value = "{id}/update.json", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject update(@PathVariable Integer id,

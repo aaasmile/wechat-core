@@ -3,11 +3,17 @@ package com.d1m.wechat.model;
 import java.util.Date;
 import javax.persistence.*;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel(value="QrcodePersonal", description="个人二维码")
 @Table(name = "qrcode_personal")
 public class QrcodePersonal {
     /**
      * 主键ID
      */
+	@ApiModelProperty("个人二维码ID")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -15,56 +21,66 @@ public class QrcodePersonal {
     /**
      * 公众号ID
      */
+	@ApiModelProperty("公众号ID")
     @Column(name = "wechat_id")
     private Integer wechatId;
 
     /**
      * 名称
      */
+	@ApiModelProperty("名称")
     private String name;
 
     /**
      * 简介
      */
+	@ApiModelProperty("简介")
     private String summary;
 
     /**
      * 二维码ticket
      */
+	@ApiModelProperty("二维码ticket")
     private String ticket;
 
     /**
      * 二维码图片解析后的地址
      */
+	@ApiModelProperty("二维码图片解析后的地址")
     @Column(name = "qrcode_url")
     private String qrcodeUrl;
 
     /**
      * 状态(0:删除,1:使用)
      */
+	@ApiModelProperty("状态(0:删除,1:使用)")
     private Byte status;
 
     /**
      * 创建时间
      */
+	@ApiModelProperty("创建时间")
     @Column(name = "created_at")
     private Date createdAt;
 
     /**
      * 创建用户ID
      */
+	@ApiModelProperty("创建用户ID")
     @Column(name = "creator_id")
     private Integer creatorId;
 
     /**
      * 二维码有效时间，以秒为单位(最大不超过2592000,此字段如果不填，则默认有效期为30秒)
      */
+	@ApiModelProperty("二维码有效时间，以秒为单位(最大不超过2592000,此字段如果不填，则默认有效期为30秒)")
     @Column(name = "expire_seconds")
     private Integer expireSeconds;
 
     /**
      * 场景值ID
      */
+	@ApiModelProperty("场景值ID")
     private String scene;
 
     /**

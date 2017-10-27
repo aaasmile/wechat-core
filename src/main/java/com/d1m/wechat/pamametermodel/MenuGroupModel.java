@@ -2,18 +2,28 @@ package com.d1m.wechat.pamametermodel;
 
 import java.util.List;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel("菜单组参数")
 public class MenuGroupModel extends BaseModel {
-
+	
+	@ApiModelProperty("菜单组ID")
 	private Integer id;
-
+	
+	@ApiModelProperty("菜单组名称")
 	private String menuGroupName;
-
+	
+	@ApiModelProperty("菜单")
 	private List<MenuModel> menus;
-
+	
+	@ApiModelProperty("规则")
 	private MenuRuleModel rules;
-
+	
+	@ApiModelProperty("微信菜单ID")
     private String wxMenuId;
-
+	
+	@ApiModelProperty("是否推送")
 	private Boolean push;
 
 	public Integer getId() {

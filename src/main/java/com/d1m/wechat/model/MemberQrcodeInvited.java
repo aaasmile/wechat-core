@@ -3,8 +3,14 @@ package com.d1m.wechat.model;
 import java.util.Date;
 import javax.persistence.*;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel(value="MemberQrcodeInvited", description="会员二维码邀请关系")
 @Table(name = "member_qrcode_invited")
 public class MemberQrcodeInvited {
+	
+	@ApiModelProperty("id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -12,31 +18,37 @@ public class MemberQrcodeInvited {
     /**
      * 用户id
      */
+	@ApiModelProperty("用户id")
     @Column(name = "member_id")
     private Integer memberId;
 
     /**
      * 邀请人id
      */
+	@ApiModelProperty("邀请人id")
     @Column(name = "invited_by")
     private Integer invitedBy;
 
     /**
      * 状态：1 有效  0 无效
      */
+	@ApiModelProperty("状态：1 有效  0 无效")
     private Integer status;
 
     /**
      * 所属微信
      */
+	@ApiModelProperty("公众号ID")
     @Column(name = "wechat_id")
     private Integer wechatId;
 
     /**
      * 二维码scene_str
      */
+	@ApiModelProperty("二维码scene_str")
     private String scene;
-
+	
+	@ApiModelProperty("创建时间")
     @Column(name = "created_at")
     private Date createdAt;
 

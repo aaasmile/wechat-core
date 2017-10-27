@@ -31,8 +31,14 @@ import com.d1m.wechat.service.ActivityService;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
 @Controller
 @RequestMapping("/activity-qrcode")
+@Api(value="活动二维码API", tags="活动二维码接口")
 public class ActivityQrcodeController extends BaseController {
 
 	private Logger log = LoggerFactory
@@ -43,10 +49,14 @@ public class ActivityQrcodeController extends BaseController {
 
 	@Autowired
 	private ActivityService activityService;
-
+	
+	@ApiOperation(value="查询活动二维码列表", tags="活动二维码接口")
+	@ApiResponse(code=200, message="1-活动二维码列表成功, 0-系统异常")
 	@RequestMapping(value = "list.json", method = RequestMethod.POST)
 	@ResponseBody
-	public JSONObject list(@RequestBody(required = false) ActivityModel model,
+	public JSONObject list(
+			@ApiParam("ActivityModel")
+			@RequestBody(required = false) ActivityModel model,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
@@ -63,9 +73,12 @@ public class ActivityQrcodeController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="根据ID下载活动二维码", tags="活动二维码接口")
 	@RequestMapping(value = "{id}/download.json", method = RequestMethod.GET)
-	public void download(@PathVariable Integer id,
+	public void download(
+			@ApiParam("活动二维码ID")
+			@PathVariable Integer id,
 			HttpServletResponse response, HttpSession session) {
 		response.setCharacterEncoding("utf-8");
 		response.setContentType("multipart/form-data");
@@ -112,10 +125,14 @@ public class ActivityQrcodeController extends BaseController {
 			}
 		}
 	}
-
+	
+	@ApiOperation(value="根据ID删除活动二维码", tags="活动二维码接口")
+	@ApiResponse(code=200, message="1-活动二维码删除成功, 0-系统异常")
 	@RequestMapping(value = "{activityQrcodeId}/delete.json", method = RequestMethod.DELETE)
 	@ResponseBody
-	public JSONObject delete(@PathVariable Integer activityQrcodeId,
+	public JSONObject delete(
+			@ApiParam("活动二维码ID")
+			@PathVariable Integer activityQrcodeId,
 			HttpSession session) {
 		try {
 			activityQrcodeService.delete(getWechatId(session),
@@ -127,9 +144,12 @@ public class ActivityQrcodeController extends BaseController {
 		}
 	}
 
+	@ApiOperation(value="创建新的活动二维码", tags="活动二维码接口")
+	@ApiResponse(code=200, message="1-活动二维码创建成功, 0-系统异常")
 	@RequestMapping(value = "create.json", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject create(
+			@ApiParam("ActivityModel")
 			@RequestBody(required = false) ActivityQrcodeModel model,
 			HttpSession session) {
 		try {

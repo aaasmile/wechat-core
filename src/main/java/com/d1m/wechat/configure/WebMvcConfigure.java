@@ -1,6 +1,7 @@
 package com.d1m.wechat.configure;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -11,6 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @author f0rb on 2017-04-12.
  */
 @Configuration
+@Import(SwaggerConfigure.class)
 public class WebMvcConfigure extends WebMvcConfigurerAdapter {
 
     //public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -59,5 +61,12 @@ public class WebMvcConfigure extends WebMvcConfigurerAdapter {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
+        
+        
+        registry.addResourceHandler("swagger-ui.html")
+        	.addResourceLocations("classpath:/META-INF/resources/");
+
+        registry.addResourceHandler("/webjars/**")
+        	.addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
 }

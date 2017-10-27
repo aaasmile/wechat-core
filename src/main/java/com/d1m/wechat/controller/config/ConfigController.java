@@ -6,6 +6,12 @@ import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.dto.ConfigDto;
 import com.d1m.wechat.service.ConfigService;
 import com.d1m.wechat.util.Message;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,15 +29,22 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/config")
+@Api(value="配置API", tags="配置接口")
 public class ConfigController extends BaseController {
     private static Logger log = LoggerFactory.getLogger(ConfigController.class);
     @Autowired
     private ConfigService configService;
-
+    
+	@ApiOperation(value="获取配置信息", tags="配置接口")
+	@ApiResponse(code=200, message="1-操作成功")
     @RequestMapping(value = "get/{group}/{key}", method = RequestMethod.GET)
     @ResponseBody
     @RequiresPermissions("system-setting:config-list")
-    public JSONObject get(@PathVariable String group, @PathVariable String key,
+    public JSONObject get(
+    		@ApiParam("组别")
+    			@PathVariable String group, 
+    		@ApiParam("key")
+    			@PathVariable String key,
                              HttpSession session, HttpServletRequest request, HttpServletResponse response) {
         try {
             ConfigDto config = configService.getConfigDto(getWechatId(session),group,key);
@@ -42,10 +55,14 @@ public class ConfigController extends BaseController {
         }
     }
 
+	@ApiOperation(value="获取配置列表", tags="配置接口")
+	@ApiResponse(code=200, message="1-操作成功")
     @RequestMapping(value = "group/{group}", method = RequestMethod.GET)
     @ResponseBody
     @RequiresPermissions("system-setting:config-list")
-    public JSONObject group(@PathVariable String group,
+    public JSONObject group(
+    		@ApiParam("组别")
+    			@PathVariable String group,
                              HttpSession session, HttpServletRequest request, HttpServletResponse response) {
         try {
             List<ConfigDto> list = configService.getConfigDtoList(getWechatId(session),group);
@@ -56,6 +73,8 @@ public class ConfigController extends BaseController {
         }
     }
 
+	@ApiOperation(value="更新配置信息", tags="配置接口")
+	@ApiResponse(code=200, message="1-操作成功")
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
     @RequiresPermissions("system-setting:config-list")

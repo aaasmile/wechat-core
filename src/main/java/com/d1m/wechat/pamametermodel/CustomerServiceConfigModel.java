@@ -1,17 +1,27 @@
 package com.d1m.wechat.pamametermodel;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel("客服配置Model")
 public class CustomerServiceConfigModel {
-
+	
+	@ApiModelProperty("组名")
 	private String group;
-
+	
+	@ApiModelProperty("组名标签")
 	private String groupLabel;
-
+	
+	@ApiModelProperty("客服配置ID")
 	private Integer id;
-
+	
+	@ApiModelProperty("key")
 	private String key;
-
+	
+	@ApiModelProperty("key标签")
 	private String keyLabel;
-
+	
+	@ApiModelProperty("值")
 	private String value;
 
 	public String getGroup() {

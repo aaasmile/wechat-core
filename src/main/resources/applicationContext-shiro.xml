@@ -49,6 +49,10 @@
                 /static/** = anon
 
                 /mapi/popup/** = anon
+                
+                /apis = anon
+                /swagger-ui.html = anon
+                /webjars/** = anon
 
                 /** = authc
             </value>

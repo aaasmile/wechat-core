@@ -20,6 +20,11 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import cn.d1m.wechat.client.model.WxUser;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.controller.report.MemberReport;
@@ -37,6 +42,7 @@ import com.d1m.wechat.util.Message;
 
 @Controller
 @RequestMapping("/member")
+@Api(value="会员API", tags="会员接口")
 public class MemberController extends BaseController {
 
 	private Logger log = LoggerFactory.getLogger(MemberController.class);
@@ -53,6 +59,8 @@ public class MemberController extends BaseController {
 	@Autowired
 	private MemberMapper memberMapper;
 
+	@ApiOperation(value="拉取微信会员信息", tags="会员接口")
+	@ApiResponse(code=200, message="1-拉取微信会员信息成功")
 	@RequestMapping(value = "/pullwxmember.json", method = RequestMethod.GET)
 	@ResponseBody
 	public JSONObject pullWxMember(HttpSession session, HttpServletRequest request) {
@@ -65,6 +73,9 @@ public class MemberController extends BaseController {
 			return wrapException(e);
 		}
 	}
+	
+	@ApiOperation(value="更新微信会员信息", tags="会员接口")
+	@ApiResponse(code=200, message="更新微信会员信息成功")
 	@RequestMapping(value = "/updateMemberInfo.json", method = RequestMethod.GET)
 	@ResponseBody
 	public JSONObject updateMemberInfo(HttpSession session, HttpServletRequest request) {
@@ -158,11 +169,15 @@ public class MemberController extends BaseController {
 			return wrapException(e);
 		}
 	}*/
-
+	
+	@ApiOperation(value="获取会员详情", tags="会员接口")
+	@ApiResponse(code=200, message="1-获取会员详情成功")
 	@RequestMapping(value = "{id}/get.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("member:list")
-	public JSONObject get(@PathVariable Integer id, HttpSession session) {
+	public JSONObject get(
+			@ApiParam("会员ID")
+				@PathVariable Integer id, HttpSession session) {
 		try {
 			
 			MemberDto memberDto = memberService.getMemberDto(
@@ -222,11 +237,14 @@ public class MemberController extends BaseController {
 	 * @param response
 	 * @return
 	 */
+	@ApiOperation(value="获取会员列表", tags="会员接口")
+	@ApiResponse(code=200, message="1-获取会员列表成功")
 	@RequestMapping(value = "list.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("member:list")
 	public JSONObject list(
-			@RequestBody(required = false) AddMemberTagModel addMemberTagModel,
+			@ApiParam(name="AddMemberTagModel", required=false)
+				@RequestBody(required = false) AddMemberTagModel addMemberTagModel,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
@@ -245,6 +263,8 @@ public class MemberController extends BaseController {
 		
 	}
 	
+	@ApiOperation(value="导出会员列表", tags="会员接口")
+	@ApiResponse(code=200, message="导出会员列表")
 	@RequestMapping(value = "/export.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("member:list")
@@ -333,11 +353,14 @@ public class MemberController extends BaseController {
 	 * @param session
 	 * @return
 	 */
+	@ApiOperation(value="添加会员标签", tags="会员接口")
+	@ApiResponse(code=200, message="1-添加会员标签成功")
 	@RequestMapping(value = "addtag.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("member:list")
 	public JSONObject addMemberTag(
-			@RequestBody(required = false) AddMemberTagModel addMemberTagModel,
+			@ApiParam(name="AddMemberTagModel", required=false)
+				@RequestBody(required = false) AddMemberTagModel addMemberTagModel,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
@@ -361,10 +384,15 @@ public class MemberController extends BaseController {
 	 * @param response
 	 * @return
 	 */
+	@ApiOperation(value="删除会员标签", tags="会员接口")
+	@ApiResponse(code=200, message="1-删除会员标签成功")
 	@RequestMapping(value = "/{memberId}/{memberTagId}/deltag.json", method = RequestMethod.DELETE)
 	@ResponseBody
-	public JSONObject deltag(@PathVariable Integer memberId,
-			@PathVariable Integer memberTagId,
+	public JSONObject deltag(
+			@ApiParam("会员ID")
+				@PathVariable Integer memberId,
+			@ApiParam("会员标签ID")
+				@PathVariable Integer memberTagId,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
@@ -377,6 +405,8 @@ public class MemberController extends BaseController {
 
 	}
 	
+	@ApiOperation(value="会员同步微信标签", tags="会员接口")
+	@ApiResponse(code=200, message="1-会员同步微信标签成功")
 	@RequestMapping(value = "initwxtag.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("member:list")

@@ -2,24 +2,37 @@ package com.d1m.wechat.pamametermodel;
 
 import java.util.List;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel("优惠券参数")
 public class CouponModel extends BaseModel {
-
+	
+	@ApiModelProperty("优惠券配置ID")
 	private Integer couponSettingId;
-
+	
+	@ApiModelProperty("活动ID")
 	private Integer activityId;
-
+	
+	@ApiModelProperty("状态(0:删除,1:使用)")
 	private Byte status;
-
+	
+	@ApiModelProperty("门店ID")
 	private Integer businessId;
-
+	
+	@ApiModelProperty("会员ID")
 	private Integer memberId;
-
+	
+	@ApiModelProperty("赠送类别：10：商品、20：折扣（价）券、30：折扣(价)券_现折")
 	private String giftType;
-
+	
+	@ApiModelProperty("公众号ID")
 	private Integer wechatId;
-
+	
+	@ApiModelProperty("活动编号")
 	private List<String> grnos;
-
+	
+	@ApiModelProperty("状态不是以下类型")
 	private Byte except;
 
 	public Integer getActivityId() {

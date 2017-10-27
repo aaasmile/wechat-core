@@ -6,6 +6,12 @@ import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,17 +32,21 @@ import com.d1m.wechat.util.Message;
 
 @Controller
 @RequestMapping("/business")
+@Api(value="门店API", tags="门店接口")
 public class BusinessController extends BaseController {
 
 	private Logger log = LoggerFactory.getLogger(BusinessController.class);
 
 	@Autowired
 	private BusinessService businessService;
-
+	
+	@ApiOperation(value="上传图片", tags="门店接口")
+	@ApiResponse(code=200, message="1-上传文件成功")
 	@RequestMapping(value = "photo/upload.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("outlets:list")
 	public JSONObject uploadImage(
+			@ApiParam("上传的图片")
 			@RequestParam(required = false) MultipartFile file,
 			HttpServletResponse response, HttpSession session) {
 		try {
@@ -51,11 +61,14 @@ public class BusinessController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="创建新的门店", tags="门店接口")
+	@ApiResponse(code=200, message="1-创建门店成功")
 	@RequestMapping(value = "create.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("outlets:list")
 	public JSONObject create(
+			@ApiParam("BusinessModel")
 			@RequestBody(required = false) BusinessModel model,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
@@ -75,11 +88,15 @@ public class BusinessController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="获取门店列表", tags="门店接口")
+	@ApiResponse(code=200, message="1-获取门店列表成功")
 	@RequestMapping(value = "list.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("outlets:list")
-	public JSONObject list(@RequestBody(required = false) BusinessModel model,
+	public JSONObject list(
+			@ApiParam("BusinessModel")
+			@RequestBody(required = false) BusinessModel model,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
@@ -96,11 +113,15 @@ public class BusinessController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="获取门店详情", tags="门店接口")
+	@ApiResponse(code=200, message="1-获取门店详情成功")
 	@RequestMapping(value = "detail.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("outlets:list")
-	public JSONObject detail(@RequestParam(required = true) Integer id,
+	public JSONObject detail(
+			@ApiParam("门店ID")
+			@RequestParam(required = true) Integer id,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
@@ -113,10 +134,13 @@ public class BusinessController extends BaseController {
 		}
 	}
 
+	@ApiOperation(value="删除门店", tags="门店接口")
+	@ApiResponse(code=200, message="1-删除门店成功")
 	@RequestMapping(value = "delete.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("outlets:list")
 	public JSONObject delete(
+			@ApiParam("BusinessModel")
 			@RequestBody(required = false) BusinessModel model,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
@@ -129,10 +153,13 @@ public class BusinessController extends BaseController {
 		}
 	}
 
+	@ApiOperation(value="更新门店", tags="门店接口")
+	@ApiResponse(code=200, message="1-更新门店成功")
 	@RequestMapping(value = "update.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("outlets:list")
 	public JSONObject update(
+			@ApiParam("BusinessModel")
 			@RequestBody(required = false) BusinessModel model,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
@@ -145,6 +172,8 @@ public class BusinessController extends BaseController {
 		}
 	}
 	
+	@ApiOperation(value="获取门店百度经纬度信息", tags="门店接口")
+	@ApiResponse(code=200, message="1-门店获取百度经纬度成功")
 	@RequestMapping(value = "init-business.json", method = RequestMethod.GET)
 	@ResponseBody
 	public JSONObject initBusinessLatAndLng(

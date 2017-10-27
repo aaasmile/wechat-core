@@ -68,6 +68,12 @@ import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 /**
  * 客户分析
  * 
@@ -75,6 +81,7 @@ import com.github.pagehelper.Page;
  */
 @Controller
 @RequestMapping("/report")
+@Api(value="用户分析报表 API", tags="用户分析报表接口")
 public class CustomerAnalysisReport extends BaseController {
 
 	private Logger log = LoggerFactory.getLogger(MemberTagController.class);
@@ -105,12 +112,17 @@ public class CustomerAnalysisReport extends BaseController {
 
 	@Autowired
 	private ReportActivityService reportActivityService;
-
+	
+	@ApiOperation(value="获取菜单趋势报表", tags="用户分析报表接口")
+	@ApiResponse(code=200, message="1-获取菜单趋势报表成功")
 	@RequestMapping(value = "trend.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions(value={"dash_board:list","data-report:customer-analysis"},logical=Logical.OR)
-	public JSONObject trend(@RequestParam(required = true) String start,
-			@RequestParam(required = true) String end, HttpSession session) {
+	public JSONObject trend(
+			@ApiParam(name="开始时间", required=true)
+				@RequestParam(required = true) String start,
+			@ApiParam(name="结束时间", required=true)
+				@RequestParam(required = true) String end, HttpSession session) {
 		try {
 			DateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			Date date1 = DateUtil.getDateBegin(dateFormat1.parse(start));
@@ -123,13 +135,19 @@ public class CustomerAnalysisReport extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="获取会员详情", tags="用户分析报表接口")
+	@ApiResponse(code=200, message="1-获取会员详情成功")
 	@RequestMapping(value = "pie.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions(value={"dash_board:list","data-report:customer-analysis"},logical=Logical.OR)
-	public JSONObject pie(@RequestParam(required = true) String start,
-			@RequestParam(required = true) String end,
-			@RequestParam(required = true) String type, HttpSession session) {
+	public JSONObject pie(
+			@ApiParam(name="开始时间", required=true)
+				@RequestParam(required = true) String start,
+			@ApiParam(name="结束时间", required=true)
+				@RequestParam(required = true) String end,
+			@ApiParam(name="类型", required=true)
+				@RequestParam(required = true) String type, HttpSession session) {
 		try {
 			DateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			Date date1 = DateUtil.getDateBegin(dateFormat1.parse(start));
@@ -152,12 +170,18 @@ public class CustomerAnalysisReport extends BaseController {
 	}
 
 	// 活跃用户
+	@ApiOperation(value="获取活跃用户", tags="用户分析报表接口")
+	@ApiResponse(code=200, message="1-获取会员详情成功")
 	@RequestMapping(value = "activity-user.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions(value={"dash_board:list","data-report:customer-analysis"},logical=Logical.OR)
-	public JSONObject activityUser(@RequestParam(required = true) String start,
-			@RequestParam(required = true) String end,
-			@RequestParam(required = true) Integer top, HttpSession session) {
+	public JSONObject activityUser(
+			@ApiParam(name="开始时间", required=true)
+				@RequestParam(required = true) String start,
+			@ApiParam(name="结束时间", required=true)
+				@RequestParam(required = true) String end,
+			@ApiParam(name="TOP条数", required=true)
+				@RequestParam(required = true) Integer top, HttpSession session) {
 		try {
 			DateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			Date date1 = DateUtil.getDateBegin(dateFormat1.parse(start));
@@ -177,11 +201,17 @@ public class CustomerAnalysisReport extends BaseController {
 	}
 
 	// 标签用户
+	@ApiOperation(value="获取标签用户", tags="用户分析报表接口")
+	@ApiResponse(code=200, message="1-获取会员详情成功")
 	@RequestMapping(value = "tag-user.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions(value={"dash_board:list","data-report:customer-analysis"},logical=Logical.OR)
-	public JSONObject tagUser(@RequestParam(required = true) String start,
+	public JSONObject tagUser(
+		@ApiParam(name="开始时间", required=true)
+			@RequestParam(required = true) String start,
+		@ApiParam(name="结束时间", required=true)
 			@RequestParam(required = true) String end,
+		@ApiParam(name="TOP条数", required=true)
 			@RequestParam(required = true) Integer top, HttpSession session) {
 		try {
 			DateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -204,10 +234,15 @@ public class CustomerAnalysisReport extends BaseController {
 	}
 
 	// 用户来源分析
+	@ApiOperation(value="获取用户来源分析", tags="用户分析报表接口")
+	@ApiResponse(code=200, message="1-获取会员详情成功")
 	@RequestMapping(value = "source-user.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("data-report:customer-source-analysis")
-	public JSONObject sourceUser(@RequestParam(required = true) String start,
+	public JSONObject sourceUser(
+		@ApiParam(name="开始时间", required=true)
+			@RequestParam(required = true) String start,
+		@ApiParam(name="结束时间", required=true)
 			@RequestParam(required = true) String end, HttpSession session) {
 		try {
 			DateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -223,13 +258,21 @@ public class CustomerAnalysisReport extends BaseController {
 	}
 
 	// 二维码分析
+	@ApiOperation(value="获取二维码详情", tags="用户分析报表接口")
+	@ApiResponse(code=200, message="1-获取二维码详情成功")
 	@RequestMapping(value = "qrcode.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("data-report:qrCode-analysis")
-	public JSONObject qrcode(@RequestParam(required = true) String start,
-			@RequestParam(required = true) String end, 
+	public JSONObject qrcode(
+		@ApiParam(name="开始时间", required=true)
+			@RequestParam(required = true) String start,
+		@ApiParam(name="结束时间", required=true)
+			@RequestParam(required = true) String end,
+		@ApiParam("二维码ID")
 			@RequestParam(required = false) Integer qrcodeId,
+		@ApiParam("场景值")
 			@RequestParam(required = false) String scene,
+		@ApiParam("状态")
 			@RequestParam(required = false) Integer status,
 			HttpSession session) {
 		try {
@@ -246,6 +289,8 @@ public class CustomerAnalysisReport extends BaseController {
 	}
 	
 	// 二维码统计列表导出
+	@ApiOperation(value="二维码统计列表导出", tags="用户分析报表接口")
+	@ApiResponse(code=200, message="二维码统计列表导出")
 	@RequestMapping(value = "export-qrcode.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("data-report:qrCode-analysis")
@@ -280,6 +325,8 @@ public class CustomerAnalysisReport extends BaseController {
 	}
 	
 	// 每日二维码统计列表导出
+	@ApiOperation(value="每日二维码统计列表导出", tags="用户分析报表接口")
+	@ApiResponse(code=200, message="每日二维码统计列表导出")
 	@RequestMapping(value = "export-dateqrcode.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("data-report:qrCode-analysis")
@@ -314,11 +361,20 @@ public class CustomerAnalysisReport extends BaseController {
 	}
 
 	// 消息分析
+	@ApiOperation(value="获取消息分析", tags="用户分析报表接口")
+	@ApiResponses({
+		@ApiResponse(code=200, message="1-获取日消息报表成功"),
+		@ApiResponse(code=200, message="1-获取小时消息报表成功")
+	})
 	@RequestMapping(value = "message.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("data-report:message-analysis")
-	public JSONObject message(@RequestParam(required = true) String start,
-			@RequestParam(required = true) String end, 
+	public JSONObject message(
+		@ApiParam(name="开始时间", required=true)
+			@RequestParam(required = true) String start,
+		@ApiParam(name="结束时间", required=true)
+			@RequestParam(required = true) String end,
+		@ApiParam(name="类型", required=true)
 			@RequestParam(required = true) String type,
 			HttpSession session) {
 		
@@ -346,10 +402,16 @@ public class CustomerAnalysisReport extends BaseController {
 	}
 	
 	// 小时消息分析
+	@ApiOperation(value="获取小时消息报表", tags="用户分析报表接口")
+	@ApiResponse(code=200, message="1-获取小时消息报表成功")
 	@RequestMapping(value = "hour-message.json", method = RequestMethod.GET)
 	@ResponseBody
-	public JSONObject hourMessage(@RequestParam(required = true) String start,
-			@RequestParam(required = true) String end, HttpSession session) {
+	public JSONObject hourMessage(
+			@ApiParam(name="开始时间", required=true)
+				@RequestParam(required = true) String start,
+			@ApiParam(name="结束时间", required=true)
+				@RequestParam(required = true) String end, 
+			HttpSession session) {
 		try {
 			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			Date startDate = dateFormat.parse(start);
@@ -364,10 +426,14 @@ public class CustomerAnalysisReport extends BaseController {
 	}
 
 	// 菜单分析
+	@ApiOperation(value="获取菜单报表", tags="用户分析报表接口")
+	@ApiResponse(code=200, message="1-获取菜单报表成功")
 	@RequestMapping(value = "menu.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("data-report:menu-analysis")
-	public JSONObject menu(@RequestBody(required = true) MenuReportModel model, HttpSession session) {
+	public JSONObject menu(
+			@ApiParam(name="MenuReportModel", required=true)
+				@RequestBody(required = true) MenuReportModel model, HttpSession session) {
 		try {
 			DateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			Date date1 = DateUtil.getDateBegin(dateFormat1.parse(model.getStart()));
@@ -382,6 +448,8 @@ public class CustomerAnalysisReport extends BaseController {
 	}
 
 	// 菜单组
+	@ApiOperation(value="获取菜单组报表", tags="用户分析报表接口")
+	@ApiResponse(code=200, message="1-获取菜单报表成功")
 	@RequestMapping(value = "menu-group.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("data-report:menu-analysis")
@@ -397,12 +465,19 @@ public class CustomerAnalysisReport extends BaseController {
 	}
 
 	// 子菜单分析
+	@ApiOperation(value="获取子菜单分析报表", tags="用户分析报表接口")
+	@ApiResponse(code=200, message="1-获取菜单报表成功")
 	@RequestMapping(value = "menu-child.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("data-report:menu-analysis")
-	public JSONObject menuChild(@RequestParam(required = true) Integer groupId,
-			@RequestParam(required = true) String start,
-			@RequestParam(required = true) String end, HttpSession session) {
+	public JSONObject menuChild(
+			@ApiParam(name="组ID", required=true)
+				@RequestParam(required = true) Integer groupId,
+			@ApiParam(name="开始时间", required=true)
+				@RequestParam(required = true) String start,
+			@ApiParam(name="结束时间", required=true)
+				@RequestParam(required = true) String end, 
+			HttpSession session) {
 		try {
 
 			DateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -419,11 +494,16 @@ public class CustomerAnalysisReport extends BaseController {
 	}
 	
 	// 关键字匹配分析
+	@ApiOperation(value="获取子菜单分析报表", tags="用户分析报表接口")
+	@ApiResponse(code=200, message="1-获取菜单报表成功")
 	@RequestMapping(value = "keyMatch.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("data-report:keyword-analysis")
-	public JSONObject keyMatch(@RequestParam(required = true) String start,
-			@RequestParam(required = true) String end, HttpSession session) {
+	public JSONObject keyMatch(
+			@ApiParam(name="开始时间", required= true)
+				@RequestParam(required = true) String start,
+			@ApiParam(name="结束时间", required= true)
+				@RequestParam(required = true) String end, HttpSession session) {
 		try {
 			DateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			Date date1 = DateUtil.getDateBegin(dateFormat1.parse(start));
@@ -438,12 +518,18 @@ public class CustomerAnalysisReport extends BaseController {
 	}
 
 	// 关键字匹配TOP
+	@ApiOperation(value="获取关键字报表", tags="用户分析报表接口")
+	@ApiResponse(code=200, message="1-获取关键字报表成功")
 	@RequestMapping(value = "matchTop.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("data-report:keyword-analysis")
-	public JSONObject matchTop(@RequestParam(required = true) String start,
-			@RequestParam(required = true) String end,
-			@RequestParam(required = true) Integer top, HttpSession session) {
+	public JSONObject matchTop(
+			@ApiParam(name="开始时间", required= true)
+				@RequestParam(required = true) String start,
+			@ApiParam(name="结束时间", required= true)
+				@RequestParam(required = true) String end,
+			@ApiParam(name="TOP条数", required= true)
+				@RequestParam(required = true) Integer top, HttpSession session) {
 		try {
 			DateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			Date date1 = DateUtil.getDateBegin(dateFormat1.parse(start));
@@ -464,12 +550,18 @@ public class CustomerAnalysisReport extends BaseController {
 	}
 	
 	// 关键字未匹配TOP
+	@ApiOperation(value="获取未匹配关键字报表", tags="用户分析报表接口")
+	@ApiResponse(code=200, message="1-获取关键字报表成功")
 	@RequestMapping(value = "unMatchTop.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("data-report:keyword-analysis")
-	public JSONObject unMatchTop(@RequestParam(required = true) String start,
-			@RequestParam(required = true) String end,
-			@RequestParam(required = true) Integer top, HttpSession session) {
+	public JSONObject unMatchTop(
+			@ApiParam(name="开始时间", required= true)
+				@RequestParam(required = true) String start,
+			@ApiParam(name="结束时间", required= true)
+				@RequestParam(required = true) String end,
+			@ApiParam(name="TOP条数", required= true)
+				@RequestParam(required = true) Integer top, HttpSession session) {
 		try {
 			DateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			Date date1 = DateUtil.getDateBegin(dateFormat1.parse(start));
@@ -490,11 +582,20 @@ public class CustomerAnalysisReport extends BaseController {
 	}
 	
 	// 群发图文分析
+	@ApiOperation(value="获取未匹配关键字报表", tags="用户分析报表接口")
+	@ApiResponses({
+		@ApiResponse(code=200, message="1-获取群发图文报表成功"),
+		@ApiResponse(code=200, message="1-获取小时群发图文报表成功")
+	})
 	@RequestMapping(value = "article.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("data-report:img-text-analysis")
-	public JSONObject article(@RequestParam(required = true) String start,
-			@RequestParam(required = true) String end, 
+	public JSONObject article(
+		@ApiParam(name="开始时间", required= true)
+			@RequestParam(required = true) String start,
+		@ApiParam(name="结束时间", required= true)
+			@RequestParam(required = true) String end,
+		@ApiParam(name="类型", required= false)
 			@RequestParam(required = false) String type,
 			HttpSession session) {
 		
@@ -524,12 +625,19 @@ public class CustomerAnalysisReport extends BaseController {
 	}
 
 	// 活动分析
+	@ApiOperation(value="获取活动报表", tags="用户分析报表接口")
+	@ApiResponse(code=200, message="1-获取活动报表成功")
 	@RequestMapping(value = "activity.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("data-report:activity-analysis")
-	public JSONObject activity(@RequestParam(required = true) String start,
+	public JSONObject activity(
+		@ApiParam(name="开始时间", required= true)
+			@RequestParam(required = true) String start,
+		@ApiParam(name="结束时间", required= true)
 			@RequestParam(required = true) String end,
+		@ApiParam(name="活动ID", required= false)
 			@RequestParam(required = false) Integer activityId,
+		@ApiParam(name="优惠券配置ID", required= false	)
 			@RequestParam(required = false) Integer couponSettingId,
 			HttpSession session) {
 
@@ -548,6 +656,8 @@ public class CustomerAnalysisReport extends BaseController {
 	}
 
 	// 活动-优惠券列表接口
+	@ApiOperation(value="获取活动-优惠券列表", tags="用户分析报表接口")
+	@ApiResponse(code=200, message="1-获取活动-优惠券列表成功")
 	@RequestMapping(value = "activity-list.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("data-report:activity-analysis")
@@ -565,10 +675,14 @@ public class CustomerAnalysisReport extends BaseController {
 	}
 
 	//二维码列表接口
+	@ApiOperation(value="获取二维码列表", tags="用户分析报表接口")
+	@ApiResponse(code=200, message="1-获取二维码列表成功")
 	@RequestMapping(value = "qrcode-list.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("data-report:qrcode-analysis")
-	public JSONObject qrcodeList(@RequestParam(required = false) Integer status,
+	public JSONObject qrcodeList(
+			@ApiParam("状态")
+				@RequestParam(required = false) Integer status,
 			HttpSession session) {
 		
 		try {
@@ -583,6 +697,11 @@ public class CustomerAnalysisReport extends BaseController {
 	}
 	
 	// 导出用户来源分析
+	@ApiOperation(value="获取二维码列表", tags="用户分析报表接口")
+	@ApiResponses({
+		@ApiResponse(code=200, message="获取二维码列表"),
+		@ApiResponse(code=21003, message="导出用户来源分析报表开始或结束时间不能为空")
+	})
 	@RequestMapping(value = "export-sourceuser.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("data-report:customer-source-analysis")
@@ -617,6 +736,11 @@ public class CustomerAnalysisReport extends BaseController {
 	}
 	
 	// 导出图文分析
+	@ApiOperation(value="导出图文分析", tags="用户分析报表接口")
+	@ApiResponses({
+		@ApiResponse(code=200, message="导出图文分析"),
+		@ApiResponse(code=21004, message="导出图文分析报表开始或结束时间不能为空")
+	})
 	@RequestMapping(value = "export-article.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("data-report:img-text-analysis")
@@ -650,6 +774,11 @@ public class CustomerAnalysisReport extends BaseController {
 	}
 	
 	// 导出消息分析
+	@ApiOperation(value="导出消息分析", tags="用户分析报表接口")
+	@ApiResponses({
+		@ApiResponse(code=200, message="导出消息分析"),
+		@ApiResponse(code=21003, message="导出用户来源分析报表开始或结束时间不能为空")
+	})
 	@RequestMapping(value = "export-message.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("data-report:message-analysis")
@@ -689,6 +818,11 @@ public class CustomerAnalysisReport extends BaseController {
 	}
 	
 	// 导出菜单分析
+	@ApiOperation(value="导出菜单分析", tags="用户分析报表接口")
+	@ApiResponses({
+		@ApiResponse(code=200, message="导出菜单分析"),
+		@ApiResponse(code=21006, message="导出菜单分析报表开始或结束时间不能为空")
+	})
 	@RequestMapping(value = "export-menu.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("data-report:menu-analysis")
@@ -722,6 +856,11 @@ public class CustomerAnalysisReport extends BaseController {
 	}
 	
 	// 导出关键字分析
+	@ApiOperation(value="导出关键字分析", tags="用户分析报表接口")
+	@ApiResponses({
+		@ApiResponse(code=200, message="导出关键字分析"),
+		@ApiResponse(code=21006, message="导出菜单分析报表开始或结束时间不能为空")
+	})
 	@RequestMapping(value = "export-key.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("data-report:keyword-analysis")
@@ -756,6 +895,11 @@ public class CustomerAnalysisReport extends BaseController {
 	}
 
         // 导出用户分析
+	@ApiOperation(value="导出用户分析", tags="用户分析报表接口")
+	@ApiResponses({
+		@ApiResponse(code=200, message="导出用户分析"),
+		@ApiResponse(code=21007, message="导出用户分析报表开始或结束时间不能为空")
+	})
  	@RequestMapping(value = "export-user.json", method = RequestMethod.POST)
  	@ResponseBody
  	@RequiresPermissions(value={"dash_board:list","data-report:customer-analysis"},logical=Logical.OR)

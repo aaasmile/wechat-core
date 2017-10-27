@@ -25,8 +25,14 @@ import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
 @Controller
 @RequestMapping("/material-image-type")
+@Api(value="素材图片类型API", tags="素材图片类型接口")
 public class MaterialImageTypeController extends BaseController {
 
 	private Logger log = LoggerFactory
@@ -34,15 +40,22 @@ public class MaterialImageTypeController extends BaseController {
 
 	@Autowired
 	private MaterialImageTypeService materialImageTypeService;
-
+	
+	@ApiOperation(value="获取素材图片类型列表", tags="素材图片类型接口")
+	@ApiResponse(code=200, message="1-获取素材图片类型列表成功")
 	@RequestMapping(value = "list.json", method = RequestMethod.GET)
 	@ResponseBody
 	public JSONObject list(
-			@RequestParam(required = false) String name,
-			@RequestParam(required = false) String sortName,
-			@RequestParam(required = false) String sortDir,
-			@RequestParam(required = false, defaultValue = "1") Integer pageNum,
-			@RequestParam(required = false, defaultValue = "10") Integer pageSize,
+			@ApiParam(name="素材名称", required=false)
+				@RequestParam(required = false) String name,
+			@ApiParam(name="排序列", required=false)
+				@RequestParam(required = false) String sortName,
+			@ApiParam(name="素材顺序", required=false)
+				@RequestParam(required = false) String sortDir,
+			@ApiParam(name="当前页", required=false, defaultValue="1")
+				@RequestParam(required = false, defaultValue = "1") Integer pageNum,
+			@ApiParam(name="分页大小", required=false, defaultValue="10")
+				@RequestParam(required = false, defaultValue = "10") Integer pageSize,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		Page<MaterialImageType> page = materialImageTypeService.search(
