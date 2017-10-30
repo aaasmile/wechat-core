@@ -10,6 +10,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import cn.d1m.wechat.client.model.WxUser;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.model.OauthUrlLog;
@@ -39,6 +44,7 @@ import com.d1m.wechat.util.HttpRequestProxy;
  * 
  * @author d1m
  */
+@Api(value="OAuth API", tags="OAuth接口")
 @Controller
 @RequestMapping("/oauth")
 public class WxOauthController {
@@ -61,8 +67,12 @@ public class WxOauthController {
 	 * @param request
 	 * @param response
 	 */
+	@ApiOperation(value="短地址转发地址", tags="OAuth接口")
+	@ApiResponse(code=200, message="如果数据库有配置就跳转地址")
 	@RequestMapping(value = "u/{shortUrl}", method = RequestMethod.GET)
-	public void shortUrl(@PathVariable String shortUrl,
+	public void shortUrl(
+			@ApiParam("短地址链接")
+				@PathVariable String shortUrl,
 			HttpServletRequest request, HttpServletResponse response) {
 		try {
 			log.info("shortUrl : {}", shortUrl);
@@ -112,6 +122,8 @@ public class WxOauthController {
 		}
 	}
 
+	@ApiOperation(value="OAuth回调方法", tags="OAuth接口")
+	@ApiResponse(code=200, message="处理回调后的逻辑")
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "callback", method = RequestMethod.GET)
 	public void callback(HttpServletRequest request,

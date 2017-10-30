@@ -2,36 +2,39 @@ package com.d1m.wechat.pamametermodel;
 
 import java.util.Date;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+@ApiModel("二维码 参数")
 public class QrcodeModel extends BaseModel {
-
+	@ApiModelProperty("ID")
 	private Integer id;
-
+	@ApiModelProperty("创建时间")
 	private Date createdAt;
-
+	@ApiModelProperty("名称")
 	private String name;
-
+	@ApiModelProperty("摘要")
 	private String summary;
-
+	@ApiModelProperty("二维码类型ID")
 	private Integer qrcodeTypeId;
-
+	@ApiModelProperty("二维码类型名称")
 	private String qrcodeTypeName;
-
+	@ApiModelProperty("二维码URL")
 	private String qrcodeUrl;
-
+	@ApiModelProperty("场景值")
 	private String scene;
-
+	@ApiModelProperty("二维码ID")
 	private Integer qrcodeId;
-
+	@ApiModelProperty("二维码行为规则参数")
 	private ActionEngineModel rules;
-
+	@ApiModelProperty("查询条件")
 	private String query;
-
+	@ApiModelProperty("支持订阅回复")
 	private Byte sopportSubscribeReply;
-	
+	@ApiModelProperty("开始时间")
 	private String start;
-	
+	@ApiModelProperty("结束时间")
 	private String end;
-	
+	@ApiModelProperty("状态")
 	private Integer status;
 
 	public Date getCreatedAt() {

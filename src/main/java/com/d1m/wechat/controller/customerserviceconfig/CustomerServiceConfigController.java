@@ -17,9 +17,15 @@ import com.d1m.wechat.service.CustomerServiceConfigService;
 import com.d1m.wechat.service.UserWechatService;
 import com.d1m.wechat.util.Message;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
 @Slf4j
 @Controller
 @RequestMapping("/customer-service-config")
+@Api(value="CS设置API", tags="CS设置接口")
 public class CustomerServiceConfigController extends BaseController {
 
 	@Resource
@@ -27,7 +33,9 @@ public class CustomerServiceConfigController extends BaseController {
 
 	@Resource
 	private UserWechatService userWechatService;
-
+	
+	@ApiOperation(value="获取客服配置列表", tags="CS设置接口")
+	@ApiResponse(code=200, message="1-客服配置列表成功")
 	@RequestMapping(value = "list", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("system-setting:customer-service-config-list")
@@ -42,11 +50,14 @@ public class CustomerServiceConfigController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="客服配置批量更新", tags="CS设置接口")
+	@ApiResponse(code=200, message="1-客服配置更新成功")
 	@RequestMapping(value = "updateGroup", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("system-setting:customer-service-config-update")
 	public JSONObject updateGroup(
+			@ApiParam(name="CustomerServiceConfigModel列表", required=false)
 			@RequestBody(required = false) List<CustomerServiceConfigModel> list) {
 		try {
 			customerServiceConfigService.updateGroup(getWechatId(), list);
@@ -56,12 +67,15 @@ public class CustomerServiceConfigController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="客服配置单个更新", tags="CS设置接口")
+	@ApiResponse(code=200, message="1-客服配置更新成功")
 	@RequestMapping(value = "update", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("system-setting:customer-service-config-update")
 	public JSONObject update(
-			@RequestBody(required = false) CustomerServiceConfigModel model) {
+			@ApiParam("CustomerServiceConfigModel")
+				@RequestBody(required = false) CustomerServiceConfigModel model) {
 		try {
 			customerServiceConfigService.update(getWechatId(), model);
 			return representation(Message.CUSTOMER_SERVICE_CONFIG_UPDATE_SUCCESS, model.getId());
@@ -70,11 +84,15 @@ public class CustomerServiceConfigController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="根据ID删除客服配置", tags="CS设置接口")
+	@ApiResponse(code=200, message="1-客服配置删除成功")
 	@RequestMapping(value = "{id}/delete", method = RequestMethod.DELETE)
 	@ResponseBody
 	@RequiresPermissions("system-setting:customer-service-config-delete")
-	public JSONObject delete(@PathVariable Integer id) {
+	public JSONObject delete(
+			@ApiParam("客服配置ID")
+				@PathVariable Integer id) {
 		try {
 			customerServiceConfigService.delete(getWechatId(), id);
 			return representation(Message.CUSTOMER_SERVICE_CONFIG_DELETE_SUCCESS);
@@ -83,11 +101,15 @@ public class CustomerServiceConfigController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="客服配置添加", tags="CS设置接口")
+	@ApiResponse(code=200, message="1-客服配置添加成功")
 	@RequestMapping(value = "add", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("system-setting:customer-service-config-delete")
-	public JSONObject add(@RequestBody(required = false) CustomerServiceConfigModel model) {
+	public JSONObject add(
+			@ApiParam(name="CustomerServiceConfigModel", required=false)
+				@RequestBody(required = false) CustomerServiceConfigModel model) {
 		try {
 			int addedId = customerServiceConfigService.add(model, getWechatId());
 			return representation(Message.CUSTOMER_SERVICE_CONFIG_ADD_SUCCESS, addedId);
@@ -96,7 +118,9 @@ public class CustomerServiceConfigController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="获取微信用户列表", tags="CS设置接口")
+	@ApiResponse(code=200, message="1-获取微信用户列表成功", response=List.class)
 	@RequestMapping(value = "getCustomerServiceUsers", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("system-setting:customer-service-config-update")

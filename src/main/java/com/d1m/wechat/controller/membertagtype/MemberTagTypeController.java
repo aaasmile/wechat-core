@@ -38,8 +38,14 @@ import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
 @Controller
 @RequestMapping("/member-tag-type")
+@Api(value="会员标签类型API", tags="会员标签类型接口")
 public class MemberTagTypeController extends BaseController {
 
 	private Logger log = LoggerFactory.getLogger(MemberTagTypeController.class);
@@ -50,9 +56,13 @@ public class MemberTagTypeController extends BaseController {
 	@Autowired
 	private MemberTagService memberTagService;
 	
+	@ApiOperation(value="创建会员标签类型", tags="会员标签类型接口")
+	@ApiResponse(code=200, message="1-创建会员标签类型成功")
 	@RequestMapping(value = "new.json", method = RequestMethod.POST)
 	@ResponseBody
-	public JSONObject create(@RequestBody(required = false) MemberTagTypeModel model,
+	public JSONObject create(
+			@ApiParam(name="MemberTagTypeModel", required=false)
+				@RequestBody(required = false) MemberTagTypeModel model,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
@@ -68,9 +78,13 @@ public class MemberTagTypeController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="删除会员标签类型", tags="会员标签类型接口")
+	@ApiResponse(code=200, message="1-删除会员标签类型成功")
 	@RequestMapping(value = "{id}/delete.json", method = RequestMethod.DELETE)
-	public JSONObject delete(@PathVariable Integer id, HttpSession session,
+	public JSONObject delete(
+			@ApiParam("会员标签类型ID")
+				@PathVariable Integer id, HttpSession session,
 			HttpServletRequest request, HttpServletResponse response) {
 		try {
 			memberTagTypeService.delete(getUser(session), getWechatId(session),
@@ -81,11 +95,15 @@ public class MemberTagTypeController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="获取会员标签类型列表", tags="会员标签类型接口")
+	@ApiResponse(code=200, message="1-获取会员标签类型列表成功")
 	@RequestMapping(value = "list.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions(value={"member:list","system-setting:auto-reply"},logical=Logical.OR)
-	public JSONObject list(@RequestBody(required = false) MemberTagTypeModel model,
+	public JSONObject list(
+			@ApiParam(name="MemberTagTypeModel", required=false)
+				@RequestBody(required = false) MemberTagTypeModel model,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		if(model == null){
@@ -101,10 +119,15 @@ public class MemberTagTypeController extends BaseController {
 		return representation(Message.MEMBER_TAG_TYPE_LIST_SUCCESS,
 				memberTagTypeDtos, model.getPageNum(), model.getPageSize(), memberTagTypes.getTotal());
 	}
-
+	
+	@ApiOperation(value="更新会员标签类型", tags="会员标签类型接口")
+	@ApiResponse(code=200, message="1-更新会员标签类型成功")
 	@RequestMapping(value = "{id}/update.json", method = RequestMethod.POST)
-	public JSONObject update(@PathVariable Integer id,
-			@RequestBody(required = false) MemberTagTypeModel model, HttpSession session,
+	public JSONObject update(
+			@ApiParam("会员标签类型ID")
+				@PathVariable Integer id,
+			@ApiParam(name="MemberTagTypeModel", required=false)
+				@RequestBody(required = false) MemberTagTypeModel model, HttpSession session,
 			HttpServletRequest request, HttpServletResponse response) {
 		try {
 			if(model == null){
@@ -128,6 +151,8 @@ public class MemberTagTypeController extends BaseController {
 		return dto;
 	}
 	
+	@ApiOperation(value="获取会员标签类型列表", tags="会员标签类型接口")
+	@ApiResponse(code=200, message="1-获取会员标签类型列表成功")
 	@RequestMapping(value = "listAllTypesTags.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("system-setting:tag-category-management")
@@ -147,7 +172,9 @@ public class MemberTagTypeController extends BaseController {
 		}
 		return representation(Message.MEMBER_TAG_TYPE_LIST_SUCCESS, selectAll);
 	}
-
+	
+	@ApiOperation(value="导出标签分类", tags="会员标签类型接口")
+	@ApiResponse(code=200, message="导出标签分类")
 	@RequestMapping(value = "exportCategorys.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("system-setting:tag-category-management")

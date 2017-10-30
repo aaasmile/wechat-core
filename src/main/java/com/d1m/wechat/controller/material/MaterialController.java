@@ -6,6 +6,12 @@ import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
@@ -31,6 +37,7 @@ import com.d1m.wechat.util.Message;
 
 @Controller
 @RequestMapping("/material")
+@Api(value="素材API", tags="素材接口")
 public class MaterialController extends BaseController {
 
 	private Logger log = LoggerFactory.getLogger(MaterialController.class);
@@ -49,11 +56,14 @@ public class MaterialController extends BaseController {
 	 * @param response
      * @return
      */
+	@ApiOperation(value="素材图文推送微信", tags="素材接口")
+	@ApiResponse(code=200, message="1-素材图文推送微信成功")
 	@RequestMapping(value = "pushwx.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("app-msg:list")
 	public JSONObject pushToWx(
-			@RequestBody(required = false) MaterialModel materialModel,
+			@ApiParam(name="MaterialModel",required=false)
+				@RequestBody(required = false) MaterialModel materialModel,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
@@ -77,11 +87,14 @@ public class MaterialController extends BaseController {
 	 * @param response
      * @return
      */
+	@ApiOperation(value="素材图文推送微信", tags="素材接口")
+	@ApiResponse(code=200, message="1-素材图文推送微信成功")
 	@RequestMapping(value = "preview.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("app-msg:list")
 	public JSONObject previewMaterial(
-			@RequestBody(required = false) MaterialModel materialModel,
+			@ApiParam(name="MaterialModel",required=false)
+				@RequestBody(required = false) MaterialModel materialModel,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
@@ -102,11 +115,14 @@ public class MaterialController extends BaseController {
 	 * @param response
      * @return
      */
+	@ApiOperation(value="获取素材图片列表", tags="素材接口")
+	@ApiResponse(code=200, message="1-获取素材图片列表成功")
 	@RequestMapping(value = "image/list.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions(value={"app-msg:list","member:list","message:message-list"},logical=Logical.OR)
 	public JSONObject searchImage(
-			@RequestBody(required = false) ImageModel imageModel,
+			@ApiParam(name="ImageModel",required=false)
+				@RequestBody(required = false) ImageModel imageModel,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		if (imageModel == null) {
@@ -129,11 +145,14 @@ public class MaterialController extends BaseController {
 	 * @param response
      * @return
      */
+	@ApiOperation(value="获取素材图文列表", tags="素材接口")
+	@ApiResponse(code=200, message="1-获取素材图文列表成功")
 	@RequestMapping(value = "imagetext/list.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("app-msg:list")
 	public JSONObject searchImageText(
-			@RequestBody(required = false) ImageTextModel imageTextModel,
+			@ApiParam(name="ImageTextModel",required=false)
+				@RequestBody(required = false) ImageTextModel imageTextModel,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		if (imageTextModel == null) {
@@ -154,11 +173,14 @@ public class MaterialController extends BaseController {
 	 * @param session
      * @return
      */
+	@ApiOperation(value="上传图片文件", tags="素材接口")
+	@ApiResponse(code=200, message="1-上传文件成功")
 	@RequestMapping(value = "image/new.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("app-msg:list")
 	public JSONObject uploadImage(
-			@RequestParam(required = false) MultipartFile file,
+			@ApiParam(name="上传文件", required=false)
+				@RequestParam(required = false) MultipartFile file,
 			HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		try {
@@ -178,11 +200,14 @@ public class MaterialController extends BaseController {
 		}
 	}
 	
+	@ApiOperation(value="上传图文图片文件", tags="素材接口")
+	@ApiResponse(code=200, message="1-上传文件成功")
 	@RequestMapping(value = "mediaimage/new.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("app-msg:list")
 	public JSONObject uploadMediaImage(
-			@RequestParam(required = false) MultipartFile file,
+			@ApiParam(name="上传文件", required=false)
+				@RequestParam(required = false) MultipartFile file,
 			HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		try {
@@ -210,6 +235,8 @@ public class MaterialController extends BaseController {
 	 * @param session HttpSession
 	 * @return upload result
 	 */
+	@ApiOperation(value="上传秀米图文图片文件", tags="素材接口")
+	@ApiResponse(code=200, message="1-上传文件成功")
 	@RequestMapping(value = "mediaimage/newXiumiImage.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("app-msg:list")
@@ -251,11 +278,14 @@ public class MaterialController extends BaseController {
 	 * @param response
 	 * @return
 	 */
+	@ApiOperation(value="创建素材图文", tags="素材接口")
+	@ApiResponse(code=200, message="1-创建素材图文成功")
 	@RequestMapping(value = "imagetext/new.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("app-msg:list")
 	public JSONObject createImageText(
-			@RequestBody(required = false) MaterialModel materialModel,
+			@ApiParam(name="MaterialModel", required=false)
+				@RequestBody(required = false) MaterialModel materialModel,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
@@ -296,11 +326,16 @@ public class MaterialController extends BaseController {
 	 * @param response
 	 * @return
 	 */
+	@ApiOperation(value="更新素材图文", tags="素材接口")
+	@ApiResponse(code=200, message="1-更新素材图文成功")
 	@RequestMapping(value = "imagetext/{materialId}/update.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("app-msg:list")
-	public JSONObject updateImageText(@PathVariable Integer materialId,
-			@RequestBody(required = false) MaterialModel materialModel,
+	public JSONObject updateImageText(
+			@ApiParam("素材ID")
+				@PathVariable Integer materialId,
+			@ApiParam(name="MaterialModel", required=false)
+				@RequestBody(required = false) MaterialModel materialModel,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
@@ -327,10 +362,14 @@ public class MaterialController extends BaseController {
 	 * @param response
 	 * @return
 	 */
+	@ApiOperation(value="删除素材图文", tags="素材接口")
+	@ApiResponse(code=200, message="1-删除素材图文成功")
 	@RequestMapping(value = "imagetext/{materialId}/delete.json", method = RequestMethod.DELETE)
 	@ResponseBody
 	@RequiresPermissions("app-msg:list")
-	public JSONObject deleteImageText(@PathVariable Integer materialId,
+	public JSONObject deleteImageText(
+			@ApiParam("素材ID")
+				@PathVariable Integer materialId,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
@@ -352,12 +391,15 @@ public class MaterialController extends BaseController {
 	 * @param response
 	 * @return
 	 */
+	@ApiOperation(value="删除图文详情", tags="素材接口")
+	@ApiResponse(code=200, message="1-删除图文详情成功")
 	@RequestMapping(value = "imagetextdetail/{materialImageTextDetailId}/delete.json", method = RequestMethod.DELETE)
 	@ResponseBody
 	@Deprecated
 	@RequiresPermissions("app-msg:list")
 	public JSONObject deleteImageTextDetail(
-			@PathVariable Integer materialImageTextDetailId,
+			@ApiParam("素材图文ID")
+				@PathVariable Integer materialImageTextDetailId,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
@@ -382,10 +424,14 @@ public class MaterialController extends BaseController {
 	 * @param response
 	 * @return
 	 */
+	@ApiOperation(value="获取图文详情", tags="素材接口")
+	@ApiResponse(code=200, message="1-获取图文详情成功")
 	@RequestMapping(value = "imagetextdetail/{id}/get.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("app-msg:list")
-	public JSONObject getImageText(@PathVariable Integer id,
+	public JSONObject getImageText(
+			@ApiParam("图文ID")
+				@PathVariable Integer id,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		MaterialDto materialDto = materialService.getImageText(
@@ -411,16 +457,24 @@ public class MaterialController extends BaseController {
 	 * @param response
 	 * @return
 	 */
+	@ApiOperation(value="获取图文详情列表", tags="素材接口")
+	@ApiResponse(code=200, message="1-获取图文详情列表成功")
 	@RequestMapping(value = "imagetextdetail/list.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("app-msg:list")
 	public JSONObject listImageTextDetail(
-			@RequestParam(required = false) Integer materialId,
-			@RequestParam(required = false) String query,
-			@RequestParam(required = false) String sortName,
-			@RequestParam(required = false) String sortDir,
-			@RequestParam(required = false, defaultValue = "1") Integer pageNum,
-			@RequestParam(required = false, defaultValue = "10") Integer pageSize,
+			@ApiParam(name="素材ID", required=false)
+				@RequestParam(required = false) Integer materialId,
+			@ApiParam(name="查询条件", required=false)
+				@RequestParam(required = false) String query,
+			@ApiParam(name="排序名", required=false)
+				@RequestParam(required = false) String sortName,
+			@ApiParam(name="排序顺序", required=false)
+				@RequestParam(required = false) String sortDir,
+			@ApiParam(name="当前页数", defaultValue="1", required=false)
+				@RequestParam(required = false, defaultValue = "1") Integer pageNum,
+			@ApiParam(name="分页大小", defaultValue="10", required=false)
+				@RequestParam(required = false, defaultValue = "10") Integer pageSize,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		Page<MaterialImageTextDetailDto> materialImageTextDetails = materialImageTextDetailService
@@ -436,11 +490,16 @@ public class MaterialController extends BaseController {
 	 * 更新图片名称
 	 * 
 	 */
+	@ApiOperation(value="重命名素材图片", tags="素材接口")
+	@ApiResponse(code=200, message="1-重命名素材图片成功")
 	@RequestMapping(value = "image/{materialId}/rename.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("app-msg:list")
-	public JSONObject updateImageName(@PathVariable Integer materialId,
-			@RequestParam(required = false) String name, HttpSession session,
+	public JSONObject updateImageName(
+			@ApiParam("素材ID")
+				@PathVariable Integer materialId,
+			@ApiParam(name="素材名称", required=false)
+				@RequestParam(required = false) String name, HttpSession session,
 			HttpServletRequest request, HttpServletResponse response) {
 		try {
 			materialService.renameImage(getWechatId(session), getUser(session),
@@ -457,10 +516,14 @@ public class MaterialController extends BaseController {
 	 * 删除图片
 	 * 
 	 */
+	@ApiOperation(value="删除素材图片", tags="素材接口")
+	@ApiResponse(code=200, message="1-删除素材图片成功")
 	@RequestMapping(value = "image/{materialId}/delete.json", method = RequestMethod.DELETE)
 	@ResponseBody
 	@RequiresPermissions("app-msg:list")
-	public JSONObject deleteImage(@PathVariable Integer materialId,
+	public JSONObject deleteImage(
+			@ApiParam("素材ID")
+				@PathVariable Integer materialId,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {

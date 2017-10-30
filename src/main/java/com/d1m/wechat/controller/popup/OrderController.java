@@ -20,6 +20,12 @@ import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.model.enums.OrderEnum;
 import com.d1m.wechat.service.MemberService;
 import com.github.pagehelper.Page;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -41,6 +47,7 @@ import com.d1m.wechat.util.Message;
  */
 @RequestMapping("order")
 @Controller
+@Api(value="订单API", tags="订单接口")
 public class OrderController extends BaseController {
 
     private Logger log = LoggerFactory.getLogger(OrderController.class);
@@ -73,10 +80,14 @@ public class OrderController extends BaseController {
     /**
      * 导出订单列表数据
      */
+	@ApiOperation(value="导出订单列表数据", tags="订单接口")
+	@ApiResponse(code=200, message="导出订单列表数据xls文件")
     @ResponseBody
     @RequestMapping(value = "export", method = {RequestMethod.POST})
     @RequiresPermissions("popup-store:order-manage")
-    public void exportOrderList(@RequestBody(required = true) PopupOrderFilter orderFilter, HttpServletRequest request, HttpServletResponse response) {
+    public void exportOrderList(
+    		@ApiParam(name="PopupOrderFilter",required=true)
+    			@RequestBody(required = true) PopupOrderFilter orderFilter, HttpServletRequest request, HttpServletResponse response) {
 
         response.reset();
         response.setHeader("Content-disposition", "attachment; filename=OrderList-" + DateUtil.getCurrentyyyyMMdd() + ".xls");
@@ -326,11 +337,15 @@ public class OrderController extends BaseController {
 //            return wrapException(e);
 //        }
 //    }
-
+	
+	@ApiOperation(value="获取订单列表", tags="订单接口")
+	@ApiResponse(code=200, message="1-操作成功")
     @ResponseBody
     @RequestMapping(value = "list")
     @RequiresPermissions("popup-store:order-manage")
-    public JSONObject listOrder(@CookieValue(name = "wechatId", required = false) Integer wechatId, HttpServletRequest request) {
+    public JSONObject listOrder(
+    		@ApiParam(name="wechatId",required=false)
+    			@CookieValue(name = "wechatId", required = false) Integer wechatId, HttpServletRequest request) {
         wechatId = debug ? 32 : getWechatId(request.getSession());
         try {
             PopupOrderFilter orderFilter = new PopupOrderFilter();
@@ -342,10 +357,14 @@ public class OrderController extends BaseController {
             return wrapException(e);
         }
     }
-
+	
+	@ApiOperation(value="查询订单", tags="订单接口")
+	@ApiResponse(code=200, message="1-操作成功")
     @ResponseBody
     @RequestMapping(value = "search", method = RequestMethod.POST)
-    public JSONObject searchOrder(@RequestBody(required = true) PopupOrderFilter orderFilter, @CookieValue(name = "wechatId", required = false) Integer wechatId, HttpServletRequest request) {
+    public JSONObject searchOrder(
+    		@ApiParam(name="PopupOrderFilter",required=true)
+    			@RequestBody(required = true) PopupOrderFilter orderFilter, @CookieValue(name = "wechatId", required = false) Integer wechatId, HttpServletRequest request) {
         wechatId = debug ? 32 : getWechatId(request.getSession());
         if (orderFilter.getPageNum() < 0 || orderFilter.getPageSize() < 0)
             return representation(Message.ILLEGAL_REQUEST);
@@ -358,11 +377,15 @@ public class OrderController extends BaseController {
             return wrapException(e);
         }
     }
-
+	
+	@ApiOperation(value="更新运单号", tags="订单接口")
+	@ApiResponse(code=200, message="1-操作成功")
     @ResponseBody
     @RequestMapping(value = "trackno/update", method = RequestMethod.POST)
     @RequiresPermissions("popup-store:order-manage")
-    public JSONObject updateTrackNo(@RequestBody(required = true) JSONObject params, @CookieValue(name = "wechatId", required = false) Integer wechatId, HttpServletRequest request) {
+    public JSONObject updateTrackNo(
+    		@ApiParam(name="params",required=true)
+    			@RequestBody(required = true) JSONObject params, @CookieValue(name = "wechatId", required = false) Integer wechatId, HttpServletRequest request) {
         try {
             Long orderId = params.getLong("orderId");
             String trackNo = params.getString("trackNo");

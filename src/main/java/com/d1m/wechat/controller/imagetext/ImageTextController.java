@@ -21,10 +21,15 @@ import com.d1m.wechat.model.MaterialImageTextDetail;
 import com.d1m.wechat.service.MaterialService;
 import com.d1m.wechat.util.QrcodeUtils;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
 import tk.mybatis.mapper.util.StringUtil;
 
 @Controller
 @RequestMapping("/imagetext")
+@Api(value="图文API", tags="图文接口")
 public class ImageTextController extends BaseController {
 	@Autowired
 	private MaterialService materialService;
@@ -32,9 +37,13 @@ public class ImageTextController extends BaseController {
 	@Autowired
 	private MaterialImageTextDetailMapper materialImageTextDetailMapper;
 	
+	@ApiOperation(value="获取二维码", tags="图文接口")
+	@ApiResponse(code=200, message="1-生成二维码")
 	@RequestMapping("/qrcode/{imageTextId}")
 	@RequiresPermissions("app-msg:list")
-	public void getQrCode(@PathVariable Integer imageTextId, HttpSession session, HttpServletRequest req, HttpServletResponse response) throws Exception {
+	public void getQrCode(
+			@ApiParam("图文ID")
+				@PathVariable Integer imageTextId, HttpSession session, HttpServletRequest req, HttpServletResponse response) throws Exception {
 		Integer wechatId = getWechatId(session);
 		MaterialImageTextDetail detail = new MaterialImageTextDetail();
 		detail.setWechatId(wechatId);
@@ -55,8 +64,12 @@ public class ImageTextController extends BaseController {
 		sos.close();
 	}
 	
+	@ApiOperation(value="获取根据imageTextId来生成HTML页面", tags="图文接口")
+	@ApiResponse(code=200, message="1-生成HTML页面")
 	@RequestMapping("/html/{imageTextId}.html")
-	public void getImageTextHtml(@PathVariable Integer imageTextId, HttpServletRequest req, HttpServletResponse response) throws Exception {
+	public void getImageTextHtml(
+			@ApiParam("图文ID")
+				@PathVariable Integer imageTextId, HttpServletRequest req, HttpServletResponse response) throws Exception {
 		MaterialImageTextDetail detail = new MaterialImageTextDetail();
 		detail.setId(imageTextId);
 		detail = materialImageTextDetailMapper.selectOne(detail);

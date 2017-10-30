@@ -1,33 +1,50 @@
 package com.d1m.wechat.pamametermodel;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel("图文参数")
 public class ImageTextModel extends BaseModel {
-
+	
+	@ApiModelProperty("主键ID")
 	private Integer id;
-
+	
+	@ApiModelProperty("标题")
 	private String title;
 
+	@ApiModelProperty("作者")
 	private String author;
-
+	
+	@ApiModelProperty("正文")
 	private String content;
 
+	@ApiModelProperty("原文链接是否存在")
 	private Boolean contentSourceChecked;
 
+	@ApiModelProperty("原文链接")
 	private String contentSourceUrl;
 
+	@ApiModelProperty("是否展示封面")
 	private boolean showCover;
 
+	@ApiModelProperty("摘要")
 	private String summary;
 
+	@ApiModelProperty("素材封面ID")
 	private Integer materialCoverId;
 
+	@ApiModelProperty("素材封面URL")
 	private String materialCoverUrl;
 
+	@ApiModelProperty("素材封面媒体ID")
 	private String materialCoverMediaId;
-
+	
+	@ApiModelProperty("查询条件")
 	private String query;
 
+	@ApiModelProperty("是否推送")
 	private Boolean pushed;
-
+	
 	private Integer comment;
 
 	public String getAuthor() {

@@ -395,9 +395,10 @@ public class ConversationServiceImpl extends BaseService<Conversation>
 				conversationModel.getMemberId());
 		notBlank(member, Message.MEMBER_NOT_EXIST);
 
-		if (!member.isOnline()) {
+		// 防止最后会话时间没更新，暂时屏蔽
+		/*if (!member.isOnline()) {
 			throw new WechatException(Message.CONVERSATION_MEMBER_NOT_ONLINE);
-		}
+		}*/
 
         Object message;
         MsgType msgType = null;

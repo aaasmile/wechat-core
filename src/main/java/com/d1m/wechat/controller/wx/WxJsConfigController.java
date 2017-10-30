@@ -16,6 +16,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
 import com.d1m.wechat.model.OauthUrl;
 import com.d1m.wechat.model.Wechat;
 import com.d1m.wechat.pamametermodel.JsConfigModel;
@@ -25,6 +31,7 @@ import com.d1m.wechat.util.WeiXinUtils;
 
 @Controller
 @RequestMapping("/jsconfig")
+@Api("微信JS配置")
 public class WxJsConfigController {
 
 	@Resource
@@ -35,10 +42,14 @@ public class WxJsConfigController {
 
 	private static Logger log = LoggerFactory
 			.getLogger(WxJsConfigController.class);
-
+	
+	@ApiOperation(value="从微信端获取JS配置")
+	@ApiResponse(code=200, message="JS配置")
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
-	public JSONObject getJsConfig(@RequestBody(required = false) JsConfigModel jsConfigModel, String callback) {
+	public JSONObject getJsConfig(
+			@ApiParam("JsConfigModel")
+				@RequestBody(required = false) JsConfigModel jsConfigModel, String callback) {
 		try {
 			String shortUrl = jsConfigModel.getShortUrl();
 			String url = jsConfigModel.getUrl();
@@ -63,6 +74,9 @@ public class WxJsConfigController {
 		}
 		return null;
 	}
+	
+	@ApiOperation(value="获取JS配置")
+	@ApiResponse(code=200, message="JS配置")
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	public JSONObject getJsConfig(String shortUrl, String url, String callback, HttpServletResponse response) {

@@ -5,6 +5,12 @@ import com.d1m.common.ds.TenantHelper;
 import com.d1m.wechat.model.Member;
 import com.d1m.wechat.service.MemberService;
 import com.esotericsoftware.minlog.Log;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +23,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("/mapi/popup")
+@Api(value="微店API", tags="微店接口")
 public class PopupApiController extends ApiController{
 
     private Logger log = LoggerFactory.getLogger(MemberApiController.class);
@@ -26,10 +33,14 @@ public class PopupApiController extends ApiController{
 
     @Resource
     TenantHelper tenantHelper;
-
+    
+	@ApiOperation(value="根据会员ID查询会员信息", tags="微店接口")
+	@ApiResponse(code=200, message="返回结果会员信息")
     @RequestMapping(value = "/member/{memberId}", method = RequestMethod.GET)
     @ResponseBody
-    public Member getMember(@PathVariable(name = "memberId") Integer id) {
+    public Member getMember(
+    		@ApiParam("会员ID")
+    		@PathVariable(name = "memberId") Integer id) {
         // 多数据源支持,临时方案
         String domain = tenantHelper.getTenantByIdentifier("marni");
         if (domain!=null){

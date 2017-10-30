@@ -2,44 +2,66 @@ package com.d1m.wechat.pamametermodel;
 
 import java.util.List;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel("门店")
 public class BusinessModel extends BaseModel {
-
+	
+	@ApiModelProperty("门店ID")
 	private Integer id;
-
+	
+	@ApiModelProperty("门店编号")
 	private String businessCode;
-
+	
+	@ApiModelProperty("门店名称")
 	private String businessName;
-
+	
+	@ApiModelProperty("分店名称")
 	private String branchName;
 
+	@ApiModelProperty("省")
 	private Integer province;
 
+	@ApiModelProperty("市")
 	private Integer city;
-
+	
+	@ApiModelProperty("区/县")
 	private String district;
-
+	
+	@ApiModelProperty("详细地址")
 	private String address;
-
+	
+	@ApiModelProperty("电话")
 	private String telephone;
-
+	
+	@ApiModelProperty("地理位置的经度")
 	private Double longitude;
-
+	
+	@ApiModelProperty("地理位置的纬度")
 	private Double latitude;
-
+	
+	@ApiModelProperty("推荐品，餐厅可为推荐菜；酒店为推荐套房；景点为推荐游玩景点等，针对自己行业的推荐内容")
 	private String recommend;
-
+	
+	@ApiModelProperty("特色服务，如免费wifi，免费停车，送货上门等商户能提供的特色功能或服务")
 	private String special;
 
+	@ApiModelProperty("商户简介，主要介绍商户信息等")
 	private String introduction;
 
+	@ApiModelProperty("营业时间：开始时间")
 	private String openStartTime;
-
+	
+	@ApiModelProperty("营业时间：结束时间")
 	private String openEndTime;
-
+	
+	@ApiModelProperty("人均价格")
 	private Integer avgPrice;
 
 	private List<String> photoList;
-
+	
+	@ApiModelProperty("街道")
 	private String street;
 
 	private String sid;
@@ -49,9 +71,11 @@ public class BusinessModel extends BaseModel {
 	private Boolean push;
 
 	private List<String> absolutePhotoList;
-
+	
+	@ApiModelProperty("纬度")
 	private Double lat;
-
+	
+	@ApiModelProperty("经度")
 	private Double lng;
 
 	private Integer isPush;

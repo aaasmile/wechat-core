@@ -24,8 +24,14 @@ import com.d1m.wechat.service.MemberBenefitService;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
 @Controller
 @RequestMapping("/benefit/member")
+@Api(value="Benefit项目会员API", tags="Benefit项目会员接口")
 public class MemberBenefitController extends BaseController {
 	
 	private Logger log = LoggerFactory.getLogger(MemberBenefitController.class);
@@ -33,10 +39,14 @@ public class MemberBenefitController extends BaseController {
 	@Autowired
 	private MemberBenefitService memberBenefitService;
 	
+	@ApiOperation(value="获取Benefit项目会员列表", tags="会员接口")
+	@ApiResponse(code=200, message="1-获取会员列表成功")
 	@RequestMapping(value = "list.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("member:list")
-	public JSONObject benefitList(@RequestBody(required = false) MemberBenefitListModel memberBenefitListModel,
+	public JSONObject benefitList(
+			@ApiParam(name="MemberBenefitListModel", required=false)
+				@RequestBody(required = false) MemberBenefitListModel memberBenefitListModel,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
@@ -55,10 +65,14 @@ public class MemberBenefitController extends BaseController {
 		
 	}
 	
+	@ApiOperation(value="获取Benefit项目会员详情成功", tags="会员接口")
+	@ApiResponse(code=200, message="1-获取会员详情成功")
 	@RequestMapping(value = "{memberId}/get.json", method = RequestMethod.GET)
 	@ResponseBody
 	@RequiresPermissions("member:list")
-	public JSONObject get(@PathVariable Integer memberId, HttpSession session) {
+	public JSONObject get(
+			@ApiParam("会员ID")
+				@PathVariable Integer memberId, HttpSession session) {
 		try {
 			log.info("memberId:{}", memberId);
 			Integer wechatId = getWechatId(session);

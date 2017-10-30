@@ -29,11 +29,17 @@ import com.d1m.wechat.service.OauthUrlService;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
 /**
  * Created on 16/11/25.
  */
 @Controller
 @RequestMapping("/api/store")
+@Api(value="店铺API", tags="店铺接口")
 public class StoreApiController extends ApiController {
 
 	private Logger log = LoggerFactory.getLogger(StoreApiController.class);
@@ -43,10 +49,14 @@ public class StoreApiController extends ApiController {
 
 	@Resource
 	private OauthUrlService oauthUrlService;
-
+	
+	@ApiOperation(value="根据ID获取门店信息", tags="店铺接口")
+	@ApiResponse(code=200, message="返回门店信息")
 	@RequestMapping(value = "/getOutlet/{id}.json", method = RequestMethod.GET)
 	@ResponseBody
-	public JSONObject getOutlet(@PathVariable Integer id, HttpSession session,
+	public JSONObject getOutlet(
+			@ApiParam("门店ID")
+			@PathVariable Integer id, HttpSession session,
 			HttpServletRequest request, HttpServletResponse response) {
 		try {
 			BusinessDto businessDto = businessService.get(null, id);
@@ -57,9 +67,13 @@ public class StoreApiController extends ApiController {
 		}
 	}
 
+	@ApiOperation(value="获取门店信息列表", tags="店铺接口")
+	@ApiResponse(code=200, message="返回门店信息列表")
 	@RequestMapping(value = "list.json", method = RequestMethod.POST)
 	@ResponseBody
-	public JSONObject list(@RequestBody(required = false) BusinessModel model,
+	public JSONObject list(
+			@ApiParam("BusinessModel")
+			@RequestBody(required = false) BusinessModel model,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
@@ -88,7 +102,9 @@ public class StoreApiController extends ApiController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="获取地区列表", tags="店铺接口")
+	@ApiResponse(code=200, message="返回地区列表")
 	@RequestMapping(value = "area-list.json", method = RequestMethod.GET)
 	@ResponseBody
 	public JSONObject areaList(HttpSession session, HttpServletRequest request,

@@ -7,44 +7,65 @@ import org.apache.commons.lang.StringUtils;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.ParamUtil;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel("增加用户标签参数")
 public class AddMemberTagModel extends BaseModel {
-
+	
+	@ApiModelProperty("活动")
 	private Integer[] activity;
-
+	
+	@ApiModelProperty("关注时间不早于")
 	private String attentionStartTime;
-
+	
+	@ApiModelProperty("关注时间不晚于")
 	private String attentionEndTime;
-
+	
+	@ApiModelProperty("本月群发数量")
 	private Integer[] batchSendOfMonth;
-
+	
+	@ApiModelProperty("取消关注时间不早于")
 	private String cancelStartTime;
-
+	
+	@ApiModelProperty("取消关注时间不晚于")
 	private String cancelEndTime;
-
+	
+	@ApiModelProperty("国家ID")
 	private Integer country;
-
+	
+	@ApiModelProperty("省份ID")
 	private Integer province;
-
+	
+	@ApiModelProperty("城市ID")
 	private Integer city;
-
+	
+	@ApiModelProperty("昵称")
 	private String nickname;
-
+	
+	@ApiModelProperty("性别")
 	private String sex;
-
+	
+	@ApiModelProperty("是否关注")
 	private Boolean subscribe;
 
 	private Integer[] memberIds;
 
 	private List<MemberTagModel> memberTags;
-
+	
+	@ApiModelProperty("手机")
 	private String mobile;
-
+	
+	@ApiModelProperty("用户标签")
 	private List<MemberTagModel> tags;
-
+	
+	@ApiModelProperty("openId")
 	private String openId;
-
+	
+	@ApiModelProperty("是否发送给所有人")
 	private Boolean sendToAll;
 	
+	@ApiModelProperty("绑定状态")
 	private Integer bindStatus;
 
 	/**

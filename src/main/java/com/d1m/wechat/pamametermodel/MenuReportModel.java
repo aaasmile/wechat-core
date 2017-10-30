@@ -1,9 +1,17 @@
 package com.d1m.wechat.pamametermodel;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel("菜单报表参数")
 public class MenuReportModel {
+	@ApiModelProperty("组ID")
 	private Integer groupId;
+	@ApiModelProperty("状态")
 	private Integer status;
+	@ApiModelProperty("开始时间")
 	private String start;
+	@ApiModelProperty("结束时间")
 	private String end;
 	
 	public Integer getGroupId() {

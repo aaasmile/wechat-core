@@ -11,6 +11,12 @@ import com.d1m.wechat.pamametermodel.SourceUserModel;
 import com.d1m.wechat.service.ConversationService;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
@@ -38,12 +44,18 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/report")
+@Api(value="客服报表 API", tags="客服报表接口")
 public class CustomerServiceReport extends BaseController {
     private Logger log = LoggerFactory.getLogger(CustomerServiceReport.class);
 
     @Autowired
     private ConversationService conversationService;
-
+    
+	@ApiOperation(value="导出客服报表", tags="客服报表接口")
+	@ApiResponses({
+		@ApiResponse(code=200, message="导出用户分析"),
+		@ApiResponse(code=21008, message="导出客户服务报表开始或结束时间不能为空")
+	})
     @RequestMapping(value = "exportCustomerService.json", method = RequestMethod.POST)
     @ResponseBody
     @RequiresPermissions("system-setting:customer-service-config-list")

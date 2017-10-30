@@ -4,6 +4,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.model.popup.dao.PopupPayConfig;
 import com.d1m.wechat.util.Message;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
+@Api(value="微店API", tags="微店接口")
 public class PopupController extends BaseController {
     private Logger log = LoggerFactory.getLogger(PopupController.class);
     static boolean debug = false;
@@ -31,14 +38,18 @@ public class PopupController extends BaseController {
 
     public PopupController() {
     }
-
+    
+	@ApiOperation(value="更新支付配置", tags="微店接口")
+	@ApiResponse(code=200, message="1-操作成功")
     @ResponseBody
     @RequestMapping(
             value = {"pay/config/{id}"},
             method = {RequestMethod.POST}
     )
     @RequiresPermissions("popup-store:pay-config")
-    public JSONObject updatePayConfig(@PathVariable(name = "id") long id, @RequestBody(required = false) PopupPayConfig model) {
+    public JSONObject updatePayConfig(
+    		@ApiParam("支付配置ID")
+    			@PathVariable(name = "id") long id, @RequestBody(required = false) PopupPayConfig model) {
         boolean state = true;
         if (model.getCompanyId() == 0) {
             model.setCompanyId(null);
@@ -53,7 +64,9 @@ public class PopupController extends BaseController {
 
         return state ? this.representation(Message.SUCCESS) : this.representation(Message.SYSTEM_ERROR);
     }
-
+	
+	@ApiOperation(value="获取支付配置", tags="微店接口")
+	@ApiResponse(code=200, message="1-操作成功")
     @ResponseBody
     @RequestMapping(
             value = {"pay/config"},

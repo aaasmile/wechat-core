@@ -24,8 +24,14 @@ import com.d1m.wechat.service.ActivityCouponSettingService;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
 @Controller
 @RequestMapping("/activity-coupon-setting")
+@Api(value="活动优惠券API", tags="活动优惠券接口")
 public class ActivityCouponSettingController extends BaseController {
 
 	private Logger log = LoggerFactory
@@ -33,10 +39,14 @@ public class ActivityCouponSettingController extends BaseController {
 
 	@Autowired
 	private ActivityCouponSettingService activityCouponSettingService;
-
+	
+	@ApiOperation(value="查询活动优惠券列表", tags="活动优惠券接口")
+	@ApiResponse(code=200, message="1-活动优惠券列表成功, 0-系统异常")
 	@RequestMapping(value = "list.json", method = RequestMethod.POST)
 	@ResponseBody
-	public JSONObject list(@RequestBody(required = false) ActivityModel model,
+	public JSONObject list(
+			@ApiParam("ActivityModel")
+			@RequestBody(required = false) ActivityModel model,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
@@ -53,10 +63,13 @@ public class ActivityCouponSettingController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="创建新的活动优惠券", tags="活动优惠券接口")
+	@ApiResponse(code=200, message="1-活动优惠券创建成功, 0-系统异常")
 	@RequestMapping(value = "new.json", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject create(
+			@ApiParam("ActivityModel")
 			@RequestBody(required = false) ActivityModel model,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
@@ -70,10 +83,14 @@ public class ActivityCouponSettingController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="根据ID删除活动优惠券", tags="活动优惠券接口")
+	@ApiResponse(code=200, message="1-活动优惠券删除成功, 0-系统异常")
 	@RequestMapping(value = "{activityCouponSettingId}/delete.json", method = RequestMethod.DELETE)
 	@ResponseBody
-	public JSONObject delete(@PathVariable Integer activityCouponSettingId,
+	public JSONObject delete(
+			@ApiParam("活动优惠券ID")
+			@PathVariable Integer activityCouponSettingId,
 			HttpSession session) {
 		try {
 			activityCouponSettingService.delete(getWechatId(session),

@@ -37,8 +37,14 @@ import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
 @Controller
 @RequestMapping("/conversation")
+@Api(value="会话API", tags="会话接口")
 public class ConversationController extends BaseController {
 
 	private Logger log = LoggerFactory.getLogger(ConversationController.class);
@@ -51,12 +57,15 @@ public class ConversationController extends BaseController {
 
 	@Autowired
 	private MaterialService materialService;
-
+	
+	@ApiOperation(value="创建群发会话", tags="会话接口")
+	@ApiResponse(code=200, message="1-创建群发会话成功")
 	@RequestMapping(value = "mass/new.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("member:list")
 	public JSONObject createMass(
-			@RequestBody(required = false) MassConversationModel massConversationModel,
+			@ApiParam(name="MassConversationModel", required=false)
+				@RequestBody(required = false) MassConversationModel massConversationModel,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
@@ -68,11 +77,14 @@ public class ConversationController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="群发审核", tags="会话接口")
+	@ApiResponse(code=200, message="1-群发审核成功")
 	@RequestMapping(value = "mass/audit.json", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject auditMass(
-			@RequestBody(required = false) MassConversationModel massConversationModel,
+			@ApiParam(name="MassConversationModel", required=false)
+				@RequestBody(required = false) MassConversationModel massConversationModel,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
@@ -84,11 +96,14 @@ public class ConversationController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="群发发送", tags="会话接口")
+	@ApiResponse(code=200, message="1-群发发送成功")
 	@RequestMapping(value = "mass/send.json", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject sendMass(
-			@RequestBody(required = false) MassConversationModel massConversationModel,
+			@ApiParam(name="MassConversationModel", required=false)
+				@RequestBody(required = false) MassConversationModel massConversationModel,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
@@ -103,10 +118,13 @@ public class ConversationController extends BaseController {
 		}
 	}
 
+	@ApiOperation(value="创建会话", tags="会话接口")
+	@ApiResponse(code=200, message="1-创建会话成功")
 	@RequestMapping(value = "kfmember.json", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject create(
-			@RequestBody(required = false) ConversationModel conversationModel,
+			@ApiParam(name="ConversationModel", required=false)
+				@RequestBody(required = false) ConversationModel conversationModel,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
@@ -137,11 +155,14 @@ public class ConversationController extends BaseController {
 		}
 	}
 
+	@ApiOperation(value="获取群发会话列表", tags="会话接口")
+	@ApiResponse(code=200, message="1-获取群发会话列表成功")
 	@RequestMapping(value = "mass/list.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("message:batch-message-list")
 	public JSONObject massList(
-			@RequestBody(required = false) ConversationModel conversationModel,
+			@ApiParam(name="ConversationModel", required=false)
+				@RequestBody(required = false) ConversationModel conversationModel,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		if (conversationModel == null) {
@@ -156,11 +177,14 @@ public class ConversationController extends BaseController {
 				conversationModel.getPageNum(), page.getTotal());
 	}
 
+	@ApiOperation(value="获取群发会话列表", tags="会话接口")
+	@ApiResponse(code=200, message="1-获取群发会话列表成功")
 	@RequestMapping(value = "mass/auditlist.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("message:batch-message-review")
 	public JSONObject massAuditList(
-			@RequestBody(required = false) ConversationModel conversationModel,
+			@ApiParam(name="ConversationModel", required=false)
+				@RequestBody(required = false) ConversationModel conversationModel,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		if (conversationModel == null) {
@@ -177,6 +201,8 @@ public class ConversationController extends BaseController {
 				conversationModel.getPageNum(), page.getTotal());
 	}
 
+	@ApiOperation(value="获取本月群发会话可用数量", tags="会话接口")
+	@ApiResponse(code=200, message="1-获取本月群发会话可用数量成功")
 	@RequestMapping(value = "massavailable.json", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject massavailable(HttpSession session,
@@ -189,11 +215,14 @@ public class ConversationController extends BaseController {
 				json);
 	}
 
+	@ApiOperation(value="获取会话列表", tags="会话接口")
+	@ApiResponse(code=200, message="1-获取会话列表成功")
 	@RequestMapping(value = "unread/list.json", method = RequestMethod.POST)
 	@ResponseBody
 	@RequiresPermissions("message:message-list")
 	public JSONObject listUnread(
-			@RequestBody(required = false) ConversationModel conversationModel,
+			@ApiParam(name="ConversationModel", required=false)
+				@RequestBody(required = false) ConversationModel conversationModel,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		if (conversationModel == null) {
@@ -212,10 +241,13 @@ public class ConversationController extends BaseController {
 				conversationModel.getPageNum(), page.getTotal());
 	}
 
+	@ApiOperation(value="获取会话列表", tags="会话接口")
+	@ApiResponse(code=200, message="1-获取会话列表成功")
 	@RequestMapping(value = "list.json", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject list(
-			@RequestBody(required = false) ConversationModel conversationModel,
+			@ApiParam(name="ConversationModel", required=false)
+				@RequestBody(required = false) ConversationModel conversationModel,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {

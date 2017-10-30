@@ -23,18 +23,29 @@ import com.d1m.wechat.service.ActivityService;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+
 @Controller
 @RequestMapping("/activity")
+@Api(value="活动API", tags="活动接口")
 public class ActivityController extends BaseController {
 
 	private Logger log = LoggerFactory.getLogger(ActivityController.class);
 
 	@Autowired
 	private ActivityService activityService;
-
+	
+	@ApiOperation(value="查询活动列表", tags="活动接口")
+	@ApiResponse(code=200, message="1-活动列表成功, 0-系统异常")
 	@RequestMapping(value = "list.json", method = RequestMethod.POST)
 	@ResponseBody
-	public JSONObject list(@RequestBody(required = false) ActivityModel model,
+	public JSONObject list(
+			@ApiParam("ActivityModel")
+			@RequestBody(required = false) ActivityModel model,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
@@ -51,10 +62,15 @@ public class ActivityController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="根据id查询某个活动", tags="活动接口")
+	@ApiResponse(code=200, message="1-活动获取成功, 0-系统异常")
 	@RequestMapping(value = "{id}/get.json", method = RequestMethod.GET)
 	@ResponseBody
-	public JSONObject get(@PathVariable Integer id, HttpSession session,
+	public JSONObject get(
+			@ApiParam(name="活动ID")
+			@PathVariable Integer id, 
+			HttpSession session,
 			HttpServletRequest request, HttpServletResponse response) {
 		try {
 			ActivityDto activityDto = activityService.get(getWechatId(session),
@@ -65,10 +81,15 @@ public class ActivityController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="根据id删除某个活动", tags="活动接口")
+	@ApiResponse(code=200, message="1-活动删除成功, 0-系统异常")
 	@RequestMapping(value = "{id}/delete.json", method = RequestMethod.DELETE)
 	@ResponseBody
-	public JSONObject delete(@PathVariable Integer id, HttpSession session,
+	public JSONObject delete(
+			@ApiParam(name="活动ID")
+			@PathVariable Integer id, 
+			HttpSession session,
 			HttpServletRequest request, HttpServletResponse response) {
 		try {
 			activityService.delete(getWechatId(session), id);
@@ -78,10 +99,13 @@ public class ActivityController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="创建一个新的活动", tags="活动接口")
+	@ApiResponse(code=200, message="1-活动创建成功, 0-系统异常")
 	@RequestMapping(value = "new.json", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject create(
+			@ApiParam("ActivityModel")
 			@RequestBody(required = false) ActivityModel model,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
@@ -96,10 +120,14 @@ public class ActivityController extends BaseController {
 			return wrapException(e);
 		}
 	}
-
+	
+	@ApiOperation(value="更新某个活动", tags="活动接口")
+	@ApiResponse(code=200, message="1-活动更新成功, 0-系统异常")
+	@ApiImplicitParam(name="model", paramType="body")
 	@RequestMapping(value = "update.json", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject update(
+			@ApiParam("ActivityModel")
 			@RequestBody(required = false) ActivityModel model,
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
