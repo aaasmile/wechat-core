@@ -74,7 +74,7 @@ public class LbsOutletApi implements IApi {
                     distance = new BigDecimal(0);
                 }
                 String distanceStr = "【距您"+distance.doubleValue()+"公里】";
-                if(StringUtils.isNotBlank(enableDistance)&&"0".equals(distanceStr)){
+                if(StringUtils.isNotBlank(enableDistance)&&"0".equals(enableDistance)){
                     article.setTitle(business.getBusinessName());
                 }else{
                     article.setTitle(business.getBusinessName()+distanceStr);
