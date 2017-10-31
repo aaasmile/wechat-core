@@ -185,12 +185,7 @@ public class MemberController extends BaseController {
 			MemberLevelDto memberLevelDto = memberService.selectMemberProfile(id, getWechatId(session));
 			memberDto.setCredits(memberLevelDto.getCredits());
 			memberDto.setLevel(memberLevelDto.getLevel());
-			Integer bindStatus = memberProfileService.getMemberBindStatus(id, getWechatId(session));
-			if(bindStatus != null){
-				memberDto.setBindStatus(bindStatus);
-			}else{
-				memberDto.setBindStatus(2);
-			}
+
 			return representation(Message.MEMBER_GET_SUCCESS, memberDto);
 		} catch (Exception e) {
 			log.error(e.getMessage());

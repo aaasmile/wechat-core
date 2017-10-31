@@ -24,7 +24,7 @@ CREATE TABLE `mass_conversation_batch_member` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='分批群发用户表';
 
 -- 2017-08-22 add lacoste crm
-ALTER TABLE `member` ADD COLUMN `status` tinyint(2) NULL COMMENT '绑定状态(0:已解绑,1:已绑定)';
+ALTER TABLE `member` ADD COLUMN `status` tinyint(2) default 2 NULL COMMENT '绑定状态(0:已解绑,1:已绑定,2:未绑定)';
 ALTER TABLE `member` ADD COLUMN `pmcode` varchar(255) NULL COMMENT '卡号';
 ALTER TABLE `member` ADD COLUMN `levels` varchar(255) NULL COMMENT '卡级别';
 

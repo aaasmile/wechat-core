@@ -377,7 +377,7 @@
 	</resultMap>
 	
 	<select id="selectByWechat" parameterType="HashMap" resultMap="MemberDtoResultMap">
-		select * from member
+		select *,IF(ISNULL(status),2,status) as bindStatus from member
 		<where>
 			wechat_id = #{wechatId}
 		</where>
@@ -400,7 +400,7 @@
 	</select>
 
 	<select id="selectByMemberId" parameterType="HashMap" resultMap="MemberDtoResultMap">
-		select * from member
+		select *, IF(ISNULL(status),2,status) as bindStatus from member
 		<where>
 			wechat_id = #{wechatId}
 			<if test="ids != null">
