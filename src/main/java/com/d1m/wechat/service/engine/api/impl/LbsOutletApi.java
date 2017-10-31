@@ -56,6 +56,8 @@ public class LbsOutletApi implements IApi {
             String firstTitle = configService.getConfigValue(wechatId, "LBS","FIRST_TITLE");
             String firstPic = configService.getConfigValue(wechatId, "LBS","FIRST_PIC");
             String firstUrl = configService.getConfigValue(wechatId, "LBS","FIRST_URL");
+            String logoUrl = configService.getConfigValue(wechatId, "LBS","LOGO_URL");
+            String enableDistance = configService.getConfigValue(wechatId, "LBS","ENABLE_DISTANCE");
             if(StringUtils.isNotBlank(firstPic)&&StringUtils.isNotBlank(firstUrl)){
                 WxArticleMessage first = new WxArticleMessage();
                 first.setTitle(firstTitle);
@@ -71,7 +73,12 @@ public class LbsOutletApi implements IApi {
                 }else{
                     distance = new BigDecimal(0);
                 }
-                article.setTitle(business.getBusinessName()+"【距您"+distance.doubleValue()+"公里】");
+                String distanceStr = "【距您"+distance.doubleValue()+"公里】";
+                if(StringUtils.isNotBlank(enableDistance)&&"0".equals(enableDistance)){
+                    article.setTitle(business.getBusinessName());
+                }else{
+                    article.setTitle(business.getBusinessName()+distanceStr);
+                }
                 article.setDescription(business.getIntroduction());
                 //设置图片
                 List<String> plist = business.getPhotoList();
@@ -79,7 +86,11 @@ public class LbsOutletApi implements IApi {
                     article.setPicUrl(plist.get(0));
                 }else{
                     //设置默认
-                    article.setPicUrl("http://placehold.it/320x200");
+                    if(StringUtils.isNotBlank(logoUrl)){
+                        article.setPicUrl(logoUrl);
+                    }else {
+                        article.setPicUrl("http://placehold.it/200x200");
+                    }
                 }
                 String outlet_url = configService.getConfigValue(wechatId,"LBS","OUTLET_URL");
                 //设置前端访问页面
