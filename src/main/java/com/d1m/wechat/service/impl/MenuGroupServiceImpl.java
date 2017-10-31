@@ -169,17 +169,19 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 		menu.setMenuGroupId(menuGroup.getId());
 		menu.setParentId(parentId);
 		menu.setSeq(menuDto.getSeq());
-		menuMapper.insertSelective(menu);
+		menuMapper.insert(menu);
 		MenuExtraAttr menuExtraAttr = new MenuExtraAttr();
 		menuExtraAttr.setMenuId((long)menu.getId());
-		if (menuDto.getAppId() != null)
+		if (menuDto.getAppId() != null){
 			menuExtraAttr.setAppId(menuDto.getAppId());
-		if (menuDto.getPagePath() != null)
+		}
+		if (menuDto.getPagePath() != null){
 			menuExtraAttr.setPagePath(menuDto.getPagePath());
-		if (menuDto.getAppUrl() != null)
+		}
+		if (menuDto.getAppUrl() != null){
 			menuExtraAttr.setAppUrl(menuDto.getAppUrl());
-		if (menuDto.getAppId() != null && menuDto.getPagePath() != null)
-			menuExtraAttrMapper.insertSelective(menuExtraAttr);
+		}
+		menuExtraAttrMapper.insert(menuExtraAttr);
 		return menu;
 	}
 
@@ -525,21 +527,26 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 			menu.setModifyAt(current);
 			menu.setParentId(parentId);
 			menu.setSeq(m.getSeq());
-			menuMapper.updateByPrimaryKeySelective(menu);
+			menuMapper.updateByPrimaryKey(menu);
 			MenuExtraAttr menuExtraAttr = new MenuExtraAttr();
 			menuExtraAttr.setMenuId((long)menu.getId());
 			MenuExtraAttr menuExtraAttrNew = menuExtraAttrMapper.selectOne(menuExtraAttr);
 			if (menuExtraAttrNew != null) {
 				menuExtraAttr = menuExtraAttrNew;
 			}
-			if (m.getAppId() != null)
+			if (m.getAppId() != null){
 				menuExtraAttr.setAppId(m.getAppId());
-			if (m.getPagePath() != null)
+			}
+			if (m.getPagePath() != null){
 				menuExtraAttr.setPagePath(m.getPagePath());
-			if (m.getAppUrl() != null)
+			}
+			if (m.getAppUrl() != null){
 				menuExtraAttr.setAppUrl(m.getAppUrl());
+			}
 			if (menuExtraAttr.getId() != null) {
-				menuExtraAttrMapper.updateByPrimaryKeySelective(menuExtraAttr);
+				menuExtraAttrMapper.updateByPrimaryKey(menuExtraAttr);
+			}else{
+				menuExtraAttrMapper.insert(menuExtraAttr);
 			}
 		} else {
 			/** create */
@@ -565,13 +572,16 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 			menuMapper.insert(menu);
 			MenuExtraAttr menuExtraAttr = new MenuExtraAttr();
 			menuExtraAttr.setMenuId((long)menu.getId());
-			if (m.getAppId() != null)
+			if (m.getAppId() != null){
 				menuExtraAttr.setAppId(m.getAppId());
-			if (m.getPagePath() != null)
+			}
+			if (m.getPagePath() != null){
 				menuExtraAttr.setPagePath(m.getPagePath());
-			if (m.getAppUrl() != null)
+			}
+			if (m.getAppUrl() != null) {
 				menuExtraAttr.setAppUrl(m.getAppUrl());
-			menuExtraAttrMapper.insertSelective(menuExtraAttr);
+			}
+			menuExtraAttrMapper.insert(menuExtraAttr);
 		}
 		return menu;
 	}
