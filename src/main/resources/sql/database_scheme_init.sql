@@ -609,17 +609,6 @@ CREATE TABLE `customer_service_config` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='客服配置';
 
 -- ----------------------------
---  Table structure for `demo_owen`
--- ----------------------------
-DROP TABLE IF EXISTS `demo_owen`;
-CREATE TABLE `demo_owen` (
-  `id` int(11) NOT NULL,
-  `name` varchar(10) DEFAULT NULL,
-  `value` varchar(10) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
 --  Table structure for `function`
 -- ----------------------------
 DROP TABLE IF EXISTS `function`;
