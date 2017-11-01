@@ -108,6 +108,18 @@ public class MassConversationResult {
 	private String msgDataId;
 
 	/**
+	 * 群发消息errcode
+	 */
+	@Column(name = "errcode")
+	private String errcode;
+
+	/**
+	 * 群发消息errmsg
+	 */
+	@Column(name = "errmsg")
+	private String errmsg;
+
+	/**
 	 * 结果
 	 */
 	private Byte status;
@@ -465,6 +477,22 @@ public class MassConversationResult {
 	 */
 	public String getMsgDataId() {
 		return msgDataId;
+	}
+
+	public String getErrcode() {
+		return errcode;
+	}
+
+	public void setErrcode(String errcode) {
+		this.errcode = errcode;
+	}
+
+	public String getErrmsg() {
+		return errmsg;
+	}
+
+	public void setErrmsg(String errmsg) {
+		this.errmsg = errmsg;
 	}
 
 	/**

@@ -22,6 +22,8 @@
     <result column="total_batch" jdbcType="INTEGER" property="totalBatch" />
     <result column="msg_id" jdbcType="VARCHAR" property="msgId" />
     <result column="msg_data_id" jdbcType="VARCHAR" property="msgDataId" />
+    <result column="errcode" jdbcType="VARCHAR" property="errcode" />
+    <result column="errmsg" jdbcType="VARCHAR" property="errmsg" />
     <result column="status" jdbcType="TINYINT" property="status" />
     <result column="total_count" jdbcType="INTEGER" property="totalCount" />
     <result column="filter_count" jdbcType="INTEGER" property="filterCount" />

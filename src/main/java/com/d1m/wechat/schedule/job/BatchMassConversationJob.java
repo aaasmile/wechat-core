@@ -72,6 +72,8 @@ public class BatchMassConversationJob extends BaseJobHandler {
 				} else {
 					batchResult.setMsgId(wxMessage.getMsgId());
 					batchResult.setMsgDataId(wxMessage.getDataId());
+					batchResult.setErrcode(wxMessage.getErrcode()+"");
+					batchResult.setErrmsg(wxMessage.getErrmsg());
 					batchResult.setStatus(MassConversationResultStatus.SENDING.getValue());
 					massConversationBatchResultMapper.updateByPrimaryKey(batchResult);
 
