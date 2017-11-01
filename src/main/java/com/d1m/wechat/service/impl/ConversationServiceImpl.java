@@ -1059,6 +1059,9 @@ public class ConversationServiceImpl extends BaseService<Conversation>
 		}
 		massConversationResult.setSendAt(current);
 		massConversationResult.setMsgId(wxMessage.getMsgId());
+		massConversationResult.setMsgDataId(wxMessage.getDataId());
+		massConversationResult.setErrcode(wxMessage.getErrcode()+"");
+		massConversationResult.setErrmsg(wxMessage.getErrmsg());
 		massConversationResult
 				.setStatus(MassConversationResultStatus.SENDING.getValue());
 		massConversationResult.setMsgType(msgType.getValue());
@@ -1291,6 +1294,9 @@ public class ConversationServiceImpl extends BaseService<Conversation>
 
 		massConversationResult.setSendAt(current);
 		massConversationResult.setMsgId(wxMessage!=null?wxMessage.getMsgId():null);
+		massConversationResult.setMsgDataId(wxMessage.getDataId());
+		massConversationResult.setErrcode(wxMessage.getErrcode()+"");
+		massConversationResult.setErrmsg(wxMessage.getErrmsg());
 		massConversationResult.setStatus(MassConversationResultStatus.SENDING.getValue());
 		massConversationResult.setMsgType(msgType.getValue());
 		massConversationResult.setTotalBatch(batchIndex-1);

@@ -83,3 +83,17 @@ ALTER TABLE `conversation`
 
 -- 2017-10-23
 ALTER TABLE business_category ADD wechat_id INT DEFAULT 0 NOT NULL;
+
+-- 2017-11-01 增加群发msg_data_id
+ALTER TABLE `mass_conversation_batch_result`
+  ADD COLUMN `msg_data_id`  varchar(50) NULL AFTER `msg_id`;
+ALTER TABLE `mass_conversation_result`
+  ADD COLUMN `msg_data_id`  varchar(50) NULL AFTER `msg_id`;
+
+ALTER TABLE `mass_conversation_batch_result`
+  ADD COLUMN `errcode`  varchar(20) NULL AFTER `msg_data_id`,
+  ADD COLUMN `errmsg`  varchar(100) NULL AFTER `errcode`;
+
+ALTER TABLE `mass_conversation_result`
+  ADD COLUMN `errcode`  varchar(20) NULL AFTER `msg_data_id`,
+  ADD COLUMN `errmsg`  varchar(100) NULL AFTER `errcode`;

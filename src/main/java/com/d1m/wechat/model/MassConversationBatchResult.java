@@ -25,6 +25,24 @@ public class MassConversationBatchResult {
     private String msgId;
 
     /**
+     * 群发消息数据ID
+     */
+    @Column(name = "msg_data_id")
+    private String msgDataId;
+
+    /**
+     * 群发消息errcode
+     */
+    @Column(name = "errcode")
+    private String errcode;
+
+    /**
+     * 群发消息errmsg
+     */
+    @Column(name = "errmsg")
+    private String errmsg;
+
+    /**
      * 群发分组的第几批次
      */
     @Column(name = "pi_ci")
@@ -135,6 +153,40 @@ public class MassConversationBatchResult {
      */
     public void setMsgId(String msgId) {
         this.msgId = msgId == null ? null : msgId.trim();
+    }
+
+    /**
+     * 获取群发消息数据ID
+     *
+     * @return msg_data_id - 群发消息数据ID
+     */
+    public String getMsgDataId() {
+        return msgDataId;
+    }
+
+    /**
+     * 设置群发消息数据ID
+     *
+     * @param msgDataId 群发消息数据ID
+     */
+    public void setMsgDataId(String msgDataId) {
+        this.msgDataId = msgDataId == null ? null : msgDataId.trim();
+    }
+
+    public String getErrcode() {
+        return errcode;
+    }
+
+    public void setErrcode(String errcode) {
+        this.errcode = errcode;
+    }
+
+    public String getErrmsg() {
+        return errmsg;
+    }
+
+    public void setErrmsg(String errmsg) {
+        this.errmsg = errmsg;
     }
 
     /**
