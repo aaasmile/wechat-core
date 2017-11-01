@@ -48,10 +48,10 @@
     <!--<context:property-placeholder location="classpath:config.properties"/>-->
 
     <bean id="dataSourceDefault" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
-        <property name="driverClassName" value="${jdbc.driverClass}"/>
-        <property name="url" value="${jdbc.url}"/>
-        <property name="username" value="${jdbc.user}"/>
-        <property name="password" value="${jdbc.password}"/>
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://10.60.1.60:3306/d1m_wechat?autoReconnect=true"/>
+        <property name="username" value="root"/>
+        <property name="password" value="root"/>
 
         <property name="filters" value="stat"/>
 
@@ -147,6 +147,6 @@
     <task:executor id="callerRunsExecutor" pool-size="5-50" queue-capacity="1000" keep-alive="60" rejection-policy="CALLER_RUNS"/>
 
     <!--<import resource="classpath:applicationContext-redis.xml"/>-->
-    <import resource="classpath:applicationContext-shiro.xml"/>
+    <!--<import resource="classpath:applicationContext-shiro.xml"/>-->
 
 </beans>

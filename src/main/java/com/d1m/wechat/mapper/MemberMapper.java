@@ -4,24 +4,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.InsertProvider;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.jdbc.SQL;
 
-import com.d1m.wechat.dto.MemberDto;
-import com.d1m.wechat.dto.MemberLevelDto;
-import com.d1m.wechat.dto.MemberStatusDto;
-import com.d1m.wechat.dto.MemberTagDto;
-import com.d1m.wechat.dto.PieBaseDto;
-import com.d1m.wechat.dto.ReportActivityUserDto;
-import com.d1m.wechat.dto.ReportAreaBaseDto;
-import com.d1m.wechat.dto.ReportUserSourceDto;
-import com.d1m.wechat.dto.TrendBaseDto;
+import com.d1m.wechat.dto.*;
 import com.d1m.wechat.model.Member;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.MyMapper;
-import com.github.pagehelper.Page;
 
 public interface MemberMapper extends MyMapper<Member> {
 
@@ -161,6 +154,7 @@ public interface MemberMapper extends MyMapper<Member> {
     //@SelectProvider(type = MemberSqlProvider.class, method = "count")
     //int count(Member record);
 
+    @Options
     @InsertProvider(type = MemberSqlProvider.class, method = "batchInsertOpenId")
     int batchInsertOpenId(@Param("wechatId") Integer wechatId, @Param("list") List<String> openidList);
 
