@@ -102,6 +102,12 @@ public class MassConversationResult {
 	private String msgId;
 
 	/**
+	 * 群发消息数据ID
+	 */
+	@Column(name = "msg_data_id")
+	private String msgDataId;
+
+	/**
 	 * 结果
 	 */
 	private Byte status;
@@ -450,6 +456,24 @@ public class MassConversationResult {
 	 */
 	public void setMsgId(String msgId) {
 		this.msgId = msgId == null ? null : msgId.trim();
+	}
+
+	/**
+	 * 获取群发消息数据ID
+	 *
+	 * @return msg_data_id - 群发消息数据ID
+	 */
+	public String getMsgDataId() {
+		return msgDataId;
+	}
+
+	/**
+	 * 设置群发消息数据ID
+	 *
+	 * @param msgDataId 群发消息数据ID
+	 */
+	public void setMsgDataId(String msgDataId) {
+		this.msgDataId = msgDataId == null ? null : msgDataId.trim();
 	}
 
 	/**

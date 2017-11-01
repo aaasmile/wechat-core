@@ -8,6 +8,7 @@
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
     <result column="msg_id" property="msgId" jdbcType="VARCHAR" />
+    <result column="msg_data_id" jdbcType="VARCHAR" property="msgDataId" />
     <result column="pi_ci" property="piCi" jdbcType="INTEGER" />
     <result column="status" property="status" jdbcType="TINYINT" />
     <result column="msg_type" property="msgType" jdbcType="TINYINT" />
