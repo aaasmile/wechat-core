@@ -83,7 +83,8 @@ public class AddMemberTagModel extends BaseModel {
 				&& StringUtils.isBlank(nickname) && StringUtils.isBlank(sex)
 				&& subscribe == null && memberIds == null
 				&& (memberTags == null || memberTags.isEmpty())
-				&& StringUtils.isBlank(mobile) && isOnline == null;
+				&& StringUtils.isBlank(mobile) && isOnline == null
+				&& bindStatus == null;
 	}
 
 	public Integer[] getActivity() {
