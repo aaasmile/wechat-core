@@ -1,4 +1,16 @@
 -- 20170713 add
+ALTER TABLE `member` ADD COLUMN `name`  varchar(255) NULL DEFAULT NULL COMMENT '会员姓名' AFTER `keyword`;
+ALTER TABLE `member` ADD COLUMN `birth_date`  date NULL DEFAULT NULL COMMENT '会员生日' AFTER `name`;
+ALTER TABLE `member` ADD COLUMN `email`  varchar(255) NULL DEFAULT NULL COMMENT '会员邮箱' AFTER `birth_date`;
+ALTER TABLE `member` ADD COLUMN `bind_at`  datetime NULL DEFAULT NULL COMMENT '绑定时间' AFTER `status`;
+ALTER TABLE `member` ADD COLUMN `unbund_at`  datetime NULL DEFAULT NULL COMMENT '解绑时间' AFTER `bind_at`;
+ALTER TABLE `member` ADD COLUMN `province_code`  varchar(255) NULL DEFAULT NULL AFTER `unbund_at`;
+ALTER TABLE `member` ADD COLUMN `city_code`  varchar(255) NULL DEFAULT NULL AFTER `province_code`;
+ALTER TABLE `member` ADD COLUMN `country_code`  varchar(255) NULL DEFAULT NULL AFTER `city_code`;
+ALTER TABLE `member` ADD COLUMN `province_name`  varchar(255) NULL DEFAULT NULL AFTER `country_code`;
+ALTER TABLE `member` ADD COLUMN `city_name`  varchar(255) NULL DEFAULT NULL AFTER `province_name`;
+ALTER TABLE `member` ADD COLUMN `country_name`  varchar(255) NULL DEFAULT NULL AFTER `city_name`;
+ALTER TABLE `member` ADD COLUMN `address`  varchar(255) NULL DEFAULT NULL COMMENT '详细地址' AFTER `country_name`;
 ALTER TABLE `member` ADD COLUMN `medium` varchar(255) DEFAULT '' COMMENT '媒介' AFTER `last_conversation_at`;
 ALTER TABLE `conversation_image_text_detail` CHANGE COLUMN `content_source_url` `content_source_url` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '原文链接';
 ALTER TABLE `material_image_text_detail` CHANGE COLUMN `content_source_url` `content_source_url` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '原文链接';
