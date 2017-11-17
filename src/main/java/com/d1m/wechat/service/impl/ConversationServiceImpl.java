@@ -1294,9 +1294,9 @@ public class ConversationServiceImpl extends BaseService<Conversation>
 
 		massConversationResult.setSendAt(current);
 		massConversationResult.setMsgId(wxMessage!=null?wxMessage.getMsgId():null);
-		massConversationResult.setMsgDataId(wxMessage.getDataId());
-		massConversationResult.setErrcode(wxMessage.getErrcode()+"");
-		massConversationResult.setErrmsg(wxMessage.getErrmsg());
+		massConversationResult.setMsgDataId(wxMessage!=null?wxMessage.getDataId():null);
+		massConversationResult.setErrcode(wxMessage!=null?wxMessage.getErrcode()+"":null);
+		massConversationResult.setErrmsg(wxMessage!=null?wxMessage.getErrmsg():null);
 		massConversationResult.setStatus(MassConversationResultStatus.SENDING.getValue());
 		massConversationResult.setMsgType(msgType.getValue());
 		massConversationResult.setTotalBatch(batchIndex-1);
