@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.d1m.wechat.mapper.EstoreOrderMapper" >
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.EstoreOrder" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="member_id" property="memberId" jdbcType="BIGINT" />
+    <result column="total_point" property="totalPoint" jdbcType="INTEGER" />
+    <result column="total_amount" property="totalAmount" jdbcType="DECIMAL" />
+    <result column="product_amount" property="productAmount" jdbcType="DECIMAL" />
+    <result column="delivery_fee" property="deliveryFee" jdbcType="DECIMAL" />
+    <result column="discount" property="discount" jdbcType="DECIMAL" />
+    <result column="payment_id" property="paymentId" jdbcType="BIGINT" />
+    <result column="pay_status" property="payStatus" jdbcType="TINYINT" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="delivery_type" property="deliveryType" jdbcType="TINYINT" />
+    <result column="delivery_ext" property="deliveryExt" jdbcType="VARCHAR" />
+    <result column="delivery_name" property="deliveryName" jdbcType="VARCHAR" />
+    <result column="delivery_phone" property="deliveryPhone" jdbcType="VARCHAR" />
+    <result column="delivery_other_phone" property="deliveryOtherPhone" jdbcType="VARCHAR" />
+    <result column="delivery_province" property="deliveryProvince" jdbcType="VARCHAR" />
+    <result column="delivery_city" property="deliveryCity" jdbcType="VARCHAR" />
+    <result column="delivery_district" property="deliveryDistrict" jdbcType="VARCHAR" />
+    <result column="delivery_address" property="deliveryAddress" jdbcType="VARCHAR" />
+    <result column="express_no" property="expressNo" jdbcType="VARCHAR" />
+    <result column="need_invoice" property="needInvoice" jdbcType="TINYINT" />
+    <result column="invoice_type" property="invoiceType" jdbcType="TINYINT" />
+    <result column="invoice_title" property="invoiceTitle" jdbcType="VARCHAR" />
+    <result column="invoice_tax_no" property="invoiceTaxNo" jdbcType="VARCHAR" />
+    <result column="invoice_content" property="invoiceContent" jdbcType="VARCHAR" />
+    <result column="invoice_delivery_type" property="invoiceDeliveryType" jdbcType="TINYINT" />
+    <result column="invoice_name" property="invoiceName" jdbcType="VARCHAR" />
+    <result column="invoice_phone" property="invoicePhone" jdbcType="VARCHAR" />
+    <result column="invoice_province" property="invoiceProvince" jdbcType="VARCHAR" />
+    <result column="invoice_city" property="invoiceCity" jdbcType="VARCHAR" />
+    <result column="invoice_district" property="invoiceDistrict" jdbcType="VARCHAR" />
+    <result column="invoice_address" property="invoiceAddress" jdbcType="VARCHAR" />
+    <result column="need_gift" property="needGift" jdbcType="TINYINT" />
+    <result column="gift_content" property="giftContent" jdbcType="VARCHAR" />
+    <result column="create_at" property="createAt" jdbcType="TIMESTAMP" />
+    <result column="update_at" property="updateAt" jdbcType="TIMESTAMP" />
+    <result column="wechat_id" property="wechatId" jdbcType="BIGINT" />
+  </resultMap>
+
+  <resultMap id="searchResultMap" type="com.d1m.wechat.model.EstoreOrderListResult">
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="member_id" property="memberId" jdbcType="BIGINT" />
+    <result column="total_point" property="totalPoint" jdbcType="INTEGER" />
+    <result column="total_amount" property="totalAmount" jdbcType="DECIMAL" />
+    <result column="product_amount" property="productAmount" jdbcType="DECIMAL" />
+    <result column="delivery_fee" property="deliveryFee" jdbcType="DECIMAL" />
+    <result column="discount" property="discount" jdbcType="DECIMAL" />
+    <result column="payment_id" property="paymentId" jdbcType="BIGINT" />
+    <result column="pay_status" property="payStatus" jdbcType="TINYINT" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="delivery_type" property="deliveryType" jdbcType="TINYINT" />
+    <result column="delivery_ext" property="deliveryExt" jdbcType="VARCHAR" />
+    <result column="delivery_name" property="deliveryName" jdbcType="VARCHAR" />
+    <result column="delivery_phone" property="deliveryPhone" jdbcType="VARCHAR" />
+    <result column="delivery_other_phone" property="deliveryOtherPhone" jdbcType="VARCHAR" />
+    <result column="delivery_province" property="deliveryProvince" jdbcType="VARCHAR" />
+    <result column="delivery_city" property="deliveryCity" jdbcType="VARCHAR" />
+    <result column="delivery_district" property="deliveryDistrict" jdbcType="VARCHAR" />
+    <result column="delivery_address" property="deliveryAddress" jdbcType="VARCHAR" />
+    <result column="express_no" property="expressNo" jdbcType="VARCHAR" />
+    <result column="need_invoice" property="needInvoice" jdbcType="TINYINT" />
+    <result column="invoice_type" property="invoiceType" jdbcType="TINYINT" />
+    <result column="invoice_title" property="invoiceTitle" jdbcType="VARCHAR" />
+    <result column="invoice_tax_no" property="invoiceTaxNo" jdbcType="VARCHAR" />
+    <result column="invoice_content" property="invoiceContent" jdbcType="VARCHAR" />
+    <result column="invoice_delivery_type" property="invoiceDeliveryType" jdbcType="TINYINT" />
+    <result column="invoice_name" property="invoiceName" jdbcType="VARCHAR" />
+    <result column="invoice_phone" property="invoicePhone" jdbcType="VARCHAR" />
+    <result column="invoice_province" property="invoiceProvince" jdbcType="VARCHAR" />
+    <result column="invoice_city" property="invoiceCity" jdbcType="VARCHAR" />
+    <result column="invoice_district" property="invoiceDistrict" jdbcType="VARCHAR" />
+    <result column="invoice_address" property="invoiceAddress" jdbcType="VARCHAR" />
+    <result column="need_gift" property="needGift" jdbcType="TINYINT" />
+    <result column="gift_content" property="giftContent" jdbcType="VARCHAR" />
+    <result column="create_at" property="createAt" jdbcType="TIMESTAMP" />
+    <result column="update_at" property="updateAt" jdbcType="TIMESTAMP" />
+    <result column="wechat_id" property="wechatId" jdbcType="BIGINT" />
+    <result column="cb_status" property="cbStatus" jdbcType="VARCHAR" />
+    <result column="cb_data" property="cbData" jdbcType="VARCHAR" />
+    <result column="pay_time" property="payTime" jdbcType="VARCHAR" />
+    <result column="pay_name" property="payName" jdbcType="VARCHAR" />
+    <result column="pay_code" property="payCode" jdbcType="VARCHAR" />
+    <result column="product_id" property="productId" jdbcType="BIGINT" />
+    <result column="product_spec_id" property="productSpecId" jdbcType="BIGINT" />
+    <result column="quantity" property="quantity" jdbcType="INTEGER" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="point" property="point" jdbcType="INTEGER" />
+  </resultMap>
+
+  <select id="selectOrderList" resultMap="searchResultMap">
+    select a.*,
+    b.`status` as cb_status,
+    b.`data` as cb_data,
+    b.`create_at` as pay_time,
+    c.`name` as pay_name,
+    c.`code` as pay_code,
+    d.`product_id`,
+    d.`product_spec_id`,
+    d.`quantity`,
+    d.`price`,
+    d.`point`
+    from estore_order a
+    LEFT JOIN estore_order_pay b on a.id=b.order_id
+    LEFT JOIN estore_payment c on c.id=b.payment_id
+    LEFT JOIN estore_order_product d on d.order_id=a.id
+    <where>
+      a.wechat_id = #{wechatId}
+      <if test="orderId != null">
+        and a.`id` = #{orderId}
+      </if>
+      <if test="orderNo != null">
+        and a.`order_no` = #{orderNo}
+      </if>
+      <if test="deliveryName != null">
+        and a.`delivery_name`='#{deliveryName}'
+      </if>
+      <if test="deliveryPhone != null">
+        and a.`delivery_phone`='#{deliveryPhone}'
+      </if>
+      <if test="payStatus != null">
+        and a.`pay_status` = #{payStatus}
+      </if>
+      <if test="payType != null">
+        and c.`pay_code`='#{payType}'
+      </if>
+      <if test="expressNo != null">
+        and a.express_no = '#{expressNo}'
+      </if>
+      <if test="status != null">
+        and a.status = #{status}
+      </if>
+      <if test="startDate != null and endDate !=null">
+        and a.create_at between #{startDate} and #{endDate}
+      </if>
+    </where>
+  </select>
+</mapper>

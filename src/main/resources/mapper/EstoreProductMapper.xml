@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.d1m.wechat.mapper.EstoreProductMapper" >
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.EstoreProduct" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="ext_attr" property="extAttr" jdbcType="VARCHAR" typeHandler="com.d1m.wechat.util.mybatis.JsonTypeHandler" />
+    <result column="spec_type" property="specType" jdbcType="TINYINT" />
+    <result column="spec_meta" property="specMeta" jdbcType="VARCHAR" typeHandler="com.d1m.wechat.util.mybatis.JsonTypeHandler" />
+    <result column="create_at" property="createAt" jdbcType="TIMESTAMP" />
+    <result column="modify_at" property="modifyAt" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="wechat_id" property="wechatId" jdbcType="BIGINT" />
+    <result column="description" property="description" jdbcType="LONGVARCHAR" />
+  </resultMap>
+
+
+  <resultMap id="searchResultMap" type="com.d1m.wechat.model.EstoreProductListResult">
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="ext_attr" property="extAttr" jdbcType="VARCHAR" typeHandler="com.d1m.wechat.util.mybatis.JsonTypeHandler" />
+    <result column="spec_type" property="specType" jdbcType="TINYINT" />
+    <result column="spec_meta" property="specMeta" jdbcType="VARCHAR" typeHandler="com.d1m.wechat.util.mybatis.JsonTypeHandler" />
+    <result column="create_at" property="createAt" jdbcType="TIMESTAMP" />
+    <result column="modify_at" property="modifyAt" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="wechat_id" property="wechatId" jdbcType="BIGINT" />
+    <result column="description" property="description" jdbcType="LONGVARCHAR" />
+    <result column="sale_id" property="saleId" jdbcType="BIGINT" />
+    <result column="on_sale" property="onSale" jdbcType="TINYINT" />
+    <result column="delivery_free" property="deliveryFree" jdbcType="TINYINT" />
+    <result column="delivery_tpl_id" property="deliveryTplId" jdbcType="BIGINT" />
+    <result column="sp_id" property="spId" jdbcType="BIGINT" />
+    <result column="sku" property="sku" jdbcType="VARCHAR" />
+    <result column="sp_spec_type" property="spSpecType" jdbcType="TINYINT" />
+    <result column="sp_spec_value" property="spSpecValue" jdbcType="VARCHAR" typeHandler="com.d1m.wechat.util.mybatis.JsonTypeHandler" />
+    <result column="market_price" property="marketPrice" jdbcType="DECIMAL" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="point" property="point" jdbcType="INTEGER" />
+    <result column="stock" property="stock" jdbcType="INTEGER" />
+    <result column="weight" property="weight" jdbcType="DOUBLE" />
+    <result column="volume" property="volume" jdbcType="DOUBLE" />
+    <result column="sp_status" property="spStatus" jdbcType="TINYINT" />
+  </resultMap>
+
+
+  <select id="selectProductList" resultMap="searchResultMap">
+    select a.*,b.id as sale_id,b.on_sale,b.delivery_free,b.delivery_tpl_id,
+    e.`id` as sp_id,
+    e.`sku`,
+    e.`spec_type` as sp_spec_type,
+    e.`spec_value` as sp_spec_value,
+    e.`market_price`,
+    e.`price`,
+    e.`point`,
+    e.`stock`,
+    e.`weight`,
+    e.`volume`,
+    e.`status` as sp_status
+    from estore_product a
+    left join estore_product_sale b on a.id=b.product_id
+    left join estore_product_spec e on a.id=e.product_id
+    <where>
+      a.wechat_id = #{wechatId}
+      <if test="pId != null">
+        and a.`id` = #{pId}
+      </if>
+      <if test="specId != null">
+        and e.`id` = #{specId}
+      </if>
+      <if test="name != null">
+        and a.`name` LIKE concat('%',#{name},'%')
+      </if>
+      <if test="desc != null">
+        and a.`description` LIKE concat('%',#{desc},'%')
+      </if>
+      <if test="sku != null">
+        and e.sku = '#{sku}'
+      </if>
+      <if test="status != null">
+        and a.status = #{status}
+      </if>
+    </where>
+  </select>
+</mapper>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.d1m.wechat.mapper.EstoreProductCategoryMapper" >
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.EstoreProductCategory" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <result column="product_sale_id" property="productSaleId" jdbcType="BIGINT" />
+    <result column="category_id" property="categoryId" jdbcType="BIGINT" />
+    <result column="wechat_id" property="wechatId" jdbcType="BIGINT" />
+  </resultMap>
+</mapper>
