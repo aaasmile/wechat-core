@@ -194,20 +194,10 @@
 			</if>
 			<if test="isOnline != null">
 				<if test="isOnline == true">
-					<if test="daytime == null">
-						and (m.is_subscribe = 1 and now() <![CDATA[ <= ]]> DATE_ADD(m.last_conversation_at, INTERVAL 48 DAY_HOUR))
-					</if>
-					<if test="daytime != null">
-						and (m.is_subscribe = 1 and m.last_conversation_at &gt;= #{daytime})
-					</if>
+					and (m.is_subscribe = 1 and now() <![CDATA[ <= ]]> DATE_ADD(m.last_conversation_at, INTERVAL 48 DAY_HOUR))
 				</if>
 				<if test="isOnline == false">
-					<if test="daytime == null">
-						and (m.is_subscribe = 0 or m.last_conversation_at is null or (m.is_subscribe = 1 and now() <![CDATA[ > ]]> DATE_ADD(m.last_conversation_at, INTERVAL 48 DAY_HOUR)))
-					</if>
-					<if test="daytime != null">
-						and (m.is_subscribe = 0 or m.last_conversation_at is null or (m.is_subscribe = 1 and m.last_conversation_at &lt; #{daytime}))
-					</if>
+					and (m.is_subscribe = 0 or m.last_conversation_at is null or (m.is_subscribe = 1 and now() <![CDATA[ > ]]> DATE_ADD(m.last_conversation_at, INTERVAL 48 DAY_HOUR)))
 				</if>
 			</if>
 			<if test="memberTags != null and memberTags.length &gt; 0">
