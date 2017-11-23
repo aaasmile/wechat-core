@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.dto.MiniProgramDto;
+import com.d1m.wechat.model.Material;
 import com.d1m.wechat.pamametermodel.MaterialModel;
 import com.d1m.wechat.pamametermodel.MiniProgramModel;
 import com.d1m.wechat.service.MaterialService;
@@ -47,8 +48,8 @@ public class MaterialMiniProgramController extends BaseController {
     @RequestMapping(method = RequestMethod.POST)
     @RequiresPermissions("app-msg:list")
     public JSONObject create(@ApiParam("小程序素材") @RequestBody MaterialModel materialModel) {
-        materialService.createMiniProgram(getUser().getId(), getWechatId(), materialModel);
-        return representation(Message.MATERIAL_MINI_PROGRAM_CREATE_SUCCESS);
+        Material material = materialService.createMiniProgram(getUser().getId(), getWechatId(), materialModel);
+        return representation(Message.MATERIAL_MINI_PROGRAM_CREATE_SUCCESS, material);
     }
 
     @ApiOperation(value = "更新小程序", tags = "小程序接口")
