@@ -44,7 +44,7 @@ public class MaterialMiniProgramController extends BaseController {
 
     @ApiOperation(value = "创建小程序", tags = "小程序接口")
     @ApiResponse(code = 200, message = "创建小程序成功")
-    @RequestMapping(value = "{id}", method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST)
     @RequiresPermissions("app-msg:list")
     public JSONObject create(@ApiParam("小程序素材") @RequestBody MaterialModel materialModel) {
         materialService.createMiniProgram(getUser().getId(), getWechatId(), materialModel);
@@ -61,8 +61,8 @@ public class MaterialMiniProgramController extends BaseController {
     }
 
     @ApiOperation(value = "查询小程序", tags = "小程序接口")
-    @ApiResponse(code = 200, message = "更新小程序成功")
-    @RequestMapping(method = RequestMethod.POST)
+    @ApiResponse(code = 200, message = "查询小程序成功")
+    @RequestMapping(value = "/list", method = RequestMethod.POST)
     @RequiresPermissions("app-msg:list")
     public JSONObject search(@ApiParam("小程序素材") @RequestBody MiniProgramModel miniProgramModel) {
         Page<MiniProgramDto> data = materialService.searchMiniProgram(miniProgramModel, true);
