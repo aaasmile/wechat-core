@@ -4,14 +4,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.annotation.Resource;
 
-import com.d1m.wechat.component.FileUploadConfig;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.common.Mapper;
 
 import cn.d1m.wechat.client.model.WxArticle;
@@ -19,50 +19,49 @@ import cn.d1m.wechat.client.model.WxMaterial;
 import cn.d1m.wechat.client.model.WxMedia;
 import cn.d1m.wechat.client.model.WxMessage;
 import cn.d1m.wechat.client.model.common.WxHolder;
-import com.d1m.wechat.wechatclient.WechatClientDelegate;
+import com.d1m.wechat.component.FileUploadConfig;
 import com.d1m.wechat.controller.file.Upload;
 import com.d1m.wechat.dto.ImageTextDto;
 import com.d1m.wechat.dto.MaterialDto;
+import com.d1m.wechat.dto.MiniProgramDto;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.MaterialImageTextDetailMapper;
 import com.d1m.wechat.mapper.MaterialMapper;
-import com.d1m.wechat.model.Material;
-import com.d1m.wechat.model.MaterialImageTextDetail;
-import com.d1m.wechat.model.Member;
-import com.d1m.wechat.model.User;
+import com.d1m.wechat.mapper.MaterialMiniProgramMapper;
+import com.d1m.wechat.model.*;
 import com.d1m.wechat.model.enums.MaterialStatus;
 import com.d1m.wechat.model.enums.MaterialType;
-import com.d1m.wechat.pamametermodel.ConversationModel;
-import com.d1m.wechat.pamametermodel.ImageModel;
-import com.d1m.wechat.pamametermodel.ImageTextModel;
-import com.d1m.wechat.pamametermodel.MaterialModel;
+import com.d1m.wechat.pamametermodel.*;
 import com.d1m.wechat.service.ConversationService;
 import com.d1m.wechat.service.MaterialService;
 import com.d1m.wechat.service.MemberService;
 import com.d1m.wechat.util.HtmlUtils;
 import com.d1m.wechat.util.Message;
 import com.d1m.wechat.util.ParamUtil;
+import com.d1m.wechat.wechatclient.WechatClientDelegate;
 
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
 
 @Service
-public class MaterialServiceImpl extends BaseService<Material> implements
-		MaterialService {
+public class MaterialServiceImpl extends BaseService<Material> implements MaterialService {
 
-	@Autowired
-	private MaterialMapper materialMapper;
+	@Resource
+    private MaterialMapper materialMapper;
 
-	@Autowired
-	private MaterialImageTextDetailMapper materialImageTextDetailMapper;
+    @Resource
+    private MaterialImageTextDetailMapper materialImageTextDetailMapper;
 
-	@Autowired
-	private MemberService memberService;
-	
-	@Autowired
-	private ConversationService conversationService;
+    @Resource
+    private MaterialMiniProgramMapper materialMiniProgramMapper;
 
-	public void setMaterialMapper(MaterialMapper materialMapper) {
+    @Resource
+    private MemberService memberService;
+
+    @Resource
+    private ConversationService conversationService;
+
+    public void setMaterialMapper(MaterialMapper materialMapper) {
 		this.materialMapper = materialMapper;
 	}
 
@@ -147,7 +146,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements
 		return material;
 	}
 
-	@Override
+    @Override
 	public Material createMaterialImage(Integer wechatId, User user,
 			Upload upload) throws WechatException {
 		notBlank(upload.getAccessPath(), Message.MATERIAL_IMAGE_NOT_BLANK);
@@ -676,4 +675,87 @@ public class MaterialServiceImpl extends BaseService<Material> implements
 			throw new WechatException(Message.WEIXIN_HTTPS_REQUEST_ERROR);
 		}
 	}
+
+    @Override
+    @Transactional
+    public Material createMiniProgram(Integer userId, Integer wechatId, MaterialModel materialModel) {
+        Material material = new Material();
+        material.setCreatedAt(new Date());
+        material.setCreatorId(userId);
+        material.setMaterialType(MaterialType.VIDEO.getValue());
+
+        MiniProgramModel miniProgramModel = materialModel.getMiniProgram();
+        material.setName(miniProgramModel.getTitle());
+        material.setStatus(MaterialStatus.INUSED.getValue());
+        material.setWechatId(wechatId);
+
+        materialMapper.insert(material);
+
+        MaterialMiniProgram materialMiniProgram = new MaterialMiniProgram();
+        // 小程序的属性
+        materialMiniProgram.setAppid(miniProgramModel.getAppid());
+        materialMiniProgram.setTitle(miniProgramModel.getTitle());
+        materialMiniProgram.setPagepath(miniProgramModel.getPagepath());
+        materialMiniProgram.setThumbMediaId(miniProgramModel.getThumbMediaId());
+        // 素材相关属性
+        materialMiniProgram.setId(material.getId());
+        materialMiniProgram.setWechatId(material.getWechatId());
+        materialMiniProgram.setCreatedAt(material.getCreatedAt());
+        materialMiniProgram.setCreatorId(material.getCreatorId());
+        materialMiniProgram.setStatus(material.getStatus());
+        materialMiniProgramMapper.insert(materialMiniProgram);
+
+        return material;
+    }
+
+    @Override
+    public int updateMiniProgram(Integer userId, Integer wechatId, MaterialModel materialModel) {
+        MiniProgramModel miniProgramModel = materialModel.getMiniProgram();
+        MaterialMiniProgram materialMiniProgram = materialMiniProgramMapper.selectByPrimaryKey(miniProgramModel.getId());
+        if (materialMiniProgram == null) {
+            return 0;
+        }
+        materialMiniProgram.setAppid(miniProgramModel.getAppid());
+        materialMiniProgram.setTitle(miniProgramModel.getTitle());
+        materialMiniProgram.setPagepath(miniProgramModel.getPagepath());
+        materialMiniProgram.setThumbMediaId(miniProgramModel.getThumbMediaId());
+
+        int ret = materialMiniProgramMapper.updateByPrimaryKeySelective(materialMiniProgram);
+
+        Material material = materialMapper.selectByPrimaryKey(materialMiniProgram.getMaterialId());
+        Material updateMaterial = new Material();
+        updateMaterial.setId(material.getId());
+        updateMaterial.setModifyById(userId);
+        updateMaterial.setModifyAt(new Date());
+        materialMapper.updateByPrimaryKeySelective(updateMaterial);
+        return ret;
+    }
+
+    @Override
+    public int deleteMiniProgram(Integer userId, Integer wechatId, Integer miniProgramId) {
+        MaterialMiniProgram materialMiniProgram = materialMiniProgramMapper.selectByPrimaryKey(miniProgramId);
+        if (materialMiniProgram == null) {
+            return 0;
+        }
+        MaterialMiniProgram update = new MaterialMiniProgram();
+        update.setId(materialMiniProgram.getId());
+        update.setStatus(MaterialStatus.INUSED.getValue());
+        int ret = materialMiniProgramMapper.updateByPrimaryKeySelective(update);
+
+        Material material = materialMapper.selectByPrimaryKey(materialMiniProgram.getMaterialId());
+        Material updateMaterial = new Material();
+        updateMaterial.setId(material.getId());
+        updateMaterial.setModifyById(userId);
+        updateMaterial.setModifyAt(new Date());
+        updateMaterial.setStatus(MaterialStatus.INUSED.getValue());
+        materialMapper.updateByPrimaryKeySelective(updateMaterial);
+        return ret;
+    }
+
+    @Override
+    public Page<MiniProgramDto> searchMiniProgram(MiniProgramModel miniProgramModel, boolean queryCount) {
+        PageHelper.startPage(miniProgramModel.getPageNum(), miniProgramModel.getPageSize(), queryCount);
+        return materialMapper.searchMiniProgram(miniProgramModel);
+    }
+
 }
