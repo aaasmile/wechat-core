@@ -682,7 +682,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         Material material = new Material();
         material.setCreatedAt(new Date());
         material.setCreatorId(userId);
-        material.setMaterialType(MaterialType.VIDEO.getValue());
+        material.setMaterialType(MaterialType.MINI_PROGRAM.getValue());
 
         MiniProgramModel miniProgramModel = materialModel.getMiniProgram();
         material.setName(miniProgramModel.getTitle());
@@ -698,7 +698,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         materialMiniProgram.setPagepath(miniProgramModel.getPagepath());
         materialMiniProgram.setThumbMediaId(miniProgramModel.getThumbMediaId());
         // 素材相关属性
-        materialMiniProgram.setId(material.getId());
+        materialMiniProgram.setMaterialId(material.getId());
         materialMiniProgram.setWechatId(material.getWechatId());
         materialMiniProgram.setCreatedAt(material.getCreatedAt());
         materialMiniProgram.setCreatorId(material.getCreatorId());

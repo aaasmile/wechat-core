@@ -20,6 +20,7 @@ public enum MaterialType {
 
 	OFFLINEACTIVITYIMAGE((byte) 9, "线下活动图片"),
 
+    MINI_PROGRAM((byte) 10, "小程序"),
 	;
 
 	private byte value;
