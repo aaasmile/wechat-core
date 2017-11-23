@@ -1,47 +1,49 @@
 package com.d1m.wechat.controller;
 
 import java.util.Locale;
-
-import javax.servlet.http.Cookie;
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSONObject;
-
-import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.d1m.wechat.model.User;
-import com.d1m.wechat.service.MemberProfileService;
-import com.d1m.wechat.service.MemberService;
 import com.d1m.wechat.service.WechatService;
 import com.d1m.wechat.util.Message;
 import com.d1m.wechat.util.MessageUtil;
 
 public class BaseController {
 
-    @Autowired
-    private MemberProfileService memberProfileService;
-
-    @Autowired
-    private MemberService memberService;
-
-    @Autowired
+    @Resource
     private WechatService wechatService;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Deprecated
     protected Integer getWechatId(HttpSession session) {
-        User user = getUser(session);
-        return user.getWechatId();
+        return getWechatId();
     }
 
+    @Deprecated
     protected User getUser(HttpSession session) {
+        return getUser();
+    }
+
+    @Deprecated
+    protected Integer getCompanyId(HttpSession session) {
+        return getCompanyId();
+    }
+
+    protected Integer getWechatId() {
+        return getUser().getWechatId();
+    }
+
+    protected User getUser() {
         Subject subject = SecurityUtils.getSubject();
         User user = (User) subject.getPrincipal();
         Integer wechatId = (Integer)subject.getSession().getAttribute("CURRENT_WECHAT");
@@ -51,27 +53,17 @@ public class BaseController {
         return user;
     }
 
-    protected Integer getCompanyId(HttpSession session) {
-        User user = getUser(session);
-        return user.getCompanyId();
-    }
-
-    protected Integer getWechatId() {
-        return getWechatId(null);
-    }
-
-    protected User getUser() {
-        return getUser(null);
-    }
-
     protected Integer getCompanyId() {
-        return getCompanyId(null);
+        return getUser().getCompanyId();
     }
 
+    @Deprecated
     protected Integer getIsSystemRole(HttpSession session) {
-        User user = getUser(session);
+        return getIsSystemRole();
+    }
 
-        return wechatService.getIsSystemRole(user);
+    protected Integer getIsSystemRole() {
+        return wechatService.getIsSystemRole(getUser());
     }
 
     protected MessageUtil getMessageUtil() {
@@ -123,19 +115,6 @@ public class BaseController {
         json.put("msg", msg);
         logger.error("[" + resultCode + "]" + msg, e);
         return json;
-    }
-
-    public static String getCookie(HttpServletRequest request, String name) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null || cookies.length == 0) {
-            return null;
-        }
-        for (Cookie cookie : cookies) {
-            if (StringUtils.equals(cookie.getName(), name)) {
-                return cookie.getValue();
-            }
-        }
-        return null;
     }
 
     public Locale getLocale(HttpServletRequest request) {

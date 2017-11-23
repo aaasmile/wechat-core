@@ -109,3 +109,49 @@ ALTER TABLE `mass_conversation_batch_result`
 ALTER TABLE `mass_conversation_result`
   ADD COLUMN `errcode`  varchar(20) NULL AFTER `msg_data_id`,
   ADD COLUMN `errmsg`  varchar(100) NULL AFTER `errcode`;
+
+-- 2017-11-16 添加用户权限表
+create table user_function
+(
+    id int auto_increment comment '主键ID' primary key,
+    user_id int null comment '用户ID',
+    function_id int null comment '功能ID',
+    created_at datetime not null comment '创建时间',
+    creator_id int null comment '创建用户ID',
+    constraint user_function_user_id_fk
+    foreign key (user_id) references user (id),
+    constraint user_function_function_id_fk
+    foreign key (function_id) references function (id)
+)
+;
+
+create index function_id
+    on user_function (function_id)
+;
+
+create index user_id
+    on user_function (user_id)
+;
+# DROP TABLE material_mini_program;
+-- 2017-11-21 添加小程序
+CREATE TABLE material_mini_program
+(
+    id INT AUTO_INCREMENT COMMENT '主键ID' PRIMARY KEY,
+    material_id INT NULL COMMENT '素材ID',
+    wechat_id INT NOT NULL COMMENT '公众号ID',
+    title VARCHAR(50) NULL COMMENT '小程序的标题',
+    appid VARCHAR(50) NULL COMMENT '小程序的appid',
+    pagepath VARCHAR(50) NULL COMMENT '小程序的页面路径',
+    thumb_media_id VARCHAR(50) NULL COMMENT '小程序卡片图片的媒体ID',
+    creator_id INT(11) NOT NULL,
+    created_at DATETIME NOT NULL,
+    status TINYINT(4) DEFAULT '1',
+    CONSTRAINT material_mini_program_material_id_fk
+    FOREIGN KEY (material_id) REFERENCES material (id),
+    CONSTRAINT material_mini_program_wechat_id_fk
+    FOREIGN KEY (wechat_id) REFERENCES wechat (id)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci
+    COMMENT '小程序素材';
+
+
+

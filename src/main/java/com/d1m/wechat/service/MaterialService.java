@@ -1,7 +1,10 @@
 package com.d1m.wechat.service;
 
+import com.github.pagehelper.Page;
+
 import com.d1m.wechat.controller.file.Upload;
 import com.d1m.wechat.dto.MaterialDto;
+import com.d1m.wechat.dto.MiniProgramDto;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.model.Material;
 import com.d1m.wechat.model.MaterialImageTextDetail;
@@ -9,7 +12,7 @@ import com.d1m.wechat.model.User;
 import com.d1m.wechat.pamametermodel.ImageModel;
 import com.d1m.wechat.pamametermodel.ImageTextModel;
 import com.d1m.wechat.pamametermodel.MaterialModel;
-import com.github.pagehelper.Page;
+import com.d1m.wechat.pamametermodel.MiniProgramModel;
 
 public interface MaterialService extends IService<Material> {
 
@@ -82,4 +85,8 @@ public interface MaterialService extends IService<Material> {
 
 	//Material createOfflineImage(Integer wechatId, User user, Upload upload);
 
+    Material createMiniProgram(Integer userId, Integer wechatId, MaterialModel materialModel);
+    int updateMiniProgram(Integer userId, Integer wechatId, MaterialModel materialModel);
+    int deleteMiniProgram(Integer userId, Integer wechatId, Integer miniProgramId);
+    Page<MiniProgramDto> searchMiniProgram(MiniProgramModel miniProgramModel, boolean queryCount);
 }
