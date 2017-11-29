@@ -26,6 +26,10 @@ public class MiniProgramDto {
 
     private String pagepath;
 
+    private Integer coverMaterialId;
+
+    private String coverMaterialUrl;
+
     private String thumbMediaId;
 
     private Integer creatorId;
