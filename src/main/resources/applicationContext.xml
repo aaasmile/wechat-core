@@ -147,8 +147,6 @@
 
     <bean id="appContextUtils" class="com.d1m.wechat.util.AppContextUtils"/>
 
-    <bean id="taskContext" class="com.d1m.wechat.service.engine.EngineContext"/>
-
     <!--<bean id="initDataService" class="com.d1m.wechat.service.InitDataService"/>-->
 
     <!-- Spring线程池管理 -->
