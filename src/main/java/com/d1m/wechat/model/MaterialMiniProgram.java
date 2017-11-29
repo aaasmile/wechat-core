@@ -40,6 +40,12 @@ public class MaterialMiniProgram {
     private String pagepath;
 
     /**
+     * 小程序卡片图片的素材ID
+     */
+    @Column(name = "cover_material_id")
+    private Integer coverMaterialId;
+
+    /**
      * 小程序卡片图片的媒体ID
      */
     @Column(name = "thumb_media_id")
@@ -219,5 +225,13 @@ public class MaterialMiniProgram {
      */
     public void setStatus(Byte status) {
         this.status = status;
+    }
+
+    public Integer getCoverMaterialId() {
+        return coverMaterialId;
+    }
+
+    public void setCoverMaterialId(Integer coverMaterialId) {
+        this.coverMaterialId = coverMaterialId;
     }
 }

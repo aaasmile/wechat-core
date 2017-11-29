@@ -66,6 +66,7 @@ public class MaterialMiniProgramController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @RequiresPermissions("app-msg:list")
     public JSONObject search(@ApiParam("小程序素材") @RequestBody MiniProgramModel miniProgramModel) {
+        miniProgramModel.setWechatId(getWechatId());
         Page<MiniProgramDto> data = materialService.searchMiniProgram(miniProgramModel, true);
         return representation(Message.MATERIAL_MINI_PROGRAM_SEARCH_SUCCESS, data);
     }
