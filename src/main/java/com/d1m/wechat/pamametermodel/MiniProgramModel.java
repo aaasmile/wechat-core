@@ -32,6 +32,9 @@ public class MiniProgramModel extends BaseModel {
     @ApiModelProperty("小程序的页面路径")
     private String pagepath;
 
+    @ApiModelProperty("小程序卡片图片的素材ID")
+    private Integer coverMaterialId;
+
     @ApiModelProperty("小程序卡片图片的媒体ID")
     private String thumbMediaId;
 

@@ -137,11 +137,12 @@ create index user_id
 CREATE TABLE material_mini_program
 (
     id INT AUTO_INCREMENT COMMENT '主键ID' PRIMARY KEY,
-    material_id INT NULL COMMENT '素材ID',
+    material_id INT NOT NULL COMMENT '素材ID',
     wechat_id INT NOT NULL COMMENT '公众号ID',
-    title VARCHAR(50) NULL COMMENT '小程序的标题',
-    appid VARCHAR(50) NULL COMMENT '小程序的appid',
-    pagepath VARCHAR(50) NULL COMMENT '小程序的页面路径',
+    title VARCHAR(50) NOT NULL COMMENT '小程序的标题',
+    appid VARCHAR(50) NOT NULL COMMENT '小程序的appid',
+    pagepath VARCHAR(50) NOT NULL COMMENT '小程序的页面路径',
+    cover_material_id INT NOT NULL COMMENT '素材ID',
     thumb_media_id VARCHAR(50) NULL COMMENT '小程序卡片图片的媒体ID',
     creator_id INT(11) NOT NULL,
     created_at DATETIME NOT NULL,
@@ -149,9 +150,9 @@ CREATE TABLE material_mini_program
     CONSTRAINT material_mini_program_material_id_fk
     FOREIGN KEY (material_id) REFERENCES material (id),
     CONSTRAINT material_mini_program_wechat_id_fk
-    FOREIGN KEY (wechat_id) REFERENCES wechat (id)
+    FOREIGN KEY (wechat_id) REFERENCES wechat (id),
+    CONSTRAINT material_mini_program_cover_material_id_fk
+    FOREIGN KEY (cover_material_id) REFERENCES material (id)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci
     COMMENT '小程序素材';
-
-
 

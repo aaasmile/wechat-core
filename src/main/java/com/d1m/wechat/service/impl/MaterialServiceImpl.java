@@ -696,6 +696,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         materialMiniProgram.setAppid(miniProgramModel.getAppid());
         materialMiniProgram.setTitle(miniProgramModel.getTitle());
         materialMiniProgram.setPagepath(miniProgramModel.getPagepath());
+        materialMiniProgram.setCoverMaterialId(miniProgramModel.getCoverMaterialId());
         materialMiniProgram.setThumbMediaId(miniProgramModel.getThumbMediaId());
         // 素材相关属性
         materialMiniProgram.setMaterialId(material.getId());
@@ -718,6 +719,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         materialMiniProgram.setAppid(miniProgramModel.getAppid());
         materialMiniProgram.setTitle(miniProgramModel.getTitle());
         materialMiniProgram.setPagepath(miniProgramModel.getPagepath());
+        materialMiniProgram.setCoverMaterialId(miniProgramModel.getCoverMaterialId());
         materialMiniProgram.setThumbMediaId(miniProgramModel.getThumbMediaId());
 
         int ret = materialMiniProgramMapper.updateByPrimaryKeySelective(materialMiniProgram);
