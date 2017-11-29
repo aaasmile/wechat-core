@@ -68,6 +68,8 @@ public class MaterialMiniProgramController extends BaseController {
     public JSONObject search(@ApiParam("小程序素材") @RequestBody MiniProgramModel miniProgramModel) {
         miniProgramModel.setWechatId(getWechatId());
         Page<MiniProgramDto> data = materialService.searchMiniProgram(miniProgramModel, true);
-        return representation(Message.MATERIAL_MINI_PROGRAM_SEARCH_SUCCESS, data);
+        return representation(Message.MATERIAL_MINI_PROGRAM_SEARCH_SUCCESS,
+                              data, miniProgramModel.getPageSize(),
+                              miniProgramModel.getPageNum(), data.getTotal());
     }
 }
