@@ -11,7 +11,7 @@
     <result column="title" property="title" jdbcType="VARCHAR" />
     <result column="appid" property="appid" jdbcType="VARCHAR" />
     <result column="pagepath" property="pagepath" jdbcType="VARCHAR" />
-    <result column="thumb_media_id" property="thumbMediaId" jdbcType="VARCHAR" />
+    <result column="thumb_material_id" property="thumbMaterialId" jdbcType="VARCHAR" />
     <result column="creator_id" property="creatorId" jdbcType="INTEGER" />
     <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
     <result column="status" property="status" jdbcType="TINYINT" />

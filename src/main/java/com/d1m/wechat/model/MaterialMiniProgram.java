@@ -42,14 +42,8 @@ public class MaterialMiniProgram {
     /**
      * 小程序卡片图片的素材ID
      */
-    @Column(name = "cover_material_id")
-    private Integer coverMaterialId;
-
-    /**
-     * 小程序卡片图片的媒体ID
-     */
-    @Column(name = "thumb_media_id")
-    private String thumbMediaId;
+    @Column(name = "thumb_material_id")
+    private Integer thumbMaterialId;
 
     @Column(name = "creator_id")
     private Integer creatorId;
@@ -168,24 +162,6 @@ public class MaterialMiniProgram {
     }
 
     /**
-     * 获取小程序卡片图片的媒体ID
-     *
-     * @return thumb_media_id - 小程序卡片图片的媒体ID
-     */
-    public String getThumbMediaId() {
-        return thumbMediaId;
-    }
-
-    /**
-     * 设置小程序卡片图片的媒体ID
-     *
-     * @param thumbMediaId 小程序卡片图片的媒体ID
-     */
-    public void setThumbMediaId(String thumbMediaId) {
-        this.thumbMediaId = thumbMediaId == null ? null : thumbMediaId.trim();
-    }
-
-    /**
      * @return creator_id
      */
     public Integer getCreatorId() {
@@ -227,11 +203,11 @@ public class MaterialMiniProgram {
         this.status = status;
     }
 
-    public Integer getCoverMaterialId() {
-        return coverMaterialId;
+    public Integer getThumbMaterialId() {
+        return thumbMaterialId;
     }
 
-    public void setCoverMaterialId(Integer coverMaterialId) {
-        this.coverMaterialId = coverMaterialId;
+    public void setThumbMaterialId(Integer thumbMaterialId) {
+        this.thumbMaterialId = thumbMaterialId;
     }
 }
