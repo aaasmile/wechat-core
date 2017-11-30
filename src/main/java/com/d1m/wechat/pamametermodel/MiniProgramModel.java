@@ -35,9 +35,6 @@ public class MiniProgramModel extends BaseModel {
     @ApiModelProperty("小程序卡片图片的素材ID")
     private Integer coverMaterialId;
 
-    @ApiModelProperty("小程序卡片图片的媒体ID")
-    private String thumbMediaId;
-
     private Integer creatorId;
 
     private Date createdAt;

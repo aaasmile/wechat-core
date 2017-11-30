@@ -143,7 +143,6 @@ CREATE TABLE material_mini_program
     appid VARCHAR(50) NOT NULL COMMENT '小程序的appid',
     pagepath VARCHAR(50) NOT NULL COMMENT '小程序的页面路径',
     cover_material_id INT NOT NULL COMMENT '素材ID',
-    thumb_media_id VARCHAR(50) NULL COMMENT '小程序卡片图片的媒体ID',
     creator_id INT(11) NOT NULL,
     created_at DATETIME NOT NULL,
     status TINYINT(4) DEFAULT '1',
@@ -156,3 +155,8 @@ CREATE TABLE material_mini_program
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci
     COMMENT '小程序素材';
 
+
+CREATE VIEW material_mini_program_view AS
+    SELECT mp.*, mc.pic_url as cover_material_url, mc.media_id as thumb_media_id
+    FROM material_mini_program mp
+        LEFT JOIN material mc ON mp.cover_material_id = mc.id;
