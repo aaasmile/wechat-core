@@ -135,8 +135,7 @@
   </resultMap>
 
     <select id="searchMiniProgram" parameterType="com.d1m.wechat.pamametermodel.MiniProgramModel" resultMap="MiniProgramResultMap">
-        SELECT mp.*, mc.id as cover_material_id, mc.pic_url as cover_material_url FROM material_mini_program mp
-        LEFT JOIN material mc ON mp.cover_material_id = mc.id
+        SELECT mp.* FROM material_mini_program_view mp
         <where>
             mp.status = 1 and mp.wechat_id = #{wechatId,jdbcType=INTEGER}
             <if test="title != null">
