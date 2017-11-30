@@ -150,8 +150,8 @@
     <resultMap id="MiniProgramResultMap" type="com.d1m.wechat.dto.MiniProgramDto">
         <result column="material_id" jdbcType="INTEGER" property="materialId"/>
         <result column="wechat_id" jdbcType="INTEGER" property="wechatId"/>
-        <result column="cover_material_id" jdbcType="VARCHAR" property="coverMaterialId"/>
-        <result column="cover_material_url" jdbcType="VARCHAR" property="coverMaterialUrl"/>
+        <result column="thumb_material_id" jdbcType="VARCHAR" property="thumbMaterialId"/>
+        <result column="thumb_url" jdbcType="VARCHAR" property="thumbUrl"/>
         <result column="thumb_media_id" jdbcType="VARCHAR" property="thumbMediaId"/>
         <result column="creator_id" jdbcType="INTEGER" property="creatorId"/>
         <result column="created_at" jdbcType="TIMESTAMP" property="createdAt"/>

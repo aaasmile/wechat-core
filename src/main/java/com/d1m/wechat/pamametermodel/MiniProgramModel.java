@@ -33,7 +33,7 @@ public class MiniProgramModel extends BaseModel {
     private String pagepath;
 
     @ApiModelProperty("小程序卡片图片的素材ID")
-    private Integer coverMaterialId;
+    private Integer thumbMaterialId;
 
     private Integer creatorId;
 
