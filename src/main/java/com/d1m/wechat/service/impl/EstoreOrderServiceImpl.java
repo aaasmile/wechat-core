@@ -7,6 +7,8 @@ import com.d1m.wechat.pamametermodel.*;
 import com.d1m.wechat.service.IEstoreOrderService;
 import com.d1m.wechat.service.IEstoreProductService;
 import com.d1m.wechat.util.DateUtil;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.impl.cookie.DateUtils;
 import org.slf4j.Logger;
@@ -34,120 +36,105 @@ public class EstoreOrderServiceImpl implements IEstoreOrderService {
     private EstoreConfigMapper estoreConfigMapper;
 
     @Override
-    public List<EstoreOrderEntity> selectOrderList(EstoreOrderSearch estoreOrderSearch) {
+    public Page<EstoreOrderEntity> selectOrderList(EstoreOrderSearch estoreOrderSearch) {
+        PageHelper.startPage(estoreOrderSearch.getPageNum(), estoreOrderSearch.getPageSize(), true);
         List<EstoreOrderListResult> listEstoreOrderListResult = estoreOrderMapper.selectOrderList(estoreOrderSearch);
+        List<EstoreOrderEntity> listEstoreOrderEntity = new Page<>();
         EstoreOrderEntity estoreOrderEntity;
-        List<EstoreOrderEntity> listEstoreOrderEntity = new ArrayList<>();
-        HashMap<Long, EstoreOrderEntity> mapEstoreOrderEntity = new HashMap<>();
-        HashMap<Long, List<EstoreOrderProductEntity>> mapEstoreOrderProductEntity = new HashMap<>();
         for (EstoreOrderListResult result : listEstoreOrderListResult) {
             Long orderId = result.getId();
             Long wechatId = result.getWechatId();
-            if (!mapEstoreOrderEntity.containsKey(orderId)) {
-                estoreOrderEntity = new EstoreOrderEntity();
-                estoreOrderEntity.setId(orderId);
-                estoreOrderEntity.setOrderNo(result.getOrderNo());
-                estoreOrderEntity.setMemberId(result.getMemberId());
-                estoreOrderEntity.setTotalPoint(result.getTotalPoint());
-                estoreOrderEntity.setTotalAmount(result.getTotalAmount());
-                estoreOrderEntity.setProductAmount(result.getProductAmount());
-                estoreOrderEntity.setDeliveryFee(result.getDeliveryFee());
-                estoreOrderEntity.setDiscount(result.getDiscount());
-                estoreOrderEntity.setPayStatus(result.getPayStatus());
-                estoreOrderEntity.setStatus(result.getStatus());
-                estoreOrderEntity.setRemark(result.getRemark());
-                estoreOrderEntity.setDeliveryType(result.getDeliveryType());
-                estoreOrderEntity.setDeliveryExt(result.getDeliveryExt());
-                estoreOrderEntity.setDeliveryName(result.getDeliveryName());
-                estoreOrderEntity.setDeliveryPhone(result.getDeliveryPhone());
-                estoreOrderEntity.setDeliveryOtherPhone(result.getDeliveryOtherPhone());
-                estoreOrderEntity.setDeliveryProvince(result.getDeliveryProvince());
-                estoreOrderEntity.setDeliveryCity(result.getDeliveryCity());
-                estoreOrderEntity.setDeliveryDistrict(result.getDeliveryDistrict());
-                estoreOrderEntity.setDeliveryAddress(result.getDeliveryAddress());
-                estoreOrderEntity.setExpressNo(result.getExpressNo());
-                estoreOrderEntity.setNeedInvoice(result.getNeedInvoice());
-                estoreOrderEntity.setInvoiceType(result.getInvoiceType());
-                estoreOrderEntity.setInvoiceTitle(result.getInvoiceTitle());
-                estoreOrderEntity.setInvoiceTaxNo(result.getInvoiceTaxNo());
-                estoreOrderEntity.setInvoiceContent(result.getInvoiceContent());
-                estoreOrderEntity.setInvoiceDeliveryType(result.getInvoiceDeliveryType());
-                estoreOrderEntity.setInvoiceName(result.getInvoiceName());
-                estoreOrderEntity.setInvoicePhone(result.getInvoicePhone());
-                estoreOrderEntity.setInvoiceProvince(result.getInvoiceProvince());
-                estoreOrderEntity.setInvoiceCity(result.getInvoiceCity());
-                estoreOrderEntity.setInvoiceDistrict(result.getInvoiceDistrict());
-                estoreOrderEntity.setInvoiceAddress(result.getInvoiceAddress());
-                estoreOrderEntity.setNeedGift(result.getNeedGift());
-                estoreOrderEntity.setGiftContent(result.getGiftContent());
-                estoreOrderEntity.setCreateAt(DateUtil.formatYYYYMMDDHHMMSS(result.getCreateAt()));
-                estoreOrderEntity.setUpdateAt(DateUtil.formatYYYYMMDDHHMMSS(result.getUpdateAt()));
-                estoreOrderEntity.setWechatId(result.getWechatId());
-                EstoreOrderPay estoreOrderPay = new EstoreOrderPay();
-                estoreOrderPay.setOrderId(orderId);
-                estoreOrderPay.setWechatId(wechatId);
-                estoreOrderPay = estoreOrderPayMapper.selectOne(estoreOrderPay);
-                if (estoreOrderPay != null && estoreOrderPay.getPaymentId() != null) {
-                    EstorePayment estorePayment = estorePaymentMapper.selectByPrimaryKey(estoreOrderPay.getPaymentId());
-                    estoreOrderEntity.setPayType(estorePayment.getCode());
-                    estoreOrderEntity.setPaymentId(estorePayment.getId());
-                    estoreOrderEntity.setPayTime(DateUtil.formatYYYYMMDDHHMMSS(estoreOrderPay.getCreateAt()));
-                } else {
-                    estoreOrderEntity.setPayType("");
-                    estoreOrderEntity.setPayTime("");
-                    estoreOrderEntity.setPaymentId(0L);
-                }
-                mapEstoreOrderEntity.put(orderId, estoreOrderEntity);
-            }
-
-            EstoreOrderProductEntity estoreOrderProductEntity;
-            estoreOrderProductEntity = new EstoreOrderProductEntity();
-            estoreOrderProductEntity.setOrderId(orderId);
-            estoreOrderProductEntity.setProductId(result.getProductId());
-            estoreOrderProductEntity.setProductSpecId(result.getProductSpecId());
-            estoreOrderProductEntity.setPrice(result.getPrice());
-            estoreOrderProductEntity.setPoint(result.getPoint());
-            estoreOrderProductEntity.setQuantity(result.getQuantity());
-            EstoreProductSearch estoreProductSearch = new EstoreProductSearch();
-            estoreProductSearch.setPId(result.getProductId());
-            estoreProductSearch.setSpecId(result.getProductSpecId());
-            estoreProductSearch.setWechatId(result.getWechatId());
-            List<EstoreProductListResult> listEstoreProductListResult = estoreProductMapper.selectProductList(estoreProductSearch);
-            if (listEstoreProductListResult != null && listEstoreProductListResult.size() > 0 ) {
-                EstoreProductListResult productListResult = listEstoreProductListResult.get(0);
-                estoreOrderProductEntity.setProductName(productListResult.getName());
-                estoreOrderProductEntity.setSpSpecType(productListResult.getSpSpecType());
-                estoreOrderProductEntity.setSpSpecValue(productListResult.getSpSpecValue());
-                estoreOrderProductEntity.setExtAttr(productListResult.getExtAttr());
-                estoreOrderProductEntity.setSku(productListResult.getSku());
-                estoreOrderProductEntity.setWeight(productListResult.getWeight());
-                estoreOrderProductEntity.setVolume(productListResult.getVolume());
-            }
-
-            if (!mapEstoreOrderProductEntity.containsKey(orderId)){
-                List<EstoreOrderProductEntity> listOP = new ArrayList<>();
-                listOP.add(estoreOrderProductEntity);
-                mapEstoreOrderProductEntity.put(orderId, listOP);
+            estoreOrderEntity = new EstoreOrderEntity();
+            estoreOrderEntity.setId(orderId);
+            estoreOrderEntity.setOrderNo(result.getOrderNo());
+            estoreOrderEntity.setMemberId(result.getMemberId());
+            estoreOrderEntity.setTotalPoint(result.getTotalPoint());
+            estoreOrderEntity.setTotalAmount(result.getTotalAmount());
+            estoreOrderEntity.setProductAmount(result.getProductAmount());
+            estoreOrderEntity.setDeliveryFee(result.getDeliveryFee());
+            estoreOrderEntity.setDiscount(result.getDiscount());
+            estoreOrderEntity.setPayStatus(result.getPayStatus());
+            estoreOrderEntity.setStatus(result.getStatus());
+            estoreOrderEntity.setRemark(result.getRemark());
+            estoreOrderEntity.setDeliveryType(result.getDeliveryType());
+            estoreOrderEntity.setDeliveryExt(result.getDeliveryExt());
+            estoreOrderEntity.setDeliveryName(result.getDeliveryName());
+            estoreOrderEntity.setDeliveryPhone(result.getDeliveryPhone());
+            estoreOrderEntity.setDeliveryOtherPhone(result.getDeliveryOtherPhone());
+            estoreOrderEntity.setDeliveryProvince(result.getDeliveryProvince());
+            estoreOrderEntity.setDeliveryCity(result.getDeliveryCity());
+            estoreOrderEntity.setDeliveryDistrict(result.getDeliveryDistrict());
+            estoreOrderEntity.setDeliveryAddress(result.getDeliveryAddress());
+            estoreOrderEntity.setExpressNo(result.getExpressNo());
+            estoreOrderEntity.setNeedInvoice(result.getNeedInvoice());
+            estoreOrderEntity.setInvoiceType(result.getInvoiceType());
+            estoreOrderEntity.setInvoiceTitle(result.getInvoiceTitle());
+            estoreOrderEntity.setInvoiceTaxNo(result.getInvoiceTaxNo());
+            estoreOrderEntity.setInvoiceContent(result.getInvoiceContent());
+            estoreOrderEntity.setInvoiceDeliveryType(result.getInvoiceDeliveryType());
+            estoreOrderEntity.setInvoiceName(result.getInvoiceName());
+            estoreOrderEntity.setInvoicePhone(result.getInvoicePhone());
+            estoreOrderEntity.setInvoiceProvince(result.getInvoiceProvince());
+            estoreOrderEntity.setInvoiceCity(result.getInvoiceCity());
+            estoreOrderEntity.setInvoiceDistrict(result.getInvoiceDistrict());
+            estoreOrderEntity.setInvoiceAddress(result.getInvoiceAddress());
+            estoreOrderEntity.setNeedGift(result.getNeedGift());
+            estoreOrderEntity.setGiftContent(result.getGiftContent());
+            estoreOrderEntity.setCreateAt(DateUtil.formatYYYYMMDDHHMMSS(result.getCreateAt()));
+            estoreOrderEntity.setUpdateAt(DateUtil.formatYYYYMMDDHHMMSS(result.getUpdateAt()));
+            estoreOrderEntity.setWechatId(result.getWechatId());
+            EstoreOrderPay estoreOrderPay = new EstoreOrderPay();
+            estoreOrderPay.setOrderId(orderId);
+            estoreOrderPay.setWechatId(wechatId);
+            estoreOrderPay = estoreOrderPayMapper.selectOne(estoreOrderPay);
+            if (estoreOrderPay != null && estoreOrderPay.getPaymentId() != null) {
+                EstorePayment estorePayment = estorePaymentMapper.selectByPrimaryKey(estoreOrderPay.getPaymentId());
+                estoreOrderEntity.setPayType(estorePayment.getCode());
+                estoreOrderEntity.setPaymentId(estorePayment.getId());
+                estoreOrderEntity.setPayTime(DateUtil.formatYYYYMMDDHHMMSS(estoreOrderPay.getCreateAt()));
             } else {
-                mapEstoreOrderProductEntity.get(orderId).add(estoreOrderProductEntity);
+                estoreOrderEntity.setPayType("");
+                estoreOrderEntity.setPayTime("");
+                estoreOrderEntity.setPaymentId(0L);
             }
+            List<EstoreOrderProduct> listOrderProduct = result.getListOrderProduct();
+            List<EstoreOrderProductEntity> listEstoreOrderProductEntity = new ArrayList<>(listOrderProduct.size());
+            EstoreOrderProductEntity estoreOrderProductEntity;
+            for (EstoreOrderProduct estoreOrderProduct : listOrderProduct) {
+                estoreOrderProductEntity = new EstoreOrderProductEntity();
+                estoreOrderProductEntity.setProductId(estoreOrderProduct.getProductId());
+                estoreOrderProductEntity.setProductSpecId(estoreOrderProduct.getProductSpecId());
+                estoreOrderProductEntity.setPrice(estoreOrderProduct.getPrice());
+                estoreOrderProductEntity.setQuantity(estoreOrderProduct.getQuantity());
+                EstoreProductSearch estoreProductSearch = new EstoreProductSearch();
+                estoreProductSearch.setProductId(estoreOrderProduct.getProductId());
+                estoreProductSearch.setSpecId(estoreOrderProduct.getProductSpecId());
+                estoreProductSearch.setWechatId(estoreOrderProduct.getWechatId());
+                List<EstoreProductListResult> listEstoreProductListResult = estoreProductMapper.selectProductList(estoreProductSearch);
+                if (listEstoreProductListResult != null && listEstoreProductListResult.size() > 0) {
+                    EstoreProductListResult productResult = listEstoreProductListResult.get(0);
+                    EstoreProductSpecListResult productSpec = productResult.getListProductSpec().get(0);
+                    estoreOrderProductEntity.setProductName(productResult.getName());
+                    estoreOrderProductEntity.setSpSpecType(productSpec.getSpecType());
+                    estoreOrderProductEntity.setSpSpecValue(productSpec.getSpecValue());
+                    estoreOrderProductEntity.setExtAttr(productResult.getExtAttr());
+                    estoreOrderProductEntity.setSku(productSpec.getSku());
+                    estoreOrderProductEntity.setWeight(productSpec.getWeight());
+                    estoreOrderProductEntity.setVolume(productSpec.getVolume());
+                }
+                listEstoreOrderProductEntity.add(estoreOrderProductEntity);
+            }
+            estoreOrderEntity.setListOrderProduct(listEstoreOrderProductEntity);
+            listEstoreOrderEntity.add(estoreOrderEntity);
         }
 
-        for (Map.Entry<Long, EstoreOrderEntity> entry : mapEstoreOrderEntity.entrySet()) {
-            entry.getValue().setListOrderProduct(mapEstoreOrderProductEntity.get(entry.getKey()));
-            listEstoreOrderEntity.add(entry.getValue());
-        }
-        Integer pageNum = estoreOrderSearch.getPageNum();
-        Integer pageSize = estoreOrderSearch.getPageSize();
-        Integer fromIdx = (pageNum-1)*pageSize;
-        Integer toIdx = (listEstoreOrderEntity.size() < pageNum*pageSize) ? listEstoreOrderEntity.size() : pageNum*pageSize;
-        return listEstoreOrderEntity.subList(fromIdx, toIdx);
+        return (Page<EstoreOrderEntity>) listEstoreOrderEntity;
     }
 
     @Override
     public void addEstoreOrder(EstoreOrderEntity orderEntity) {
         String rnd = String.valueOf(100000 + new Random().nextInt(899999));
-        String orderNo = DateUtils.formatDate(new Date(), "YYYYmmddHHmmss") + rnd;
+        String orderNo = DateUtil.getCurrentyyyyMMddHHmmss() + rnd;
         EstoreConfig estoreConfig = new EstoreConfig();
         estoreConfig.setSegment("order");
         estoreConfig.setKey("prefix");
@@ -214,93 +201,96 @@ public class EstoreOrderServiceImpl implements IEstoreOrderService {
 
     @Override
     public EstoreOrderEntity getEstoreOrder(Long orderId, Long wechatId) {
-        EstoreOrder estoreOrder = estoreOrderMapper.selectByPrimaryKey(orderId);
+        EstoreOrderSearch estoreOrderSearch = new EstoreOrderSearch();
+        estoreOrderSearch.setOrderId(orderId);
+        estoreOrderSearch.setWechatId(wechatId);
+        List<EstoreOrderListResult> listEstoreOrder = estoreOrderMapper.selectOrderList(estoreOrderSearch);
         EstoreOrderEntity estoreOrderEntity = new EstoreOrderEntity();
-        estoreOrderEntity.setId(estoreOrder.getId());
-        estoreOrderEntity.setOrderNo(estoreOrder.getOrderNo());
-        estoreOrderEntity.setMemberId(estoreOrder.getMemberId());
-        estoreOrderEntity.setTotalPoint(estoreOrder.getTotalPoint());
-        estoreOrderEntity.setTotalAmount(estoreOrder.getTotalAmount());
-        estoreOrderEntity.setProductAmount(estoreOrder.getProductAmount());
-        estoreOrderEntity.setDeliveryFee(estoreOrder.getDeliveryFee());
-        estoreOrderEntity.setDiscount(estoreOrder.getDiscount());
-        estoreOrderEntity.setPayStatus(estoreOrder.getPayStatus());
-        estoreOrderEntity.setStatus(estoreOrder.getStatus());
-        estoreOrderEntity.setRemark(estoreOrder.getRemark());
-        estoreOrderEntity.setDeliveryType(estoreOrder.getDeliveryType());
-        estoreOrderEntity.setDeliveryExt(estoreOrder.getDeliveryExt());
-        estoreOrderEntity.setDeliveryName(estoreOrder.getDeliveryName());
-        estoreOrderEntity.setDeliveryPhone(estoreOrder.getDeliveryPhone());
-        estoreOrderEntity.setDeliveryOtherPhone(estoreOrder.getDeliveryOtherPhone());
-        estoreOrderEntity.setDeliveryProvince(estoreOrder.getDeliveryProvince());
-        estoreOrderEntity.setDeliveryCity(estoreOrder.getDeliveryCity());
-        estoreOrderEntity.setDeliveryDistrict(estoreOrder.getDeliveryDistrict());
-        estoreOrderEntity.setDeliveryAddress(estoreOrder.getDeliveryAddress());
-        estoreOrderEntity.setExpressNo(estoreOrder.getExpressNo());
-        estoreOrderEntity.setNeedInvoice(estoreOrder.getNeedInvoice());
-        estoreOrderEntity.setInvoiceType(estoreOrder.getInvoiceType());
-        estoreOrderEntity.setInvoiceTitle(estoreOrder.getInvoiceTitle());
-        estoreOrderEntity.setInvoiceTaxNo(estoreOrder.getInvoiceTaxNo());
-        estoreOrderEntity.setInvoiceContent(estoreOrder.getInvoiceContent());
-        estoreOrderEntity.setInvoiceDeliveryType(estoreOrder.getInvoiceDeliveryType());
-        estoreOrderEntity.setInvoiceName(estoreOrder.getInvoiceName());
-        estoreOrderEntity.setInvoicePhone(estoreOrder.getInvoicePhone());
-        estoreOrderEntity.setInvoiceProvince(estoreOrder.getInvoiceProvince());
-        estoreOrderEntity.setInvoiceCity(estoreOrder.getInvoiceCity());
-        estoreOrderEntity.setInvoiceDistrict(estoreOrder.getInvoiceDistrict());
-        estoreOrderEntity.setInvoiceAddress(estoreOrder.getInvoiceAddress());
-        estoreOrderEntity.setNeedGift(estoreOrder.getNeedGift());
-        estoreOrderEntity.setGiftContent(estoreOrder.getGiftContent());
-        estoreOrderEntity.setCreateAt(DateUtil.formatYYYYMMDDHHMMSS(estoreOrder.getCreateAt()));
-        estoreOrderEntity.setUpdateAt(DateUtil.formatYYYYMMDDHHMMSS(estoreOrder.getUpdateAt()));
-        estoreOrderEntity.setWechatId(estoreOrder.getWechatId());
-        EstoreOrderPay estoreOrderPay = new EstoreOrderPay();
-        estoreOrderPay.setOrderId(orderId);
-        estoreOrderPay.setWechatId(wechatId);
-        estoreOrderPay = estoreOrderPayMapper.selectOne(estoreOrderPay);
-        if (estoreOrderPay != null && estoreOrderPay.getPaymentId() != null) {
-            EstorePayment estorePayment = estorePaymentMapper.selectByPrimaryKey(estoreOrderPay.getPaymentId());
-            estoreOrderEntity.setPayType(estorePayment.getCode());
-            estoreOrderEntity.setPaymentId(estorePayment.getId());
-            estoreOrderEntity.setPayTime(DateUtil.formatYYYYMMDDHHMMSS(estoreOrderPay.getCreateAt()));
-        } else {
-            estoreOrderEntity.setPayType("");
-            estoreOrderEntity.setPayTime("");
-            estoreOrderEntity.setPaymentId(0L);
-        }
-        EstoreOrderProduct estoreOrderProduct = new EstoreOrderProduct();
-        estoreOrderProduct.setOrderId(orderId);
-        estoreOrderProduct.setWechatId(wechatId);
-        EstoreOrderProductEntity estoreOrderProductEntity;
-        List<EstoreOrderProduct> listEstoreOrderProduct = estoreOrderProductMapper.select(estoreOrderProduct);
-        List<EstoreOrderProductEntity> listEstoreOrderProductEntity = new ArrayList<>(listEstoreOrderProduct.size());
-        for (EstoreOrderProduct op : listEstoreOrderProduct) {
-            estoreOrderProductEntity = new EstoreOrderProductEntity();
-            estoreOrderProductEntity.setOrderId(op.getOrderId());
-            estoreOrderProductEntity.setProductId(op.getProductId());
-            estoreOrderProductEntity.setProductSpecId(op.getProductSpecId());
-            estoreOrderProductEntity.setPrice(op.getPrice());
-            estoreOrderProductEntity.setPoint(op.getPoint());
-            estoreOrderProductEntity.setQuantity(op.getQuantity());
-            EstoreProductSearch estoreProductSearch = new EstoreProductSearch();
-            estoreProductSearch.setPId(op.getProductId());
-            estoreProductSearch.setSpecId(op.getProductSpecId());
-            List<EstoreProductListResult> listEstoreProductListResult = estoreProductMapper.selectProductList(estoreProductSearch);
-            if (listEstoreProductListResult != null && listEstoreProductListResult.size() > 0 ) {
-                EstoreProductListResult productListResult = listEstoreProductListResult.get(0);
-                estoreOrderProductEntity.setProductName(productListResult.getName());
-                estoreOrderProductEntity.setExtAttr(productListResult.getExtAttr());
-                estoreOrderProductEntity.setSku(productListResult.getSku());
-                estoreOrderProductEntity.setSpSpecType(productListResult.getSpSpecType());
-                estoreOrderProductEntity.setSpSpecValue(productListResult.getSpSpecValue());
-                estoreOrderProductEntity.setWeight(productListResult.getWeight());
-                estoreOrderProductEntity.setVolume(productListResult.getVolume());
+        EstoreOrderListResult estoreOrder;
+        if (listEstoreOrder != null && listEstoreOrder.size() > 0) {
+            estoreOrder = listEstoreOrder.get(0);
+            estoreOrderEntity.setId(estoreOrder.getId());
+            estoreOrderEntity.setOrderNo(estoreOrder.getOrderNo());
+            estoreOrderEntity.setMemberId(estoreOrder.getMemberId());
+            estoreOrderEntity.setTotalPoint(estoreOrder.getTotalPoint());
+            estoreOrderEntity.setTotalAmount(estoreOrder.getTotalAmount());
+            estoreOrderEntity.setProductAmount(estoreOrder.getProductAmount());
+            estoreOrderEntity.setDeliveryFee(estoreOrder.getDeliveryFee());
+            estoreOrderEntity.setDiscount(estoreOrder.getDiscount());
+            estoreOrderEntity.setPayStatus(estoreOrder.getPayStatus());
+            estoreOrderEntity.setStatus(estoreOrder.getStatus());
+            estoreOrderEntity.setRemark(estoreOrder.getRemark());
+            estoreOrderEntity.setDeliveryType(estoreOrder.getDeliveryType());
+            estoreOrderEntity.setDeliveryExt(estoreOrder.getDeliveryExt());
+            estoreOrderEntity.setDeliveryName(estoreOrder.getDeliveryName());
+            estoreOrderEntity.setDeliveryPhone(estoreOrder.getDeliveryPhone());
+            estoreOrderEntity.setDeliveryOtherPhone(estoreOrder.getDeliveryOtherPhone());
+            estoreOrderEntity.setDeliveryProvince(estoreOrder.getDeliveryProvince());
+            estoreOrderEntity.setDeliveryCity(estoreOrder.getDeliveryCity());
+            estoreOrderEntity.setDeliveryDistrict(estoreOrder.getDeliveryDistrict());
+            estoreOrderEntity.setDeliveryAddress(estoreOrder.getDeliveryAddress());
+            estoreOrderEntity.setExpressNo(estoreOrder.getExpressNo());
+            estoreOrderEntity.setNeedInvoice(estoreOrder.getNeedInvoice());
+            estoreOrderEntity.setInvoiceType(estoreOrder.getInvoiceType());
+            estoreOrderEntity.setInvoiceTitle(estoreOrder.getInvoiceTitle());
+            estoreOrderEntity.setInvoiceTaxNo(estoreOrder.getInvoiceTaxNo());
+            estoreOrderEntity.setInvoiceContent(estoreOrder.getInvoiceContent());
+            estoreOrderEntity.setInvoiceDeliveryType(estoreOrder.getInvoiceDeliveryType());
+            estoreOrderEntity.setInvoiceName(estoreOrder.getInvoiceName());
+            estoreOrderEntity.setInvoicePhone(estoreOrder.getInvoicePhone());
+            estoreOrderEntity.setInvoiceProvince(estoreOrder.getInvoiceProvince());
+            estoreOrderEntity.setInvoiceCity(estoreOrder.getInvoiceCity());
+            estoreOrderEntity.setInvoiceDistrict(estoreOrder.getInvoiceDistrict());
+            estoreOrderEntity.setInvoiceAddress(estoreOrder.getInvoiceAddress());
+            estoreOrderEntity.setNeedGift(estoreOrder.getNeedGift());
+            estoreOrderEntity.setGiftContent(estoreOrder.getGiftContent());
+            estoreOrderEntity.setCreateAt(DateUtil.formatYYYYMMDDHHMMSS(estoreOrder.getCreateAt()));
+            estoreOrderEntity.setUpdateAt(DateUtil.formatYYYYMMDDHHMMSS(estoreOrder.getUpdateAt()));
+            estoreOrderEntity.setWechatId(estoreOrder.getWechatId());
+            estoreOrderEntity.setPayType(estoreOrder.getPayCode());
+            estoreOrderEntity.setPaymentId(estoreOrder.getPaymentId());
+            estoreOrderEntity.setPayTime(estoreOrder.getPayTime());
+
+            List<EstoreOrderProduct> listOrderProduct = estoreOrder.getListOrderProduct();
+            if (listOrderProduct != null ) {
+                List<EstoreOrderProductEntity> listEstoreOrderProductEntity = new ArrayList<>(listOrderProduct.size());
+                EstoreOrderProductEntity estoreOrderProductEntity;
+                for (EstoreOrderProduct estoreOrderProduct : listOrderProduct) {
+                    estoreOrderProductEntity = new EstoreOrderProductEntity();
+                    estoreOrderProductEntity.setProductId(estoreOrderProduct.getProductId());
+                    estoreOrderProductEntity.setProductSpecId(estoreOrderProduct.getProductSpecId());
+                    estoreOrderProductEntity.setPrice(estoreOrderProduct.getPrice());
+                    estoreOrderProductEntity.setQuantity(estoreOrderProduct.getQuantity());
+                    EstoreProductSearch estoreProductSearch = new EstoreProductSearch();
+                    estoreProductSearch.setProductId(estoreOrderProduct.getProductId());
+                    estoreProductSearch.setSpecId(estoreOrderProduct.getProductSpecId());
+                    estoreProductSearch.setWechatId(estoreOrderProduct.getWechatId());
+                    List<EstoreProductListResult> listEstoreProductListResult = estoreProductMapper.selectProductList(estoreProductSearch);
+                    if (listEstoreProductListResult != null && listEstoreProductListResult.size() > 0) {
+                        EstoreProductListResult productResult = listEstoreProductListResult.get(0);
+                        EstoreProductSpecListResult productSpec = productResult.getListProductSpec().get(0);
+                        estoreOrderProductEntity.setProductName(productResult.getName());
+                        estoreOrderProductEntity.setSpSpecType(productSpec.getSpecType());
+                        estoreOrderProductEntity.setSpSpecValue(productSpec.getSpecValue());
+                        estoreOrderProductEntity.setExtAttr(productResult.getExtAttr());
+                        estoreOrderProductEntity.setSku(productSpec.getSku());
+                        estoreOrderProductEntity.setWeight(productSpec.getWeight());
+                        estoreOrderProductEntity.setVolume(productSpec.getVolume());
+                    }
+                    listEstoreOrderProductEntity.add(estoreOrderProductEntity);
+                }
+                estoreOrderEntity.setListOrderProduct(listEstoreOrderProductEntity);
             }
-            listEstoreOrderProductEntity.add(estoreOrderProductEntity);
         }
-        estoreOrderEntity.setListOrderProduct(listEstoreOrderProductEntity);
         return estoreOrderEntity;
     }
 
-
+    @Override
+    public void updateTrackNo(Long orderId, String trackNo) {
+        EstoreOrder estoreOrder = new EstoreOrder();
+        estoreOrder.setId(orderId);
+        estoreOrder.setExpressNo(trackNo);
+        estoreOrder.setStatus((byte)2);
+        estoreOrderMapper.updateByPrimaryKeySelective(estoreOrder);
+    }
 }

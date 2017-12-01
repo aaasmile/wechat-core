@@ -14,4 +14,8 @@
     <result column="point" property="point" jdbcType="INTEGER" />
     <result column="wechat_id" property="wechatId" jdbcType="BIGINT" />
   </resultMap>
+
+  <select id="selectOrderProductListByOrderId" resultMap="BaseResultMap">
+    SELECT * FROM estore_order_product where order_id = #{id}
+  </select>
 </mapper>

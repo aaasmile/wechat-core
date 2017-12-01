@@ -15,7 +15,7 @@ public interface
 IEstoreProductService {
 
 
-    List<EstoreProductEntity> selectProductList(EstoreProductSearch estoreProductSearch);
+    Page<EstoreProductEntity> selectProductList(EstoreProductSearch estoreProductSearch);
 
     void updateEstoreProduct(EstoreProductEntity productEntity, String action);
 

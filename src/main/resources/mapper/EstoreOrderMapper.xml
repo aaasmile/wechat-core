@@ -96,6 +96,8 @@
     <result column="quantity" property="quantity" jdbcType="INTEGER" />
     <result column="price" property="price" jdbcType="DECIMAL" />
     <result column="point" property="point" jdbcType="INTEGER" />
+    <collection property="listOrderProduct" column="id"
+                select="com.d1m.wechat.mapper.EstoreOrderProductMapper.selectOrderProductListByOrderId" />
   </resultMap>
 
   <select id="selectOrderList" resultMap="searchResultMap">
@@ -104,16 +106,10 @@
     b.`data` as cb_data,
     b.`create_at` as pay_time,
     c.`name` as pay_name,
-    c.`code` as pay_code,
-    d.`product_id`,
-    d.`product_spec_id`,
-    d.`quantity`,
-    d.`price`,
-    d.`point`
+    c.`code` as pay_code
     from estore_order a
     LEFT JOIN estore_order_pay b on a.id=b.order_id
     LEFT JOIN estore_payment c on c.id=b.payment_id
-    LEFT JOIN estore_order_product d on d.order_id=a.id
     <where>
       a.wechat_id = #{wechatId}
       <if test="orderId != null">
@@ -144,5 +140,6 @@
         and a.create_at between #{startDate} and #{endDate}
       </if>
     </where>
+    order by a.id desc
   </select>
 </mapper>

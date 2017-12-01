@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -27,15 +28,10 @@ public class EstoreProductListResult {
     private Byte onSale;
     private Byte deliveryFree;
     private Long deliveryTplId;
-    private Long spId;
     private String sku;
-    private Byte spSpecType;
-    private JSONObject spSpecValue;
-    private BigDecimal marketPrice;
-    private BigDecimal price;
-    private Integer point;
-    private Integer stock;
-    private Double weight;
-    private Double volume;
-    private Byte spStatus;
+    private String specId;
+    private List<EstoreProductImage> listProductImage;
+    private List<EstoreProductCategory> listProductCategory;
+    private List<EstoreProductTag> listProductTag;
+    private List<EstoreProductSpecListResult> listProductSpec;
 }

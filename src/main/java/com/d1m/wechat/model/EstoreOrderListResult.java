@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -57,9 +58,10 @@ public class EstoreOrderListResult {
     private String payTime;
     private String payName;
     private String payCode;
-    private Long productId;
-    private Long productSpecId;
-    private Integer quantity;
-    private BigDecimal price;
-    private Integer point;
+//    private Long productId;
+//    private Long productSpecId;
+//    private Integer quantity;
+//    private BigDecimal price;
+//    private Integer point;
+    private List<EstoreOrderProduct> listOrderProduct;
 }

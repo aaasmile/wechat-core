@@ -12,5 +12,23 @@
     <result column="product_spec_id" property="productSpecId" jdbcType="BIGINT" />
     <result column="material_id" property="materialId" jdbcType="BIGINT" />
     <result column="wechat_id" property="wechatId" jdbcType="BIGINT" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="tag" property="tag" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
   </resultMap>
+
+  <select id="selectProductImageListByProductId" resultMap="BaseResultMap">
+    SELECT a.*,b.title,b.tag,b.url
+    FROM estore_product_image a
+    left join estore_material b on b.id=a.material_id
+    where product_id = #{id}
+  </select>
+
+  <select id="selectProductSpecImageListBySpecId" resultMap="BaseResultMap">
+    SELECT a.*,b.title,b.tag,b.url
+    FROM estore_product_image a
+    left join estore_material b on b.id=a.material_id
+    where product_spec_id = #{id}
+  </select>
+
 </mapper>

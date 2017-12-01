@@ -37,192 +37,197 @@ public class EstoreProductServiceImpl implements IEstoreProductService {
     private EstoreMaterialMapper estoreMaterialMapper;
 
     @Override
-    public List<EstoreProductEntity> selectProductList(EstoreProductSearch estoreProductSearch) {
-        EstoreProductSearch productSearch = estoreProductSearch.clone();
-        productSearch.setPageNum(null);
-        productSearch.setPageSize(null);
-        List<EstoreProductListResult> listEstoreProductListResult = estoreProductMapper.selectProductList(productSearch);
-//        PageHelper.startPage(estoreProductSearch.getPageNum(),estoreProductSearch.getPageSize(),true);
+    public Page<EstoreProductEntity> selectProductList(EstoreProductSearch estoreProductSearch) {
+        PageHelper.startPage(estoreProductSearch.getPageNum(), estoreProductSearch.getPageSize(), true);
+        List<EstoreProductListResult> listEstoreProductListResult = estoreProductMapper.selectProductList(estoreProductSearch);
         EstoreProductEntity estoreProductEntity;
         EstoreProductSpecEntity estoreProductSpecEntity;
-        List<EstoreProductEntity> listEstoreProductEntity = new ArrayList<>();
-        HashMap<Long, EstoreProductEntity> mapEstoreProductEntity = new HashMap<>();
-        HashMap<Long, List<EstoreProductSpecEntity>> mapEstoreProductSpecEntity = new HashMap<>();
+        EstoreProductImageEntity productImageEntity;
+        List<EstoreProductSpecEntity> listEstoreProductSpecEntity;
+        List<EstoreProductImageEntity> listEstoreProductImageEntity;
+        List<EstoreProductEntity> listEstoreProductEntity = new Page<>();
         for (EstoreProductListResult result : listEstoreProductListResult) {
-            if (!mapEstoreProductEntity.containsKey(result.getId())) {
-                estoreProductEntity = new EstoreProductEntity();
-                estoreProductEntity.setId(result.getId());
-                estoreProductEntity.setName(result.getName());
-                estoreProductEntity.setDescription(result.getDescription());
-                estoreProductEntity.setSpecType(result.getSpecType());
-                estoreProductEntity.setSpecMeta(result.getSpecMeta());
-                estoreProductEntity.setExtAttr(result.getExtAttr());
-                estoreProductEntity.setStatus(result.getStatus());
-                estoreProductEntity.setSaleId(result.getSaleId());
-                estoreProductEntity.setOnSale(result.getOnSale());
-                estoreProductEntity.setDeliveryFree(result.getDeliveryFree());
-                estoreProductEntity.setDeliveryTplId(result.getDeliveryTplId());
-                estoreProductEntity.setWechatId(result.getWechatId());
-                EstoreProductCategory estoreProductCategory = new EstoreProductCategory();
-                estoreProductCategory.setProductSaleId(result.getSaleId());
-                estoreProductCategory.setWechatId(result.getWechatId());
-                List<EstoreProductCategory> listEstoreProductCategory
-                        = estoreProductCategoryMapper.select(estoreProductCategory);
-                ArrayList<Long> arrCat = new ArrayList<>(listEstoreProductCategory.size());
-                for (EstoreProductCategory cat : listEstoreProductCategory) {
+            estoreProductEntity = new EstoreProductEntity();
+            estoreProductEntity.setId(result.getId());
+            estoreProductEntity.setName(result.getName());
+            estoreProductEntity.setDescription(result.getDescription());
+            estoreProductEntity.setSpecType(result.getSpecType());
+            estoreProductEntity.setSpecMeta(result.getSpecMeta());
+            estoreProductEntity.setExtAttr(result.getExtAttr());
+            estoreProductEntity.setStatus(result.getStatus());
+            estoreProductEntity.setSaleId(result.getSaleId());
+            estoreProductEntity.setOnSale(result.getOnSale());
+            estoreProductEntity.setDeliveryFree(result.getDeliveryFree());
+            estoreProductEntity.setDeliveryTplId(result.getDeliveryTplId());
+            estoreProductEntity.setWechatId(result.getWechatId());
+            List<EstoreProductImage> listProductImage = result.getListProductImage();
+            if (listProductImage != null) {
+                listEstoreProductImageEntity = new ArrayList<>(listProductImage.size());
+                for (EstoreProductImage productImage : listProductImage) {
+                    productImageEntity = new EstoreProductImageEntity();
+                    productImageEntity.setMaterialId(productImage.getMaterialId());
+                    productImageEntity.setSeq(productImage.getSeq());
+                    productImageEntity.setType(productImage.getType());
+                    productImageEntity.setTag(productImage.getTag());
+                    productImageEntity.setTitle(productImage.getTitle());
+                    productImageEntity.setUrl(productImage.getUrl());
+                    listEstoreProductImageEntity.add(productImageEntity);
+                }
+                estoreProductEntity.setListImg(listEstoreProductImageEntity);
+            }
+            List<EstoreProductCategory> listProductCategory = result.getListProductCategory();
+            if (listProductCategory != null) {
+                ArrayList<Long> arrCat = new ArrayList<>(listProductCategory.size());
+                for (EstoreProductCategory cat : listProductCategory) {
                     arrCat.add(cat.getCategoryId());
                 }
-                EstoreProductTag estoreProductTag = new EstoreProductTag();
-                estoreProductTag.setProductSaleId(result.getSaleId());
-                estoreProductTag.setWechatId(result.getWechatId());
-                List<EstoreProductTag> listEstoreProductTag
-                        = estoreProductTagMapper.select(estoreProductTag);
+                String strCat = StringUtils.join(arrCat, ",");
+                estoreProductEntity.setCategory(strCat);
+            }
+            List<EstoreProductTag> listEstoreProductTag = result.getListProductTag();
+            if (listEstoreProductTag != null) {
                 ArrayList<Long> arrTag = new ArrayList<>(listEstoreProductTag.size());
                 for (EstoreProductTag tag : listEstoreProductTag) {
                     arrTag.add(tag.getTagId());
                 }
-                String strCat = StringUtils.join(arrCat, ",");
                 String strTag = StringUtils.join(arrTag, ",");
-                estoreProductEntity.setCategory(strCat);
                 estoreProductEntity.setTag(strTag);
-                mapEstoreProductEntity.put(result.getId(), estoreProductEntity);
             }
-            estoreProductSpecEntity = new EstoreProductSpecEntity();
-            estoreProductSpecEntity.setId(result.getSpId());
-            estoreProductSpecEntity.setSku(result.getSku());
-            estoreProductSpecEntity.setMarketPrice(result.getMarketPrice());
-            estoreProductSpecEntity.setPrice(result.getPrice());
-            estoreProductSpecEntity.setPoint(result.getPoint());
-            estoreProductSpecEntity.setSpecType(result.getSpSpecType());
-            estoreProductSpecEntity.setSpecValue(result.getSpSpecValue());
-            estoreProductSpecEntity.setVolume(result.getVolume());
-            estoreProductSpecEntity.setWeight(result.getWeight());
-            estoreProductSpecEntity.setStock(result.getStock());
-            estoreProductSpecEntity.setStatus(result.getSpStatus());
-            if (!mapEstoreProductSpecEntity.containsKey(result.getId())){
-                List<EstoreProductSpecEntity> listSpec = new ArrayList<>();
-                listSpec.add(estoreProductSpecEntity);
-                mapEstoreProductSpecEntity.put(result.getId(), listSpec);
-            } else {
-                mapEstoreProductSpecEntity.get(result.getId()).add(estoreProductSpecEntity);
+            List<EstoreProductSpecListResult> listProductSpec = result.getListProductSpec();
+            if (listProductSpec != null) {
+                listEstoreProductSpecEntity = new ArrayList<>(listProductSpec.size());
+                for (EstoreProductSpecListResult productSpec : listProductSpec) {
+//                    if (estoreProductSearch.getSku() != null &&
+//                            !productSpec.getSku().equals(estoreProductSearch.getSku())) {
+//                        continue;
+//                    }
+                    estoreProductSpecEntity = new EstoreProductSpecEntity();
+                    estoreProductSpecEntity.setId(productSpec.getId());
+                    estoreProductSpecEntity.setSku(productSpec.getSku());
+                    estoreProductSpecEntity.setMarketPrice(productSpec.getMarketPrice());
+                    estoreProductSpecEntity.setPrice(productSpec.getPrice());
+                    estoreProductSpecEntity.setPoint(productSpec.getPoint());
+                    estoreProductSpecEntity.setSpecType(productSpec.getSpecType());
+                    estoreProductSpecEntity.setSpecValue(productSpec.getSpecValue());
+                    estoreProductSpecEntity.setVolume(productSpec.getVolume());
+                    estoreProductSpecEntity.setWeight(productSpec.getWeight());
+                    estoreProductSpecEntity.setStock(productSpec.getStock());
+                    estoreProductSpecEntity.setStatus(productSpec.getStatus());
+                    listProductImage = productSpec.getListProductSpecImage();
+                    if (listProductImage != null) {
+                        listEstoreProductImageEntity = new ArrayList<>(listProductImage.size());
+                        for (EstoreProductImage productSpecImage : listProductImage) {
+                            productImageEntity = new EstoreProductImageEntity();
+                            productImageEntity.setMaterialId(productSpecImage.getMaterialId());
+                            productImageEntity.setSeq(productSpecImage.getSeq());
+                            productImageEntity.setType(productSpecImage.getType());
+                            productImageEntity.setTag(productSpecImage.getTag());
+                            productImageEntity.setTitle(productSpecImage.getTitle());
+                            productImageEntity.setUrl(productSpecImage.getUrl());
+                            listEstoreProductImageEntity.add(productImageEntity);
+                        }
+                        estoreProductSpecEntity.setListImg(listEstoreProductImageEntity);
+                    }
+                    listEstoreProductSpecEntity.add(estoreProductSpecEntity);
+                }
+                estoreProductEntity.setListSpec(listEstoreProductSpecEntity);
+                listEstoreProductEntity.add(estoreProductEntity);
             }
         }
-
-        for (Map.Entry<Long, EstoreProductEntity> entry : mapEstoreProductEntity.entrySet()) {
-            entry.getValue().setListSpec(mapEstoreProductSpecEntity.get(entry.getKey()));
-            listEstoreProductEntity.add(entry.getValue());
-        }
-        Integer pageNum = estoreProductSearch.getPageNum();
-        Integer pageSize = estoreProductSearch.getPageSize();
-        Integer fromIdx = (pageNum-1)*pageSize;
-        Integer toIdx = (listEstoreProductEntity.size() < pageNum*pageSize) ? listEstoreProductEntity.size() : pageNum*pageSize;
-        return listEstoreProductEntity.subList(fromIdx, toIdx);
-//        return (Page<EstoreProductEntity>) listEstoreProductEntity;
+        return (Page<EstoreProductEntity>) listEstoreProductEntity;
     }
 
     @Override
-    public EstoreProductEntity getEstoreProduct(Long pid, Long wechatId) {
-        EstoreProductEntity estoreProductEntity = new EstoreProductEntity();
+    public EstoreProductEntity getEstoreProduct(Long productId, Long wechatId) {
         // 获取商品信息
-        EstoreProduct estoreProduct = estoreProductMapper.selectByPrimaryKey(pid);
-        estoreProductEntity.setId(pid);
-        estoreProductEntity.setName(estoreProduct.getName());
-        estoreProductEntity.setDescription(estoreProduct.getDescription());
-        estoreProductEntity.setSpecType(estoreProduct.getSpecType());
-        estoreProductEntity.setSpecMeta(estoreProduct.getSpecMeta());
-        estoreProductEntity.setStatus(estoreProduct.getStatus());
-        estoreProductEntity.setExtAttr(estoreProduct.getExtAttr());
-        EstoreProductImage estoreProductImage = new EstoreProductImage();
-        estoreProductImage.setProductId(pid);
-        estoreProductImage.setWechatId(wechatId);
-        estoreProductImage.setType((byte)0);
-        List<EstoreProductImage> listImg = estoreProductImageMapper.select(estoreProductImage);
-        List<EstoreProductImageEntity> listImgEntity = new ArrayList<>(listImg.size());
-        EstoreProductImageEntity estoreProductImageEntity;
-        for (EstoreProductImage img : listImg) {
-            estoreProductImageEntity = new EstoreProductImageEntity();
-            estoreProductImageEntity.setId(img.getId());
-            estoreProductImageEntity.setType(img.getType());
-            estoreProductImageEntity.setSeq(img.getSeq());
-            estoreProductImageEntity.setMaterialId(img.getMaterialId());
-            EstoreMaterial estoreMaterial = estoreMaterialMapper.selectByPrimaryKey(img.getMaterialId());
-            if (estoreMaterial != null) {
-                estoreProductImageEntity.setUrl(estoreMaterial.getUrl());
-                estoreProductImageEntity.setTitle(estoreMaterial.getTitle());
-                estoreProductImageEntity.setTag(estoreMaterial.getTag());
-            }
-            listImgEntity.add(estoreProductImageEntity);
-        }
-        estoreProductEntity.setListImg(listImgEntity);
-        // 获取商品销售信息
-        EstoreProductSale estoreProductSale = new EstoreProductSale();
-        estoreProductSale.setWechatId(wechatId);
-        estoreProductSale.setProductId(pid);
-        estoreProductSale = estoreProductSaleMapper.selectOne(estoreProductSale);
-        Long saleId = estoreProductSale.getId();
-        estoreProductEntity.setSaleId(saleId);
-        estoreProductEntity.setOnSale(estoreProductSale.getOnSale());
-        estoreProductEntity.setDeliveryFree(estoreProductSale.getDeliveryFree());
-        estoreProductEntity.setDeliveryTplId(estoreProductSale.getDeliveryTplId());
-        // 获取商品规格
-        EstoreProductSpec estoreProductSpec = new EstoreProductSpec();
-        estoreProductSpec.setWechatId(wechatId);
-        estoreProductSpec.setProductId(pid);
-        List<EstoreProductSpec> listEstoreProductSpec = estoreProductSpecMapper.select(estoreProductSpec);
-        List<EstoreProductSpecEntity> listSpec = new ArrayList<>(listEstoreProductSpec.size());
+        EstoreProductSearch estoreProductSearch = new EstoreProductSearch();
+        estoreProductSearch.setProductId(productId);
+        estoreProductSearch.setWechatId(wechatId);
+        List<EstoreProductListResult> listEstoreProductListResult = estoreProductMapper.selectProductList(estoreProductSearch);
+        EstoreProductEntity estoreProductEntity = new EstoreProductEntity();
         EstoreProductSpecEntity estoreProductSpecEntity;
-        for (EstoreProductSpec spec : listEstoreProductSpec) {
-            estoreProductSpecEntity = new EstoreProductSpecEntity();
-            estoreProductSpecEntity.setId(spec.getId());
-            estoreProductSpecEntity.setSku(spec.getSku());
-            estoreProductSpecEntity.setWeight(spec.getWeight());
-            estoreProductSpecEntity.setVolume(spec.getVolume());
-            estoreProductSpecEntity.setSpecType(spec.getSpecType());
-            estoreProductSpecEntity.setSpecValue(spec.getSpecValue());
-            estoreProductSpecEntity.setMarketPrice(spec.getMarketPrice());
-            estoreProductSpecEntity.setPrice(spec.getPrice());
-            estoreProductSpecEntity.setPoint(spec.getPoint());
-            estoreProductSpecEntity.setStock(spec.getStock());
-            estoreProductSpecEntity.setStatus(spec.getStatus());
-            EstoreProductImage estoreProductSpecImage = new EstoreProductImage();
-            estoreProductSpecImage.setProductSpecId(spec.getId());
-            estoreProductSpecImage.setWechatId(wechatId);
-            estoreProductSpecImage.setType((byte)1);
-            List<EstoreProductImage> listSpecImg = estoreProductImageMapper.select(estoreProductSpecImage);
-            List<EstoreProductImageEntity> listSpecImgEntity = new ArrayList<>(listSpecImg.size());
-            for (EstoreProductImage specImg : listSpecImg) {
-                estoreProductImageEntity = new EstoreProductImageEntity();
-                estoreProductImageEntity.setId(specImg.getId());
-                estoreProductImageEntity.setType(specImg.getType());
-                estoreProductImageEntity.setSeq(specImg.getSeq());
-                estoreProductImageEntity.setMaterialId(specImg.getMaterialId());
-                listSpecImgEntity.add(estoreProductImageEntity);
+        EstoreProductImageEntity productImageEntity;
+        List<EstoreProductSpecEntity> listEstoreProductSpecEntity;
+        List<EstoreProductImageEntity> listEstoreProductImageEntity;
+        if (listEstoreProductListResult != null && listEstoreProductListResult.size()>0 ) {
+            EstoreProductListResult estoreProduct = listEstoreProductListResult.get(0);
+            estoreProductEntity.setId(productId);
+            estoreProductEntity.setName(estoreProduct.getName());
+            estoreProductEntity.setDescription(estoreProduct.getDescription());
+            estoreProductEntity.setSpecType(estoreProduct.getSpecType());
+            estoreProductEntity.setSpecMeta(estoreProduct.getSpecMeta());
+            estoreProductEntity.setStatus(estoreProduct.getStatus());
+            estoreProductEntity.setExtAttr(estoreProduct.getExtAttr());
+            List<EstoreProductImage> listProductImage = estoreProduct.getListProductImage();
+            if (listProductImage != null) {
+                listEstoreProductImageEntity = new ArrayList<>(listProductImage.size());
+                for (EstoreProductImage productImage : listProductImage) {
+                    productImageEntity = new EstoreProductImageEntity();
+                    productImageEntity.setMaterialId(productImage.getMaterialId());
+                    productImageEntity.setSeq(productImage.getSeq());
+                    productImageEntity.setType(productImage.getType());
+                    productImageEntity.setTag(productImage.getTag());
+                    productImageEntity.setTitle(productImage.getTitle());
+                    productImageEntity.setUrl(productImage.getUrl());
+                    listEstoreProductImageEntity.add(productImageEntity);
+                }
+                estoreProductEntity.setListImg(listEstoreProductImageEntity);
             }
-            estoreProductSpecEntity.setListImg(listSpecImgEntity);
-            listSpec.add(estoreProductSpecEntity);
-        }
-        estoreProductEntity.setListSpec(listSpec);
-        // 获取商品分类
-        EstoreProductCategory estoreProductCategory = new EstoreProductCategory();
-        estoreProductCategory.setProductSaleId(saleId);
-        estoreProductCategory.setWechatId(wechatId);
-        List<EstoreProductCategory> listCat = estoreProductCategoryMapper.select(estoreProductCategory);
-        List<String> arrCat = new ArrayList<>(listCat.size());
-        for (EstoreProductCategory cat : listCat) {
-            arrCat.add(cat.getCategoryId() + "");
-        }
-        estoreProductEntity.setCategory(StringUtils.join(arrCat.toArray(), ","));
-        // 获取商品标签
-        EstoreProductTag estoreProductTag = new EstoreProductTag();
-        estoreProductTag.setProductSaleId(saleId);
-        estoreProductTag.setWechatId(wechatId);
-        List<EstoreProductTag> listTag = estoreProductTagMapper.select(estoreProductTag);
-        List<String> arrTag = new ArrayList<>(listTag.size());
-        for (EstoreProductTag tag : listTag) {
-            arrTag.add(tag.getTagId() + "");
-        }
-        estoreProductEntity.setTag(StringUtils.join(arrTag.toArray(), ","));
+            // 获取商品销售信息
+            estoreProductEntity.setSaleId(estoreProduct.getSaleId());
+            estoreProductEntity.setOnSale(estoreProduct.getOnSale());
+            estoreProductEntity.setDeliveryFree(estoreProduct.getDeliveryFree());
+            estoreProductEntity.setDeliveryTplId(estoreProduct.getDeliveryTplId());
 
+            // 获取商品规格
+            List<EstoreProductSpecListResult> listEstoreProductSpec = estoreProduct.getListProductSpec();
+            if (listEstoreProductSpec != null) {
+                listEstoreProductSpecEntity = new ArrayList<>(listEstoreProductSpec.size());
+                for (EstoreProductSpecListResult spec : listEstoreProductSpec) {
+                    estoreProductSpecEntity = new EstoreProductSpecEntity();
+                    estoreProductSpecEntity.setId(spec.getId());
+                    estoreProductSpecEntity.setSku(spec.getSku());
+                    estoreProductSpecEntity.setWeight(spec.getWeight());
+                    estoreProductSpecEntity.setVolume(spec.getVolume());
+                    estoreProductSpecEntity.setSpecType(spec.getSpecType());
+                    estoreProductSpecEntity.setSpecValue(spec.getSpecValue());
+                    estoreProductSpecEntity.setMarketPrice(spec.getMarketPrice());
+                    estoreProductSpecEntity.setPrice(spec.getPrice());
+                    estoreProductSpecEntity.setPoint(spec.getPoint());
+                    estoreProductSpecEntity.setStock(spec.getStock());
+                    estoreProductSpecEntity.setStatus(spec.getStatus());
+                    List<EstoreProductImage> listSpecImg = spec.getListProductSpecImage();
+                    listEstoreProductImageEntity = new ArrayList<>(listSpecImg.size());
+                    for (EstoreProductImage specImg : listSpecImg) {
+                        productImageEntity = new EstoreProductImageEntity();
+                        productImageEntity.setId(specImg.getId());
+                        productImageEntity.setType(specImg.getType());
+                        productImageEntity.setSeq(specImg.getSeq());
+                        productImageEntity.setMaterialId(specImg.getMaterialId());
+                        listEstoreProductImageEntity.add(productImageEntity);
+                    }
+                    estoreProductSpecEntity.setListImg(listEstoreProductImageEntity);
+                    listEstoreProductSpecEntity.add(estoreProductSpecEntity);
+                }
+                estoreProductEntity.setListSpec(listEstoreProductSpecEntity);
+            }
+            List<EstoreProductCategory> listCat = estoreProduct.getListProductCategory();
+            if (listCat != null) {
+                List<String> arrCat = new ArrayList<>(listCat.size());
+                for (EstoreProductCategory cat : listCat) {
+                    arrCat.add(cat.getCategoryId() + "");
+                }
+                estoreProductEntity.setCategory(StringUtils.join(arrCat.toArray(), ","));
+            }
+            List<EstoreProductTag> listTag = estoreProduct.getListProductTag();
+            if (listTag != null) {
+                List<String> arrTag = new ArrayList<>(listTag.size());
+                for (EstoreProductTag tag : listTag) {
+                    arrTag.add(tag.getTagId() + "");
+                }
+                estoreProductEntity.setTag(StringUtils.join(arrTag.toArray(), ","));
+            }
+        }
         return estoreProductEntity;
     }
 
@@ -246,7 +251,7 @@ public class EstoreProductServiceImpl implements IEstoreProductService {
             estoreProductMapper.updateByPrimaryKeySelective(estoreProduct);
         } else {
             estoreProduct.setCreateAt(now);
-            estoreProduct.setStatus((byte)1);
+            estoreProduct.setStatus((byte) 1);
             estoreProductMapper.insert(estoreProduct);
         }
         Long productId = estoreProduct.getId();
@@ -272,7 +277,7 @@ public class EstoreProductServiceImpl implements IEstoreProductService {
         estoreProductCategory.setWechatId(wechatId);
         estoreProductCategoryMapper.delete(estoreProductCategory);
         String[] arrCat = productEntity.getCategory().split(",");
-        for (String  catId : arrCat) {
+        for (String catId : arrCat) {
             estoreProductCategory = new EstoreProductCategory();
             estoreProductCategory.setProductSaleId(saleId);
             estoreProductCategory.setCategoryId(Long.parseLong(catId));
@@ -286,7 +291,7 @@ public class EstoreProductServiceImpl implements IEstoreProductService {
         estoreProductTag.setWechatId(wechatId);
         estoreProductTagMapper.delete(estoreProductTag);
         String[] arrTag = productEntity.getTag().split(",");
-        for (String  tagId : arrTag) {
+        for (String tagId : arrTag) {
             estoreProductTag = new EstoreProductTag();
             estoreProductTag.setProductSaleId(saleId);
             estoreProductTag.setTagId(Long.parseLong(tagId));
@@ -297,7 +302,7 @@ public class EstoreProductServiceImpl implements IEstoreProductService {
         // 更新商品图片
         List<EstoreProductImageEntity> listImg = productEntity.getListImg();
         EstoreProductImage estoreProductImage;
-        for (EstoreProductImageEntity entity: listImg) {
+        for (EstoreProductImageEntity entity : listImg) {
             estoreProductImage = new EstoreProductImage();
             estoreProductImage.setMaterialId(entity.getMaterialId());
             estoreProductImage.setSeq(entity.getSeq());
@@ -306,7 +311,7 @@ public class EstoreProductServiceImpl implements IEstoreProductService {
             estoreProductImage.setWechatId(wechatId);
             if (entity.getId() != null) {
                 estoreProductImage.setId(entity.getId());
-                if(entity.getIsDel() != null && entity.getIsDel() == (byte)1) {
+                if (entity.getIsDel() != null && entity.getIsDel() == (byte) 1) {
                     estoreProductImageMapper.deleteByPrimaryKey(estoreProductImage);
                 } else {
                     estoreProductImageMapper.updateByPrimaryKey(estoreProductImage);
@@ -319,7 +324,7 @@ public class EstoreProductServiceImpl implements IEstoreProductService {
         // 更新商品规格
         List<EstoreProductSpecEntity> listSepc = productEntity.getListSpec();
         EstoreProductSpec estoreProductSpec;
-        for (EstoreProductSpecEntity entity: listSepc) {
+        for (EstoreProductSpecEntity entity : listSepc) {
             estoreProductSpec = new EstoreProductSpec();
             estoreProductSpec.setMarketPrice(entity.getMarketPrice());
             estoreProductSpec.setPrice(entity.getPrice());
@@ -337,7 +342,7 @@ public class EstoreProductServiceImpl implements IEstoreProductService {
             estoreProductSpec.setModifyAt(now);
             if (entity.getId() != null) {
                 estoreProductSpec.setId(entity.getId());
-                if(entity.getIsDel() != null && entity.getIsDel() == (byte)1) {
+                if (entity.getIsDel() != null && entity.getIsDel() == (byte) 1) {
                     estoreProductSpecMapper.deleteByPrimaryKey(estoreProductSpec);
                 } else {
                     estoreProductSpecMapper.updateByPrimaryKey(estoreProductSpec);
@@ -350,7 +355,7 @@ public class EstoreProductServiceImpl implements IEstoreProductService {
             // 更新商品图片
             List<EstoreProductImageEntity> listSpecImg = entity.getListImg();
             EstoreProductImage estoreProductSpecImage;
-            for (EstoreProductImageEntity entitySpec: listSpecImg) {
+            for (EstoreProductImageEntity entitySpec : listSpecImg) {
                 estoreProductSpecImage = new EstoreProductImage();
                 estoreProductSpecImage.setMaterialId(entitySpec.getMaterialId());
                 estoreProductSpecImage.setSeq(entitySpec.getSeq());
@@ -359,7 +364,7 @@ public class EstoreProductServiceImpl implements IEstoreProductService {
                 estoreProductSpecImage.setWechatId(wechatId);
                 if (entitySpec.getId() != null) {
                     estoreProductSpecImage.setId(entitySpec.getId());
-                    if(entitySpec.getIsDel() != null && entitySpec.getIsDel() == (byte)1) {
+                    if (entitySpec.getIsDel() != null && entitySpec.getIsDel() == (byte) 1) {
                         estoreProductImageMapper.deleteByPrimaryKey(estoreProductSpecImage);
                     } else {
                         estoreProductImageMapper.updateByPrimaryKey(estoreProductSpecImage);

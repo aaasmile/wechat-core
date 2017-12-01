@@ -21,4 +21,41 @@
     <result column="product_id" property="productId" jdbcType="BIGINT" />
     <result column="wechat_id" property="wechatId" jdbcType="BIGINT" />
   </resultMap>
+
+  <resultMap id="searchResultMap" type="com.d1m.wechat.model.EstoreProductSpecListResult" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="sku" property="sku" jdbcType="VARCHAR" />
+    <result column="spec_type" property="specType" jdbcType="TINYINT" />
+    <result column="spec_value" property="specValue" jdbcType="VARCHAR" typeHandler="com.d1m.wechat.util.mybatis.JsonTypeHandler" />
+    <result column="market_price" property="marketPrice" jdbcType="DECIMAL" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="point" property="point" jdbcType="INTEGER" />
+    <result column="stock" property="stock" jdbcType="INTEGER" />
+    <result column="weight" property="weight" jdbcType="DOUBLE" />
+    <result column="volume" property="volume" jdbcType="DOUBLE" />
+    <result column="create_at" property="createAt" jdbcType="TIMESTAMP" />
+    <result column="modify_at" property="modifyAt" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="product_id" property="productId" jdbcType="BIGINT" />
+    <result column="wechat_id" property="wechatId" jdbcType="BIGINT" />
+    <collection property="listProductSpecImage" column="id"
+                select="com.d1m.wechat.mapper.EstoreProductImageMapper.selectProductSpecImageListBySpecId" />
+  </resultMap>
+
+  <select id="selectSpecListByProductId" resultMap="searchResultMap">
+    SELECT * FROM estore_product_spec
+    <where>
+      wechat_id = #{wechatId}
+      <if test="productId != null">
+        and product_id = #{productId}
+      </if>
+      <if test="specId != null">
+        and FIND_IN_SET(id,#{specId}) > 0
+      </if>
+      <if test="sku != null">
+        and FIND_IN_SET(sku,#{sku}) > 0
+      </if>
+    </where>
+  </select>
+
 </mapper>

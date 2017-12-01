@@ -73,16 +73,16 @@ public class CoreApplicationTest {
 //    @Transactional
     @Test
     public void contextLoads() {
-
-//        listOrder();
+        createOrder();
+        listOrder();
     }
 
     public void listOrder(){
         EstoreOrderSearch estoreOrderSearch = new EstoreOrderSearch();
-//        estoreOrderSearch.setPageSize(2);
-//        estoreOrderSearch.setPageNum(2);
+        estoreOrderSearch.setPageSize(1);
+        estoreOrderSearch.setPageNum(1);
 //        estoreOrderSearch.setName("test name");
-        estoreOrderSearch.setOrderId(3L);
+//        estoreOrderSearch.setOrderId(3L);
         estoreOrderSearch.setWechatId(wechatId);
         List<EstoreOrderEntity> listEstoreOrderEntity = estoreOrderServiceImpl.selectOrderList(estoreOrderSearch);
         log.info(JSONObject.toJSONString(listEstoreOrderEntity));
@@ -288,8 +288,8 @@ public class CoreApplicationTest {
     public void listProduct(){
         EstoreProductSearch estoreProductSearch = new EstoreProductSearch();
 //        estoreProductSearch.setPageSize(2);
-//        estoreProductSearch.setPageNum(2);
-        estoreProductSearch.setName("test name");
+//        estoreProductSearch.setPageNum(1);
+        estoreProductSearch.setSku("0003");
         estoreProductSearch.setWechatId(wechatId);
         List<EstoreProductEntity> listEstoreProductEntity = estoreProductServiceImpl.selectProductList(estoreProductSearch);
         log.info(JSONObject.toJSONString(listEstoreProductEntity));

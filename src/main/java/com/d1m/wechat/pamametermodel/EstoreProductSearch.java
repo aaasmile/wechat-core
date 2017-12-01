@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 public class EstoreProductSearch extends BaseModel implements Cloneable{
-    private Long pId;
+    private Long productId;
     private Long specId;
     private String name;
     private String desc;

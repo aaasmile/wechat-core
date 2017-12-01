@@ -7,17 +7,10 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.*;
 
 @Getter
 @Setter
-@Table(name = "estore_product_spec")
-public class EstoreProductSpec {
-    /**
-     * 自增ID
-     */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class EstoreProductSpecListResult {
     private Long id;
 
     /**
@@ -28,19 +21,16 @@ public class EstoreProductSpec {
     /**
      * 规格类型（0：统一规格；1：多规格）
      */
-    @Column(name = "spec_type")
     private Byte specType;
 
     /**
      * 规格值（JSON格式）
      */
-    @Column(name = "spec_value")
     private JSONObject specValue;
 
     /**
      * 市场价，单位：元
      */
-    @Column(name = "market_price")
     private BigDecimal marketPrice;
 
     /**
@@ -71,13 +61,11 @@ public class EstoreProductSpec {
     /**
      * 创建时间
      */
-    @Column(name = "create_at")
     private Date createAt;
 
     /**
      * 修改时间
      */
-    @Column(name = "modify_at")
     private Date modifyAt;
 
     /**
@@ -85,14 +73,12 @@ public class EstoreProductSpec {
      */
     private Byte status;
 
-    @Column(name = "product_id")
     private Long productId;
 
     /**
      * 微信ID
      */
-    @Column(name = "wechat_id")
     private Long wechatId;
 
-
+    private List<EstoreProductImage> listProductSpecImage;
 }

@@ -19,13 +19,15 @@ public class EstoreConfig {
     /**
      * 配置键名
      */
+    @Column(name = "`key`")
     private String key;
-
+    @Column(name = "`value`")
     private String value;
 
     /**
      * 状态（1：启用；0：禁用）
      */
+    @Column(name = "`status`")
     private Byte status;
 
     /**

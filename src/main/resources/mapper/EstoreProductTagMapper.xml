@@ -9,4 +9,8 @@
     <result column="tag_id" property="tagId" jdbcType="BIGINT" />
     <result column="wechat_id" property="wechatId" jdbcType="BIGINT" />
   </resultMap>
+
+  <select id="selectTagListByProductId" resultMap="BaseResultMap">
+    SELECT * FROM estore_product_tag where product_sale_id = #{sale_id}
+  </select>
 </mapper>
