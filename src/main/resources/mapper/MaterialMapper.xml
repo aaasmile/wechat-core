@@ -135,16 +135,24 @@
   </resultMap>
 
     <select id="searchMiniProgram" parameterType="com.d1m.wechat.pamametermodel.MiniProgramModel" resultMap="MiniProgramResultMap">
-        SELECT mp.* FROM material_mini_program_view mp
+        SELECT mmpv.* FROM material_mini_program_view mmpv
         <where>
-            mp.status = 1 and mp.wechat_id = #{wechatId,jdbcType=INTEGER}
+            mmpv.status = 1 and mmpv.wechat_id = #{wechatId,jdbcType=INTEGER}
             <if test="title != null">
-                and mp.title like CONCAT('%',#{title,jdbcType=VARCHAR},'%' )
+                and mmpv.title like CONCAT('%',#{title,jdbcType=VARCHAR},'%' )
             </if>
             <if test="appid != null">
-                and mp.appid = #{appid}
+                and mmpv.appid = #{appid}
             </if>
-            order by mp.id desc
+            order by mmpv.id desc
+        </where>
+    </select>
+    <select id="getMiniProgramByMaterialId" parameterType="hashmap" resultMap="MiniProgramResultMap">
+        SELECT mmpv.* FROM material_mini_program_view mmpv
+        <where>
+            mmpv.status = 1
+            and mmpv.wechat_id = #{wechatId,jdbcType=INTEGER}
+            and mmpv.material_id = #{materialId,jdbcType=INTEGER}
         </where>
     </select>
     <resultMap id="MiniProgramResultMap" type="com.d1m.wechat.dto.MiniProgramDto">

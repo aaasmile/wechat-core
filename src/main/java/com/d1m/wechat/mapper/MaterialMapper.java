@@ -24,4 +24,6 @@ public interface MaterialMapper extends MyMapper<Material> {
 
 	Page<MiniProgramDto> searchMiniProgram(MiniProgramModel miniProgramModel);
 
+    MiniProgramDto getMiniProgramByMaterialId(@Param("wechatId") Integer wechatId, @Param("materialId") Integer materialId);
+
 }

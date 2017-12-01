@@ -89,4 +89,7 @@ public interface MaterialService extends IService<Material> {
     int updateMiniProgram(Integer userId, Integer wechatId, MaterialModel materialModel);
     int deleteMiniProgram(Integer userId, Integer wechatId, Integer miniProgramId);
     Page<MiniProgramDto> searchMiniProgram(MiniProgramModel miniProgramModel, boolean queryCount);
+
+    MiniProgramDto getMiniProgramByMaterialId(Integer wechatId, Integer materialId);
+
 }

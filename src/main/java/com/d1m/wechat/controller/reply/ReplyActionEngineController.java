@@ -7,9 +7,20 @@ import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.Page;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.dto.MaterialDto;
 import com.d1m.wechat.dto.MemberTagDto;
+import com.d1m.wechat.dto.MiniProgramDto;
 import com.d1m.wechat.dto.ReplyActionEngineDto;
 import com.d1m.wechat.model.Material;
 import com.d1m.wechat.model.MemberTag;
@@ -24,16 +35,6 @@ import com.d1m.wechat.service.MemberTagService;
 import com.d1m.wechat.service.ReplyActionEngineService;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
-import com.github.pagehelper.Page;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
 
 @Api(value="自动回复行为规则API", tags="自动回复行为规则接口")
 @Slf4j
@@ -214,6 +215,18 @@ public class ReplyActionEngineController extends BaseController {
 								valueArray.add(valueJson);
 							}
 						}
+                    } else if (qae.getCode().byteValue() == Effect.SEND_MINI_PROGRAM.getValue()) {
+                        MiniProgramDto miniProgramDto;
+                        for (Integer id : value) {
+                            valueArray = new JSONArray();
+                            miniProgramDto = materialService.getMiniProgramByMaterialId(wechatId, id);
+                            if (miniProgramDto != null) {
+                                valueJson = new JSONObject();
+                                valueJson.put("id", miniProgramDto.getId());
+                                valueJson.put("thumbUrl", miniProgramDto.getThumbUrl());
+                                valueArray.add(valueJson);
+                            }
+                        }
 					} else if (qae.getCode().byteValue() == Effect.SEND_TEXT
 							.getValue()) {
 						valueArray = new JSONArray();

@@ -758,4 +758,9 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         return materialMapper.searchMiniProgram(miniProgramModel);
     }
 
+    @Override
+    public MiniProgramDto getMiniProgramByMaterialId(Integer wechatId, Integer materialId) {
+        return materialMapper.getMiniProgramByMaterialId(wechatId, materialId);
+    }
+
 }
