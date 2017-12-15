@@ -259,8 +259,8 @@ CREATE TABLE wx_giftcard_order_shipment
     shipment_exd VARCHAR(100) NOT NULL COMMENT '物流订单号2',
 
     ship_time DATETIME NOT NULL COMMENT '发货时间',
-    sign_time DATETIME NOT NULL COMMENT '签收时间',
-    refuse_time DATETIME NOT NULL COMMENT '拒收时间',
+    sign_time DATETIME NULL COMMENT '签收时间',
+    refuse_time DATETIME NULL COMMENT '拒收时间',
 
     valid BIT DEFAULT b'1' NULL
 );
