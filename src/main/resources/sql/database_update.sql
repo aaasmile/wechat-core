@@ -160,3 +160,151 @@ CREATE VIEW material_mini_program_view AS
     SELECT mp.*, mc.pic_url as thumb_url, mc.media_id as thumb_media_id
     FROM material_mini_program mp
         LEFT JOIN material mc ON mp.thumb_material_id = mc.id;
+
+-- 2017-12-11 添加礼品卡订单
+CREATE TABLE wx_giftcard_order
+(
+    id BIGINT AUTO_INCREMENT
+        PRIMARY KEY,
+    wechat_id INT NULL,
+    member_id INT NULL,
+    order_id VARCHAR(30) NOT NULL,
+    page_id VARCHAR(100) NULL,
+    trans_id VARCHAR(100) NULL,
+    create_time DATETIME NULL,
+    pay_finish_time DATETIME NULL,
+    total_price BIGINT NULL COMMENT '全部金额，以分为单位',
+    open_id VARCHAR(100) NULL,
+    accepter_openid VARCHAR(100) NULL,
+    valid BIT DEFAULT b'1' NULL,
+    is_chat_room BIT NULL,
+    outer_str VARCHAR(30) NULL,
+    CONSTRAINT wx_giftcard_order_order_id_uindex
+    UNIQUE (order_id)
+)
+    COMMENT '微信礼品卡订单';
+
+CREATE TABLE wx_giftcard_order_history
+(
+    id BIGINT AUTO_INCREMENT
+        PRIMARY KEY,
+    wechat_id INT NULL,
+    event VARCHAR(30) NOT NULL,
+    created_at DATETIME NULL,
+    member_id INT NULL,
+    order_id VARCHAR(30) NOT NULL,
+    page_id VARCHAR(100) NULL,
+    trans_id VARCHAR(100) NULL,
+    create_time DATETIME NULL,
+    pay_finish_time DATETIME NULL,
+    total_price BIGINT NULL COMMENT '全部金额，以分为单位',
+    open_id VARCHAR(100) NULL,
+    accepter_openid VARCHAR(100) NULL,
+    is_chat_room BIT NULL,
+    outer_str VARCHAR(30) NULL
+)
+    COMMENT '微信礼品卡订单事件记录';
+
+CREATE TABLE wx_giftcard_customer
+(
+    id BIGINT AUTO_INCREMENT
+        PRIMARY KEY,
+    wechat_id INT NULL,
+    name VARCHAR(30) NULL,
+    phone VARCHAR(30) NULL,
+    valid BIT DEFAULT b'1' NULL,
+    CONSTRAINT wx_giftcard_customer_phone_uindex
+    UNIQUE (phone)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+
+INSERT INTO d1m_wechat.wx_giftcard_customer (wechat_id, name, phone)
+    SELECT 81, eo.delivery_name, eo.delivery_phone
+    FROM estore_order eo
+    WHERE eo.id IN (
+        SELECT min(eo_.id)
+        FROM estore_order eo_
+        GROUP BY eo_.delivery_phone
+    ) and eo.delivery_phone not in (
+        SELECT phone
+        FROM wx_giftcard_customer
+    );
+
+CREATE TABLE wx_giftcard_order_card
+(
+    id BIGINT AUTO_INCREMENT
+        PRIMARY KEY,
+    wechat_id INT NULL,
+    order_id VARCHAR(100) NULL,
+    card_id VARCHAR(50) NULL,
+    price BIGINT NULL,
+    code VARCHAR(50) NULL,
+    default_gifting_msg VARCHAR(200) NULL,
+    background_pic_url VARCHAR(200) NULL,
+    outer_img_id VARCHAR(50) NULL,
+    accepter_openid VARCHAR(100) NULL,
+    valid BIT DEFAULT b'1' NULL,
+    CONSTRAINT wx_giftcard_order_card_code_uindex
+    UNIQUE (code)
+);
+
+CREATE TABLE wx_giftcard_order_shipment
+(
+    id BIGINT AUTO_INCREMENT
+        PRIMARY KEY,
+    wechat_id INT NULL,
+    order_no VARCHAR(100) NOT NULL COMMENT 'estore订单号',
+    order_id VARCHAR(100) NULL COMMENT '微信订单号',
+    express_code VARCHAR(15) NOT NULL COMMENT '物流公司',
+    shipment_id VARCHAR(100) NOT NULL COMMENT '物流订单号',
+    shipment_exd VARCHAR(100) NOT NULL COMMENT '物流订单号2',
+
+    ship_time DATETIME NOT NULL COMMENT '发货时间',
+    sign_time DATETIME NOT NULL COMMENT '签收时间',
+    refuse_time DATETIME NOT NULL COMMENT '拒收时间',
+
+    valid BIT DEFAULT b'1' NULL
+);
+
+CREATE VIEW wx_giftcard_customer_view AS
+    SELECT
+        'CUWC1I ' as 'Rec tRpe',
+        concat('C90001', lpad(c.id, 11, '0')) as 'Rip code',
+        'C90001' as 'StoreCode',
+        '' as 'title',
+        eo.delivery_name as 'last name',
+        '' as 'first name',
+        substring(eo.delivery_address, 1, 35) as 'address1',
+        substring(eo.delivery_address, 36, 35) as 'address2',
+        substring(eo.delivery_address, 71, 35) as 'address3',
+        eo.delivery_city as 'city',
+        REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(eo.delivery_province , '省', '' ) , '特别行政区', '' ) , '自治区', '' ) , '维吾尔', '' ) , '壮族', '' ) , '回族', '' ) as 'state',
+        '' as 'post code',
+        'CHN' as 'Country',
+        '' as 'phone',
+        eo.delivery_phone as 'mobile',
+        '' as 'phone3',
+        '' as 'email',
+        '' as 'day_birth',
+        '' as 'month_birth',
+        '' as 'year_birth',
+        '' as 'sex',
+        '' as 'classification',
+        '' as 'SMS',
+        '' as 'mailing',
+        '' as 'e-mailing',
+        '' as 'contact method',
+        '' as 'skin type',
+        '' as 'how found',
+        DATE_FORMAT(eo.create_at,'%Y%m%d') as 'creation date',
+        '' as 'origin vip code',
+        '' as 'FreeText',
+        '' as 'NFC',
+        '' as 'AskCustomer',
+        'C90001' as 'CreationStoreID',
+        'CHI' as 'CustomerLanguage'
+    FROM estore_order eo
+        LEFT JOIN wx_giftcard_customer c ON c.phone = eo.delivery_phone
+    WHERE eo.id in (
+        SELECT min(eo_.id) FROM estore_order eo_
+        GROUP BY eo_.delivery_phone
+    );
