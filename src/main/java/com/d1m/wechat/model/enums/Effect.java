@@ -11,8 +11,10 @@ public enum Effect {
 	SEND_IMAGE((byte) 202, "发送图片"),
 
 	SEND_TEXT((byte) 203, "发送文本"),
-	
-	API((byte) 204, "调用API")
+
+	API((byte) 204, "调用API"),
+
+	SEND_MINI_PROGRAM((byte) 205, "发送小程序"),
 
 	;
 

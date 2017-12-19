@@ -1,7 +1,5 @@
 package com.d1m.wechat;
 
-import com.d1m.wechat.service.engine.EngineContext;
-import com.d1m.wechat.util.AppContextUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -13,6 +11,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
+
+import com.d1m.wechat.util.AppContextUtils;
 
 /**
  * ManageApplication
@@ -39,8 +39,4 @@ public class CoreApplication {
         return new AppContextUtils();
     }
 
-    @Bean
-    public EngineContext taskContext() {
-        return new EngineContext();
-    }
 }

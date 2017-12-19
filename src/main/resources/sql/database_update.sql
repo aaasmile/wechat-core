@@ -1,4 +1,16 @@
 -- 20170713 add
+ALTER TABLE `member` ADD COLUMN `name`  varchar(255) NULL DEFAULT NULL COMMENT '会员姓名' AFTER `keyword`;
+ALTER TABLE `member` ADD COLUMN `birth_date`  date NULL DEFAULT NULL COMMENT '会员生日' AFTER `name`;
+ALTER TABLE `member` ADD COLUMN `email`  varchar(255) NULL DEFAULT NULL COMMENT '会员邮箱' AFTER `birth_date`;
+ALTER TABLE `member` ADD COLUMN `bind_at`  datetime NULL DEFAULT NULL COMMENT '绑定时间' AFTER `status`;
+ALTER TABLE `member` ADD COLUMN `unbund_at`  datetime NULL DEFAULT NULL COMMENT '解绑时间' AFTER `bind_at`;
+ALTER TABLE `member` ADD COLUMN `province_code`  varchar(255) NULL DEFAULT NULL AFTER `unbund_at`;
+ALTER TABLE `member` ADD COLUMN `city_code`  varchar(255) NULL DEFAULT NULL AFTER `province_code`;
+ALTER TABLE `member` ADD COLUMN `country_code`  varchar(255) NULL DEFAULT NULL AFTER `city_code`;
+ALTER TABLE `member` ADD COLUMN `province_name`  varchar(255) NULL DEFAULT NULL AFTER `country_code`;
+ALTER TABLE `member` ADD COLUMN `city_name`  varchar(255) NULL DEFAULT NULL AFTER `province_name`;
+ALTER TABLE `member` ADD COLUMN `country_name`  varchar(255) NULL DEFAULT NULL AFTER `city_name`;
+ALTER TABLE `member` ADD COLUMN `address`  varchar(255) NULL DEFAULT NULL COMMENT '详细地址' AFTER `country_name`;
 ALTER TABLE `member` ADD COLUMN `medium` varchar(255) DEFAULT '' COMMENT '媒介' AFTER `last_conversation_at`;
 ALTER TABLE `conversation_image_text_detail` CHANGE COLUMN `content_source_url` `content_source_url` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '原文链接';
 ALTER TABLE `material_image_text_detail` CHANGE COLUMN `content_source_url` `content_source_url` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '原文链接';
@@ -97,3 +109,202 @@ ALTER TABLE `mass_conversation_batch_result`
 ALTER TABLE `mass_conversation_result`
   ADD COLUMN `errcode`  varchar(20) NULL AFTER `msg_data_id`,
   ADD COLUMN `errmsg`  varchar(100) NULL AFTER `errcode`;
+
+-- 2017-11-16 添加用户权限表
+create table user_function
+(
+    id int auto_increment comment '主键ID' primary key,
+    user_id int null comment '用户ID',
+    function_id int null comment '功能ID',
+    created_at datetime not null comment '创建时间',
+    creator_id int null comment '创建用户ID',
+    constraint user_function_user_id_fk
+    foreign key (user_id) references user (id),
+    constraint user_function_function_id_fk
+    foreign key (function_id) references function (id)
+)
+;
+
+create index function_id
+    on user_function (function_id)
+;
+
+create index user_id
+    on user_function (user_id)
+;
+# DROP TABLE material_mini_program;
+-- 2017-11-21 添加小程序
+CREATE TABLE material_mini_program
+(
+    id INT AUTO_INCREMENT COMMENT '主键ID' PRIMARY KEY,
+    material_id INT NOT NULL COMMENT '素材ID',
+    wechat_id INT NOT NULL COMMENT '公众号ID',
+    title VARCHAR(50) NOT NULL COMMENT '小程序的标题',
+    appid VARCHAR(50) NOT NULL COMMENT '小程序的appid',
+    pagepath VARCHAR(50) NOT NULL COMMENT '小程序的页面路径',
+    thumb_material_id INT NOT NULL COMMENT '素材ID',
+    creator_id INT(11) NOT NULL,
+    created_at DATETIME NOT NULL,
+    status TINYINT(4) DEFAULT '1',
+    CONSTRAINT material_mini_program_material_id_fk
+    FOREIGN KEY (material_id) REFERENCES material (id),
+    CONSTRAINT material_mini_program_wechat_id_fk
+    FOREIGN KEY (wechat_id) REFERENCES wechat (id),
+    CONSTRAINT material_mini_program_thumb_material_id_fk
+    FOREIGN KEY (thumb_material_id) REFERENCES material (id)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci
+    COMMENT '小程序素材';
+
+
+CREATE VIEW material_mini_program_view AS
+    SELECT mp.*, mc.pic_url as thumb_url, mc.media_id as thumb_media_id
+    FROM material_mini_program mp
+        LEFT JOIN material mc ON mp.thumb_material_id = mc.id;
+
+-- 2017-12-11 添加礼品卡订单
+CREATE TABLE wx_giftcard_order
+(
+    id BIGINT AUTO_INCREMENT
+        PRIMARY KEY,
+    wechat_id INT NULL,
+    member_id INT NULL,
+    order_id VARCHAR(30) NOT NULL,
+    page_id VARCHAR(100) NULL,
+    trans_id VARCHAR(100) NULL,
+    create_time DATETIME NULL,
+    pay_finish_time DATETIME NULL,
+    total_price BIGINT NULL COMMENT '全部金额，以分为单位',
+    open_id VARCHAR(100) NULL,
+    accepter_openid VARCHAR(100) NULL,
+    valid BIT DEFAULT b'1' NULL,
+    is_chat_room BIT NULL,
+    outer_str VARCHAR(30) NULL,
+    CONSTRAINT wx_giftcard_order_order_id_uindex
+    UNIQUE (order_id)
+)
+    COMMENT '微信礼品卡订单';
+
+CREATE TABLE wx_giftcard_order_history
+(
+    id BIGINT AUTO_INCREMENT
+        PRIMARY KEY,
+    wechat_id INT NULL,
+    event VARCHAR(30) NOT NULL,
+    created_at DATETIME NULL,
+    member_id INT NULL,
+    order_id VARCHAR(30) NOT NULL,
+    page_id VARCHAR(100) NULL,
+    trans_id VARCHAR(100) NULL,
+    create_time DATETIME NULL,
+    pay_finish_time DATETIME NULL,
+    total_price BIGINT NULL COMMENT '全部金额，以分为单位',
+    open_id VARCHAR(100) NULL,
+    accepter_openid VARCHAR(100) NULL,
+    is_chat_room BIT NULL,
+    outer_str VARCHAR(30) NULL
+)
+    COMMENT '微信礼品卡订单事件记录';
+
+CREATE TABLE wx_giftcard_customer
+(
+    id BIGINT AUTO_INCREMENT
+        PRIMARY KEY,
+    wechat_id INT NULL,
+    name VARCHAR(30) NULL,
+    phone VARCHAR(30) NULL,
+    valid BIT DEFAULT b'1' NULL,
+    CONSTRAINT wx_giftcard_customer_phone_uindex
+    UNIQUE (phone)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+
+INSERT INTO d1m_wechat.wx_giftcard_customer (wechat_id, name, phone)
+    SELECT 81, eo.delivery_name, eo.delivery_phone
+    FROM estore_order eo
+    WHERE eo.id IN (
+        SELECT min(eo_.id)
+        FROM estore_order eo_
+        GROUP BY eo_.delivery_phone
+    ) and eo.delivery_phone not in (
+        SELECT phone
+        FROM wx_giftcard_customer
+    );
+
+CREATE TABLE wx_giftcard_order_card
+(
+    id BIGINT AUTO_INCREMENT
+        PRIMARY KEY,
+    wechat_id INT NULL,
+    order_id VARCHAR(100) NULL,
+    card_id VARCHAR(50) NULL,
+    price BIGINT NULL,
+    code VARCHAR(50) NULL,
+    default_gifting_msg VARCHAR(200) NULL,
+    background_pic_url VARCHAR(200) NULL,
+    outer_img_id VARCHAR(50) NULL,
+    accepter_openid VARCHAR(100) NULL,
+    valid BIT DEFAULT b'1' NULL,
+    CONSTRAINT wx_giftcard_order_card_code_uindex
+    UNIQUE (code)
+);
+
+CREATE TABLE wx_giftcard_order_shipment
+(
+    id BIGINT AUTO_INCREMENT
+        PRIMARY KEY,
+    wechat_id INT NULL,
+    order_no VARCHAR(100) NOT NULL COMMENT 'estore订单号',
+    order_id VARCHAR(100) NULL COMMENT '微信订单号',
+    express_code VARCHAR(15) NOT NULL COMMENT '物流公司',
+    shipment_id VARCHAR(100) NOT NULL COMMENT '物流订单号',
+    shipment_exd VARCHAR(100) NOT NULL COMMENT '物流订单号2',
+
+    ship_time DATETIME NOT NULL COMMENT '发货时间',
+    sign_time DATETIME NULL COMMENT '签收时间',
+    refuse_time DATETIME NULL COMMENT '拒收时间',
+
+    valid BIT DEFAULT b'1' NULL
+);
+
+CREATE VIEW wx_giftcard_customer_view AS
+    SELECT
+        'CUWC1I ' as 'Rec tRpe',
+        concat('C90001', lpad(c.id, 11, '0')) as 'Rip code',
+        'C90001' as 'StoreCode',
+        '' as 'title',
+        eo.delivery_name as 'last name',
+        '' as 'first name',
+        substring(eo.delivery_address, 1, 35) as 'address1',
+        substring(eo.delivery_address, 36, 35) as 'address2',
+        substring(eo.delivery_address, 71, 35) as 'address3',
+        eo.delivery_city as 'city',
+        REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(eo.delivery_province , '省', '' ) , '特别行政区', '' ) , '自治区', '' ) , '维吾尔', '' ) , '壮族', '' ) , '回族', '' ) as 'state',
+        '' as 'post code',
+        'CHN' as 'Country',
+        '' as 'phone',
+        eo.delivery_phone as 'mobile',
+        '' as 'phone3',
+        '' as 'email',
+        '' as 'day_birth',
+        '' as 'month_birth',
+        '' as 'year_birth',
+        '' as 'sex',
+        '' as 'classification',
+        '' as 'SMS',
+        '' as 'mailing',
+        '' as 'e-mailing',
+        '' as 'contact method',
+        '' as 'skin type',
+        '' as 'how found',
+        DATE_FORMAT(eo.create_at,'%Y%m%d') as 'creation date',
+        '' as 'origin vip code',
+        '' as 'FreeText',
+        '' as 'NFC',
+        '' as 'AskCustomer',
+        'C90001' as 'CreationStoreID',
+        'CHI' as 'CustomerLanguage'
+    FROM estore_order eo
+        LEFT JOIN wx_giftcard_customer c ON c.phone = eo.delivery_phone
+    WHERE eo.id in (
+        SELECT min(eo_.id) FROM estore_order eo_
+        GROUP BY eo_.delivery_phone
+    );
