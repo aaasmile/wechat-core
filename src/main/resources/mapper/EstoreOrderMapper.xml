@@ -146,6 +146,31 @@
           and a.create_at <= #{searchParam.endDate}
         ]]>
       </if>
+      <if test="searchParam.code != null">
+        and a.id IN (
+          SELECT
+            d.order_id
+          FROM
+            estore_order_product d
+          LEFT JOIN estore_product e ON e.id = d.product_id
+          LEFT JOIN estore_product_spec f ON f.id = d.product_spec_id
+          WHERE
+            e.`code` = #{searchParam.code}
+        )
+      </if>
+      <if test="searchParam.sku != null">
+        and a.id IN (
+          SELECT
+            d.order_id
+          FROM
+            estore_order_product d
+          LEFT JOIN estore_product e ON e.id = d.product_id
+          LEFT JOIN estore_product_spec f ON f.id = d.product_spec_id
+          WHERE
+            f.sku = #{searchParam.sku}
+        )
+      </if>
+
     </where>
     <if test="searchParam.sortName != null">
       order by ${searchParam.sortName}
