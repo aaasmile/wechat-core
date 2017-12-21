@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.d1m.wechat.mapper.WxGiftcardOrderMapper" >
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.WxGiftcardOrder" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="wechat_id" property="wechatId" jdbcType="INTEGER" />
+    <result column="member_id" property="memberId" jdbcType="INTEGER" />
+    <result column="order_id" property="orderId" jdbcType="VARCHAR" />
+    <result column="page_id" property="pageId" jdbcType="VARCHAR" />
+    <result column="trans_id" property="transId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="pay_finish_time" property="payFinishTime" jdbcType="TIMESTAMP" />
+    <result column="total_price" property="totalPrice" jdbcType="BIGINT" />
+    <result column="open_id" property="openId" jdbcType="VARCHAR" />
+    <result column="accepter_openid" property="accepterOpenid" jdbcType="VARCHAR" />
+    <result column="valid" property="valid" jdbcType="BIT" />
+    <result column="is_chat_room" property="isChatRoom" jdbcType="BIT" />
+    <result column="outer_str" property="outerStr" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <resultMap id="searchResultMap" type="com.d1m.wechat.dto.GiftCardOrderDto">
+    <result column="order_id" property="orderId" jdbcType="VARCHAR" />
+    <result column="trans_id" property="transId" jdbcType="VARCHAR" />
+    <result column="pay_finish_time" property="payFinishTime" jdbcType="TIMESTAMP" />
+    <result column="open_id" property="openId" jdbcType="VARCHAR" />
+    <result column="accepter_openid" property="accepterOpenId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="total_price" property="totalPrice" jdbcType="DECIMAL" />
+    <result column="card_id" property="cardId" jdbcType="VARCHAR" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="background_pic_url" property="backgroundPicUrl" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <select id="search" resultMap="searchResultMap">
+    SELECT
+    b.order_id AS order_id,
+    b.trans_id AS trans_id,
+    b.pay_finish_time AS pay_finish_time,
+    b.open_id AS open_id,
+    IF(b.accepter_openid IS NULL,c.accepter_openid,b.accepter_openid) AS accepter_openid,
+    c.create_time as create_time,
+    b.total_price / 100 AS total_price,
+    a.card_id AS card_id,
+    a.`code` AS code,
+    a.background_pic_url AS background_pic_url
+
+    FROM
+    wx_giftcard_order_card a
+    LEFT JOIN wx_giftcard_order b ON a.order_id = b.order_id
+    LEFT OUTER JOIN wx_giftcard_order_history AS c ON b.order_id = c.order_id
+      AND c.id = (
+        SELECT
+        max(id)
+        FROM
+        wx_giftcard_order_history
+        WHERE
+        `event` = 'giftcard_user_accept'
+        AND order_id = b.order_id
+      )
+    <where>
+      <if test="searchParam.orderId != null">
+        and b.order_id = #{searchParam.orderId}
+      </if>
+      <if test="searchParam.transId != null">
+        and b.trans_id = #{searchParam.transId}
+      </if>
+      <if test="searchParam.openId != null">
+        and b.open_id = #{searchParam.openId}
+      </if>
+      <if test="searchParam.accepterOpenId != null">
+        and (b.accepter_openid = #{searchParam.accepterOpenId} or c.accepter_openid = #{searchParam.accepterOpenId})
+      </if>
+      <if test="searchParam.cardId != null">
+        and a.card_id = #{searchParam.cardId}
+      </if>
+      <if test="searchParam.code != null">
+        and a.`code` = #{searchParam.code}
+      </if>
+      <if test="searchParam.payStart != null">
+        <![CDATA[
+          and b.pay_finish_time >= #{searchParam.payStart}
+        ]]>
+      </if>
+      <if test="searchParam.payEnd != null">
+        <![CDATA[
+          and b.pay_finish_time <= #{searchParam.payEnd}
+        ]]>
+      </if>
+    </where>
+    <if test="searchParam.sortName != null">
+      order by ${searchParam.sortName}
+      <if test="sortDir != null">
+        ${searchParam.sortDir}
+      </if>
+      <if test="searchParam.sortDir == null">
+        desc
+      </if>
+    </if>
+    <if test="searchParam.sortName == null">
+      order by b.id desc
+    </if>
+  </select>
+</mapper>
