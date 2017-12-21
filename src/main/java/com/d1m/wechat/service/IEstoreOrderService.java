@@ -2,22 +2,20 @@
 package com.d1m.wechat.service;
 
 
+import com.d1m.wechat.model.EstoreOrder;
 import com.d1m.wechat.pamametermodel.EstoreOrderEntity;
 import com.d1m.wechat.pamametermodel.EstoreOrderSearch;
 import com.github.pagehelper.Page;
 
-import java.util.List;
+public interface IEstoreOrderService extends IService<EstoreOrder>{
 
-public interface IEstoreOrderService {
-
-
-    Page<EstoreOrderEntity> selectOrderList(EstoreOrderSearch estoreOrderSearch);
+    Page<EstoreOrderEntity> selectOrderList(Integer wechatId, EstoreOrderSearch estoreOrderSearch, boolean queryCount);
 
     void addEstoreOrder(EstoreOrderEntity orderEntity);
 
 //    void deletePopupGoods(Long id);
 //
-    EstoreOrderEntity getEstoreOrder(Long orderId, Long wechatId);
+    EstoreOrderEntity getEstoreOrder(Long orderId, Integer wechatId);
 
     void updateTrackNo(Long orderId, String trackNo);
 }

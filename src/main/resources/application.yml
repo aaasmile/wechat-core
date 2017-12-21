@@ -53,7 +53,7 @@ spring:
       maxRequestSize: 100MB
 
 jdbc.driverClass: com.mysql.jdbc.Driver
-jdbc.url: jdbc:mysql://${MYSQL_HOST:${ENV_HOST}}:${MYSQL_PORT:3306}/${MYSQL_DB:estore}?autoReconnect=true
+jdbc.url: jdbc:mysql://${MYSQL_HOST:${ENV_HOST}}:${MYSQL_PORT:3306}/${MYSQL_DB:d1m_wechat}?autoReconnect=true
 jdbc.user: ${MYSQL_USER:root}
 jdbc.password: ${MYSQL_PASSWORD:root}
 jdbc.enableDynamic: ${ENABLE_DYNAMIC:false}

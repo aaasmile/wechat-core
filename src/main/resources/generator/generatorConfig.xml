@@ -44,7 +44,7 @@
  	</commentGenerator>
 
     <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                    connectionURL="jdbc:mysql://10.60.1.60:3306/estore"
+                    connectionURL="jdbc:mysql://10.60.1.60:3306/d1m_wechat"
                     userId="root"
                     password="root">
     </jdbcConnection>
@@ -57,7 +57,7 @@
 
     <javaClientGenerator targetPackage="${targetMapperPackage}" targetProject="${targetJavaProject}" type="XMLMAPPER" />
 
-    <table tableName="estore_%" >
+    <table tableName="wx_giftcard_%" >
       <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
     </table>
   </context>

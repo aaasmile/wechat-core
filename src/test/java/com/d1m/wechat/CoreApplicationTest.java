@@ -1,6 +1,7 @@
 package com.d1m.wechat;
 
 import com.alibaba.fastjson.JSONObject;
+import com.d1m.wechat.dto.GiftCardOrderDto;
 import com.d1m.wechat.mapper.*;
 import com.d1m.wechat.model.EstoreOrder;
 import com.d1m.wechat.model.EstoreOrderPay;
@@ -13,10 +14,7 @@ import com.d1m.wechat.model.enums.OrderEnum;
 import com.d1m.wechat.model.enums.PayTypeEnum;
 import com.d1m.wechat.model.popup.dao.*;
 import com.d1m.wechat.pamametermodel.*;
-import com.d1m.wechat.service.IEstoreOrderService;
-import com.d1m.wechat.service.IEstoreProductService;
-import com.d1m.wechat.service.IPopupGoodsService;
-import com.d1m.wechat.service.IPopupOrderService;
+import com.d1m.wechat.service.*;
 import com.d1m.wechat.util.DateUtil;
 import com.github.pagehelper.Page;
 import org.apache.commons.lang3.StringUtils;
@@ -39,7 +37,7 @@ import java.util.*;
 @SpringBootTest(classes = CoreApplication.class)
 public class CoreApplicationTest {
     private Logger log = LoggerFactory.getLogger(CoreApplicationTest.class);
-    public Long wechatId = 32L;
+    public Integer wechatId = 32;
     public Long memberId = 316L;
     public Long goodsId = 70L;
 
@@ -69,12 +67,15 @@ public class CoreApplicationTest {
     IEstoreProductService estoreProductServiceImpl;
     @Autowired
     IEstoreOrderService estoreOrderServiceImpl;
+    @Autowired
+    IGiftCardOrderService giftCardOrderService;
 
 //    @Transactional
     @Test
     public void contextLoads() {
-        createOrder();
-        listOrder();
+        //createOrder();
+        //listOrder();
+        listGiftCardOrder();
     }
 
     public void listOrder(){
@@ -83,9 +84,18 @@ public class CoreApplicationTest {
         estoreOrderSearch.setPageNum(1);
 //        estoreOrderSearch.setName("test name");
 //        estoreOrderSearch.setOrderId(3L);
-        estoreOrderSearch.setWechatId(wechatId);
-        List<EstoreOrderEntity> listEstoreOrderEntity = estoreOrderServiceImpl.selectOrderList(estoreOrderSearch);
+        List<EstoreOrderEntity> listEstoreOrderEntity = estoreOrderServiceImpl.selectOrderList(wechatId, estoreOrderSearch, true);
         log.info(JSONObject.toJSONString(listEstoreOrderEntity));
+    }
+
+    public void listGiftCardOrder(){
+        GiftCardOrderSearch giftCardOrderSearch = new GiftCardOrderSearch();
+        giftCardOrderSearch.setPageSize(1);
+        giftCardOrderSearch.setPageNum(1);
+//        estoreOrderSearch.setName("test name");
+//        estoreOrderSearch.setOrderId(3L);
+        List<GiftCardOrderDto> list = giftCardOrderService.selectOrderList(wechatId, giftCardOrderSearch,true);
+        log.info(JSONObject.toJSONString(list));
     }
 
     public void getOrder(){
@@ -131,7 +141,7 @@ public class CoreApplicationTest {
         estoreOrderEntity.setGiftContent("this is gift");
         estoreOrderEntity.setCreateAt("2017-11-16 18:23:35");
         estoreOrderEntity.setUpdateAt("2017-11-16 18:23:35");
-        estoreOrderEntity.setWechatId(wechatId);
+        estoreOrderEntity.setWechatId(wechatId.longValue());
         estoreOrderEntity.setPayType("WECHAT_PAY");
         List<EstoreOrderProductEntity> listEstoreOrderProductEntity = new ArrayList<>();
         EstoreOrderProductEntity estoreOrderProductEntity;
@@ -161,7 +171,7 @@ public class CoreApplicationTest {
                 JSONObject.parseObject("{\"颜色\":\"红色,蓝色,黄色\",\"尺码\":\"39,40,41\"}"));
         estoreProductEntity.setTag("1,2");
         estoreProductEntity.setStatus((byte)1);
-        estoreProductEntity.setWechatId(wechatId);
+        estoreProductEntity.setWechatId(wechatId.longValue());
         List<EstoreProductImageEntity> listImg = new ArrayList<>(3);
         EstoreProductImageEntity estoreProductImageEntity;
         for (int i = 1; i <= 3; i++) {
@@ -227,7 +237,7 @@ public class CoreApplicationTest {
                 JSONObject.parseObject("{\"颜色\":\"红色,蓝色,黄色\",\"尺码\":\"39,40,41\"}"));
         estoreProductEntity.setTag("1,2");
         estoreProductEntity.setStatus((byte)1);
-        estoreProductEntity.setWechatId(wechatId);
+        estoreProductEntity.setWechatId(wechatId.longValue());
         List<EstoreProductImageEntity> listImg = new ArrayList<>(3);
         EstoreProductImageEntity estoreProductImageEntity;
         for (int i = 1; i <= 3; i++) {
@@ -281,7 +291,7 @@ public class CoreApplicationTest {
 
     public void getProduct() {
         Long productId = 4L;
-        EstoreProductEntity estoreProductEntity = estoreProductServiceImpl.getEstoreProduct(productId, wechatId);
+        EstoreProductEntity estoreProductEntity = estoreProductServiceImpl.getEstoreProduct(productId, wechatId.longValue());
         log.info(JSONObject.toJSONString(estoreProductEntity));
     }
 
@@ -290,7 +300,7 @@ public class CoreApplicationTest {
 //        estoreProductSearch.setPageSize(2);
 //        estoreProductSearch.setPageNum(1);
         estoreProductSearch.setSku("0003");
-        estoreProductSearch.setWechatId(wechatId);
+        estoreProductSearch.setWechatId(wechatId.longValue());
         List<EstoreProductEntity> listEstoreProductEntity = estoreProductServiceImpl.selectProductList(estoreProductSearch);
         log.info(JSONObject.toJSONString(listEstoreProductEntity));
     }

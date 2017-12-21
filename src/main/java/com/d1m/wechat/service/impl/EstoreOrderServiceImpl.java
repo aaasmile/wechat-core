@@ -5,22 +5,19 @@ import com.d1m.wechat.mapper.*;
 import com.d1m.wechat.model.*;
 import com.d1m.wechat.pamametermodel.*;
 import com.d1m.wechat.service.IEstoreOrderService;
-import com.d1m.wechat.service.IEstoreProductService;
 import com.d1m.wechat.util.DateUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.impl.cookie.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.common.Mapper;
 
 import java.util.*;
 
 @Service
-public class EstoreOrderServiceImpl implements IEstoreOrderService {
+public class EstoreOrderServiceImpl extends BaseService<EstoreOrder> implements IEstoreOrderService {
     private static final Logger log = LoggerFactory.getLogger(EstoreOrderServiceImpl.class);
     @Autowired
     private EstoreOrderMapper estoreOrderMapper;
@@ -36,14 +33,16 @@ public class EstoreOrderServiceImpl implements IEstoreOrderService {
     private EstoreConfigMapper estoreConfigMapper;
 
     @Override
-    public Page<EstoreOrderEntity> selectOrderList(EstoreOrderSearch estoreOrderSearch) {
-        PageHelper.startPage(estoreOrderSearch.getPageNum(), estoreOrderSearch.getPageSize(), true);
-        List<EstoreOrderListResult> listEstoreOrderListResult = estoreOrderMapper.selectOrderList(estoreOrderSearch);
-        List<EstoreOrderEntity> listEstoreOrderEntity = new Page<>();
+    public Page<EstoreOrderEntity> selectOrderList(Integer wechatId, EstoreOrderSearch estoreOrderSearch, boolean queryCount) {
+        if(estoreOrderSearch.pagable()){
+            PageHelper.startPage(estoreOrderSearch.getPageNum(), estoreOrderSearch.getPageSize(), queryCount);
+        }
+        Page<EstoreOrderListResult> listEstoreOrderListResult = estoreOrderMapper.selectOrderList(wechatId, estoreOrderSearch);
+        Page<EstoreOrderEntity> listEstoreOrderEntity = new Page();
+        listEstoreOrderEntity.setTotal(listEstoreOrderListResult.getTotal());
         EstoreOrderEntity estoreOrderEntity;
         for (EstoreOrderListResult result : listEstoreOrderListResult) {
             Long orderId = result.getId();
-            Long wechatId = result.getWechatId();
             estoreOrderEntity = new EstoreOrderEntity();
             estoreOrderEntity.setId(orderId);
             estoreOrderEntity.setOrderNo(result.getOrderNo());
@@ -85,7 +84,7 @@ public class EstoreOrderServiceImpl implements IEstoreOrderService {
             estoreOrderEntity.setWechatId(result.getWechatId());
             EstoreOrderPay estoreOrderPay = new EstoreOrderPay();
             estoreOrderPay.setOrderId(orderId);
-            estoreOrderPay.setWechatId(wechatId);
+            estoreOrderPay.setWechatId(wechatId.longValue());
             estoreOrderPay = estoreOrderPayMapper.selectOne(estoreOrderPay);
             if (estoreOrderPay != null && estoreOrderPay.getPaymentId() != null) {
                 EstorePayment estorePayment = estorePaymentMapper.selectByPrimaryKey(estoreOrderPay.getPaymentId());
@@ -114,7 +113,9 @@ public class EstoreOrderServiceImpl implements IEstoreOrderService {
                 if (listEstoreProductListResult != null && listEstoreProductListResult.size() > 0) {
                     EstoreProductListResult productResult = listEstoreProductListResult.get(0);
                     EstoreProductSpecListResult productSpec = productResult.getListProductSpec().get(0);
+                    estoreOrderProductEntity.setProductCode(productResult.getCode());
                     estoreOrderProductEntity.setProductName(productResult.getName());
+                    estoreOrderProductEntity.setMarketPrice(productSpec.getMarketPrice());
                     estoreOrderProductEntity.setSpSpecType(productSpec.getSpecType());
                     estoreOrderProductEntity.setSpSpecValue(productSpec.getSpecValue());
                     estoreOrderProductEntity.setExtAttr(productResult.getExtAttr());
@@ -128,7 +129,7 @@ public class EstoreOrderServiceImpl implements IEstoreOrderService {
             listEstoreOrderEntity.add(estoreOrderEntity);
         }
 
-        return (Page<EstoreOrderEntity>) listEstoreOrderEntity;
+        return listEstoreOrderEntity;
     }
 
     @Override
@@ -200,11 +201,10 @@ public class EstoreOrderServiceImpl implements IEstoreOrderService {
     }
 
     @Override
-    public EstoreOrderEntity getEstoreOrder(Long orderId, Long wechatId) {
+    public EstoreOrderEntity getEstoreOrder(Long orderId, Integer wechatId) {
         EstoreOrderSearch estoreOrderSearch = new EstoreOrderSearch();
         estoreOrderSearch.setOrderId(orderId);
-        estoreOrderSearch.setWechatId(wechatId);
-        List<EstoreOrderListResult> listEstoreOrder = estoreOrderMapper.selectOrderList(estoreOrderSearch);
+        List<EstoreOrderListResult> listEstoreOrder = estoreOrderMapper.selectOrderList(wechatId, estoreOrderSearch);
         EstoreOrderEntity estoreOrderEntity = new EstoreOrderEntity();
         EstoreOrderListResult estoreOrder;
         if (listEstoreOrder != null && listEstoreOrder.size() > 0) {
@@ -292,5 +292,10 @@ public class EstoreOrderServiceImpl implements IEstoreOrderService {
         estoreOrder.setExpressNo(trackNo);
         estoreOrder.setStatus((byte)2);
         estoreOrderMapper.updateByPrimaryKeySelective(estoreOrder);
+    }
+
+    @Override
+    public Mapper<EstoreOrder> getGenericMapper() {
+        return estoreOrderMapper;
     }
 }

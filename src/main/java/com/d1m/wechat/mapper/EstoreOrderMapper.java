@@ -4,9 +4,9 @@ import com.d1m.wechat.model.EstoreOrder;
 import com.d1m.wechat.model.EstoreOrderListResult;
 import com.d1m.wechat.pamametermodel.EstoreOrderSearch;
 import com.d1m.wechat.util.MyMapper;
-
-import java.util.List;
+import com.github.pagehelper.Page;
+import org.apache.ibatis.annotations.Param;
 
 public interface EstoreOrderMapper extends MyMapper<EstoreOrder> {
-    List<EstoreOrderListResult> selectOrderList(EstoreOrderSearch estoreOrderSearch);
+    Page<EstoreOrderListResult> selectOrderList(@Param("wechatId") Integer wechatId, @Param("searchParam") EstoreOrderSearch estoreOrderSearch);
 }

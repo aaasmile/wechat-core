@@ -15,8 +15,10 @@ public class EstoreOrderProductEntity {
     private Long productId;
     private Long productSpecId;
     private Integer quantity;
+    private BigDecimal marketPrice;
     private BigDecimal price;
     private Integer point;
+    private String productCode;
     private String productName;
     private JSONObject extAttr;
 //    private Byte specType;

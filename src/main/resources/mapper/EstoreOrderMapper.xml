@@ -112,34 +112,52 @@
     LEFT JOIN estore_payment c on c.id=b.payment_id
     <where>
       a.wechat_id = #{wechatId}
-      <if test="orderId != null">
-        and a.`id` = #{orderId}
+      <if test="searchParam.orderId != null">
+        and a.`id` = #{searchParam.orderId}
       </if>
-      <if test="orderNo != null">
-        and a.`order_no` = #{orderNo}
+      <if test="searchParam.orderNo != null">
+        and a.`order_no` = #{searchParam.orderNo}
       </if>
-      <if test="deliveryName != null">
-        and a.`delivery_name`='#{deliveryName}'
+      <if test="searchParam.deliveryName != null">
+        and a.`delivery_name`=#{searchParam.deliveryName}
       </if>
-      <if test="deliveryPhone != null">
-        and a.`delivery_phone`='#{deliveryPhone}'
+      <if test="searchParam.deliveryPhone != null">
+        and a.`delivery_phone`=#{searchParam.deliveryPhone}
       </if>
-      <if test="payStatus != null">
-        and a.`pay_status` = #{payStatus}
+      <if test="searchParam.payStatus != null">
+        and a.`pay_status` = #{searchParam.payStatus}
       </if>
-      <if test="payType != null">
-        and c.`pay_code`='#{payType}'
+      <if test="searchParam.payType != null">
+        and c.`pay_code`=#{searchParam.payType}
       </if>
-      <if test="expressNo != null">
-        and a.express_no = '#{expressNo}'
+      <if test="searchParam.expressNo != null">
+        and a.express_no = #{searchParam.expressNo}
       </if>
-      <if test="status != null">
-        and a.status = #{status}
+      <if test="searchParam.status != null">
+        and a.status = #{searchParam.status}
       </if>
-      <if test="startDate != null and endDate !=null">
-        and a.create_at between #{startDate} and #{endDate}
+      <if test="searchParam.startDate != null">
+        <![CDATA[
+          and a.create_at >= #{searchParam.startDate}
+        ]]>
+      </if>
+      <if test="searchParam.endDate != null">
+        <![CDATA[
+          and a.create_at <= #{searchParam.endDate}
+        ]]>
       </if>
     </where>
-    order by a.id desc
+    <if test="searchParam.sortName != null">
+      order by ${searchParam.sortName}
+      <if test="sortDir != null">
+        ${searchParam.sortDir}
+      </if>
+      <if test="searchParam.sortDir == null">
+        desc
+      </if>
+    </if>
+    <if test="searchParam.sortName == null">
+      order by a.id desc
+    </if>
   </select>
 </mapper>
