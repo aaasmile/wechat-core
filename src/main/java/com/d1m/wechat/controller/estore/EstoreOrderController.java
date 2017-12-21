@@ -1,5 +1,6 @@
 package com.d1m.wechat.controller.estore;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.controller.report.ReportXlsxStreamView;
@@ -10,16 +11,14 @@ import com.d1m.wechat.service.IEstoreOrderService;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -53,9 +52,16 @@ public class EstoreOrderController extends BaseController {
 
     @RequestMapping(value = "export", method = RequestMethod.POST)
     //@RequiresPermissions("estore:order-list")
-    public ModelAndView exportOrder(@RequestBody(required = false) EstoreOrderSearch estoreOrderSearch){
+    public ModelAndView exportOrder(@RequestParam String data){
         ReportXlsxStreamView view = null;
         try {
+            EstoreOrderSearch estoreOrderSearch = null;
+            if(StringUtils.isNotBlank(data)){
+                estoreOrderSearch = JSON.parseObject(data, EstoreOrderSearch.class);
+            }
+            if(estoreOrderSearch == null){
+                estoreOrderSearch = new EstoreOrderSearch();
+            }
             estoreOrderSearch.disablePage();
             Page<EstoreOrderEntity> list = estoreOrderService.selectOrderList(getWechatId(), estoreOrderSearch,true);
             String[] titles = {"订单号", "支付状态", "物流状态", "时间", "配送人", "配送电话", "省", "市", "区" , "地址" ,"总金额", "产品", "产品编码", "SKU", "市场价", "实际价", "数量"};

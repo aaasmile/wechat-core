@@ -1,5 +1,6 @@
 package com.d1m.wechat.controller.estore;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.controller.report.ReportXlsxStreamView;
@@ -10,16 +11,14 @@ import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,9 +51,16 @@ public class GiftCardOrderController extends BaseController {
 
     @RequestMapping(value = "export", method = RequestMethod.POST)
     //@RequiresPermissions("giftcard:order-list")
-    public ModelAndView exportOrder(@RequestBody(required = false) GiftCardOrderSearch giftCardOrderSearch){
+    public ModelAndView exportOrder(@RequestParam String data){
         ReportXlsxStreamView view = null;
         try {
+            GiftCardOrderSearch giftCardOrderSearch = null;
+            if(StringUtils.isNotBlank(data)){
+                giftCardOrderSearch = JSON.parseObject(data, GiftCardOrderSearch.class);
+            }
+            if(giftCardOrderSearch == null){
+                giftCardOrderSearch = new GiftCardOrderSearch();
+            }
             giftCardOrderSearch.disablePage();
             Page<GiftCardOrderDto> list = giftCardOrderService.selectOrderList(getWechatId(), giftCardOrderSearch,true);
             String[] titles = {"订单号", "交易流水号", "支付时间", "购买人OPENID", "领取人OPENID", "领取时间", "总金额", "卡号", "券号", "卡面背景"};
