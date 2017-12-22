@@ -1,5 +1,6 @@
 package com.d1m.wechat.controller.member;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -7,14 +8,19 @@ import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.d1m.wechat.controller.report.ReportXlsxStreamView;
+import com.d1m.wechat.model.enums.Sex;
+import com.d1m.wechat.util.I18nUtil;
 import com.github.pagehelper.Page;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.RequestContextUtils;
@@ -27,7 +33,6 @@ import io.swagger.annotations.ApiResponse;
 
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.d1m.wechat.controller.BaseController;
-import com.d1m.wechat.controller.report.MemberReport;
 import com.d1m.wechat.dto.MemberDto;
 import com.d1m.wechat.dto.MemberLevelDto;
 import com.d1m.wechat.dto.MemberTagDto;
@@ -266,6 +271,7 @@ public class MemberController extends BaseController {
 	public ModelAndView exportExcel(
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response){
+		ReportXlsxStreamView view = null;
 		AddMemberTagModel addMemberTagModel = null;
 		String data = request.getParameter("data");
 		if(StringUtils.isNotBlank(data)){
@@ -274,7 +280,6 @@ public class MemberController extends BaseController {
 		if (addMemberTagModel == null) {
 			addMemberTagModel = new AddMemberTagModel();
 		}
-		ModelMap model = new ModelMap();
 		List<MemberDto> memberDtos = null;
 		Integer[] memberIds = addMemberTagModel.getMemberIds();
 		Boolean sendToAll = addMemberTagModel.getSendToAll();
@@ -286,6 +291,12 @@ public class MemberController extends BaseController {
 			memberDtos = memberService.searchAll(getWechatId(session),
 				addMemberTagModel, false);
 		}
+		Locale locale = RequestContextUtils.getLocale(request);
+		String name = I18nUtil.getMessage("follwer.list", locale);
+		String[] keys = { "no", "nickname", "gender", "mobile", "province",
+				"city", "subscribe.status", "bind.status", "subscribe.time",
+				"group.message.sent", "tag" };
+		String[] titleVal = I18nUtil.getMessage(keys, locale);
 		String lang = RequestContextUtils.getLocale(request).getCountry();
 		for (MemberDto temp:memberDtos){
 			if (temp.getCountry() != null){
@@ -301,10 +312,74 @@ public class MemberController extends BaseController {
 				temp.setCity(city);
 			}
 		}
-		
-		model.put("memberDto", memberDtos);
-		MemberReport report = new MemberReport();
-		return new ModelAndView(report, model);
+		List<MemberDto> finalMemberDtos = memberDtos;
+		view = new ReportXlsxStreamView(name,
+			new ReportXlsxStreamView.CellProcessor() {
+				@Override
+				public void process(Map<String, Object> map, Workbook workbook, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+					Sheet sheet = workbook.createSheet();
+					Row titleRow = sheet.createRow(0);
+					for (int i=0; i<titleVal.length; i++){
+						titleRow.createCell(i).setCellValue(titleVal[i]);
+					}
+					if(finalMemberDtos !=null){
+						int j = 1;
+						for(MemberDto temp: finalMemberDtos){
+							Row dataRow = sheet.createRow(j);
+							dataRow.setHeight((short) 600);
+							dataRow.createCell(0).setCellValue(j);
+							dataRow.createCell(1).setCellValue(temp.getNickname());
+							if (temp.getSex() != null) {
+								dataRow.createCell(2).setCellValue(
+										I18nUtil.getMessage(Sex.getByValue(temp.getSex())
+												.name().toLowerCase(), locale));
+							}
+							dataRow.createCell(3).setCellValue(temp.getMobile());
+							dataRow.createCell(4).setCellValue(temp.getProvince());
+							dataRow.createCell(5).setCellValue(temp.getCity());
+
+							String attentionStatus = "subscribe";
+							if (!temp.getIsSubscribe()) {
+								if (temp.getUnsubscribeAt() != null) {
+									attentionStatus = "cancel.subscribe";
+								} else {
+									attentionStatus = "unsubscribe";
+								}
+							}
+							dataRow.createCell(6).setCellValue(
+									I18nUtil.getMessage(attentionStatus, locale));
+
+							if (temp.getBindStatus() != null && temp.getBindStatus() == 1) {
+								dataRow.createCell(7).setCellValue(
+										I18nUtil.getMessage("bind", locale));
+							} else {
+								dataRow.createCell(7).setCellValue(
+										I18nUtil.getMessage("unbind", locale));
+							}
+
+							SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+							if (temp.getIsSubscribe() && temp.getSubscribeAt() != null) {
+								String attentionTime = df.format(temp.getSubscribeAt());
+								dataRow.createCell(8).setCellValue(attentionTime);
+							}
+							dataRow.createCell(9).setCellValue(
+									temp.getBatchsendMonth() == null ? 0 : temp
+											.getBatchsendMonth());
+							StringBuffer tags = new StringBuffer();
+							if (temp.getMemberTags() != null
+									&& !temp.getMemberTags().isEmpty()) {
+								for (MemberTagDto mt : temp.getMemberTags()) {
+									tags.append(mt.getName()).append(" | ");
+								}
+							}
+							dataRow.createCell(10).setCellValue(tags.toString());
+							j++;
+						}
+					}
+				}
+			}
+		);
+		return new ModelAndView(view);
 		
 	}
 	
