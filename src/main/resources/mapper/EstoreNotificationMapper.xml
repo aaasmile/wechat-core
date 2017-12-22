@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.d1m.wechat.mapper.EstoreNotificationMapper" >
+  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.EstoreNotification" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="event_key" property="eventKey" jdbcType="VARCHAR" />
+    <result column="event_name" property="eventName" jdbcType="VARCHAR" />
+    <result column="notify_object" property="notifyObject" jdbcType="TINYINT" />
+    <result column="notify_tpl" property="notifyTpl" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="TINYINT" />
+    <result column="enable" property="enable" jdbcType="TINYINT" />
+    <result column="wechat_id" property="wechatId" jdbcType="BIGINT" />
+  </resultMap>
+</mapper>

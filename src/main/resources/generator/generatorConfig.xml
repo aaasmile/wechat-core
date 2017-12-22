@@ -57,7 +57,7 @@
 
     <javaClientGenerator targetPackage="${targetMapperPackage}" targetProject="${targetJavaProject}" type="XMLMAPPER" />
 
-    <table tableName="oauth_url_log%" >
+    <table tableName="wx_giftcard_%" >
       <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
     </table>
   </context>
