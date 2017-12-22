@@ -34,6 +34,7 @@ public class ReportXlsxStreamView extends AbstractXlsxStreamingView {
             } else {
                 filename = URLEncoder.encode(filename.toString(), "UTF-8");
             }
+            setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8");
             httpServletResponse.setHeader("Content-disposition", "attachment;filename=" + filename);
         }
     }
