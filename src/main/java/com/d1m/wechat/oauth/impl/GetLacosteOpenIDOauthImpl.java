@@ -26,6 +26,7 @@ import com.d1m.wechat.service.ConfigService;
 import com.d1m.wechat.service.MemberService;
 import com.d1m.wechat.util.Constants;
 import com.d1m.wechat.util.SessionCacheUtil;
+import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.d1m.wechat.wechatclient.WechatCrmRestService;
 
 @Component
@@ -94,8 +95,10 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 			} else {
 				log.info("member unionid : {}.", member.getUnionId());
 				if (StringUtils.isBlank(member.getUnionId())) {
-					log.info("wuser unionid : {}.", wuser.getUnionid());
-					member.setUnionId(wuser.getUnionid());
+					WxUser user = WechatClientDelegate.getUser(wechatId,
+							member.getOpenId());
+					log.info("user unionid : {}.", user.getUnionid());
+					member.setUnionId(user.getUnionid());
 					memberService.updateNotNull(member);
 					log.info("update unionid.");
 				}
