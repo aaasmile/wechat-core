@@ -263,7 +263,7 @@ CREATE TABLE wx_giftcard_order_shipment
     refuse_time DATETIME NULL COMMENT '拒收时间',
 
     valid BIT DEFAULT b'1' NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 CREATE VIEW wx_giftcard_customer_view AS
     SELECT
@@ -302,6 +302,24 @@ CREATE VIEW wx_giftcard_customer_view AS
         '' as 'AskCustomer',
         'C90001' as 'CreationStoreID',
         'CHI' as 'CustomerLanguage'
+    FROM estore_order eo
+        LEFT JOIN wx_giftcard_customer c ON c.phone = eo.delivery_phone
+    WHERE eo.id in (
+        SELECT min(eo_.id) FROM estore_order eo_
+        GROUP BY eo_.delivery_phone
+    );
+
+-- 2017-12-11 礼品卡顾客视图调整
+DROP VIEW wx_giftcard_customer_view;
+CREATE VIEW wx_giftcard_customer_view AS
+    SELECT
+        concat('C90001', lpad(c.id, 11, '0')) as 'code',
+        c.name,
+        REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(eo.delivery_province , '省', '' ) , '特别行政区', '' ) , '自治区', '' ) , '维吾尔', '' ) , '壮族', '' ) , '回族', '' ) as 'state',
+        eo.delivery_city as 'city',
+        eo.delivery_address as 'address',
+        eo.delivery_phone as 'mobile',
+        eo.create_at as 'created_at'
     FROM estore_order eo
         LEFT JOIN wx_giftcard_customer c ON c.phone = eo.delivery_phone
     WHERE eo.id in (
