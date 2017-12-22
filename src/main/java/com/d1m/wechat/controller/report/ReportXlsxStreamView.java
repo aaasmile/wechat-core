@@ -1,10 +1,8 @@
 package com.d1m.wechat.controller.report;
 
 import com.d1m.wechat.util.DateUtil;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.springframework.web.servlet.view.document.AbstractExcelView;
-import org.springframework.web.servlet.view.document.AbstractXlsxView;
+import org.springframework.web.servlet.view.document.AbstractXlsxStreamingView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,7 +13,7 @@ import java.util.Map;
  * 通用基于流式处理的Excel导出类
  * Created by Stoney.Liu on 2017/12/20.
  */
-public class ReportXlsxStreamView extends AbstractXlsxView {
+public class ReportXlsxStreamView extends AbstractXlsxStreamingView {
     private CellProcessor cellProcessor = null;
     private String filename = null;
 
