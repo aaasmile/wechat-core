@@ -69,7 +69,7 @@ public class GiftCardOrderController extends BaseController {
                     @Override
                     public void process(Map<String, Object> map, Workbook workbook, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
                         Sheet sheet = workbook.createSheet();
-                        Row titleRow = sheet.createRow(0);
+                        /*Row titleRow = sheet.createRow(0);
                         for (int i=0; i<titles.length; i++){
                             titleRow.createCell(i).setCellValue(titles[i]);
                         }
@@ -89,7 +89,7 @@ public class GiftCardOrderController extends BaseController {
                                 dataRow.createCell(9).setCellValue(dto.getBackgroundPicUrl());
                                 j++;
                             }
-                        }
+                        }*/
                     }
                 }
             );
