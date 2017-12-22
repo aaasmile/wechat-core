@@ -21,18 +21,28 @@ import cn.d1m.wechat.client.model.WxUser;
 
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.model.Member;
-import com.d1m.wechat.model.enums.MemberStatus;
 import com.d1m.wechat.oauth.IOauth;
 import com.d1m.wechat.service.ConfigService;
 import com.d1m.wechat.service.MemberService;
 import com.d1m.wechat.util.Constants;
 import com.d1m.wechat.util.SessionCacheUtil;
+import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.d1m.wechat.wechatclient.WechatCrmRestService;
 
 @Component
 public class GetLacosteOpenIDOauthImpl implements IOauth {
 	private Logger log = LoggerFactory
 			.getLogger(GetLacosteOpenIDOauthImpl.class);
+
+	private static final String SYSTEM_ERROR = "-1";
+
+	private static final String NOT_BIND = "0";
+
+	private static final String BIND = "1";
+
+	private static final String NEED_BIND = "1";
+
+	private static final String TO_MEMBER_CENTER_IF_BIND = "1";
 
 	@Resource
 	private MemberService memberService;
@@ -82,6 +92,13 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 				member.setHeadImgUrl(wuser.getHeadimgurl());
 				member.setLocalHeadImgUrl(wuser.getHeadimgurl());
 				memberService.save(member);
+			} else {
+				if (StringUtils.isBlank(member.getUnionId())) {
+					WxUser user = WechatClientDelegate.getUser(wechatId,
+							member.getOpenId());
+					member.setUnionId(user.getUnionid());
+					memberService.updateNotNull(member);
+				}
 			}
 
 			log.info("callbackUrl : {}", redirectUrl);
@@ -90,11 +107,26 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 				addCookie(ip, request, response, member, 60 * 60 * 24 * 30);
 				SessionCacheUtil.addMember(member, ip);
 
-				if (StringUtils.equals(needBind, "1")) {
-					if (member.getStatus() != null
-							&& member.getStatus().equals(
-									MemberStatus.BIND.getValue())) {
-						if (StringUtils.equals(toMemberCenterIfBind, "1")) {
+				if (StringUtils.equals(needBind, NEED_BIND)) {
+					String status = wechatCrmRestService.getMemberStatus(
+							wechatId, member.getId());
+					if (StringUtils.equals(status, SYSTEM_ERROR)) {
+						log.info("get status runsa api error.");
+						redirectUrl = configService.getConfigValue(wechatId,
+								"LACOSTE_CRM", "SERVER_BUSY_URL");
+						log.info("get status server busy callbackUrl OK : {}",
+								redirectUrl);
+						response.sendRedirect(redirectUrl);
+					} else if (StringUtils.equals(status, NOT_BIND)) {
+						redirectUrl = configService.getConfigValue(wechatId,
+								"LACOSTE_CRM", "LACOSTE_MEMBER_REGISTER_URL");
+						if (StringUtils.isNotBlank(campaign)
+								&& !StringUtils.contains(redirectUrl, campaign)) {
+							redirectUrl += ("?campaign=" + campaign);
+						}
+					} else if (StringUtils.equals(status, BIND)) {
+						if (StringUtils.equals(toMemberCenterIfBind,
+								TO_MEMBER_CENTER_IF_BIND)) {
 							String val = configService.getConfigValue(wechatId,
 									"LACOSTE_CRM", "LACOSTE_MEMBER_CENTER_URL");
 							JSONObject json = JSONObject.parseObject(val);
@@ -104,7 +136,7 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 									"wechatId : {}, memberId : {}, levels : {}.",
 									wechatId, member.getId(), levels);
 							if (StringUtils.isNotBlank(levels)) {
-								if (StringUtils.equals(levels, "-1")) {
+								if (StringUtils.equals(levels, SYSTEM_ERROR)) {
 									log.info("runsa api error.");
 									redirectUrl = configService.getConfigValue(
 											wechatId, "LACOSTE_CRM",
@@ -121,13 +153,6 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 								}
 							}
 						}
-						if (StringUtils.isNotBlank(campaign)
-								&& !StringUtils.contains(redirectUrl, campaign)) {
-							redirectUrl += ("?campaign=" + campaign);
-						}
-					} else {
-						redirectUrl = configService.getConfigValue(wechatId,
-								"LACOSTE_CRM", "LACOSTE_MEMBER_REGISTER_URL");
 						if (StringUtils.isNotBlank(campaign)
 								&& !StringUtils.contains(redirectUrl, campaign)) {
 							redirectUrl += ("?campaign=" + campaign);

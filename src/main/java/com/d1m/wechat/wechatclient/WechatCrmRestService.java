@@ -14,4 +14,8 @@ public interface WechatCrmRestService {
 	String getMemberLevels(@PathVariable("wechatId") Integer wechatId,
 			@PathVariable("memberId") Integer memberId);
 
+	@RequestMapping(value = "/api/member/{wechatId}/{memberId}/status", method = RequestMethod.GET)
+	String getMemberStatus(@PathVariable("wechatId") Integer wechatId,
+			@PathVariable("memberId") Integer memberId);
+
 }
