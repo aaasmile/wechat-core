@@ -34,7 +34,7 @@ public class ReportXlsxStreamView extends AbstractXlsxStreamingView {
             } else {
                 filename = URLEncoder.encode(filename.toString(), "UTF-8");
             }
-            setContentType("application/vnd.ms-excel");
+            setContentType("application/octet-stream");
             httpServletResponse.setHeader("Content-disposition", "attachment;filename=" + filename);
         }
     }
