@@ -160,6 +160,9 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 			else if(StringUtils.isNotEmpty(menuDto.getUrl())) {
 				menu.setUrl(menuDto.getUrl());
 			}
+			if(StringUtils.isNotEmpty(menuDto.getApiClass())) {
+				menu.setApiClass(menuDto.getApiClass());
+			}
 		} else if (materialDto != null) {
 			menu.setMenuKey(materialDto.getId());
 			menu.setUrl(materialDto.getUrl());
@@ -226,6 +229,9 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 					menuDto.setPagePath(menuModel.getPagePath());
 				if (menuModel.getAppUrl() != null)
 					menuDto.setAppUrl(menuModel.getAppUrl());
+				if(StringUtils.isNotEmpty(menuModel.getApiClass())) {
+					menuDto.setApiClass(menuModel.getApiClass());
+				}
 				menuList.add(menuDto);
 				childrenMenuDtos = new ArrayList<MenuDto>();
 				Integer subSeq = 1;
@@ -347,6 +353,9 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 		menu.setName(menuModel.getName());
 		menu.setSeq(menuModel.getSeq());
 		menu.setType(menuType.getValue());
+		if(StringUtils.isNotEmpty(menuModel.getApiClass())) {
+			menu.setApiClass(menuModel.getApiClass());
+		}
 		if (menuModel.getAppid() != null)
 			menu.setAppId(menuModel.getAppid());
 		if (menuModel.getPagePath() != null)
@@ -520,6 +529,9 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 				} 
 				if(material.getMaterialType() == null) {
 					menu.setUrl(null);
+				}
+				if(StringUtils.isNotEmpty(m.getApiClass())) {
+					menu.setApiClass(m.getApiClass());
 				}
 			} else if (material != null) {
 				menu.setMenuKey(material.getId());

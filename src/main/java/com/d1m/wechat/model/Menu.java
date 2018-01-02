@@ -95,6 +95,9 @@ public class Menu {
      * 顺序
      */
     private Integer seq;
+
+    @Column(name = "api_class")
+    private String apiClass;
     
     /**
      * 获取主键ID
@@ -382,5 +385,13 @@ public class Menu {
      */
     public void setSeq(Integer seq) {
         this.seq = seq;
+    }
+
+    public String getApiClass() {
+        return apiClass;
+    }
+
+    public void setApiClass(String apiClass) {
+        this.apiClass = apiClass;
     }
 }
