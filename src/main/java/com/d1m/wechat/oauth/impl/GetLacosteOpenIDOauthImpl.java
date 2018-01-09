@@ -40,9 +40,7 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 
 	private static final String BIND = "1";
 
-	private static final String MULTI_CARD_BIND = "2";
-
-	private static final String MERGE_CARD = "3";
+	private static final String MERGE_CARD = "2";
 
 	private static final String NEED_BIND = "1";
 
@@ -125,8 +123,7 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 						log.info("get status server busy callbackUrl OK : {}",
 								redirectUrl);
 						response.sendRedirect(redirectUrl);
-					} else if (StringUtils.equals(status, NOT_BIND)
-							|| StringUtils.equals(status, MULTI_CARD_BIND)) {
+					} else if (StringUtils.equals(status, NOT_BIND)) {
 						redirectUrl = configService.getConfigValue(wechatId,
 								"LACOSTE_CRM", "LACOSTE_MEMBER_REGISTER_URL");
 						if (StringUtils.isNotBlank(campaign)
