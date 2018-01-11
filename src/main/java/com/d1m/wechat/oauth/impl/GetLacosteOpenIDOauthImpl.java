@@ -113,8 +113,18 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 				SessionCacheUtil.addMember(member, ip);
 
 				if (StringUtils.equals(needBind, NEED_BIND)) {
-					String status = wechatCrmRestService.getMemberStatus(
-							wechatId, member.getId());
+					String status = null;
+					try {
+						status = wechatCrmRestService.getMemberStatus(wechatId,
+								member.getId());
+						if (StringUtils.isBlank(status)) {
+							log.error("status get null.");
+							status = SYSTEM_ERROR;
+						}
+					} catch (Exception e) {
+						log.error("error : {}.", e.getMessage());
+						status = SYSTEM_ERROR;
+					}
 					log.info("status : {}.", status);
 					if (StringUtils.equals(status, SYSTEM_ERROR)) {
 						log.info("get status runsa api error.");
