@@ -116,7 +116,7 @@
         and a.`id` = #{searchParam.orderId}
       </if>
       <if test="searchParam.orderNo != null">
-        and a.`order_no` = #{searchParam.orderNo}
+        and a.`order_no` like CONCAT('%',#{searchParam.orderNo},'%')
       </if>
       <if test="searchParam.deliveryName != null">
         and a.`delivery_name`=#{searchParam.deliveryName}
