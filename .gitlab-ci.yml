@@ -6,7 +6,7 @@ stages:
 build-dev:
   stage: build
   only:
-    - dev-lacoste-mini-program-unionid
+    - dev
   tags:
     - shell-dev
   script:
@@ -15,7 +15,7 @@ build-dev:
 deploy-dev:
   stage: deploy
   only:
-    - dev-lacoste-mini-program-unionid
+    - dev
   tags:
     - shell-dev
   script:
@@ -25,7 +25,7 @@ deploy-dev:
 push-dev:
   stage: push
   only:
-    - dev-lacoste-mini-program-unionid
+    - dev
   tags:
     - shell-dev
   script:
