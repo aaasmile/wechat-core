@@ -132,7 +132,6 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 								"LACOSTE_CRM", "SERVER_BUSY_URL");
 						log.info("get status server busy callbackUrl OK : {}",
 								redirectUrl);
-						response.sendRedirect(redirectUrl);
 					} else if (StringUtils.equals(status, NOT_BIND)) {
 						redirectUrl = configService.getConfigValue(wechatId,
 								"LACOSTE_CRM", "LACOSTE_MEMBER_REGISTER_URL");
@@ -167,7 +166,6 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 											"SERVER_BUSY_URL");
 									log.info("server busy callbackUrl OK : {}",
 											redirectUrl);
-									response.sendRedirect(redirectUrl);
 								} else {
 									String url = getRedirectUrl(levels, json);
 									log.info("url : {}.", url);
