@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.common.Mapper;
 
@@ -333,10 +334,11 @@ public class QrcodeServiceImpl extends BaseService<Qrcode> implements
         WechatClient wechatClient = WechatClientDelegate.get(wechatId);
         List<Qrcode> list = qrcodeMapper.getLackWxQrcode();
 		for (Qrcode qrcode : list){
-			WxQRCode wxQrcode = wechatClient.createQRCode(qrcode.getScene());
-			qrcode.setTicket(wxQrcode.getTicket());
-			qrcode.setQrcodeUrl(wxQrcode.getUrl());
-
+			if(StringUtils.isBlank(qrcode.getTicket())){
+				WxQRCode wxQrcode = wechatClient.createQRCode(qrcode.getScene());
+				qrcode.setTicket(wxQrcode.getTicket());
+				qrcode.setQrcodeUrl(wxQrcode.getUrl());
+			}
 			String format = DateUtil.yyyyMMddHHmmss.format(new Date());
 			String type = Constants.IMAGE + File.separator + Constants.QRCODE;
 			File root = FileUtils.getUploadPathRoot(wechatId, type);
