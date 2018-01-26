@@ -41,7 +41,7 @@
     b.pay_finish_time AS pay_finish_time,
     b.open_id AS open_id,
     IF(b.accepter_openid IS NULL,c.accepter_openid,b.accepter_openid) AS accepter_openid,
-    c.create_time as create_time,
+    c.created_at as create_time,
     b.total_price / 100 AS total_price,
     a.card_id AS card_id,
     a.`code` AS code,
