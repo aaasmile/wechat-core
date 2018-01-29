@@ -326,3 +326,79 @@ CREATE VIEW wx_giftcard_customer_view AS
         SELECT min(eo_.id) FROM estore_order eo_
         GROUP BY eo_.delivery_phone
     );
+
+ALTER TABLE report_config ADD report_param VARCHAR(1000) DEFAULT '{}' NOT NULL;
+ALTER TABLE report_config
+    MODIFY COLUMN wechat_id INT(11) NOT NULL DEFAULT '0' COMMENT '公众号ID' AFTER id;
+
+create table report_article_source
+(
+    id int auto_increment comment '主键ID'
+        primary key,
+    msgid varchar(20) not null comment '图文消息ID',
+    title varchar(100) null comment ' 图文消息标题',
+    ref_date varchar(10) not null comment '群发日期',
+    page_user int(20) null comment '图文页阅读人数',
+    page_count int(20) null comment '图文页阅读次数',
+    ori_page_user int(20) null comment '原文页阅读人数',
+    ori_page_count int(20) null comment '原文页阅读次数',
+    add_fav_user int(20) null comment '收藏人数',
+    add_fav_count int(20) null comment '收藏次数',
+    share_user int(20) null comment '分享人数',
+    share_count int(20) null comment '分享次数',
+    wechat_id int(20) not null comment '所属公众号ID',
+    created_at datetime not null comment '创建时间'
+)
+;
+
+create table report_article_source_detail
+(
+    id int auto_increment comment '主键ID'
+        primary key,
+    wechat_id int(20) not null comment '所属公众号ID',
+    msgid varchar(20) not null comment '图文消息ID',
+    title varchar(100) null comment ' 图文消息标题',
+    ref_date varchar(10) not null comment '群发日期',
+    stat_date varchar(10) not null comment '统计的日期',
+    target_user int not null comment '图文消息的标题',
+    int_page_read_user int not null comment '图文页的阅读人数',
+    int_page_read_count int not null comment '图文页的阅读次数',
+    ori_page_read_user int not null comment '原文页（点击图文页“阅读原文”进入的页面）的阅读人数，无原文页时此处数据为0',
+    ori_page_read_count int not null comment '原文页的阅读次数',
+    share_user int not null comment '分享人数',
+    share_count int not null comment '分享次数',
+    add_to_fav_user int not null comment '收藏的人数',
+    add_to_fav_count int not null comment '收藏的次数',
+    int_page_from_session_read_user int not null comment '公众号会话阅读人数',
+    int_page_from_session_read_count int not null comment '公众号会话阅读次数',
+    int_page_from_hist_msg_read_user int not null comment '历史消息页阅读人数',
+    int_page_from_hist_msg_read_count int not null comment '历史消息页阅读次数',
+    int_page_from_feed_read_user int not null comment '朋友圈阅读人数',
+    int_page_from_feed_read_count int not null comment '朋友圈阅读次数',
+    int_page_from_friends_read_user int not null comment '好友转发阅读人数',
+    int_page_from_friends_read_count int not null comment '好友转发阅读次数',
+    int_page_from_other_read_user int not null comment '好友转发阅读人数',
+    int_page_from_other_read_count int not null comment '好友转发阅读次数',
+    feed_share_from_session_user int not null comment '公众号会话转发朋友圈人数',
+    feed_share_from_session_cnt int not null comment '公众号会话转发朋友圈次数',
+    feed_share_from_feed_user int not null comment '朋友圈转发朋友圈人数',
+    feed_share_from_feed_cnt int not null comment '朋友圈转发朋友圈次数',
+    feed_share_from_other_user int not null comment '朋友圈转发朋友圈次数',
+    feed_share_from_other_cnt int not null comment '其他场景转发朋友圈人数',
+    created_at timestamp default CURRENT_TIMESTAMP not null,
+    constraint report_article_source_detail_msgid_stat_date_uindex
+    unique (msgid, stat_date)
+)
+;
+
+CREATE TABLE celine_payment_tag_record (
+    id INT AUTO_INCREMENT COMMENT '主键ID'
+        PRIMARY KEY,
+    wechat_id INT NOT NULL COMMENT '所属公众号ID',
+    shop_id VARCHAR(30) NOT NULL COMMENT '门店id',
+    open_id VARCHAR(50) NOT NULL COMMENT '微信openid',
+    tag_id INT NOT NULL COMMENT '',
+    success BIT NOT NULL COMMENT '是否成功打上标签',
+    created_at DATETIME(6) NOT NULL COMMENT '打标签时间'
+)
+
