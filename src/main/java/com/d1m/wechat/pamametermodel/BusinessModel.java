@@ -50,9 +50,12 @@ public class BusinessModel extends BaseModel {
 	@ApiModelProperty("商户简介，主要介绍商户信息等")
 	private String introduction;
 
+	@ApiModelProperty("营业时间：自定义时间")
+	private String openTime;
+
 	@ApiModelProperty("营业时间：开始时间")
 	private String openStartTime;
-	
+
 	@ApiModelProperty("营业时间：结束时间")
 	private String openEndTime;
 	
@@ -246,7 +249,15 @@ public class BusinessModel extends BaseModel {
 		this.longitude = longitude;
 	}
 
-	public void setOpenEndTime(String openEndTime) {
+    public String getOpenTime() {
+        return openTime;
+    }
+
+    public void setOpenTime(String openTime) {
+        this.openTime = openTime;
+    }
+
+    public void setOpenEndTime(String openEndTime) {
 		this.openEndTime = openEndTime;
 	}
 
