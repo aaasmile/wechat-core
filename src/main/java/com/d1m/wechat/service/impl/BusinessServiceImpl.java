@@ -238,8 +238,7 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 		business.setRecommend(model.getRecommend());
 		business.setSpecial(model.getSpecial());
 		business.setIntroduction(model.getIntroduction());
-		business.setOpenTime(model.getOpenStartTime() + "-"
-				+ model.getOpenEndTime());
+		business.setOpenTime(model.getOpenTime());
 		business.setAvgPrice(model.getAvgPrice());
 
 		checkBusinessCodeRepeat(model);
