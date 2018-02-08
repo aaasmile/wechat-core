@@ -133,8 +133,8 @@ public class MenuServiceImpl extends BaseService<Menu> implements MenuService {
 				}
 			}
 		}
-		
-		if(status.intValue() == 0){
+
+		if(status != null && status == 0){
 			List<ReportMenuBaseDto> mainMenu = menuMapper.getMainMenuList(wechatId,
 				groupId);
 			for (ReportMenuBaseDto menu : mainMenu){
