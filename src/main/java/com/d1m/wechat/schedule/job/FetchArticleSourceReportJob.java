@@ -1,27 +1,36 @@
 package com.d1m.wechat.schedule.job;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Resource;
 
-import com.d1m.wechat.schedule.BaseJobHandler;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.parser.Feature;
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.annotation.JobHander;
 import com.xxl.job.core.log.XxlJobLogger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import cn.d1m.wechat.client.model.WxArticleData;
-import com.d1m.wechat.wechatclient.WechatClientDelegate;
+import cn.d1m.wechat.client.model.WxArticleDetail;
+import cn.d1m.wechat.client.model.common.WxList;
 import com.d1m.wechat.mapper.ReportArticleHourSourceMapper;
+import com.d1m.wechat.mapper.ReportArticleSourceDetailMapper;
 import com.d1m.wechat.mapper.ReportArticleSourceMapper;
 import com.d1m.wechat.model.ReportArticleHourSource;
 import com.d1m.wechat.model.ReportArticleSource;
+import com.d1m.wechat.model.ReportArticleSourceDetail;
 import com.d1m.wechat.model.Wechat;
+import com.d1m.wechat.schedule.BaseJobHandler;
 import com.d1m.wechat.service.ReportArticleHourSourceService;
 import com.d1m.wechat.service.ReportArticleSourceService;
 import com.d1m.wechat.service.WechatService;
 import com.d1m.wechat.util.DateUtil;
+import com.d1m.wechat.wechatclient.WechatClientDelegate;
 
+@Slf4j
 @JobHander(value="fetchArticleSourceReportJob")
 @Component
 public class FetchArticleSourceReportJob extends BaseJobHandler {
@@ -41,6 +50,9 @@ public class FetchArticleSourceReportJob extends BaseJobHandler {
     @Resource
     private ReportArticleHourSourceMapper reportArticleHourSourceMapper;
 
+    @Resource
+    private ReportArticleSourceDetailMapper reportArticleSourceDetailMapper;
+
     @Override
     public ReturnT<String> run(String... strings) throws Exception {
         try {
@@ -50,6 +62,7 @@ public class FetchArticleSourceReportJob extends BaseJobHandler {
                     Date date = DateUtil.getDate(i);
                     saveReportArticleSource(wechat.getId(), date);
                     saveReportArticleHourSource(wechat.getId(), date);
+                    saveReportArticleDetail(wechat.getId(), date);
                 }
             }
             return ReturnT.SUCCESS;
@@ -59,6 +72,27 @@ public class FetchArticleSourceReportJob extends BaseJobHandler {
             XxlJobLogger.log("获取群发图文报表失败：" + e.getMessage());
             return ReturnT.FAIL;
         }
+    }
+
+    private void saveReportArticleDetail(Integer wechatId, Date date) {
+        List<ReportArticleSourceDetail> reportArticleSourceDetailList = new LinkedList<>();
+        WxList<WxArticleData> wxList = WechatClientDelegate.getArticleTotal(wechatId, date, date);
+        for (WxArticleData wxArticleData : wxList.getData()) {
+            for (WxArticleDetail wxArticleDetail : wxArticleData.getDetails()) {
+                ReportArticleSourceDetail detail = JSON.parseObject(JSON.toJSONString(wxArticleDetail), ReportArticleSourceDetail.class, Feature.InternFieldNames);
+                detail.setMsgid(wxArticleData.getMsgId());
+                detail.setRefDate(wxArticleData.getRefDate());
+                detail.setTitle(wxArticleData.getTitle());
+                detail.setWechatId(wechatId);
+                reportArticleSourceDetailList.add(detail);
+            }
+        }
+        try {
+            reportArticleSourceDetailMapper.insertList(reportArticleSourceDetailList);
+        } catch (Exception e) {
+            log.error("ReportArticleSourceDetailList保存失败", e);
+        }
+
     }
 
     private void saveReportArticleSource(Integer wechatId, Date date) {

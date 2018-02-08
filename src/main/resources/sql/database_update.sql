@@ -388,7 +388,7 @@ create table report_article_source_detail
     created_at timestamp default CURRENT_TIMESTAMP not null,
     constraint report_article_source_detail_msgid_stat_date_uindex
     unique (msgid, stat_date)
-)
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 ;
 
 CREATE TABLE celine_payment_tag_record (
@@ -401,4 +401,4 @@ CREATE TABLE celine_payment_tag_record (
     success BIT NOT NULL COMMENT '是否成功打上标签',
     created_at DATETIME(6) NOT NULL COMMENT '打标签时间'
 )
-
+;
