@@ -55,4 +55,5 @@ public class EstoreOrderEntity {
     private String payTime;
 //    private EstoreOrderPayEntity estoreOrderPayEntity;
     private List<EstoreOrderProductEntity> listOrderProduct;
+    private String openId;
 }

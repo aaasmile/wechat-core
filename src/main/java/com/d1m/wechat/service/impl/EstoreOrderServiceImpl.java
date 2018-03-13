@@ -82,6 +82,7 @@ public class EstoreOrderServiceImpl extends BaseService<EstoreOrder> implements 
             estoreOrderEntity.setCreateAt(DateUtil.formatYYYYMMDDHHMMSS(result.getCreateAt()));
             estoreOrderEntity.setUpdateAt(DateUtil.formatYYYYMMDDHHMMSS(result.getUpdateAt()));
             estoreOrderEntity.setWechatId(result.getWechatId());
+            estoreOrderEntity.setOpenId(result.getOpenId());
             EstoreOrderPay estoreOrderPay = new EstoreOrderPay();
             estoreOrderPay.setOrderId(orderId);
             estoreOrderPay.setWechatId(wechatId.longValue());

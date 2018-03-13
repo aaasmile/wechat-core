@@ -20,4 +20,5 @@ public class EstoreOrderSearch extends BaseModel{
     private Date endDate;
     private String code;
     private String sku;
+    private Integer wechatId;
 }

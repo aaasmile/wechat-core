@@ -42,7 +42,8 @@ public class EstoreOrderController extends BaseController {
     //@RequiresPermissions("estore:order-list")
     public JSONObject orderList(@RequestBody(required = false) EstoreOrderSearch estoreOrderSearch){
         try {
-            Page<EstoreOrderEntity> list = estoreOrderService.selectOrderList(getWechatId(), estoreOrderSearch, true);
+            Integer wechatId=estoreOrderSearch.getWechatId()==null?getWechatId():estoreOrderSearch.getWechatId();
+            Page<EstoreOrderEntity> list = estoreOrderService.selectOrderList(wechatId, estoreOrderSearch, true);
             return representation(Message.SUCCESS, list.getResult(), estoreOrderSearch.getPageNum(),estoreOrderSearch.getPageNum(),list.getTotal() );
         } catch (Exception e) {
             log.error("get order list error: ", e);
@@ -63,7 +64,8 @@ public class EstoreOrderController extends BaseController {
                 estoreOrderSearch = new EstoreOrderSearch();
             }
             estoreOrderSearch.disablePage();
-            Page<EstoreOrderEntity> list = estoreOrderService.selectOrderList(getWechatId(), estoreOrderSearch,true);
+            Integer wechatId=estoreOrderSearch.getWechatId()==null?getWechatId():estoreOrderSearch.getWechatId();
+            Page<EstoreOrderEntity> list = estoreOrderService.selectOrderList(wechatId, estoreOrderSearch,true);
             String[] titles = {"订单号", "支付状态", "物流状态", "时间", "配送人", "配送电话", "省", "市", "区" , "地址" ,"总金额", "产品", "产品编码", "SKU", "市场价", "实际价", "数量"};
             view = new ReportXlsxStreamView("订单",
                     new ReportXlsxStreamView.CellProcessor() {

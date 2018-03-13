@@ -64,4 +64,5 @@ public class EstoreOrderListResult {
 //    private BigDecimal price;
 //    private Integer point;
     private List<EstoreOrderProduct> listOrderProduct;
+    private String openId;
 }
