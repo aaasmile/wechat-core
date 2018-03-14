@@ -1,5 +1,6 @@
 package com.d1m.wechat.model;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.*;
 
@@ -35,7 +36,7 @@ public class EstoreOrder {
      * 实际付款金额（商品总金额+快递费-优惠）
      */
     @Column(name = "total_amount")
-    private Long totalAmount;
+    private BigDecimal totalAmount;
 
     /**
      * 商品总金额
@@ -297,7 +298,7 @@ public class EstoreOrder {
      *
      * @return total_amount - 实际付款金额（商品总金额+快递费-优惠）
      */
-    public Long getTotalAmount() {
+    public BigDecimal getTotalAmount() {
         return totalAmount;
     }
 
@@ -306,7 +307,7 @@ public class EstoreOrder {
      *
      * @param totalAmount 实际付款金额（商品总金额+快递费-优惠）
      */
-    public void setTotalAmount(Long totalAmount) {
+    public void setTotalAmount(BigDecimal totalAmount) {
         this.totalAmount = totalAmount;
     }
 

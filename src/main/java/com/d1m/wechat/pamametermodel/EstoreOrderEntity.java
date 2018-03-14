@@ -16,7 +16,7 @@ public class EstoreOrderEntity {
     private String orderNo;
     private Long memberId;
     private Integer totalPoint;
-    private Long totalAmount;
+    private BigDecimal totalAmount;
     private Long productAmount;
     private Long deliveryFee;
     private Long discount;

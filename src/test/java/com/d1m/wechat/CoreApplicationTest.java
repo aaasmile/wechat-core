@@ -108,7 +108,7 @@ public class CoreApplicationTest {
         EstoreOrderEntity estoreOrderEntity = new EstoreOrderEntity();
         estoreOrderEntity.setMemberId(memberId);
         estoreOrderEntity.setTotalPoint(0);
-        estoreOrderEntity.setTotalAmount(1L);
+        estoreOrderEntity.setTotalAmount(new BigDecimal(1));
         estoreOrderEntity.setProductAmount(1L);
         estoreOrderEntity.setDeliveryFee(1L);
         estoreOrderEntity.setDiscount(0L);

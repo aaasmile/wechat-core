@@ -90,7 +90,7 @@ public class EstoreOrderController extends BaseController {
                                     dataRow.createCell(7).setCellValue(dto.getDeliveryCity());
                                     dataRow.createCell(8).setCellValue(dto.getDeliveryDistrict());
                                     dataRow.createCell(9).setCellValue(dto.getDeliveryAddress());
-                                    dataRow.createCell(10).setCellValue(dto.getTotalAmount());
+                                    dataRow.createCell(10).setCellValue(dto.getTotalAmount().doubleValue());
 
                                     //有购物车时，产品列表可能为多个
                                     //"产品", "产品编码", "SKU", "市场价", "实际价", "数量"
