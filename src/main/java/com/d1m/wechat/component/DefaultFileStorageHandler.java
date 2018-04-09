@@ -3,8 +3,9 @@ package com.d1m.wechat.component;
 import java.io.File;
 import java.util.Date;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.d1m.wechat.util.Constants;
@@ -18,9 +19,10 @@ import com.d1m.wechat.util.FileUtils;
  *
  * @author f0rb on 2017-04-13.
  */
-@Slf4j
 @Component("fileStorageHandler")
 public class DefaultFileStorageHandler implements FileStorageHandler {
+	
+	private static final Logger log = LoggerFactory.getLogger(DefaultFileStorageHandler.class);
 
     @Override
     public String saveRemoteFile(Integer wechatId, String url) {

@@ -1,39 +1,41 @@
 package com.d1m.wechat.service.impl;
 
-import javax.annotation.Resource;
+import java.util.Date;
 
-import com.d1m.wechat.model.Member;
-import com.d1m.wechat.model.Wechat;
-import com.d1m.wechat.model.enums.Event;
-import com.d1m.wechat.model.enums.MsgType;
-import com.d1m.wechat.service.MemberService;
-import com.d1m.wechat.service.WechatService;
-import com.d1m.wechat.util.ParamUtil;
-import com.github.pagehelper.Page;
-import lombok.extern.slf4j.Slf4j;
+import javax.annotation.Resource;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-
-import com.d1m.wechat.mapper.OriginalConversationMapper;
-import com.d1m.wechat.model.OriginalConversation;
-import com.d1m.wechat.service.OriginalConversationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import com.d1m.wechat.mapper.OriginalConversationMapper;
+import com.d1m.wechat.model.Member;
+import com.d1m.wechat.model.OriginalConversation;
+import com.d1m.wechat.model.Wechat;
+import com.d1m.wechat.model.enums.Event;
+import com.d1m.wechat.model.enums.MsgType;
+import com.d1m.wechat.service.MemberService;
+import com.d1m.wechat.service.OriginalConversationService;
+import com.d1m.wechat.service.WechatService;
+import com.d1m.wechat.util.ParamUtil;
+import com.github.pagehelper.Page;
 
 /**
  * 专门处理待处理的OriginalConversation
  *
  * @author f0rb
  */
-@Slf4j
 @Service
 public class OriginalConversationQueueServiceImpl implements ApplicationListener<ContextRefreshedEvent> {
+	
+	private static final Logger log = LoggerFactory.getLogger(OriginalConversationQueueServiceImpl.class);
+			
     @Resource
     OriginalConversationService originalConversationService;
 

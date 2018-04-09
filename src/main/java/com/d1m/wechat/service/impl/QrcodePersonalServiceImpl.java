@@ -1,6 +1,13 @@
 package com.d1m.wechat.service.impl;
 
-import cn.d1m.wechat.client.model.WxQRCode;
+import java.util.Date;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.QrcodePersonalMapper;
 import com.d1m.wechat.model.QrcodePersonal;
@@ -8,18 +15,14 @@ import com.d1m.wechat.model.enums.QrcodeStatus;
 import com.d1m.wechat.pamametermodel.QrcodeModel;
 import com.d1m.wechat.service.QrcodePersonalService;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+
+import cn.d1m.wechat.client.model.WxQRCode;
 import tk.mybatis.mapper.common.Mapper;
 
-import javax.annotation.Resource;
-import java.util.Date;
-
-@Slf4j
 @Service
 public class QrcodePersonalServiceImpl extends BaseService<QrcodePersonal> implements QrcodePersonalService {
+	
+	private static final Logger log = LoggerFactory.getLogger(QrcodePersonalServiceImpl.class);
 
 	@Autowired
 	private QrcodePersonalMapper qrcodeMapper;

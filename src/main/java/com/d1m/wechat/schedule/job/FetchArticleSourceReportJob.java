@@ -3,19 +3,15 @@ package com.d1m.wechat.schedule.job;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+
 import javax.annotation.Resource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.parser.Feature;
-import com.xxl.job.core.biz.model.ReturnT;
-import com.xxl.job.core.handler.annotation.JobHander;
-import com.xxl.job.core.log.XxlJobLogger;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-
-import cn.d1m.wechat.client.model.WxArticleData;
-import cn.d1m.wechat.client.model.WxArticleDetail;
-import cn.d1m.wechat.client.model.common.WxList;
 import com.d1m.wechat.mapper.ReportArticleHourSourceMapper;
 import com.d1m.wechat.mapper.ReportArticleSourceDetailMapper;
 import com.d1m.wechat.mapper.ReportArticleSourceMapper;
@@ -29,11 +25,19 @@ import com.d1m.wechat.service.ReportArticleSourceService;
 import com.d1m.wechat.service.WechatService;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
+import com.xxl.job.core.biz.model.ReturnT;
+import com.xxl.job.core.handler.annotation.JobHander;
+import com.xxl.job.core.log.XxlJobLogger;
 
-@Slf4j
+import cn.d1m.wechat.client.model.WxArticleData;
+import cn.d1m.wechat.client.model.WxArticleDetail;
+import cn.d1m.wechat.client.model.common.WxList;
+
 @JobHander(value="fetchArticleSourceReportJob")
 @Component
 public class FetchArticleSourceReportJob extends BaseJobHandler {
+	
+	private static final Logger log = LoggerFactory.getLogger(FetchArticleSourceReportJob.class);
 
     @Resource
     private ReportArticleSourceService reportService;

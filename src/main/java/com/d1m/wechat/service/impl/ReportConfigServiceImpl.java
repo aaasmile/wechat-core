@@ -3,10 +3,11 @@ package com.d1m.wechat.service.impl;
 import java.util.*;
 import javax.annotation.Resource;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.common.Mapper;
 
@@ -21,9 +22,10 @@ import com.d1m.wechat.util.I18nUtil;
  *
  * @author f0rb on 2017-01-25.
  */
-@Slf4j
 @Service
 public class ReportConfigServiceImpl extends BaseService<ReportConfig> implements ReportConfigService {
+	
+	private static final Logger log = LoggerFactory.getLogger(ReportConfigServiceImpl.class);
 
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 

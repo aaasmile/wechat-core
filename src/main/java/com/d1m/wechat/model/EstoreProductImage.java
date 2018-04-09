@@ -1,12 +1,7 @@
 package com.d1m.wechat.model;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import javax.persistence.*;
 
-@Getter
-@Setter
 @Table(name = "estore_product_image")
 public class EstoreProductImage {
     /**
@@ -50,4 +45,64 @@ public class EstoreProductImage {
     private String title;
     private String tag;
     private String url;
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public Byte getType() {
+		return type;
+	}
+	public void setType(Byte type) {
+		this.type = type;
+	}
+	public Integer getSeq() {
+		return seq;
+	}
+	public void setSeq(Integer seq) {
+		this.seq = seq;
+	}
+	public Long getProductId() {
+		return productId;
+	}
+	public void setProductId(Long productId) {
+		this.productId = productId;
+	}
+	public Long getProductSpecId() {
+		return productSpecId;
+	}
+	public void setProductSpecId(Long productSpecId) {
+		this.productSpecId = productSpecId;
+	}
+	public Long getMaterialId() {
+		return materialId;
+	}
+	public void setMaterialId(Long materialId) {
+		this.materialId = materialId;
+	}
+	public Long getWechatId() {
+		return wechatId;
+	}
+	public void setWechatId(Long wechatId) {
+		this.wechatId = wechatId;
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	public String getTag() {
+		return tag;
+	}
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
+	public String getUrl() {
+		return url;
+	}
+	public void setUrl(String url) {
+		this.url = url;
+	}
 }

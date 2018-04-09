@@ -4,9 +4,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.annotation.Resource;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.d1m.wechat.test.SpringTest;
 
@@ -15,8 +16,9 @@ import com.d1m.wechat.test.SpringTest;
  *
  * @author f0rb on 2017-01-22.
  */
-@Slf4j
 public class ReportConfigMapperTest extends SpringTest {
+	private static final Logger log = LoggerFactory.getLogger(ReportConfigMapperTest.class);
+	
     @Resource
     ReportConfigMapper reportConfigMapper;
 

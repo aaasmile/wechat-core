@@ -1,14 +1,20 @@
 package com.d1m.wechat.controller.customerserviceconfig;
 
 import java.util.List;
+
 import javax.annotation.Resource;
 
-import com.alibaba.fastjson.JSONObject;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.dto.CustomerServiceConfigDto;
 import com.d1m.wechat.model.User;
@@ -22,11 +28,12 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 
-@Slf4j
 @Controller
 @RequestMapping("/customer-service-config")
 @Api(value="CS设置API", tags="CS设置接口")
 public class CustomerServiceConfigController extends BaseController {
+	
+	private static final Logger log = LoggerFactory.getLogger(CustomerServiceConfigController.class);
 
 	@Resource
 	private CustomerServiceConfigService customerServiceConfigService;

@@ -1,8 +1,10 @@
 package com.d1m.wechat.controller.api;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
@@ -16,14 +18,11 @@ import com.d1m.wechat.service.MemberService;
 import com.d1m.wechat.util.Message;
 import com.d1m.wechat.util.SessionCacheUtil;
 
-import java.util.Map;
-
 /**
  * Created on 16/11/25.
  */
-@Slf4j
 public class ApiController extends BaseController {
-
+	private static final Logger log = LoggerFactory.getLogger(ApiController.class);
 	@Autowired
 	protected MemberService memberService;
 

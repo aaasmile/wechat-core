@@ -1,5 +1,26 @@
 package com.d1m.wechat.controller.estore;
 
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
@@ -10,21 +31,6 @@ import com.d1m.wechat.pamametermodel.EstoreOrderSearch;
 import com.d1m.wechat.service.IEstoreOrderService;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Map;
 
 /**
  * EStore 订单管理接口
@@ -32,8 +38,10 @@ import java.util.Map;
  */
 @RequestMapping("estore/order")
 @Controller
-@Slf4j
 public class EstoreOrderController extends BaseController {
+	
+	private static final Logger log = LoggerFactory.getLogger(EstoreOrderController.class);
+			
     @Autowired
     private IEstoreOrderService estoreOrderService;
 

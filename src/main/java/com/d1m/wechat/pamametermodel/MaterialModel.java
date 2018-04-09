@@ -4,12 +4,8 @@ import java.util.List;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
 
 @ApiModel("素材")
-@Getter
-@Setter
 public class MaterialModel {
 
     @ApiModelProperty("主键ID")
@@ -44,4 +40,91 @@ public class MaterialModel {
 
     private Integer memberId;
 
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public List<ImageTextModel> getItems() {
+		return items;
+	}
+
+	public void setItems(List<ImageTextModel> items) {
+		this.items = items;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public MaterialTextDetailModel getText() {
+		return text;
+	}
+
+	public void setText(MaterialTextDetailModel text) {
+		this.text = text;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(String createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public Byte getMaterialType() {
+		return materialType;
+	}
+
+	public void setMaterialType(Byte materialType) {
+		this.materialType = materialType;
+	}
+
+	public List<ImageTextModel> getImagetexts() {
+		return imagetexts;
+	}
+
+	public void setImagetexts(List<ImageTextModel> imagetexts) {
+		this.imagetexts = imagetexts;
+	}
+
+	public MiniProgramModel getMiniProgram() {
+		return miniProgram;
+	}
+
+	public void setMiniProgram(MiniProgramModel miniProgram) {
+		this.miniProgram = miniProgram;
+	}
+
+	public Boolean getPush() {
+		return push;
+	}
+
+	public void setPush(Boolean push) {
+		this.push = push;
+	}
+
+	public Integer getMemberId() {
+		return memberId;
+	}
+
+	public void setMemberId(Integer memberId) {
+		this.memberId = memberId;
+	}
 }

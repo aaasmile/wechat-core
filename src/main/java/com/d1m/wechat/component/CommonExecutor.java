@@ -3,7 +3,6 @@ package com.d1m.wechat.component;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Component;
  *
  * @author f0rb on 2017-03-16.
  */
-@Slf4j
 @Component
 public class CommonExecutor {
     @Async("callerRunsExecutor")

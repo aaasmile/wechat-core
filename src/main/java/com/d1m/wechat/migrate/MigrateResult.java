@@ -3,16 +3,11 @@ package com.d1m.wechat.migrate;
 import java.util.LinkedList;
 import java.util.List;
 
-import lombok.Getter;
-import lombok.Setter;
-
 /**
  * 类描述
  *
  * @author f0rb on 2016-12-08.
  */
-@Getter
-@Setter
 public class MigrateResult {
     private String message;
     private List<String> errors;
@@ -40,4 +35,37 @@ public class MigrateResult {
         }
         return messages;
     }
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public List<String> getErrors() {
+		return errors;
+	}
+
+	public void setErrors(List<String> errors) {
+		this.errors = errors;
+	}
+
+	public List<String> getMessages() {
+		return messages;
+	}
+
+	public void setMessages(List<String> messages) {
+		this.messages = messages;
+	}
+
+	public List<?> getIgnored() {
+		return ignored;
+	}
+
+	public void setIgnored(List<?> ignored) {
+		this.ignored = ignored;
+	}
+    
 }

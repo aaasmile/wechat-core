@@ -1,21 +1,25 @@
 package com.d1m.wechat.security.shiro;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.session.Session;
-import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
-import org.springframework.data.redis.core.RedisTemplate;
-
-import javax.annotation.Resource;
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Resource;
+
+import org.apache.shiro.session.Session;
+import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 
 /**
  * redis实现共享session
  * @author Stoney.Liu on 2017/07/19
  */
-@Slf4j
 //@Component
 public class RedisSessionDAO extends EnterpriseCacheSessionDAO {
+	
+	private static final Logger log = LoggerFactory.getLogger(RedisSessionDAO.class);
+			
     private static int expireTime = 1800;// session 在redis过期时间是30分钟30*60
     private static String prefix = "d1m-shiro-session:";
 

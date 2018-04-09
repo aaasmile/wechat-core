@@ -1,16 +1,12 @@
 package com.d1m.wechat.model;
 
 import com.alibaba.fastjson.JSONObject;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
 
-@Getter
-@Setter
 @Table(name = "estore_product_spec")
 public class EstoreProductSpec {
     /**
@@ -94,5 +90,123 @@ public class EstoreProductSpec {
     @Column(name = "wechat_id")
     private Long wechatId;
 
+	public Long getId() {
+		return id;
+	}
 
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getSku() {
+		return sku;
+	}
+
+	public void setSku(String sku) {
+		this.sku = sku;
+	}
+
+	public Byte getSpecType() {
+		return specType;
+	}
+
+	public void setSpecType(Byte specType) {
+		this.specType = specType;
+	}
+
+	public JSONObject getSpecValue() {
+		return specValue;
+	}
+
+	public void setSpecValue(JSONObject specValue) {
+		this.specValue = specValue;
+	}
+
+	public BigDecimal getMarketPrice() {
+		return marketPrice;
+	}
+
+	public void setMarketPrice(BigDecimal marketPrice) {
+		this.marketPrice = marketPrice;
+	}
+
+	public BigDecimal getPrice() {
+		return price;
+	}
+
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
+
+	public Integer getPoint() {
+		return point;
+	}
+
+	public void setPoint(Integer point) {
+		this.point = point;
+	}
+
+	public Integer getStock() {
+		return stock;
+	}
+
+	public void setStock(Integer stock) {
+		this.stock = stock;
+	}
+
+	public Double getWeight() {
+		return weight;
+	}
+
+	public void setWeight(Double weight) {
+		this.weight = weight;
+	}
+
+	public Double getVolume() {
+		return volume;
+	}
+
+	public void setVolume(Double volume) {
+		this.volume = volume;
+	}
+
+	public Date getCreateAt() {
+		return createAt;
+	}
+
+	public void setCreateAt(Date createAt) {
+		this.createAt = createAt;
+	}
+
+	public Date getModifyAt() {
+		return modifyAt;
+	}
+
+	public void setModifyAt(Date modifyAt) {
+		this.modifyAt = modifyAt;
+	}
+
+	public Byte getStatus() {
+		return status;
+	}
+
+	public void setStatus(Byte status) {
+		this.status = status;
+	}
+
+	public Long getProductId() {
+		return productId;
+	}
+
+	public void setProductId(Long productId) {
+		this.productId = productId;
+	}
+
+	public Long getWechatId() {
+		return wechatId;
+	}
+
+	public void setWechatId(Long wechatId) {
+		this.wechatId = wechatId;
+	}
 }

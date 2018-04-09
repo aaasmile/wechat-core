@@ -11,9 +11,10 @@ import javax.annotation.Resource;
 
 import com.alibaba.fastjson.JSON;
 import com.d1m.common.ds.TenantContext;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
@@ -38,9 +39,10 @@ import static com.d1m.wechat.util.FileUtils.*;
  *
  * @author f0rb on 2016-12-02.
  */
-@Slf4j
 @Component
 public class MigrateServiceExecutor {
+	
+	private static final Logger log = LoggerFactory.getLogger(MigrateServiceExecutor.class);
 
     @Resource
     private MaterialMapper materialMapper;

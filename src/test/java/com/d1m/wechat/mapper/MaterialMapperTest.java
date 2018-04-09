@@ -2,9 +2,10 @@ package com.d1m.wechat.mapper;
 
 import javax.annotation.Resource;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -17,10 +18,11 @@ import com.d1m.wechat.test.SpringTest;
  *
  * @author f0rb on 2017-10-23.
  */
-@Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = CoreApplication.class)
 public class MaterialMapperTest extends SpringTest {
+	
+	private static final Logger log = LoggerFactory.getLogger(MaterialMapperTest.class);
 
     @Resource
     MaterialMapper materialMapper;

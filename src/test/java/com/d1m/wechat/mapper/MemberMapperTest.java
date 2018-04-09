@@ -6,9 +6,10 @@ import java.util.List;
 import java.util.concurrent.*;
 import javax.annotation.Resource;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.d1m.wechat.test.SpringTest;
 
@@ -18,8 +19,10 @@ import com.d1m.wechat.test.SpringTest;
  * @author f0rb on 2016-12-22.
  * @since 1.0.5
  */
-@Slf4j
 public class MemberMapperTest extends SpringTest {
+	
+	private static final Logger log = LoggerFactory.getLogger(MemberMapperTest.class);
+	
     @Resource
     private MemberMapper memberMapper;
 
