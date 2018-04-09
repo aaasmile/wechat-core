@@ -10,8 +10,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.d1m.common.ds.TenantContext;
 import com.github.pagehelper.Page;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -42,9 +43,11 @@ import com.d1m.wechat.service.MigrateService;
  *
  * @author f0rb on 2016-12-01.
  */
-@Slf4j
 @Service
 public class MigrateServiceImpl implements MigrateService {
+	
+	private static final Logger log = LoggerFactory.getLogger(MigrateServiceImpl.class);
+			
     private static final ReentrantLock materialLock = new ReentrantLock();
     private static final ReentrantLock menuLock = new ReentrantLock();
     private static final ReentrantLock userLock = new ReentrantLock();

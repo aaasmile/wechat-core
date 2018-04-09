@@ -1,7 +1,5 @@
 package com.d1m.wechat.pamametermodel;
 
-import lombok.Data;
-
 public class MemberBenefitListModel extends BaseModel{
 	
 	private String nickname;

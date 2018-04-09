@@ -10,7 +10,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.annotation.Resource;
 
 import com.alibaba.fastjson.JSONObject;
-import lombok.extern.slf4j.Slf4j;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.*;
 import org.springframework.stereotype.Controller;
 
@@ -33,10 +35,11 @@ import com.d1m.wechat.util.DateUtil;
  * @author f0rb on 2017-03-14.
  * @deprecated livechat迁移到微服务wechat-customservice
  */
-@Slf4j
 @Controller
 @Deprecated
 public class CustomServiceController {
+	
+	private static final Logger log = LoggerFactory.getLogger(CustomServiceController.class);
 
     /* 公众号在线客服 */
     private final Map<Serializable, Map<Serializable, CustomerServiceRepresentative>> wechatCsrMap = new ConcurrentHashMap<>();

@@ -4,11 +4,7 @@ import java.util.List;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 @ApiModel("会话DTO")
 public class ConversationDto {
 	
@@ -93,4 +89,219 @@ public class ConversationDto {
 	@ApiModelProperty("群发会话结果ID")
 	private Integer csrId;
 
+	public Integer getCid() {
+		return cid;
+	}
+
+	public void setCid(Integer cid) {
+		this.cid = cid;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Byte getMsgType() {
+		return msgType;
+	}
+
+	public void setMsgType(Byte msgType) {
+		this.msgType = msgType;
+	}
+
+	public String getMemberPhoto() {
+		return memberPhoto;
+	}
+
+	public void setMemberPhoto(String memberPhoto) {
+		this.memberPhoto = memberPhoto;
+	}
+
+	public String getMemberId() {
+		return memberId;
+	}
+
+	public void setMemberId(String memberId) {
+		this.memberId = memberId;
+	}
+
+	public String getMemberNickname() {
+		return memberNickname;
+	}
+
+	public void setMemberNickname(String memberNickname) {
+		this.memberNickname = memberNickname;
+	}
+
+	public String getMemberOpenId() {
+		return memberOpenId;
+	}
+
+	public void setMemberOpenId(String memberOpenId) {
+		this.memberOpenId = memberOpenId;
+	}
+
+	public String getKfPhoto() {
+		return kfPhoto;
+	}
+
+	public void setKfPhoto(String kfPhoto) {
+		this.kfPhoto = kfPhoto;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public String getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(String createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public String getCurrent() {
+		return current;
+	}
+
+	public void setCurrent(String current) {
+		this.current = current;
+	}
+
+	public List<ImageTextDto> getItems() {
+		return items;
+	}
+
+	public void setItems(List<ImageTextDto> items) {
+		this.items = items;
+	}
+
+	public Integer getDir() {
+		return dir;
+	}
+
+	public void setDir(Integer dir) {
+		this.dir = dir;
+	}
+
+	public Integer getIsMass() {
+		return isMass;
+	}
+
+	public void setIsMass(Integer isMass) {
+		this.isMass = isMass;
+	}
+
+	public MassConversationResultDto getResult() {
+		return result;
+	}
+
+	public void setResult(MassConversationResultDto result) {
+		this.result = result;
+	}
+
+	public Byte getStatus() {
+		return status;
+	}
+
+	public void setStatus(Byte status) {
+		this.status = status;
+	}
+
+	public Integer getMaterialId() {
+		return materialId;
+	}
+
+	public void setMaterialId(Integer materialId) {
+		this.materialId = materialId;
+	}
+
+	public Byte getEvent() {
+		return event;
+	}
+
+	public void setEvent(Byte event) {
+		this.event = event;
+	}
+
+	public String getSendAt() {
+		return sendAt;
+	}
+
+	public void setSendAt(String sendAt) {
+		this.sendAt = sendAt;
+	}
+
+	public String getWxSendAt() {
+		return wxSendAt;
+	}
+
+	public void setWxSendAt(String wxSendAt) {
+		this.wxSendAt = wxSendAt;
+	}
+
+	public String getAuditAt() {
+		return auditAt;
+	}
+
+	public void setAuditAt(String auditAt) {
+		this.auditAt = auditAt;
+	}
+
+	public String getAuditBy() {
+		return auditBy;
+	}
+
+	public void setAuditBy(String auditBy) {
+		this.auditBy = auditBy;
+	}
+
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+
+	public String getRunAt() {
+		return runAt;
+	}
+
+	public void setRunAt(String runAt) {
+		this.runAt = runAt;
+	}
+
+	public String getVoiceUrl() {
+		return voiceUrl;
+	}
+
+	public void setVoiceUrl(String voiceUrl) {
+		this.voiceUrl = voiceUrl;
+	}
+
+	public String getVideoUrl() {
+		return videoUrl;
+	}
+
+	public void setVideoUrl(String videoUrl) {
+		this.videoUrl = videoUrl;
+	}
+
+	public Integer getCsrId() {
+		return csrId;
+	}
+
+	public void setCsrId(Integer csrId) {
+		this.csrId = csrId;
+	}
 }

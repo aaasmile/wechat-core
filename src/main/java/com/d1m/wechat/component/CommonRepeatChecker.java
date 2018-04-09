@@ -1,9 +1,11 @@
 package com.d1m.wechat.component;
 
 import java.util.Date;
+
 import javax.annotation.Resource;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,9 +15,10 @@ import org.springframework.stereotype.Component;
  *
  * @author f0rb on 2017-02-27.
  */
-@Slf4j
 @Component
 public class CommonRepeatChecker {
+	
+	private static final Logger log = LoggerFactory.getLogger(CommonRepeatChecker.class);
 
     @Resource
     private CommonCache commonCache;

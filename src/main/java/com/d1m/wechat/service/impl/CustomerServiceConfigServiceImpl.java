@@ -1,15 +1,17 @@
 package com.d1m.wechat.service.impl;
 
+import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.fastjson.JSON;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tk.mybatis.mapper.common.Mapper;
 
+import com.alibaba.fastjson.JSON;
 import com.d1m.wechat.dto.CustomerServiceConfigDto;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.CustomerServiceConfigMapper;
@@ -18,13 +20,14 @@ import com.d1m.wechat.pamametermodel.CustomerServiceConfigModel;
 import com.d1m.wechat.service.CustomerServiceConfigService;
 import com.d1m.wechat.util.Message;
 
-import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
+import tk.mybatis.mapper.common.Mapper;
 
-@Slf4j
 @Service
 public class CustomerServiceConfigServiceImpl extends
 		BaseService<CustomerServiceConfig> implements
 		CustomerServiceConfigService {
+	
+	private static final Logger log = LoggerFactory.getLogger(CustomerServiceConfigServiceImpl.class);
 
 	public static final String QUICK_REPLY = "QUICK_REPLY";
 

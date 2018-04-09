@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -16,9 +15,10 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.d1m.wechat.dto.RoleDto;
 import com.d1m.wechat.dto.WechatDto;
 import com.d1m.wechat.model.User;
@@ -26,13 +26,15 @@ import com.d1m.wechat.model.Wechat;
 import com.d1m.wechat.service.RoleService;
 import com.d1m.wechat.service.UserService;
 import com.d1m.wechat.service.WechatService;
+import com.d1m.wechat.wechatclient.WechatClientDelegate;
 
 /**
  * 自定义数据库Realm
  * @author d1m
  */
-@Slf4j
 public class ShiroDbRealm extends AuthorizingRealm {
+	
+	private static final Logger log = LoggerFactory.getLogger(ShiroDbRealm.class);
 	
 	@Autowired
 	private UserService userService;

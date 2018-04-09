@@ -8,7 +8,8 @@ import java.util.Enumeration;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Web应用关闭时，清理第三方类库的线程.
@@ -16,8 +17,9 @@ import lombok.extern.slf4j.Slf4j;
  * @author Yuan Zhen
  * @version 1.0.0  2016-08-16
  */
-@Slf4j
 public class CleanupContextListener implements ServletContextListener {
+	
+	private static final Logger log = LoggerFactory.getLogger(CleanupContextListener.class);
 
     public void contextInitialized(ServletContextEvent sce) {
     }

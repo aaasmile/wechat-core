@@ -2,21 +2,22 @@ package com.d1m.wechat.controller.reply;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.github.pagehelper.Page;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.dto.MaterialDto;
 import com.d1m.wechat.dto.MemberTagDto;
@@ -35,12 +36,19 @@ import com.d1m.wechat.service.MemberTagService;
 import com.d1m.wechat.service.ReplyActionEngineService;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
+import com.github.pagehelper.Page;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
 
 @Api(value="自动回复行为规则API", tags="自动回复行为规则接口")
-@Slf4j
 @Controller
 @RequestMapping("/reply-action-engine")
 public class ReplyActionEngineController extends BaseController {
+	
+	private static final Logger log = LoggerFactory.getLogger(ReplyActionEngineController.class);
 
 	@Resource
 	private ReplyActionEngineService replyActionEngineService;

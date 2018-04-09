@@ -1,19 +1,22 @@
 package com.d1m.wechat.service.impl;
 
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.d1m.wechat.mapper.MemberQrcodeInvitedMapper;
 import com.d1m.wechat.model.MemberQrcodeInvited;
 import com.d1m.wechat.service.MemberQrcodeInvitedService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+
 import tk.mybatis.mapper.common.Mapper;
 
-import javax.annotation.Resource;
-import java.util.List;
-
-@Slf4j
 @Service
 public class MemberQrcodeInvitedServiceImpl extends BaseService<MemberQrcodeInvited> implements MemberQrcodeInvitedService {
+	
+	private static final Logger log = LoggerFactory.getLogger(MemberQrcodeInvitedServiceImpl.class);
 
 	@Autowired
 	private MemberQrcodeInvitedMapper invitedMapper;

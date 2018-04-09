@@ -11,7 +11,6 @@ import cn.d1m.wechat.client.model.request.WxVideoDesc;
 import com.d1m.wechat.mapper.WechatMapper;
 import com.d1m.wechat.model.Wechat;
 import com.d1m.wechat.util.AppContextUtils;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.Serializable;
@@ -22,6 +21,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static org.bouncycastle.asn1.x500.style.RFC4519Style.cn;
 
 /**
@@ -31,8 +33,9 @@ import static org.bouncycastle.asn1.x500.style.RFC4519Style.cn;
  * @since 1.0.4
  */
 @SuppressWarnings("unused")
-@Slf4j
 public class WechatClientDelegate {
+	
+	private static final Logger log = LoggerFactory.getLogger(WechatClientDelegate.class);
 
     private static final Map<Serializable, WechatClient> holder = new ConcurrentHashMap<Serializable, WechatClient>();
     private static final Map<Integer, AtomicInteger> wechatClientRefCnt = new ConcurrentHashMap<Integer, AtomicInteger>();

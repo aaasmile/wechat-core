@@ -3,10 +3,11 @@ package com.d1m.wechat.wechatclient;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cn.d1m.wechat.client.core.AccessTokenProvider;
 import cn.d1m.wechat.client.util.HashUtil;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
 import com.d1m.common.rest.RestResponse;
 import com.d1m.wechat.util.AppContextUtils;
@@ -16,15 +17,16 @@ import com.d1m.wechat.util.AppContextUtils;
  *
  * @author f0rb on 2017-04-07.
  */
-@Slf4j
 public class RestAccessTokenProvider implements AccessTokenProvider {
-    @Getter
+	
+	private static final Logger log = LoggerFactory.getLogger(RestAccessTokenProvider.class);
+			
     protected final String appid;
     protected final String secret;
     protected final int hash;
     /** 单元测试使用 */
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
-    @Getter
+
     protected String accessToken;
     private WechatTokenRestService wechatTokenRestService;
 
@@ -110,4 +112,15 @@ public class RestAccessTokenProvider implements AccessTokenProvider {
         return restResponse.getData();
     }
 
+	public String getAccessToken() {
+		return accessToken;
+	}
+
+	public void setAccessToken(String accessToken) {
+		this.accessToken = accessToken;
+	}
+
+	public String getAppid() {
+		return appid;
+	}
 }

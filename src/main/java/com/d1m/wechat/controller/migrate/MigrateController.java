@@ -2,8 +2,9 @@ package com.d1m.wechat.controller.migrate;
 
 import javax.annotation.Resource;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,11 +25,12 @@ import io.swagger.annotations.ApiResponse;
  *
  * @author Yuan Zhen on 2016-11-28.
  */
-@Slf4j
 @Controller
 @RequestMapping("migrate")
 @Api(value="迁移API", tags="同步接口")
 public class MigrateController extends BaseController {
+	
+	private static final Logger log = LoggerFactory.getLogger(MigrateController.class);
 
     @Resource
     private MigrateService migrateService;

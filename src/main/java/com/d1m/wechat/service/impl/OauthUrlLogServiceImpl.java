@@ -3,7 +3,9 @@ package com.d1m.wechat.service.impl;
 import com.d1m.wechat.mapper.OauthUrlLogMapper;
 import com.d1m.wechat.model.OauthUrlLog;
 import com.d1m.wechat.service.OauthUrlLogService;
-import lombok.extern.slf4j.Slf4j;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -15,9 +17,11 @@ import java.util.List;
 /**
  * Created by Stoney.Liu on 2017/9/19.
  */
-@Slf4j
 @Service
 public class OauthUrlLogServiceImpl extends BaseService<OauthUrlLog> implements OauthUrlLogService{
+	
+	private static final Logger log = LoggerFactory.getLogger(OauthUrlLogServiceImpl.class);
+			
     // 每批插入条数
     private static final int batch_size = 10;
     private static List<OauthUrlLog> tmpList = new ArrayList<OauthUrlLog>();

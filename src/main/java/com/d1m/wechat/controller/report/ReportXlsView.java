@@ -3,12 +3,14 @@ package com.d1m.wechat.controller.report;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.servlet.view.document.AbstractExcelView;
 
@@ -19,8 +21,10 @@ import com.d1m.wechat.service.ReportConfigService;
  *
  * @author f0rb on 2017-01-24.
  */
-@Slf4j
 public class ReportXlsView extends AbstractExcelView {
+	
+	private static final Logger log = LoggerFactory.getLogger(ReportXlsView.class);
+	
     public static final String REPORT_KEY = "report_key";
     public static final String WECHAT_ID = "wechat_id";
     public static final String PARAMS = "params";

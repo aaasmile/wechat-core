@@ -6,7 +6,9 @@ import javax.annotation.Resource;
 
 import cn.d1m.wechat.client.model.WxUser;
 import cn.d1m.wechat.client.model.common.WxList;
-import lombok.extern.slf4j.Slf4j;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
@@ -23,9 +25,11 @@ import com.d1m.wechat.wechatclient.WechatClientDelegate;
  *
  * @author f0rb on 2016-12-08.
  */
-@Slf4j
 @Component
 public class MigrateUserExecutor {
+	
+	private static final Logger log = LoggerFactory.getLogger(MigrateUserExecutor.class);
+			
     @Resource
     private MemberMapper memberMapper;
     @Resource

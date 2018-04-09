@@ -1,24 +1,28 @@
 package com.d1m.wechat.component;
 
 import java.io.File;
-import java.util.Map;
 import java.util.Properties;
+
 import javax.annotation.Resource;
 
-import com.d1m.wechat.service.ConfigService;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
-@Slf4j
+import com.d1m.wechat.service.ConfigService;
+
 @Component
 @RefreshScope
 @PropertySource("classpath:fileupload.properties")
 public class FileUploadConfig {
+	
+	private static final Logger log = LoggerFactory.getLogger(FileUploadConfig.class);
+			
     private static Properties fileUploadProp;
 
     private static String uploadUrl;

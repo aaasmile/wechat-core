@@ -1,8 +1,14 @@
 package com.d1m.wechat.service.impl;
 
-import cn.d1m.wechat.client.model.WxMessage;
-import com.alibaba.fastjson.JSONObject;
-import com.d1m.common.ds.TenantContext;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.d1m.wechat.dto.MemberDto;
 import com.d1m.wechat.mapper.MassConversationBatchMemberMapper;
 import com.d1m.wechat.mapper.MassConversationBatchResultMapper;
@@ -11,26 +17,19 @@ import com.d1m.wechat.model.MassConversationBatchResult;
 import com.d1m.wechat.model.enums.MassConversationResultStatus;
 import com.d1m.wechat.model.enums.MsgType;
 import com.d1m.wechat.service.MassConversationBatchResultService;
-import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.github.pagehelper.Page;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-import tk.mybatis.mapper.common.Mapper;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import tk.mybatis.mapper.common.Mapper;
 
 /**
  * Created by D1M on 2017/6/2.
  */
 @Service
-@Slf4j
 public class MassConversationBatchResultServiceImpl extends
         BaseService<MassConversationBatchResult> implements
         MassConversationBatchResultService {
+	
+	private static final Logger log = LoggerFactory.getLogger(MassConversationBatchResultServiceImpl.class);
 
     @Autowired
     private MassConversationBatchResultMapper massConversationBatchResultMapper;

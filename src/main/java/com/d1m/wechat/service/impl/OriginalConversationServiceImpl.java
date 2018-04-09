@@ -1,27 +1,27 @@
 package com.d1m.wechat.service.impl;
 
-import java.util.Date;
 import javax.annotation.Resource;
 
-import lombok.extern.slf4j.Slf4j;
 import org.dom4j.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import tk.mybatis.mapper.common.Mapper;
 
 import com.d1m.wechat.mapper.OriginalConversationMapper;
 import com.d1m.wechat.model.Member;
 import com.d1m.wechat.model.OriginalConversation;
-import com.d1m.wechat.model.enums.OriginalConversationStatus;
 import com.d1m.wechat.service.ConversationService;
 import com.d1m.wechat.service.OriginalConversationService;
 
-@Slf4j
+import tk.mybatis.mapper.common.Mapper;
+
 @Service
 public class OriginalConversationServiceImpl extends
         BaseService<OriginalConversation> implements
         OriginalConversationService {
+	
+	private static final Logger log = LoggerFactory.getLogger(OriginalConversationServiceImpl.class);
 
     @Resource
     @Lazy
