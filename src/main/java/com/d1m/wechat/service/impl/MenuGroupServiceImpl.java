@@ -317,10 +317,8 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 		} else {
             if (menuType == MenuType.VIEW ) {//只有view有url, f0rb
                 notBlank(menuModel.getUrl(), Message.MENU_URL_NOT_BLANK);
-            } else if ( menuType == MenuType.MINIPROGRAM ) {
-				notBlank(menuModel.getAppUrl(), Message.MENU_URL_NOT_BLANK);
-			}
-			if (menuType == MenuType.MINIPROGRAM) {
+            } else if (menuType == MenuType.MINIPROGRAM) {
+				notBlank(menuModel.getUrl(), Message.MENU_URL_NOT_BLANK);
 				notBlank(menuModel.getAppId(), Message.MINIPROGRAM_APPID_NOT_BLANK);
 				notBlank(menuModel.getPagePath(), Message.MINIPROGRAM_PAGEPATH_NOT_BLANK);
 			}
