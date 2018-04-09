@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -244,7 +245,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 
 	private MenuDto getMenu(MenuModel menuModel, User user, Integer wechatId,
 			Date current) throws WechatException {
-		log.info(this.getClass().getCanonicalName() + ">>" + menuModel.toString());
+		log.info(this.getClass().getCanonicalName() + ">>" + JSON.toJSONString(menuModel, true));
 		String content = null, url = null;
 		Integer materialId = null;
 		notBlank(menuModel.getName(), Message.MENU_NAME_NOT_BLANK);

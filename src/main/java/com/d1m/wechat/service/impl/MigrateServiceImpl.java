@@ -332,6 +332,7 @@ public class MigrateServiceImpl implements MigrateService {
             menuModel.setUrl(wxMenu.getUrl());
             menuModel.setSeq(seq++);
             menuModel.setParent(parent);
+            menuModel.setAppid(wxMenu.getAppid());
             if (wxMenu.getType() == null) {
                 menuModel.setType(MenuType.PARENT.getValue());
             } else {
