@@ -244,6 +244,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 
 	private MenuDto getMenu(MenuModel menuModel, User user, Integer wechatId,
 			Date current) throws WechatException {
+		log.info(this.getClass().getCanonicalName() + ">>" + menuModel.toString());
 		String content = null, url = null;
 		Integer materialId = null;
 		notBlank(menuModel.getName(), Message.MENU_NAME_NOT_BLANK);
