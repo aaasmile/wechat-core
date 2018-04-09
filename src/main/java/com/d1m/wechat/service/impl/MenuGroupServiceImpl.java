@@ -218,8 +218,8 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 				menuDto.setType((byte)0); //对于父菜单,重置type为null
 				if (menuModel.getUrl() != null)
 					menuDto.setUrl(menuModel.getUrl());
-				if (menuModel.getAppId() != null)
-					menuDto.setAppId(menuModel.getAppId());
+				if (menuModel.getAppid() != null)
+					menuDto.setAppId(menuModel.getAppid());
 				if (menuModel.getPagePath() != null)
 					menuDto.setPagePath(menuModel.getPagePath());
 				if (menuModel.getAppUrl() != null)
@@ -244,6 +244,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 
 	private MenuDto getMenu(MenuModel menuModel, User user, Integer wechatId,
 			Date current) throws WechatException {
+		log.info(this.getClass().getCanonicalName() + ">>" + menuModel.toString());
 		String content = null, url = null;
 		Integer materialId = null;
 		notBlank(menuModel.getName(), Message.MENU_NAME_NOT_BLANK);
@@ -319,7 +320,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
                 notBlank(menuModel.getUrl(), Message.MENU_URL_NOT_BLANK);
             } else if (menuType == MenuType.MINIPROGRAM) {
 				notBlank(menuModel.getUrl(), Message.MENU_URL_NOT_BLANK);
-				notBlank(menuModel.getAppId(), Message.MINIPROGRAM_APPID_NOT_BLANK);
+				notBlank(menuModel.getAppid(), Message.MINIPROGRAM_APPID_NOT_BLANK);
 				notBlank(menuModel.getPagePath(), Message.MINIPROGRAM_PAGEPATH_NOT_BLANK);
 			}
 			url = menuModel.getUrl();
@@ -344,7 +345,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 		menu.setName(menuModel.getName());
 		menu.setSeq(menuModel.getSeq());
 		menu.setType(menuType.getValue());
-		if (menuModel.getAppId() != null) menu.setAppId(menuModel.getAppId());
+		if (menuModel.getAppid() != null) menu.setAppId(menuModel.getAppid());
 		if (menuModel.getPagePath() != null) menu.setPagePath(menuModel.getPagePath());
 		if (menuModel.getAppUrl() != null) menu.setAppUrl(menuModel.getAppUrl());
 		MaterialDto material = new MaterialDto();

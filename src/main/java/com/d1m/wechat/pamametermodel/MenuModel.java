@@ -22,7 +22,7 @@ public class MenuModel {
 
 	private Integer seq;
 
-	private String appId;
+	private String appid;
 
 	private String pagePath;
 
@@ -100,12 +100,12 @@ public class MenuModel {
 		this.url = url;
 	}
 
-	public String getAppId() {
-		return appId;
+	public String getAppid() {
+		return appid;
 	}
 
-	public void setAppId(String appId) {
-		this.appId = appId;
+	public void setAppid(String appid) {
+		this.appid = appid;
 	}
 
 	public String getPagePath() {
@@ -122,5 +122,12 @@ public class MenuModel {
 
 	public void setAppUrl(String appUrl) {
 		this.appUrl = appUrl;
+	}
+
+	@Override
+	public String toString() {
+		return "MenuModel [id=" + id + ", type=" + type + ", materialType=" + materialType + ", name=" + name
+				+ ", material=" + material + ", parent=" + parent + ", children=" + children + ", url=" + url + ", seq="
+				+ seq + ", appid=" + appid + ", pagePath=" + pagePath + ", appUrl=" + appUrl + "]";
 	}
 }
