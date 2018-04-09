@@ -123,11 +123,4 @@ public class MenuModel {
 	public void setAppUrl(String appUrl) {
 		this.appUrl = appUrl;
 	}
-
-	@Override
-	public String toString() {
-		return "MenuModel [id=" + id + ", type=" + type + ", materialType=" + materialType + ", name=" + name
-				+ ", material=" + material + ", parent=" + parent + ", children=" + children + ", url=" + url + ", seq="
-				+ seq + ", appid=" + appid + ", pagePath=" + pagePath + ", appUrl=" + appUrl + "]";
-	}
 }
