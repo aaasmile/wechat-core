@@ -22,7 +22,7 @@ public class MenuModel {
 
 	private Integer seq;
 
-	private String appId;
+	private String appid;
 
 	private String pagePath;
 
@@ -100,12 +100,12 @@ public class MenuModel {
 		this.url = url;
 	}
 
-	public String getAppId() {
-		return appId;
+	public String getAppid() {
+		return appid;
 	}
 
-	public void setAppId(String appId) {
-		this.appId = appId;
+	public void setAppid(String appid) {
+		this.appid = appid;
 	}
 
 	public String getPagePath() {
