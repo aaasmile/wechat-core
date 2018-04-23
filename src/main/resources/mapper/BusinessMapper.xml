@@ -112,6 +112,9 @@
 	   		<if test="city != null">
 	   			and city = #{city}
 	   		</if>
+			<if test="district != null">
+				and district = #{district}
+			</if>
 	   		<if test="query != null">
 	   			and (business_name like CONCAT('%',#{query},'%')
 	   			or business_code like CONCAT('%',#{query},'%')
