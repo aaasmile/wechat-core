@@ -1,22 +1,10 @@
 package com.d1m.wechat.service.impl;
 
-import java.io.File;
-import java.util.*;
-
-import com.alibaba.fastjson.JSONObject;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import tk.mybatis.mapper.common.Mapper;
-
 import cn.d1m.wechat.client.core.WxResponse;
 import cn.d1m.wechat.client.model.WxBusiness;
 import cn.d1m.wechat.client.model.WxBusinessPhoto;
 import cn.d1m.wechat.client.model.common.WxHolder;
+import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.dto.BusinessAreaListDto;
 import com.d1m.wechat.dto.BusinessDto;
 import com.d1m.wechat.exception.WechatException;
@@ -34,6 +22,21 @@ import com.d1m.wechat.service.BusinessService;
 import com.d1m.wechat.util.BaiduLocationUtil;
 import com.d1m.wechat.util.Message;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.common.Mapper;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
@@ -160,7 +163,7 @@ public class BusinessServiceImpl extends BaseService<Business> implements
 		}
 		return businessMapper.search(wechatId,
 				BusinessStatus.INUSED.getValue(), businessModel.getProvince(),
-				businessModel.getCity(), businessModel.getLng(),
+				businessModel.getCity(), businessModel.getDistrict(), businessModel.getLng(),
 				businessModel.getLat(), businessModel.getQuery(),
 				businessModel.getSortName(), businessModel.getSortDir());
 	}

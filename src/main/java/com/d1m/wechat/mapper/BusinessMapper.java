@@ -1,20 +1,19 @@
 package com.d1m.wechat.mapper;
 
-import java.util.List;
-
-import org.apache.ibatis.annotations.Param;
-
 import com.d1m.wechat.dto.BusinessAreaListDto;
 import com.d1m.wechat.dto.BusinessDto;
 import com.d1m.wechat.model.Business;
 import com.d1m.wechat.util.MyMapper;
 import com.github.pagehelper.Page;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface BusinessMapper extends MyMapper<Business> {
 
 	Page<BusinessDto> search(@Param("wechatId") Integer wechatId,
 			@Param("status") Byte status, @Param("province") Integer province,
-			@Param("city") Integer city, @Param("lng") Double lng,
+			@Param("city") Integer city, @Param("district") String district, @Param("lng") Double lng,
 			@Param("lat") Double lat, @Param("query") String query,
 			@Param("sortName") String sortName, @Param("sortDir") String sortDir);
 
