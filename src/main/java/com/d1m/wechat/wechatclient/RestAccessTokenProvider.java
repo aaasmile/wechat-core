@@ -3,6 +3,7 @@ package com.d1m.wechat.wechatclient;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,6 +11,7 @@ import cn.d1m.wechat.client.core.AccessTokenProvider;
 import cn.d1m.wechat.client.util.HashUtil;
 
 import com.d1m.common.rest.RestResponse;
+import com.d1m.wechat.thirdparty.AccessToken;
 import com.d1m.wechat.util.AppContextUtils;
 
 /**
@@ -105,11 +107,23 @@ public class RestAccessTokenProvider implements AccessTokenProvider {
      * @throws RuntimeException 请求access_token出错时, 通过异常传递微信返回的错误信息
      */
     protected String getAccessTokenFromWechat() {
-        RestResponse<String> restResponse = wechatTokenRestService.refreshAccessToken(appid, secret);
-        if (!restResponse.isSuccess()) {
-            throw new RuntimeException("AccessToken获取失败[appid=" + appid + ",secret=" + secret + "]:" + restResponse.getInfo());
-        }
-        return restResponse.getData();
+    	log.info("getAccessTokenFromWechat appid>>" + appid);
+    	if(StringUtils.isNotEmpty(appid) && appid.indexOf("com.d1m") > -1 && StringUtils.isNotEmpty(secret)) {
+    		try {
+				Class className = Class.forName(appid);
+				AccessToken accessToken = (AccessToken) className.newInstance();
+				return accessToken.getAccessToken(secret);
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+			}
+    		return null;
+    	} else {
+	        RestResponse<String> restResponse = wechatTokenRestService.refreshAccessToken(appid, secret);
+	        if (!restResponse.isSuccess()) {
+	            throw new RuntimeException("AccessToken获取失败[appid=" + appid + ",secret=" + secret + "]:" + restResponse.getInfo());
+	        }
+	        return restResponse.getData();
+    	}
     }
 
 	public String getAccessToken() {
