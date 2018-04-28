@@ -248,6 +248,7 @@ public class MemberTagServiceImpl extends BaseService<MemberTag> implements
 			Integer userId, String oriFileName, String csv, String csvName) {
 		try {
 			// produce exception file and check OpenId and TagType Not Blank
+			log.info("wechatId>>" + wechatId + ">>uploadPath>>" + uploadPath + ">>userId>>" + userId + ">>oriFileName>>" + csv + ">>csvName>>" + csvName);
 			CsvReader r = new CsvReader(uploadPath, ',', Charset.forName("UTF-8"));
 			JSONObject json = new JSONObject();
 			r.readHeaders();
@@ -256,6 +257,7 @@ public class MemberTagServiceImpl extends BaseService<MemberTag> implements
 			String[] head = {"OPEN_ID","TYPE","TAG","Fail_Reason"};
 			wr.writeRecord(head);
 			while (r.readRecord()) {
+				log.debug("csvAddMemberTag>>" + r.getRawRecord());
 				String openId = r.getRawRecord().split(",")[0];
 				if(!openId.equals("")){
 					Member member = new Member();
@@ -326,12 +328,12 @@ public class MemberTagServiceImpl extends BaseService<MemberTag> implements
 							Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
 				}
 			} catch (Exception e) {
-				log.error(e.getLocalizedMessage());
+				log.error(e.getLocalizedMessage(), e);
 				throw new WechatException(
 						Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
 			}
 		} catch (Exception e) {
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			return;
 		}
 	}
