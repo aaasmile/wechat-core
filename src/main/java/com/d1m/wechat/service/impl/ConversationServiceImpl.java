@@ -573,7 +573,12 @@ public class ConversationServiceImpl extends BaseService<Conversation>
 			massConversationModel = new MassConversationModel();
 		}
 		Date current = new Date();
-		Date runAt = DateUtil.parse(massConversationModel.getRunAt());
+		Date runAt = null;
+		try {
+			runAt = DateUtil.parse(massConversationModel.getRunAt());
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
 		if (runAt != null && runAt.compareTo(new Date()) <= 0) {
 			throw new WechatException(
 					Message.CONVERSATION_MASS_RUN_AT_MUST_BE_GE_NOW);
