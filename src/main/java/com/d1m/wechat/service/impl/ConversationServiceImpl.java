@@ -569,6 +569,8 @@ public class ConversationServiceImpl extends BaseService<Conversation>
 	@Override
 	public void sendMassConversation(Integer wechatId, User user,
 			MassConversationModel massConversationModel) {
+		long start = System.currentTimeMillis();
+		log.info("start sendMassConversation >>> " + start);
 		if (massConversationModel == null) {
 			massConversationModel = new MassConversationModel();
 		}
@@ -745,6 +747,7 @@ public class ConversationServiceImpl extends BaseService<Conversation>
 						Message.CONVERSATION_MASS_ADD_JOB_ERROR);
 			}
 		}
+		log.info("end sendMassConversation >>> " + (System.currentTimeMillis() - start) / 1000);
 	}
 
 	/**
@@ -1008,6 +1011,7 @@ public class ConversationServiceImpl extends BaseService<Conversation>
 		massConversationResult.setMsgType(msgType.getValue());
 		massConversationResult.setTotalBatch(batchIndex-1);
 		massConversationResultMapper.updateByPrimaryKey(massConversationResult);
+		log.info("end sendMassMessage massConversationResult!");
 	}
 
 	/**
