@@ -86,6 +86,7 @@ public class WechatClientDelegate {
     }
 
     public static WechatClient get(Serializable key) {
+    	
         if (!holder.containsKey(key)) {
             synchronized (holder) {
                 if (!holder.containsKey(key)) {
@@ -98,6 +99,12 @@ public class WechatClientDelegate {
                     }
                 }
             }
+        }
+        Object client = holder.get(key);
+        if(client != null) {
+        	log.info("WechatClient>>" + client.getClass().getCanonicalName());
+        } else {
+        	log.error("WechatClient>>" + client);
         }
         return holder.get(key);
     }
