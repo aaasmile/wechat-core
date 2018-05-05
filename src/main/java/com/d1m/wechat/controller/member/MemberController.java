@@ -369,7 +369,7 @@ public class MemberController extends BaseController {
 							}
 
 							
-							if (isSubscribe && subscribeAt != null) {
+							if (subscribeAt != null && isSubscribe) {
 								String attentionTime = df.format(subscribeAt);
 								dataRow.createCell(8).setCellValue(attentionTime);
 							}
