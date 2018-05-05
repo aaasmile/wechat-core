@@ -271,6 +271,7 @@ public class MemberController extends BaseController {
 	public ModelAndView exportExcel(
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response){
+		SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		ReportXlsxStreamView view = null;
 		AddMemberTagModel addMemberTagModel = null;
 		String data = request.getParameter("data");
@@ -328,19 +329,29 @@ public class MemberController extends BaseController {
 							Row dataRow = sheet.createRow(j);
 							dataRow.setHeight((short) 600);
 							dataRow.createCell(0).setCellValue(j);
-							dataRow.createCell(1).setCellValue(temp.getNickname());
-							if (temp.getSex() != null) {
+							
+							String nickname = temp.getNickname();
+							Byte sex = temp.getSex();
+							Boolean isSubscribe = temp.getIsSubscribe();
+							Date unsubscribeAt = temp.getUnsubscribeAt();
+							String attentionStatus = "subscribe";
+							Date subscribeAt = temp.getSubscribeAt();
+							Integer batchsendMonth = temp.getBatchsendMonth();
+							List<MemberTagDto> memberTags = temp.getMemberTags();
+							Integer bindStatus = temp.getBindStatus();
+							
+							dataRow.createCell(1).setCellValue(nickname);
+							if (sex != null) {
 								dataRow.createCell(2).setCellValue(
-										I18nUtil.getMessage(Sex.getByValue(temp.getSex())
+										I18nUtil.getMessage(Sex.getByValue(sex)
 												.name().toLowerCase(), locale));
 							}
 							dataRow.createCell(3).setCellValue(temp.getMobile());
 							dataRow.createCell(4).setCellValue(temp.getProvince());
 							dataRow.createCell(5).setCellValue(temp.getCity());
 
-							String attentionStatus = "subscribe";
-							if (!temp.getIsSubscribe()) {
-								if (temp.getUnsubscribeAt() != null) {
+							if (isSubscribe != null && !isSubscribe) {
+								if (unsubscribeAt != null) {
 									attentionStatus = "cancel.subscribe";
 								} else {
 									attentionStatus = "unsubscribe";
@@ -349,7 +360,7 @@ public class MemberController extends BaseController {
 							dataRow.createCell(6).setCellValue(
 									I18nUtil.getMessage(attentionStatus, locale));
 
-							if (temp.getBindStatus() != null && temp.getBindStatus() == 1) {
+							if (bindStatus != null && bindStatus == 1) {
 								dataRow.createCell(7).setCellValue(
 										I18nUtil.getMessage("bind", locale));
 							} else {
@@ -357,18 +368,17 @@ public class MemberController extends BaseController {
 										I18nUtil.getMessage("unbind", locale));
 							}
 
-							SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-							if (temp.getIsSubscribe() && temp.getSubscribeAt() != null) {
-								String attentionTime = df.format(temp.getSubscribeAt());
+							
+							if (isSubscribe && subscribeAt != null) {
+								String attentionTime = df.format(subscribeAt);
 								dataRow.createCell(8).setCellValue(attentionTime);
 							}
-							dataRow.createCell(9).setCellValue(
-									temp.getBatchsendMonth() == null ? 0 : temp
-											.getBatchsendMonth());
+							
+							dataRow.createCell(9).setCellValue(batchsendMonth == null ? 0 : batchsendMonth);
 							StringBuffer tags = new StringBuffer();
-							if (temp.getMemberTags() != null
-									&& !temp.getMemberTags().isEmpty()) {
-								for (MemberTagDto mt : temp.getMemberTags()) {
+							
+							if (memberTags != null && !memberTags.isEmpty()) {
+								for (MemberTagDto mt : memberTags) {
 									tags.append(mt.getName()).append(" | ");
 								}
 							}
@@ -492,4 +502,5 @@ public class MemberController extends BaseController {
 			return wrapException(e);
 		}
 	}
+	
 }
