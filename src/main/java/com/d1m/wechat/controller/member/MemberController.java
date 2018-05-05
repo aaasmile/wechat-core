@@ -296,7 +296,7 @@ public class MemberController extends BaseController {
 		String name = I18nUtil.getMessage("follwer.list", locale);
 		String[] keys = { "no", "nickname", "gender", "mobile", "province",
 				"city", "subscribe.status", "bind.status", "subscribe.time",
-				"group.message.sent", "tag" };
+				"group.message.sent", "tag", "customer.service.open.id" };
 		String[] titleVal = I18nUtil.getMessage(keys, locale);
 		String lang = RequestContextUtils.getLocale(request).getCountry();
 		for (MemberDto temp:memberDtos){
@@ -369,7 +369,7 @@ public class MemberController extends BaseController {
 							}
 
 							
-							if (isSubscribe && subscribeAt != null) {
+							if (subscribeAt != null && isSubscribe) {
 								String attentionTime = df.format(subscribeAt);
 								dataRow.createCell(8).setCellValue(attentionTime);
 							}
@@ -383,6 +383,7 @@ public class MemberController extends BaseController {
 								}
 							}
 							dataRow.createCell(10).setCellValue(tags.toString());
+							dataRow.createCell(11).setCellValue(temp.getOpenId());
 							j++;
 						}
 					}
