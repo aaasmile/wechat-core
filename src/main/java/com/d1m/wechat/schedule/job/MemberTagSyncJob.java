@@ -233,11 +233,9 @@ public class MemberTagSyncJob extends BaseJobHandler  {
                 }
             } while (nextOpenid != null);
             log.info("同步数据到本地：已经同步标签[{}]的粉丝数: {}", MemberTag.getName(), count);
-            if(memberMemberTagList.size() > 0) {
-            	memberMemberTagService.insertOrUpdateList(memberMemberTagList);
-            }
-            memberMemberTagList.clear();
         }
+        log.info("同步数据到本地：已经同步的粉丝数: {}", memberMemberTagList.size());
+        memberMemberTagService.insertOrUpdateList(memberMemberTagList);
         return ReturnT.SUCCESS;
     }
 }
