@@ -178,6 +178,7 @@ public class MemberTagSyncJob extends BaseJobHandler  {
                 memberTag.setCreatedAt(current);
                 memberTag.setCreatorId(1);
                 memberTag.setWechatId(wechatId);
+                memberTag.setStatus(Byte.valueOf("1"));
                 memberTagService.save(memberTag);
                 
                 MemberTagDto memberTagDto = new MemberTagDto();
