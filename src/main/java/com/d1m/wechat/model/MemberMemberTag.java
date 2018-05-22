@@ -35,6 +35,9 @@ public class MemberMemberTag {
      */
     @Column(name = "created_at")
     private Date createdAt;
+    
+    @Column(name = "open_id")
+    private String openId;
 
     /**
      * 获取主键ID
@@ -125,4 +128,12 @@ public class MemberMemberTag {
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
+
+	public String getOpenId() {
+		return openId;
+	}
+
+	public void setOpenId(String openId) {
+		this.openId = openId;
+	}
 }

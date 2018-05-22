@@ -32,6 +32,7 @@ import com.d1m.wechat.model.MemberTagCsv;
 import com.d1m.wechat.pamametermodel.AddMemberTagModel;
 import com.d1m.wechat.pamametermodel.AddMemberTagTaskModel;
 import com.d1m.wechat.pamametermodel.MemberTagModel;
+import com.d1m.wechat.schedule.job.MemberTagSyncJob;
 import com.d1m.wechat.service.MemberTagCsvService;
 import com.d1m.wechat.service.MemberTagService;
 import com.d1m.wechat.util.Constants;
@@ -51,6 +52,9 @@ public class MemberTagController extends BaseController {
 	
 	@Autowired
 	private MemberTagCsvService memberTagCsvService;
+	
+	@Autowired
+	private MemberTagSyncJob memberTagSyncJob;
 	
 	@ApiOperation(value="创建会员标签", tags="会员标签接口")
 	@ApiResponse(code=200, message="1-创建会员标签成功")
@@ -224,4 +228,18 @@ public class MemberTagController extends BaseController {
 		return representation(Message.MEMBER_TAG_SEARCH_SUCCESS, dtos);
 	}
 
+	@ApiOperation(value="双向同步会员标签", tags="双向同步会员接口")
+	@ApiResponse(code=200, message="1-双向同步会员标签成功")
+	@RequestMapping(value = "sync.json", method = RequestMethod.GET)
+	public JSONObject sync(HttpSession session,
+			HttpServletRequest request, HttpServletResponse response) {
+		try {
+			String wechatid = getWechatId(session).toString();
+			memberTagSyncJob.run(wechatid);
+			return representation(Message.MEMBER_TAG_DELETE_SUCCESS);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			return wrapException(e);
+		}
+	}
 }

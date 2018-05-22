@@ -10,5 +10,27 @@
     <result column="member_tag_id" jdbcType="INTEGER" property="memberTagId" />
     <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
     <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="open_id" jdbcType="VARCHAR" property="openId" />
   </resultMap>
+  
+  <select id="getMemberMemberTagList" resultMap="BaseResultMap" parameterType="com.d1m.wechat.model.MemberMemberTag">
+  	SELECT
+		m.open_id,
+	  	mmt.member_tag_id
+	FROM
+		member_member_tag mmt,
+		member m
+	WHERE
+		mmt.member_id = m.id
+	  and mmt.member_tag_id=#{memberTagId}
+  </select>
+  
+  <insert id="insertOrUpdateList" parameterType="java.util.List">
+  	<foreach collection="list" item="item" index="index" separator=";">
+  		insert into member_member_tag(member_id, member_tag_id, wechat_id, created_at) 
+  		values (${item.member_id}, ${item.member_tag_id}, ${item.wechat_id}, now())
+  		ON DUPLICATE KEY 
+  		UPDATE member_id=${item.member_tag_id},member_tag_id=${item.member_tag_id},wechat_id=${item.wechat_id},created_at=now()
+  	</foreach>
+  </insert>
 </mapper>
