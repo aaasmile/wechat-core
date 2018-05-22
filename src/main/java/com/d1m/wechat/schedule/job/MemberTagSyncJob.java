@@ -63,6 +63,10 @@ public class MemberTagSyncJob extends BaseJobHandler  {
 			return ReturnT.FAIL;
 		}
 		String wechatIdStr = strings[0];
+		if(strings.length < 2) {
+			log.error("args length size not 2");
+		}
+		String shopname = strings[1];
 		log.info("wechatId>>" + wechatIdStr);
 		Integer wechatId = null;
 		if(StringUtils.isEmpty(wechatIdStr)) {
@@ -73,7 +77,7 @@ public class MemberTagSyncJob extends BaseJobHandler  {
 		Integer memberTagTypeId = null;
 		try {
 			MemberTagType query = new MemberTagType();
-			query.setName("门店");
+			query.setName(shopname);
 			query = memberTagTypeService.selectOne(query);
 			memberTagTypeId = query.getId();
 		} catch (Exception e) {
