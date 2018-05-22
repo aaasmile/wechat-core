@@ -43,4 +43,14 @@ public class MemberMemberTagServiceImpl extends BaseService<MemberMemberTag>
 		memberMemberTagMapper.deleteByPrimaryKey(memberMemberTagId);
 	}
 
+	@Override
+	public List<MemberMemberTag> getMemberMemberTagList(MemberMemberTag memberMemberTag) {
+		return memberMemberTagMapper.getMemberMemberTagList(memberMemberTag);
+	}
+
+	@Override
+	public void insertOrUpdateList(List<MemberMemberTag> memberMemberAddTags) {
+		memberMemberTagMapper.insertOrUpdateList(memberMemberAddTags);
+	}
+
 }
