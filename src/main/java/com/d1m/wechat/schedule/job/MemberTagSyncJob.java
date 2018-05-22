@@ -18,8 +18,10 @@ import com.d1m.wechat.schedule.BaseJobHandler;
 import com.d1m.wechat.service.MemberMemberTagService;
 import com.d1m.wechat.service.MemberService;
 import com.d1m.wechat.service.MemberTagService;
+import com.d1m.wechat.service.MemberTagTypeService;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.d1m.wechat.model.MemberTag;
+import com.d1m.wechat.model.MemberTagType;
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.annotation.JobHander;
 
@@ -51,6 +53,8 @@ public class MemberTagSyncJob extends BaseJobHandler  {
     private MemberMemberTagService memberMemberTagService;
 	@Autowired
 	private MemberService memberService;
+	@Autowired
+	private MemberTagTypeService memberTagTypeService;
 
 	@Override
 	public ReturnT<String> run(String... strings) throws Exception {
@@ -66,10 +70,18 @@ public class MemberTagSyncJob extends BaseJobHandler  {
 			return ReturnT.FAIL;
 		}
 		wechatId = Integer.valueOf(wechatIdStr);
-		
+		Integer memberTagTypeId = null;
+		try {
+			MemberTagType query = new MemberTagType();
+			query.setName("门店");
+			query = memberTagTypeService.selectOne(query);
+			memberTagTypeId = query.getId();
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
 		//步骤1,将微信后台用户标签同步到数据库
 		try {
-			ReturnT<String> step1 = step1(wechatId);
+			ReturnT<String> step1 = step1(wechatId, memberTagTypeId);
 			log.info("step1>>" + step1.getMsg());
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -152,7 +164,7 @@ public class MemberTagSyncJob extends BaseJobHandler  {
 	}
 
 	
-	public ReturnT<String> step1(Integer wechatId) {
+	public ReturnT<String> step1(Integer wechatId, Integer memberTagTypeId) {
         // 1. 同步微信用户标签
         List<MemberTagDto> allMemberTags = memberTagService.getAllMemberTags(wechatId);
         Map<Integer, MemberTagDto> TagIdMap = new HashMap<Integer, MemberTagDto>();
@@ -179,6 +191,7 @@ public class MemberTagSyncJob extends BaseJobHandler  {
                 memberTag.setCreatorId(1);
                 memberTag.setWechatId(wechatId);
                 memberTag.setStatus(Byte.valueOf("1"));
+                memberTag.setMemberTagTypeId(memberTagTypeId);
                 memberTagService.save(memberTag);
                 
                 MemberTagDto memberTagDto = new MemberTagDto();

@@ -28,9 +28,9 @@
   <insert id="insertOrUpdateList" parameterType="java.util.List">
   	<foreach collection="list" item="item" index="index" separator=";">
   		insert into member_member_tag(member_id, member_tag_id, wechat_id, created_at) 
-  		values (${item.member_id}, ${item.member_tag_id}, ${item.wechat_id}, now())
+  		values (${item.memberId}, ${item.memberTagId}, ${item.wechatId}, now())
   		ON DUPLICATE KEY 
-  		UPDATE member_id=${item.member_tag_id},member_tag_id=${item.member_tag_id},wechat_id=${item.wechat_id},created_at=now()
+  		UPDATE member_id=${item.memberId},member_tag_id=${item.memberTagId},wechat_id=${item.wechatId},created_at=now()
   	</foreach>
   </insert>
 </mapper>
