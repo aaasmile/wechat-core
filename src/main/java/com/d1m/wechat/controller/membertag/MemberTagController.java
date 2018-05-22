@@ -231,11 +231,14 @@ public class MemberTagController extends BaseController {
 	@ApiOperation(value="双向同步会员标签", tags="双向同步会员接口")
 	@ApiResponse(code=200, message="1-双向同步会员标签成功")
 	@RequestMapping(value = "sync.json", method = RequestMethod.GET)
-	public JSONObject sync(HttpSession session,
+	public JSONObject sync(
+			String shopname,
+			HttpSession session,
 			HttpServletRequest request, HttpServletResponse response) {
 		try {
 			String wechatid = getWechatId(session).toString();
-			memberTagSyncJob.run(wechatid);
+			log.info("shopname>>" + shopname);
+			memberTagSyncJob.run(wechatid, shopname);
 			return representation(Message.MEMBER_TAG_DELETE_SUCCESS);
 		} catch (Exception e) {
 			log.error(e.getMessage());
