@@ -249,6 +249,7 @@ public class MemberTagSyncJob extends BaseJobHandler  {
                         memberMemberTag.setMemberId(member.getId());
                         memberMemberTag.setMemberTagId(memberTagDto.getId());
                         memberMemberTag.setWechatId(wechatId);
+                        memberMemberTag.setOpenId(openId);
 
                         memberMemberTagList.add(memberMemberTag);
                     }
