@@ -294,6 +294,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
 						memberMemberTag.setMemberTagId(memberTag.getId());
 						memberMemberTag.setWechatId(wechatId);
 						memberMemberTag.setCreatedAt(current);
+						memberMemberTag.setOpenId(memberDto.getOpenId());
 						memberMemberAddTags.add(memberMemberTag);
 					}
 				}

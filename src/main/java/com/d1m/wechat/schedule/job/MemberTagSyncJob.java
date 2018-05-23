@@ -176,6 +176,7 @@ public class MemberTagSyncJob extends BaseJobHandler  {
 			}
 			//将剩余的openid发送
 			if(openid_list.size() > 0) {
+				log.info("同步数据到微信：已经同步标签[{}]的粉丝数: {}", tagname, openid_list.size());
 				client.batchTagging(openid_list, tagid);
 				openid_list.clear();
 			}
@@ -204,6 +205,15 @@ public class MemberTagSyncJob extends BaseJobHandler  {
                     memberTagService.updateAll(memberTag);
                 }
             } else {
+            	MemberTagDto memberTagDto = new MemberTagDto();
+                memberTagDto.setId(wxTag.getId());
+                memberTagDto.setName(wxTag.getName());
+                memberTagDto.setCreatedAt(now);
+                memberTagDto.setCreatorId(1);
+                memberTagDto.setWechatId(wechatId);
+                memberTagDto.setMemberTagTypeId(defaultMemberTagTypeId);
+                TagIdMap.put(wxTag.getId(), memberTagDto);
+                
                 memberTag = new MemberTag();
                 memberTag.setId(wxTag.getId());
                 memberTag.setName(wxTag.getName());
@@ -213,22 +223,13 @@ public class MemberTagSyncJob extends BaseJobHandler  {
                 memberTag.setStatus(Byte.valueOf("1"));
                 memberTag.setMemberTagTypeId(defaultMemberTagTypeId);
                 memberTagService.save(memberTag);
-                
-                MemberTagDto memberTagDto = new MemberTagDto();
-                memberTagDto.setId(wxTag.getId());
-                memberTagDto.setName(wxTag.getName());
-                memberTagDto.setCreatedAt(now);
-                memberTagDto.setCreatorId(1);
-                memberTagDto.setWechatId(wechatId);
-                memberTagDto.setMemberTagTypeId(defaultMemberTagTypeId);
-                TagIdMap.put(memberTag.getId(), memberTagDto);
             }
         }
         
         // 2. 同步各个标签下的用户
         String nextOpenid;
         List<MemberMemberTag> memberMemberTagList = new ArrayList<MemberMemberTag>();
-
+        log.info("TagIdMap>>" + TagIdMap);
         for (MemberTagDto memberTagDto : TagIdMap.values()) {
             int count = 0;
             nextOpenid = null;
