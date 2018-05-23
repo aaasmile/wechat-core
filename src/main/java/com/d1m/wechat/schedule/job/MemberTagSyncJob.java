@@ -63,10 +63,7 @@ public class MemberTagSyncJob extends BaseJobHandler  {
 			return ReturnT.FAIL;
 		}
 		String wechatIdStr = strings[0];
-		if(strings.length < 2) {
-			log.error("args length size not 2");
-		}
-		String shopname = strings[1];
+		
 		log.info("wechatId>>" + wechatIdStr);
 		Integer wechatId = null;
 		if(StringUtils.isEmpty(wechatIdStr)) {
@@ -74,25 +71,39 @@ public class MemberTagSyncJob extends BaseJobHandler  {
 			return ReturnT.FAIL;
 		}
 		wechatId = Integer.valueOf(wechatIdStr);
+		//根据传入参数获取tagtypeid
 		Integer memberTagTypeId = null;
+		if(strings.length >= 2) {
+			try {
+				String shopname = strings[1];
+				MemberTagType query = new MemberTagType();
+				query.setName(shopname);
+				query = memberTagTypeService.selectOne(query);
+				memberTagTypeId = query.getId();
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+			}
+		}
+		//查询出门店tagtypeid,从微信导入本地的增量tag设置默认门店类型(memberTagTypeId)
+		Integer defaultMemberTagTypeId = null;
 		try {
 			MemberTagType query = new MemberTagType();
-			query.setName(shopname);
+			query.setName("门店");
 			query = memberTagTypeService.selectOne(query);
-			memberTagTypeId = query.getId();
+			defaultMemberTagTypeId = query.getId();
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
 		//步骤1,将微信后台用户标签同步到数据库
 		try {
-			ReturnT<String> step1 = step1(wechatId, memberTagTypeId);
+			ReturnT<String> step1 = step1(wechatId, defaultMemberTagTypeId, memberTagTypeId);
 			log.info("step1>>" + step1.getMsg());
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
 		//步骤2，将本地用户标签推送给微信
 		try {
-			ReturnT<String> step2 = step2(wechatId);
+			ReturnT<String> step2 = step2(wechatId, memberTagTypeId);
 			log.info("step2>>" + step2.getMsg());
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -100,7 +111,7 @@ public class MemberTagSyncJob extends BaseJobHandler  {
 		return ReturnT.SUCCESS;
 	}
 	
-	public ReturnT<String> step2(Integer wechatId) {
+	public ReturnT<String> step2(Integer wechatId, Integer memberTagTypeId) {
 		
 		//获取微信tags
 		log.info("获取微信tags");
@@ -144,6 +155,11 @@ public class MemberTagSyncJob extends BaseJobHandler  {
 				WxTag wxtag = wxtagHolder.getData();
 				tagid = wxtag.getId();
 			}
+			//如果指定了memberTagTypeId,执行过滤
+			if(memberTagTypeId != null && memberTagDto.getMemberTagTypeId() != null && memberTagDto.getMemberTagTypeId() != memberTagTypeId) {
+				continue;
+			}
+			
 			//查询出该tag下所有openid
 			MemberMemberTag query = new MemberMemberTag();
 			query.setMemberTagId(memberTagDto.getId());
@@ -168,7 +184,7 @@ public class MemberTagSyncJob extends BaseJobHandler  {
 	}
 
 	
-	public ReturnT<String> step1(Integer wechatId, Integer memberTagTypeId) {
+	public ReturnT<String> step1(Integer wechatId, Integer defaultMemberTagTypeId, Integer memberTagTypeId) {
         // 1. 同步微信用户标签
         List<MemberTagDto> allMemberTags = memberTagService.getAllMemberTags(wechatId);
         Map<Integer, MemberTagDto> TagIdMap = new HashMap<Integer, MemberTagDto>();
@@ -195,7 +211,7 @@ public class MemberTagSyncJob extends BaseJobHandler  {
                 memberTag.setCreatorId(1);
                 memberTag.setWechatId(wechatId);
                 memberTag.setStatus(Byte.valueOf("1"));
-                memberTag.setMemberTagTypeId(memberTagTypeId);
+                memberTag.setMemberTagTypeId(defaultMemberTagTypeId);
                 memberTagService.save(memberTag);
                 
                 MemberTagDto memberTagDto = new MemberTagDto();
@@ -204,6 +220,7 @@ public class MemberTagSyncJob extends BaseJobHandler  {
                 memberTagDto.setCreatedAt(now);
                 memberTagDto.setCreatorId(1);
                 memberTagDto.setWechatId(wechatId);
+                memberTagDto.setMemberTagTypeId(defaultMemberTagTypeId);
                 TagIdMap.put(memberTag.getId(), memberTagDto);
             }
         }
@@ -212,11 +229,15 @@ public class MemberTagSyncJob extends BaseJobHandler  {
         String nextOpenid;
         List<MemberMemberTag> memberMemberTagList = new ArrayList<MemberMemberTag>();
 
-        for (MemberTagDto MemberTag : TagIdMap.values()) {
+        for (MemberTagDto memberTagDto : TagIdMap.values()) {
             int count = 0;
             nextOpenid = null;
+            //如果指定了memberTagTypeId,执行过滤
+            if(memberTagTypeId != null && memberTagDto.getMemberTagTypeId() != null && memberTagDto.getMemberTagTypeId() != memberTagTypeId) {
+				continue;
+			}
             do {
-                WxOpenidPage OpenidPage = WechatClientDelegate.getOpenidByTag(wechatId, MemberTag.getId(), nextOpenid);
+                WxOpenidPage OpenidPage = WechatClientDelegate.getOpenidByTag(wechatId, memberTagDto.getId(), nextOpenid);
                 nextOpenid = OpenidPage.getNextOpenid();
                 if (OpenidPage.getCount() > 0) {
                     List<String> openIdList = OpenidPage.getData();
@@ -225,7 +246,7 @@ public class MemberTagSyncJob extends BaseJobHandler  {
 
                         MemberMemberTag memberMemberTag = new MemberMemberTag();
                         memberMemberTag.setMemberId(member.getId());
-                        memberMemberTag.setMemberTagId(MemberTag.getId());
+                        memberMemberTag.setMemberTagId(memberTagDto.getId());
                         memberMemberTag.setWechatId(wechatId);
 
                         memberMemberTagList.add(memberMemberTag);
@@ -236,7 +257,7 @@ public class MemberTagSyncJob extends BaseJobHandler  {
                     count += OpenidPage.getCount();
                 }
             } while (nextOpenid != null);
-            log.info("同步数据到本地：已经同步标签[{}]的粉丝数: {}", MemberTag.getName(), count);
+            log.info("同步数据到本地：已经同步标签[{}]的粉丝数: {}", memberTagDto.getName(), count);
         }
         log.info("同步数据到本地：已经同步的粉丝数: {}", memberMemberTagList.size());
         memberMemberTagService.insertOrUpdateList(memberMemberTagList);
