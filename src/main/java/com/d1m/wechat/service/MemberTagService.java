@@ -35,7 +35,7 @@ public interface MemberTagService extends IService<MemberTag> {
 
 	MemberTag selectOne(MemberTag memberTag);
 	
-	List<MemberTagDto> getAllMemberTags(Integer wechatId);
+	List<MemberTagDto> getAllMemberTags(Integer wechatId, Integer memberTagTypeId);
 
 	void moveTag(Integer wechatId, MemberTagModel model);
 

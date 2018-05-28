@@ -28,7 +28,7 @@ public interface MemberTagMapper extends MyMapper<MemberTag> {
 			@Param("end") Date end,
 			@Param("top") Integer top);
 	
-	List<MemberTagDto> getAllMemberTags(@Param("wechatId") Integer wechatId);
+	List<MemberTagDto> getAllMemberTags(@Param("wechatId") Integer wechatId, @Param("memberTagTypeId") Integer memberTagTypeId);
 
 	List<MemberTagDto> searchName(@Param("wechatId") Integer wechatId, @Param("name") String name);
 
