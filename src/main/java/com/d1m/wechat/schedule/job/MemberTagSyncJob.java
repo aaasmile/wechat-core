@@ -139,14 +139,14 @@ public class MemberTagSyncJob extends BaseJobHandler  {
 		for(int i = 0; i < allMemberTags.size(); i++) {
 			try {
 
-				MemberTag memberTagDto = allMemberTags.get(i);
+				MemberTag memberTag1 = allMemberTags.get(i);
 				List<String> openid_list = new ArrayList<String>();
 				MemberTag memberTag = null;
-				String tagname = tagMap.get(memberTagDto.getId());
-				if (tagMap.containsKey(memberTagDto.getId())) {
-	                if (!StringUtils.equals(memberTagDto.getName(), tagMap.get(memberTagDto.getId()))) {
+				String tagname = tagMap.get(memberTag1.getId());
+				if (tagMap.containsKey(memberTag1.getId())) {
+	                if (!StringUtils.equals(memberTag1.getName(), tagMap.get(memberTag1.getId()))) {
 	                    memberTag = new MemberTag();
-	                	memberTag.setId(memberTagDto.getId());
+	                	memberTag.setId(memberTag1.getId());
 	                	memberTag.setName(tagname);
 	                    memberTagService.updateAll(memberTag);
 	                }
@@ -160,13 +160,13 @@ public class MemberTagSyncJob extends BaseJobHandler  {
 					tagid = wxtag.getId();
 				}
 				//如果指定了memberTagTypeId,执行过滤
-				if(memberTagTypeId != null && memberTagDto.getMemberTagTypeId() != null && memberTagDto.getMemberTagTypeId() != memberTagTypeId) {
+				if(memberTagTypeId != null && memberTag1.getMemberTagTypeId() != null && memberTag1.getMemberTagTypeId() != memberTagTypeId) {
 					continue;
 				}
 				
 				//查询出该tag下所有openid
 				MemberMemberTag query = new MemberMemberTag();
-				query.setMemberTagId(memberTagDto.getId());
+				query.setMemberTagId(memberTag1.getId());
 				List<MemberMemberTag> memberTagList = memberMemberTagService.getMemberMemberTagList(query);
 				for(int j = 0; j < memberTagList.size(); j++) {
 					MemberMemberTag memberMemberTag = memberTagList.get(j);
@@ -194,10 +194,11 @@ public class MemberTagSyncJob extends BaseJobHandler  {
 	
 	public ReturnT<String> step1(Integer wechatId, Integer defaultMemberTagTypeId, Integer memberTagTypeId) {
         // 1. 同步微信用户标签
-        List<MemberTagDto> allMemberTags = memberTagService.getAllMemberTags(wechatId);
-        Map<Integer, MemberTagDto> TagIdMap = new HashMap<Integer, MemberTagDto>();
-        for (MemberTagDto memberTagDto : allMemberTags) {
-            TagIdMap.put(memberTagDto.getId(), memberTagDto);
+		Page<MemberTag> page = memberTagService.search(wechatId, memberTagTypeId, null, null, null, 0, 1, false);
+		List<MemberTag> allMemberTags = page.getResult();
+        Map<Integer, MemberTag> TagIdMap = new HashMap<Integer, MemberTag>();
+        for (MemberTag memberTag1 : allMemberTags) {
+            TagIdMap.put(memberTag1.getId(), memberTag1);
         }
 
         List<WxTag> TagList = WechatClientDelegate.getTags(wechatId).get();
@@ -212,15 +213,6 @@ public class MemberTagSyncJob extends BaseJobHandler  {
                     memberTagService.updateAll(memberTag);
                 }
             } else {
-            	MemberTagDto memberTagDto = new MemberTagDto();
-                memberTagDto.setId(wxTag.getId());
-                memberTagDto.setName(wxTag.getName());
-                memberTagDto.setCreatedAt(now);
-                memberTagDto.setCreatorId(1);
-                memberTagDto.setWechatId(wechatId);
-                memberTagDto.setMemberTagTypeId(defaultMemberTagTypeId);
-                TagIdMap.put(wxTag.getId(), memberTagDto);
-                
                 memberTag = new MemberTag();
                 memberTag.setId(wxTag.getId());
                 memberTag.setName(wxTag.getName());
@@ -230,6 +222,8 @@ public class MemberTagSyncJob extends BaseJobHandler  {
                 memberTag.setStatus(Byte.valueOf("1"));
                 memberTag.setMemberTagTypeId(defaultMemberTagTypeId);
                 memberTagService.save(memberTag);
+                
+                TagIdMap.put(wxTag.getId(), memberTag);
             }
         }
         
@@ -237,15 +231,15 @@ public class MemberTagSyncJob extends BaseJobHandler  {
         String nextOpenid;
         List<MemberMemberTag> memberMemberTagList = new ArrayList<MemberMemberTag>();
         log.info("TagIdMap>>" + TagIdMap);
-        for (MemberTagDto memberTagDto : TagIdMap.values()) {
+        for (MemberTag memberTag1 : TagIdMap.values()) {
             int count = 0;
             nextOpenid = null;
             //如果指定了memberTagTypeId,执行过滤
-            if(memberTagTypeId != null && memberTagDto.getMemberTagTypeId() != null && memberTagDto.getMemberTagTypeId() != memberTagTypeId) {
+            if(memberTagTypeId != null && memberTag1.getMemberTagTypeId() != null && memberTag1.getMemberTagTypeId() != memberTagTypeId) {
 				continue;
 			}
             do {
-                WxOpenidPage OpenidPage = WechatClientDelegate.getOpenidByTag(wechatId, memberTagDto.getId(), nextOpenid);
+                WxOpenidPage OpenidPage = WechatClientDelegate.getOpenidByTag(wechatId, memberTag1.getId(), nextOpenid);
                 nextOpenid = OpenidPage.getNextOpenid();
                 if (OpenidPage.getCount() > 0) {
                     List<String> openIdList = OpenidPage.getData();
@@ -254,7 +248,7 @@ public class MemberTagSyncJob extends BaseJobHandler  {
 
                         MemberMemberTag memberMemberTag = new MemberMemberTag();
                         memberMemberTag.setMemberId(member.getId());
-                        memberMemberTag.setMemberTagId(memberTagDto.getId());
+                        memberMemberTag.setMemberTagId(memberTag1.getId());
                         memberMemberTag.setWechatId(wechatId);
                         memberMemberTag.setOpenId(openId);
 
@@ -266,7 +260,7 @@ public class MemberTagSyncJob extends BaseJobHandler  {
                     count += OpenidPage.getCount();
                 }
             } while (nextOpenid != null);
-            log.info("同步数据到本地：已经同步标签[{}]的粉丝数: {}", memberTagDto.getName(), count);
+            log.info("同步数据到本地：已经同步标签[{}]的粉丝数: {}", memberTag1.getName(), count);
         }
         log.info("同步数据到本地：已经同步的粉丝数: {}", memberMemberTagList.size());
         memberMemberTagService.insertOrUpdateList(memberMemberTagList);
