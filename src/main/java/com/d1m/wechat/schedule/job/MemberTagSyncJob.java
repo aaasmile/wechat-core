@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.druid.util.StringUtils;
-import com.d1m.wechat.dto.MemberTagDto;
 import com.d1m.wechat.model.Member;
 import com.d1m.wechat.model.MemberMemberTag;
 import com.d1m.wechat.schedule.BaseJobHandler;
