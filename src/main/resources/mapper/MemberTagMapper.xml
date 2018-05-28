@@ -120,6 +120,9 @@
 		select id, name, member_tag_type_id as memberTagTypeId,
 				(select count(*) from member_member_tag where member_tag_id = member_tag.id) as ownedMemberCount 
 		from member_tag where wechat_id = #{wechatId} and status=1
+		<if test="memberTagTypeId != null">
+			and member_tag_type_id = #{memberTagTypeId}
+		</if>
 	</select>
 
 </mapper>

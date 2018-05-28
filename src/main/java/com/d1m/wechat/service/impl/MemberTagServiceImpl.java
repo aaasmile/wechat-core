@@ -363,8 +363,8 @@ public class MemberTagServiceImpl extends BaseService<MemberTag> implements
 	}
 
 	@Override
-	public List<MemberTagDto> getAllMemberTags(Integer wechatId) {
-		return memberTagMapper.getAllMemberTags(wechatId);
+	public List<MemberTagDto> getAllMemberTags(Integer wechatId, Integer memberTagTypeId) {
+		return memberTagMapper.getAllMemberTags(wechatId, memberTagTypeId);
 	}
 
 	@Override
