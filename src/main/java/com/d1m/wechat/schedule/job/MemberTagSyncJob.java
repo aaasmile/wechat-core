@@ -20,6 +20,7 @@ import com.d1m.wechat.service.MemberService;
 import com.d1m.wechat.service.MemberTagService;
 import com.d1m.wechat.service.MemberTagTypeService;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
+import com.github.pagehelper.Page;
 import com.d1m.wechat.model.MemberTag;
 import com.d1m.wechat.model.MemberTagType;
 import com.xxl.job.core.biz.model.ReturnT;
@@ -133,52 +134,58 @@ public class MemberTagSyncJob extends BaseJobHandler  {
 			}
 		}
 		log.info("tagMap>>" + tagMap.toString());
-		List<MemberTagDto> allMemberTags = memberTagService.getAllMemberTags(wechatId);
+		Page<MemberTag> page = memberTagService.search(wechatId, memberTagTypeId, null, null, null, 0, 1, false);
+		List<MemberTag> allMemberTags = page.getResult();
 		for(int i = 0; i < allMemberTags.size(); i++) {
-			MemberTagDto memberTagDto = allMemberTags.get(i);
-			List<String> openid_list = new ArrayList<String>();
-			MemberTag memberTag = null;
-			String tagname = tagMap.get(memberTagDto.getId());
-			if (tagMap.containsKey(memberTagDto.getId())) {
-                if (!StringUtils.equals(memberTagDto.getName(), tagMap.get(memberTagDto.getId()))) {
-                    memberTag = new MemberTag();
-                	memberTag.setId(memberTagDto.getId());
-                	memberTag.setName(tagname);
-                    memberTagService.updateAll(memberTag);
-                }
-            }
-			
-			//如果wechat中没有tag，则创建微信tag
-			Integer tagid = tagMap1.get(tagname);
-			if(tagid == null) {
-				WxHolder<WxTag> wxtagHolder = client.createTag(tagname);
-				WxTag wxtag = wxtagHolder.getData();
-				tagid = wxtag.getId();
-			}
-			//如果指定了memberTagTypeId,执行过滤
-			if(memberTagTypeId != null && memberTagDto.getMemberTagTypeId() != null && memberTagDto.getMemberTagTypeId() != memberTagTypeId) {
-				continue;
-			}
-			
-			//查询出该tag下所有openid
-			MemberMemberTag query = new MemberMemberTag();
-			query.setMemberTagId(memberTagDto.getId());
-			List<MemberMemberTag> memberTagList = memberMemberTagService.getMemberMemberTagList(query);
-			for(int j = 0; j < memberTagList.size(); j++) {
-				MemberMemberTag memberMemberTag = memberTagList.get(j);
-				openid_list.add(memberMemberTag.getOpenId());
-				//每次传入的openid列表个数不能超过50个
-				if(openid_list.size() % 50 == 0 && openid_list.size() != 0) {
+			try {
+
+				MemberTag memberTagDto = allMemberTags.get(i);
+				List<String> openid_list = new ArrayList<String>();
+				MemberTag memberTag = null;
+				String tagname = tagMap.get(memberTagDto.getId());
+				if (tagMap.containsKey(memberTagDto.getId())) {
+	                if (!StringUtils.equals(memberTagDto.getName(), tagMap.get(memberTagDto.getId()))) {
+	                    memberTag = new MemberTag();
+	                	memberTag.setId(memberTagDto.getId());
+	                	memberTag.setName(tagname);
+	                    memberTagService.updateAll(memberTag);
+	                }
+	            }
+				
+				//如果wechat中没有tag，则创建微信tag
+				Integer tagid = tagMap1.get(tagname);
+				if(tagid == null) {
+					WxHolder<WxTag> wxtagHolder = client.createTag(tagname);
+					WxTag wxtag = wxtagHolder.getData();
+					tagid = wxtag.getId();
+				}
+				//如果指定了memberTagTypeId,执行过滤
+				if(memberTagTypeId != null && memberTagDto.getMemberTagTypeId() != null && memberTagDto.getMemberTagTypeId() != memberTagTypeId) {
+					continue;
+				}
+				
+				//查询出该tag下所有openid
+				MemberMemberTag query = new MemberMemberTag();
+				query.setMemberTagId(memberTagDto.getId());
+				List<MemberMemberTag> memberTagList = memberMemberTagService.getMemberMemberTagList(query);
+				for(int j = 0; j < memberTagList.size(); j++) {
+					MemberMemberTag memberMemberTag = memberTagList.get(j);
+					openid_list.add(memberMemberTag.getOpenId());
+					//每次传入的openid列表个数不能超过50个
+					if(openid_list.size() % 50 == 0 && openid_list.size() != 0) {
+						log.info("同步数据到微信：已经同步标签[{}]的粉丝数: {}", tagname, openid_list.size());
+						client.batchTagging(openid_list, tagid);
+						openid_list.clear();
+					}
+				}
+				//将剩余的openid发送
+				if(openid_list.size() > 0) {
 					log.info("同步数据到微信：已经同步标签[{}]的粉丝数: {}", tagname, openid_list.size());
 					client.batchTagging(openid_list, tagid);
 					openid_list.clear();
 				}
-			}
-			//将剩余的openid发送
-			if(openid_list.size() > 0) {
-				log.info("同步数据到微信：已经同步标签[{}]的粉丝数: {}", tagname, openid_list.size());
-				client.batchTagging(openid_list, tagid);
-				openid_list.clear();
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
 			}
 		}
 		return ReturnT.SUCCESS;
