@@ -68,7 +68,7 @@ public class MemberApiController extends ApiController {
 	@ResponseBody
 	public String searchUnionId(@RequestBody UserInfo userInfo) {
 		String unionid = userInfo.getUnionid();
-		String username = userInfo.getUnionid();
+		String username = userInfo.getUsername();
 		String password = userInfo.getPassword();
 		log.debug("unionid>>" + unionid + ">>username>>" + username + ">>password>>" + password);
 		User user = userService.login(username, password);
