@@ -69,7 +69,7 @@ public class MemberApiController extends ApiController {
 	public String searchUnionId(@RequestBody UserInfo userInfo) {
 		String unionid = userInfo.getUnionid();
 		String username = userInfo.getUnionid();
-		String password = DigestUtils.sha256Hex(userInfo.getPassword());
+		String password = userInfo.getPassword();
 		log.debug("unionid>>" + unionid + ">>username>>" + username + ">>password>>" + password);
 		User user = userService.login(username, password);
 		if(user == null || user.getId() == null) {
