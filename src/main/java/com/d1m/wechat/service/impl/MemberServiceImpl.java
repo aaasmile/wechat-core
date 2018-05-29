@@ -1066,4 +1066,9 @@ public class MemberServiceImpl extends BaseService<Member> implements
 	public int updateNotNull(Member entity) {
 		return super.updateNotNull(entity);
 	}
+
+	@Override
+	public MemberDto searchMember(MemberDto member) {
+		return memberMapper.searchMember(member);
+	}
 }

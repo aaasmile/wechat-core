@@ -1,5 +1,6 @@
 package com.d1m.wechat.controller.api;
 
+import javax.persistence.PreUpdate;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -11,15 +12,23 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.d1m.wechat.dto.MemberDto;
 import com.d1m.wechat.model.Member;
+import com.d1m.wechat.model.User;
+import com.d1m.wechat.service.MemberService;
+import com.d1m.wechat.service.UserService;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -28,6 +37,11 @@ import java.util.Map;
 public class MemberApiController extends ApiController {
 
 	private Logger log = LoggerFactory.getLogger(MemberApiController.class);
+	
+	@Autowired
+	private MemberService memberService;
+	@Autowired
+	private UserService userService;
 	
 	@ApiOperation(value="获取当前Cookie", tags="媒体接口")
 	@ApiResponse(code=200, message="返回结果：wechatId#id")
@@ -46,5 +60,23 @@ public class MemberApiController extends ApiController {
 			log.error(e.getMessage());
 		}
 		return result;
+	}
+	
+	@RequestMapping(value = "getOpenid", method = RequestMethod.POST)
+	@ResponseBody
+	public String searchUnionId(String unionid, String username, String password) {
+		
+		User user = userService.login(username, DigestUtils.sha256Hex(password));
+		if(user == null || user.getId() == null) {
+			return "account or password does not exist!";
+		}
+		
+		MemberDto query = new MemberDto();
+		query.setUnionId(unionid);
+		MemberDto memberDto = memberService.searchMember(query);
+		if(memberDto == null) {
+			return "member does not exist!";
+		}
+		return memberDto.getOpenId();
 	}
 }
