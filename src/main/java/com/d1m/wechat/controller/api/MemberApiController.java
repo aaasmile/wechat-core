@@ -62,7 +62,7 @@ public class MemberApiController extends ApiController {
 		return result;
 	}
 	
-	@RequestMapping(value = "getOpenid", method = RequestMethod.POST)
+	@RequestMapping(value = "/getOpenid", method = RequestMethod.POST)
 	@ResponseBody
 	public String searchUnionId(String unionid, String username, String password) {
 		
