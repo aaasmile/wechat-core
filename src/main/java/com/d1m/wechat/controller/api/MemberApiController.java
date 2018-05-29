@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.d1m.wechat.dto.MemberDto;
 import com.d1m.wechat.model.Member;
 import com.d1m.wechat.model.User;
+import com.d1m.wechat.model.UserInfo;
 import com.d1m.wechat.service.MemberService;
 import com.d1m.wechat.service.UserService;
 
@@ -81,33 +82,5 @@ public class MemberApiController extends ApiController {
 			return "member does not exist!";
 		}
 		return memberDto.getOpenId();
-	}
-	class UserInfo {
-		
-		private String unionid, username, password;
-
-		public String getUnionid() {
-			return unionid;
-		}
-
-		public void setUnionid(String unionid) {
-			this.unionid = unionid;
-		}
-
-		public String getUsername() {
-			return username;
-		}
-
-		public void setUsername(String username) {
-			this.username = username;
-		}
-
-		public String getPassword() {
-			return password;
-		}
-
-		public void setPassword(String password) {
-			this.password = password;
-		}
 	}
 }
