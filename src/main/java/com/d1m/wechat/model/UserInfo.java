@@ -2,6 +2,10 @@ package com.d1m.wechat.model;
 
 public class UserInfo implements java.io.Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4150992752925409331L;
 	private String unionid, username, password;
 
 	public String getUnionid() {
