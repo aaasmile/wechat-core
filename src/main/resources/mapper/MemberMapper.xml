@@ -748,4 +748,8 @@
 			</foreach>
 		</where>
 	</update>
+	
+	<select id="searchMember" parameterType="com.d1m.wechat.dto.MemberDto" resultType="com.d1m.wechat.dto.MemberDto">
+		select open_id from member where union_id = #{unionId}
+	</select>
 </mapper>

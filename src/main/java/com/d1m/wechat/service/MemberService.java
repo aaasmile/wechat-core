@@ -72,4 +72,5 @@ public interface MemberService extends IService<Member> {
 
 	void updateWxuser(Member member, Qrcode qrcode, MemberSource memberSource);
 
+	public MemberDto searchMember(MemberDto member);
 }
