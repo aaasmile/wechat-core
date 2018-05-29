@@ -69,9 +69,9 @@ public class MemberApiController extends ApiController {
 	public String searchUnionId(@RequestBody UserInfo userInfo) {
 		String unionid = userInfo.getUnionid();
 		String username = userInfo.getUnionid();
-		String password = userInfo.getPassword();
+		String password = DigestUtils.sha256Hex(userInfo.getPassword());
 		log.debug("unionid>>" + unionid + ">>username>>" + username + ">>password>>" + password);
-		User user = userService.login(username, DigestUtils.sha256Hex(password));
+		User user = userService.login(username, password);
 		if(user == null || user.getId() == null) {
 			return "account or password does not exist!";
 		}
@@ -83,5 +83,8 @@ public class MemberApiController extends ApiController {
 			return "member does not exist!";
 		}
 		return memberDto.getOpenId();
+	}
+	public static void main(String[] args) {
+		System.out.println(DigestUtils.sha256Hex("12345"));
 	}
 }
