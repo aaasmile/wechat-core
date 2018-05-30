@@ -90,7 +90,8 @@ public class WxJsConfigController {
 						url = StringUtils.substring(url, 0,
 								StringUtils.indexOf(url, "#"));
 					}
-					Map<String, Object> jsSignMap = WeiXinUtils.getJsSignMap(WechatClientDelegate.getJsApiTicket(urlObj.getWechatId()), url);
+					String jsApiTicket = WechatClientDelegate.getJsApiTicket(urlObj.getWechatId());
+					Map<String, Object> jsSignMap = WeiXinUtils.getJsSignMap(jsApiTicket, url);
 					Wechat wechat = wechatService.getById(urlObj.getWechatId());
 					jsSignMap.put("appId", wechat.getAppid());
 					if(StringUtils.isBlank(callback)){
