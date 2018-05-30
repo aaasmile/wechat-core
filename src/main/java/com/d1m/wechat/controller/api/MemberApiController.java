@@ -68,10 +68,8 @@ public class MemberApiController extends ApiController {
 	@ResponseBody
 	public String searchUnionId(@RequestBody UserInfo userInfo) {
 		String unionid = userInfo.getUnionid();
-		String username = userInfo.getUsername();
-		String password = userInfo.getPassword();
-		log.debug("unionid>>" + unionid + ">>username>>" + username + ">>password>>" + password);
-		User user = userService.login(username, password);
+		log.debug("userInfo>>" + userInfo.toString());
+		User user = userService.login(userInfo.getUsername(), userInfo.getPassword());
 		if(user == null || user.getId() == null) {
 			return "account or password does not exist!";
 		}

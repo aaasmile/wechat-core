@@ -31,4 +31,9 @@ public class UserInfo implements java.io.Serializable {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+	@Override
+	public String toString() {
+		return "UserInfo [unionid=" + unionid + ", username=" + username + ", password=" + password + "]";
+	}
 }
