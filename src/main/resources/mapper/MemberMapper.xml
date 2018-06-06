@@ -138,7 +138,9 @@
 			) as mmt on m.id = mmt.member_id
 		</if>
 		<where>
-			m.wechat_id = #{wechatId}
+			<if test="wechatId != null">
+				m.wechat_id = #{wechatId}
+			</if>
 			<if test="openId != null">
 				and m.open_id = #{openId}
 			</if>
@@ -786,7 +788,9 @@
 				group by mmt.member_id
 				) mmt on mmt.member_id = m.id
 			where 1=1
+			<if test="wechatId != null">
 				and m.wechat_id = #{wechatId}
+			</if>
 			<if test="openId != null">
 				and m.open_id = #{openId}
 			</if>
