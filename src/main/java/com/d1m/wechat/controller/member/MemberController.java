@@ -297,7 +297,7 @@ public class MemberController extends BaseController {
 			memberDtos = memberService.getMemberList(addMemberTagModel, getWechatId(session));
 		} else {
 			List<ExcelMember> excelMemberList = null;
-			if(sendToAll) {
+			if(sendToAll != null && sendToAll) {
 				excelMemberList = memberService.totalMember(getWechatId(session), null, false);
 			} else {
 				excelMemberList = memberService.totalMember(getWechatId(session), addMemberTagModel, false);
