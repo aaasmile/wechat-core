@@ -757,7 +757,7 @@
 	
 	<select id="totalMember" parameterType="HashMap" resultType="com.d1m.wechat.pamametermodel.ExcelMember">
 		SELECT
-		  m.nickname as gender,
+		  m.nickname,
 		  cast(m.sex as char) as gender,
 		  m.mobile as mobile,
 		  CAST(cast(m.is_subscribe AS SIGNED INTEGER) AS char) as subscribe,
