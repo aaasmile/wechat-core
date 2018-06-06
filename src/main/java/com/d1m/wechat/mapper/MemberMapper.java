@@ -20,6 +20,8 @@ import com.d1m.wechat.dto.ReportAreaBaseDto;
 import com.d1m.wechat.dto.ReportUserSourceDto;
 import com.d1m.wechat.dto.TrendBaseDto;
 import com.d1m.wechat.model.Member;
+import com.d1m.wechat.pamametermodel.ExcelMember;
+import com.d1m.wechat.pamametermodel.MemberModel;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.MyMapper;
 import com.github.pagehelper.Page;
@@ -248,4 +250,24 @@ public interface MemberMapper extends MyMapper<Member> {
 	void updateBatchSendMonth(@Param("idList") List<Integer> idList);
 	
 	public MemberDto searchMember(MemberDto member);
+	
+	public List<ExcelMember> totalMember(@Param("wechatId") Integer wechatId,
+			@Param("openId") String openId, @Param("nickname") String nickname,
+			@Param("sex") Byte sex, @Param("country") Integer country,
+			@Param("province") Integer province, @Param("city") Integer city,
+			@Param("subscribe") Boolean subscribe,
+			@Param("activityStartAt") Integer activityStartAt,
+			@Param("activityEndAt") Integer activityEndAt,
+			@Param("batchSendOfMonthStartAt") Integer batchSendOfMonthStartAt,
+			@Param("batchSendOfMonthEndAt") Integer batchSendOfMonthEndAt,
+			@Param("attentionStartAt") Date attentionStartAt,
+			@Param("attentionEndAt") Date attentionEndAt,
+			@Param("cancelSubscribeStartAt") Date cancelSubscribeStartAt,
+			@Param("cancelSubscribeEndAt") Date cancelSubscribeEndAt,
+			@Param("isOnline") Boolean isOnline,
+			@Param("fromWhere") String fromWhere,
+			@Param("mobile") String mobile,
+			@Param("memberTags") Integer[] memberTags,
+			@Param("sortName") String sortName, @Param("sortDir") String sortDir,
+			@Param("bindStatus") Integer bindStatus, @Param("daytime") Date daytime);
 }

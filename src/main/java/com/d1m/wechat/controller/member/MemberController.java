@@ -39,6 +39,7 @@ import com.d1m.wechat.dto.MemberTagDto;
 import com.d1m.wechat.mapper.MemberMapper;
 import com.d1m.wechat.model.Member;
 import com.d1m.wechat.pamametermodel.AddMemberTagModel;
+import com.d1m.wechat.pamametermodel.ExcelMember;
 import com.d1m.wechat.service.AreaInfoService;
 import com.d1m.wechat.service.MemberProfileService;
 import com.d1m.wechat.service.MemberService;
@@ -281,17 +282,6 @@ public class MemberController extends BaseController {
 		if (addMemberTagModel == null) {
 			addMemberTagModel = new AddMemberTagModel();
 		}
-		List<MemberDto> memberDtos = null;
-		Integer[] memberIds = addMemberTagModel.getMemberIds();
-		Boolean sendToAll = addMemberTagModel.getSendToAll();
-		if (memberIds != null && memberIds.length != 0){
-			memberDtos = memberService.getMemberList(addMemberTagModel, getWechatId(session));
-		}else if(sendToAll != null && addMemberTagModel.getSendToAll()){
-			memberDtos = memberService.getAll(getWechatId(session));
-		}else{
-			memberDtos = memberService.searchAll(getWechatId(session),
-				addMemberTagModel, false);
-		}
 		Locale locale = RequestContextUtils.getLocale(request);
 		String name = I18nUtil.getMessage("follwer.list", locale);
 		String[] keys = { "no", "nickname", "gender", "mobile", "province",
@@ -299,6 +289,25 @@ public class MemberController extends BaseController {
 				"group.message.sent", "tag", "customer.service.open.id" };
 		String[] titleVal = I18nUtil.getMessage(keys, locale);
 		String lang = RequestContextUtils.getLocale(request).getCountry();
+		
+		List<MemberDto> memberDtos = null;
+		Integer[] memberIds = addMemberTagModel.getMemberIds();
+		Boolean sendToAll = addMemberTagModel.getSendToAll();
+		if (memberIds != null && memberIds.length != 0){
+			memberDtos = memberService.getMemberList(addMemberTagModel, getWechatId(session));
+		} else {
+			List<ExcelMember> excelMemberList = null;
+			if(sendToAll) {
+				excelMemberList = memberService.totalMember(getWechatId(session), null, false);
+			} else {
+				excelMemberList = memberService.totalMember(getWechatId(session), addMemberTagModel, false);
+			}
+			if(excelMemberList != null) {
+				view = excelMemberView(df, locale, name, titleVal, excelMemberList);
+				return new ModelAndView(view);
+			}
+		}
+		
 		for (MemberDto temp:memberDtos){
 			if (temp.getCountry() != null){
 				String country = areaInfoService.selectNameById(Integer.parseInt(temp.getCountry()), lang);
@@ -314,6 +323,14 @@ public class MemberController extends BaseController {
 			}
 		}
 		List<MemberDto> finalMemberDtos = memberDtos;
+		view = memberView(df, locale, name, titleVal, finalMemberDtos);
+		return new ModelAndView(view);
+		
+	}
+
+	public ReportXlsxStreamView memberView(SimpleDateFormat df, Locale locale, String name, String[] titleVal,
+			List<MemberDto> finalMemberDtos) {
+		ReportXlsxStreamView view;
 		view = new ReportXlsxStreamView(name,
 			new ReportXlsxStreamView.CellProcessor() {
 				@Override
@@ -390,8 +407,81 @@ public class MemberController extends BaseController {
 				}
 			}
 		);
-		return new ModelAndView(view);
-		
+		return view;
+	}
+	
+	public ReportXlsxStreamView excelMemberView(SimpleDateFormat df, Locale locale, String name, String[] titleVal, List<ExcelMember> finalMemberDtos) {
+		ReportXlsxStreamView view;
+		view = new ReportXlsxStreamView(name,
+				new ReportXlsxStreamView.CellProcessor() {
+			@Override
+			public void process(Map<String, Object> map, Workbook workbook, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+				Sheet sheet = workbook.createSheet();
+				Row titleRow = sheet.createRow(0);
+				for (int i=0; i<titleVal.length; i++){
+					titleRow.createCell(i).setCellValue(titleVal[i]);
+				}
+				if(finalMemberDtos !=null){
+					int j = 1;
+					for(ExcelMember temp: finalMemberDtos){
+						Row dataRow = sheet.createRow(j);
+						dataRow.setHeight((short) 600);
+						dataRow.createCell(0).setCellValue(j);
+						
+						String nickname = temp.getNickname();
+						Byte sex = Byte.valueOf(temp.getGender());
+						Boolean isSubscribe = "1".equals(temp.getSubscribe()) ? true : false;
+						String unsubscribeAt = temp.getUnbund_at();
+						String attentionStatus = "subscribe";
+						String subscribeAt = temp.getSubscribe_time();
+						Integer batchsendMonth = Integer.valueOf(temp.getMessage_sent());
+						String memberTags = temp.getTags();
+						String bindStatus = temp.getBind();
+						
+						dataRow.createCell(1).setCellValue(nickname);
+						if (sex != null) {
+							dataRow.createCell(2).setCellValue(
+									I18nUtil.getMessage(Sex.getByValue(sex)
+											.name().toLowerCase(), locale));
+						}
+						dataRow.createCell(3).setCellValue(temp.getMobile());
+						dataRow.createCell(4).setCellValue(temp.getProvince());
+						dataRow.createCell(5).setCellValue(temp.getCity());
+						
+						if (isSubscribe != null && !isSubscribe) {
+							if (unsubscribeAt != null) {
+								attentionStatus = "cancel.subscribe";
+							} else {
+								attentionStatus = "unsubscribe";
+							}
+						}
+						dataRow.createCell(6).setCellValue(
+								I18nUtil.getMessage(attentionStatus, locale));
+						
+						if (bindStatus != null && "1".equals(bindStatus)) {
+							dataRow.createCell(7).setCellValue(
+									I18nUtil.getMessage("bind", locale));
+						} else {
+							dataRow.createCell(7).setCellValue(
+									I18nUtil.getMessage("unbind", locale));
+						}
+						
+						
+						if (subscribeAt != null && isSubscribe) {
+							String attentionTime = df.format(subscribeAt);
+							dataRow.createCell(8).setCellValue(attentionTime);
+						}
+						
+						dataRow.createCell(9).setCellValue(batchsendMonth);
+						dataRow.createCell(10).setCellValue(memberTags);
+						dataRow.createCell(11).setCellValue(temp.getOpenid());
+						j++;
+					}
+				}
+			}
+		}
+				);
+		return view;
 	}
 	
 	
