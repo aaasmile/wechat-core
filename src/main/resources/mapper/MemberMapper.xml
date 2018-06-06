@@ -771,20 +771,20 @@
 			member m
 			LEFT JOIN area_info ai on m.province=ai.id
 			LEFT JOIN area_info ai1 on m.city=ai1.id 
-		<if test="memberTags != null and memberTags.length &gt; 0">
-			LEFT JOIN  (SELECT
-								mmt.member_id,
-								group_concat(mt.name separator '|') tags
-							FROM
-							member_member_tag mmt 
-							LEFT JOIN member_tag mt ON mmt.member_tag_id = mt.id
-			where member_tag_id in
-			<foreach close=")" collection="memberTags" index="index" item="item" open="(" separator=",">
-				#{item}
-			</foreach>
-			group by mmt.member_id
-			) mmt on mmt.member_id = m.id
-		</if>
+			<if test="memberTags != null and memberTags.length &gt; 0">
+				LEFT JOIN  (SELECT
+									mmt.member_id,
+									group_concat(mt.name separator '|') tags
+								FROM
+								member_member_tag mmt 
+								LEFT JOIN member_tag mt ON mmt.member_tag_id = mt.id
+				where member_tag_id in
+				<foreach close=")" collection="memberTags" index="index" item="item" open="(" separator=",">
+					#{item}
+				</foreach>
+				group by mmt.member_id
+				) mmt on mmt.member_id = m.id
+			</if>
 			where 1=1
 				and m.wechat_id = #{wechatId}
 			<if test="openId != null">
@@ -859,6 +859,5 @@
 					and m.status is null
 				</if>
 			</if>
-		</where>
 	</select>
 </mapper>
