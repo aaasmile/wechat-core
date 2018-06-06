@@ -434,7 +434,7 @@ public class MemberController extends BaseController {
 						String unsubscribeAt = temp.getUnbund_at();
 						String attentionStatus = "subscribe";
 						String subscribeAt = temp.getSubscribe_time();
-						Integer batchsendMonth = Integer.valueOf(temp.getMessage_sent());
+						Integer batchsendMonth = temp.getMessage_sent() != null ? Integer.valueOf(temp.getMessage_sent()) : 0;
 						String memberTags = temp.getTags();
 						String bindStatus = temp.getBind();
 						
