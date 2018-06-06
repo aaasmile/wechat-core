@@ -753,7 +753,7 @@
 		select open_id from member where union_id = #{unionId}
 	</select>
 	
-	<select id="getExportMember" parameterType="HashMap" resultType="com.d1m.wechat.pamametermodel.ExcelMember">
+	<select id="totalMember" parameterType="HashMap" resultType="com.d1m.wechat.pamametermodel.ExcelMember">
 		SELECT
 		  m.nickname as gender,
 		  cast(m.sex as char) as gender,
