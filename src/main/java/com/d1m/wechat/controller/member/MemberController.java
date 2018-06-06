@@ -429,7 +429,7 @@ public class MemberController extends BaseController {
 						dataRow.createCell(0).setCellValue(j);
 						
 						String nickname = temp.getNickname();
-						Byte sex = Byte.valueOf(temp.getGender());
+						Byte sex = temp.getGender() != null ? Byte.valueOf(temp.getGender()) : Byte.valueOf("1");
 						Boolean isSubscribe = "1".equals(temp.getSubscribe()) ? true : false;
 						String unsubscribeAt = temp.getUnbund_at();
 						String attentionStatus = "subscribe";
