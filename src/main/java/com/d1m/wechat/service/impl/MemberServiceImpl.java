@@ -3,7 +3,9 @@ package com.d1m.wechat.service.impl;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cn.d1m.wechat.client.model.WxTag;
 import cn.d1m.wechat.client.model.WxUser;
@@ -17,6 +19,7 @@ import com.d1m.wechat.model.enums.MemberSource;
 import com.d1m.wechat.model.enums.MemberTagStatus;
 import com.d1m.wechat.model.enums.Sex;
 import com.d1m.wechat.pamametermodel.AddMemberTagModel;
+import com.d1m.wechat.pamametermodel.ExcelMember;
 import com.d1m.wechat.pamametermodel.MemberModel;
 import com.d1m.wechat.pamametermodel.MemberTagModel;
 import com.d1m.wechat.service.MemberService;
@@ -28,6 +31,8 @@ import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
+import org.apache.ibatis.mapping.MappedStatement;
+import org.mybatis.spring.SqlSessionTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1070,5 +1075,33 @@ public class MemberServiceImpl extends BaseService<Member> implements
 	@Override
 	public MemberDto searchMember(MemberDto member) {
 		return memberMapper.searchMember(member);
+	}
+	
+	@Override
+	public List<ExcelMember> totalMember(Integer wechatId,
+			AddMemberTagModel addMemberTagModel, boolean queryCount) {
+		if (addMemberTagModel == null) {
+			addMemberTagModel = new AddMemberTagModel();
+		}
+		MemberModel memberModel = addMemberTagModel.getMemberModel();
+		return memberMapper.totalMember(wechatId, memberModel.getOpenId(),
+				memberModel.getNickname(), memberModel.getSex(), memberModel
+						.getCountry(), memberModel.getProvince(), memberModel
+						.getCity(), memberModel.getSubscribe(), memberModel
+						.getActivityStartAt(), memberModel.getActivityEndAt(),
+				memberModel.getBatchSendOfMonthStartAt(), memberModel
+						.getBatchSendOfMonthEndAt(), DateUtil
+						.getDateBegin(DateUtil.parse(memberModel
+								.getAttentionStartAt())), DateUtil
+						.getDateEnd(DateUtil.parse(memberModel
+								.getAttentionEndAt())), DateUtil
+						.getDateBegin(DateUtil.parse(memberModel
+								.getCancelSubscribeStartAt())), DateUtil
+						.getDateEnd(DateUtil.parse(memberModel
+								.getCancelSubscribeEndAt())), memberModel
+						.getIsOnline(), null, memberModel.getMobile(),
+				memberModel.getMemberTags(), addMemberTagModel.getSortName(),
+				addMemberTagModel.getSortDir(), addMemberTagModel
+						.getBindStatus(), DateUtil.getDate(-2));
 	}
 }

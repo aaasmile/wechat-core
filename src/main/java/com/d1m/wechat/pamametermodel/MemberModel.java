@@ -1,6 +1,8 @@
 package com.d1m.wechat.pamametermodel;
 
 public class MemberModel {
+	
+	private Integer wechatId;
 
 	private String nickname;
 
@@ -195,4 +197,11 @@ public class MemberModel {
 		this.subscribe = subscribe;
 	}
 
+	public Integer getWechatId() {
+		return wechatId;
+	}
+
+	public void setWechatId(Integer wechatId) {
+		this.wechatId = wechatId;
+	}
 }

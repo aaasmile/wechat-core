@@ -13,6 +13,7 @@ import com.d1m.wechat.model.Qrcode;
 import com.d1m.wechat.model.User;
 import com.d1m.wechat.model.enums.MemberSource;
 import com.d1m.wechat.pamametermodel.AddMemberTagModel;
+import com.d1m.wechat.pamametermodel.ExcelMember;
 
 public interface MemberService extends IService<Member> {
 
@@ -73,4 +74,7 @@ public interface MemberService extends IService<Member> {
 	void updateWxuser(Member member, Qrcode qrcode, MemberSource memberSource);
 
 	public MemberDto searchMember(MemberDto member);
+	
+	List<ExcelMember> totalMember(Integer wechatId,
+			AddMemberTagModel addMemberTagModel, boolean queryCount);
 }
