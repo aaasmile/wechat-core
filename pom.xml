@@ -523,6 +523,7 @@
                     <include>**/bootstrap*.yml</include>
                     <include>**/application*.yaml</include>
                     <include>**/application*.properties</include>
+                    <include>**/bootstrap.properties</include>
                 </includes>
             </resource>
             <resource>
