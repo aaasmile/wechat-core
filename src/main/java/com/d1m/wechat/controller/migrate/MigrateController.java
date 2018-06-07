@@ -15,6 +15,7 @@ import com.d1m.wechat.migrate.MigrateResult;
 import com.d1m.wechat.model.User;
 import com.d1m.wechat.service.MigrateService;
 import com.d1m.wechat.util.Message;
+import com.d1m.wechat.wechatclient.ConsulProperties;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -92,6 +93,21 @@ public class MigrateController extends BaseController {
         try {
             MigrateResult result = migrateService.migrateUser(getWechatId());
             return representation(Message.MEMBER_PULL_COMPLETE, result);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return wrapException(e);
+        }
+    }
+	
+	@ApiOperation(value="配置中心", tags="同步接口")
+	@ApiResponse(code=200, message="配置中心参数同步")
+    @RequestMapping(value = "/config.json", method = RequestMethod.GET)
+    @ResponseBody
+    public Object migrateConfig() {
+        try {
+        	ConsulProperties consulProperties = new ConsulProperties();
+    		consulProperties.onStartup();
+    		return "successful!";
         } catch (Exception e) {
             log.error(e.getMessage());
             return wrapException(e);
