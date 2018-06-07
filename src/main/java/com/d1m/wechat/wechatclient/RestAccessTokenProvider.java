@@ -36,7 +36,7 @@ public class RestAccessTokenProvider implements AccessTokenProvider {
 
     public RestAccessTokenProvider(String appid, String secret) {
     	String wechatTokenServerV1 = System.getProperty("wechat-token-server-v1");
-    	this.updateToken = wechatTokenServerV1 != null && wechatTokenServerV1.indexOf("appid") > 0;
+    	this.updateToken = wechatTokenServerV1 != null && wechatTokenServerV1.indexOf("appid") > -1;
         this.wechatTokenRestService = AppContextUtils.getBean(WechatTokenRestService.class);
         this.wechatTokenRestServiceV1 = AppContextUtils.getBean(WechatTokenRestServiceV1.class);
         this.appid = appid;
