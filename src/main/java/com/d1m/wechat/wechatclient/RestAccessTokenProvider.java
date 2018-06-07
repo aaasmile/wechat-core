@@ -85,8 +85,10 @@ public class RestAccessTokenProvider implements AccessTokenProvider {
     public String getJsApiTicket() {
     	RestResponse<String> restResponse = null;
     	if(updateToken) {
+    		log.info("now is going to wechatTokenRestServiceV1!");
     		restResponse = wechatTokenRestServiceV1.getJsApiTicket(appid, secret);
     	} else {
+    		log.info("now is going to wechatTokenRestService!");
     		restResponse = wechatTokenRestService.getJsApiTicket(appid, secret);
     	}
     	if(restResponse == null) {
@@ -99,8 +101,10 @@ public class RestAccessTokenProvider implements AccessTokenProvider {
     public String getCardApiTicket() {
     	RestResponse<String> restResponse = null;
     	if(updateToken) {
+    		log.info("now is going to wechatTokenRestServiceV1!");
     		restResponse = wechatTokenRestServiceV1.getCardApiTicket(appid, secret);
     	} else {
+    		log.info("now is going to wechatTokenRestService!");
     		restResponse = wechatTokenRestService.getCardApiTicket(appid, secret);
     	}
     	if(restResponse == null) {
@@ -141,8 +145,10 @@ public class RestAccessTokenProvider implements AccessTokenProvider {
     	} else {
     		RestResponse<String> restResponse = null;
     		if(updateToken) {
+    			log.info("now is going to wechatTokenRestServiceV1!");
     			restResponse = wechatTokenRestServiceV1.refreshAccessToken(appid, secret);
     		} else {
+    			log.info("now is going to wechatTokenRestService!");
     			restResponse = wechatTokenRestService.refreshAccessToken(appid, secret);
     		}
     		if(restResponse == null) {
