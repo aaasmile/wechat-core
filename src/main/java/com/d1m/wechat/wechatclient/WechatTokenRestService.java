@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * @author f0rb on 2017-04-05.
  */
 @FeignClient(
-        name = "wechat-token-server-v1",
+        name = "wechat-token-server",
         configuration = FeignClientConfiguration.class
 )
 public interface WechatTokenRestService {
