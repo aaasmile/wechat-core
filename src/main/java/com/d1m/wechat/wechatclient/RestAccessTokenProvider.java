@@ -31,9 +31,14 @@ public class RestAccessTokenProvider implements AccessTokenProvider {
 
     protected String accessToken;
     private WechatTokenRestService wechatTokenRestService;
+    private WechatTokenRestServiceV1 wechatTokenRestServiceV1;
+    private boolean updateToken;
 
     public RestAccessTokenProvider(String appid, String secret) {
+    	String wechatTokenServerV1 = System.getProperty("wechat-token-server-v1");
+    	this.updateToken = wechatTokenServerV1 != null && wechatTokenServerV1.indexOf("appid") > 0;
         this.wechatTokenRestService = AppContextUtils.getBean(WechatTokenRestService.class);
+        this.wechatTokenRestServiceV1 = AppContextUtils.getBean(WechatTokenRestServiceV1.class);
         this.appid = appid;
         this.secret = secret;
         this.hash = HashUtil.hash(appid, secret);
@@ -78,13 +83,29 @@ public class RestAccessTokenProvider implements AccessTokenProvider {
 
     @Override
     public String getJsApiTicket() {
-        RestResponse<String> restResponse = wechatTokenRestService.getJsApiTicket(appid, secret);
+    	RestResponse<String> restResponse = null;
+    	if(updateToken) {
+    		restResponse = wechatTokenRestServiceV1.getJsApiTicket(appid, secret);
+    	} else {
+    		restResponse = wechatTokenRestService.getJsApiTicket(appid, secret);
+    	}
+    	if(restResponse == null) {
+    		return null;
+    	}
         return restResponse.getData();
     }
 
     @Override
     public String getCardApiTicket() {
-        RestResponse<String> restResponse = wechatTokenRestService.getCardApiTicket(appid, secret);
+    	RestResponse<String> restResponse = null;
+    	if(updateToken) {
+    		restResponse = wechatTokenRestServiceV1.getCardApiTicket(appid, secret);
+    	} else {
+    		restResponse = wechatTokenRestService.getCardApiTicket(appid, secret);
+    	}
+    	if(restResponse == null) {
+    		return null;
+    	}
         return restResponse.getData();
     }
 
@@ -118,7 +139,15 @@ public class RestAccessTokenProvider implements AccessTokenProvider {
 			}
     		return null;
     	} else {
-	        RestResponse<String> restResponse = wechatTokenRestService.refreshAccessToken(appid, secret);
+    		RestResponse<String> restResponse = null;
+    		if(updateToken) {
+    			restResponse = wechatTokenRestServiceV1.refreshAccessToken(appid, secret);
+    		} else {
+    			restResponse = wechatTokenRestService.refreshAccessToken(appid, secret);
+    		}
+    		if(restResponse == null) {
+    			return null;
+    		}
 	        if (!restResponse.isSuccess()) {
 	            throw new RuntimeException("AccessToken获取失败[appid=" + appid + ",secret=" + secret + "]:" + restResponse.getInfo());
 	        }
