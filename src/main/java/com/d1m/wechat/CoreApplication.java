@@ -13,6 +13,7 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 
 import com.d1m.wechat.util.AppContextUtils;
+import com.d1m.wechat.wechatclient.ConsulProperties;
 
 /**
  * ManageApplication
@@ -31,6 +32,8 @@ import com.d1m.wechat.util.AppContextUtils;
 public class CoreApplication {
 
     public static void main(String[] args) {
+    	ConsulProperties consulProperties = new ConsulProperties();
+		consulProperties.onStartup();
         SpringApplication.run(CoreApplication.class, args);
     }
 
