@@ -14,11 +14,16 @@ public class User implements Serializable {
     private static final long serialVersionUID = 8121060670969148764L;
 
     @Override
-    public String toString() {
-        return "["+wechatId+","+id+"]";
-    }
+	public String toString() {
+		return "User [id=" + id + ", username=" + username + ", password=" + password + ", email=" + email
+				+ ", nickname=" + nickname + ", kfId=" + kfId + ", headImgUrl=" + headImgUrl + ", localHeadImgUrl="
+				+ localHeadImgUrl + ", createdAt=" + createdAt + ", creatorId=" + creatorId + ", modifyAt=" + modifyAt
+				+ ", pushAt=" + pushAt + ", wechatId=" + wechatId + ", position=" + position + ", mobile=" + mobile
+				+ ", lastLoginAt=" + lastLoginAt + ", status=" + status + ", roleId=" + roleId + ", companyId="
+				+ companyId + ", counter=" + counter + "]";
+	}
 
-    /**
+	/**
      * 主键ID
      */
     @ApiModelProperty("主键ID")

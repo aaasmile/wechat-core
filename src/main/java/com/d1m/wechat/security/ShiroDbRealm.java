@@ -55,6 +55,7 @@ public class ShiroDbRealm extends AuthorizingRealm {
 		String username = token.getUsername();
 		User user = userService.getByUsername(username);
 		if (user != null) {
+			log.info(user.toString());
 			// 先要对user判空, 再去查wechat数据, forb
 			List<WechatDto> wechats = userService.listVisibleWechat(user);
 			if (!wechats.isEmpty()) {
