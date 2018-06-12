@@ -32,11 +32,8 @@ public class RestAccessTokenProvider implements AccessTokenProvider {
     protected String accessToken;
     private WechatTokenRestService wechatTokenRestService;
     private WechatTokenRestServiceV1 wechatTokenRestServiceV1;
-    private boolean updateToken;
 
     public RestAccessTokenProvider(String appid, String secret) {
-    	String wechatTokenServerV1 = System.getProperty("wechat-token-server-v1");
-    	this.updateToken = wechatTokenServerV1 != null && wechatTokenServerV1.indexOf("appid") > -1;
         this.wechatTokenRestService = AppContextUtils.getBean(WechatTokenRestService.class);
         this.wechatTokenRestServiceV1 = AppContextUtils.getBean(WechatTokenRestServiceV1.class);
         this.appid = appid;
@@ -83,6 +80,8 @@ public class RestAccessTokenProvider implements AccessTokenProvider {
 
     @Override
     public String getJsApiTicket() {
+    	String wechatTokenServerV1 = System.getProperty("wechat-token-server-v1");
+    	boolean updateToken = wechatTokenServerV1 != null && wechatTokenServerV1.indexOf("appid") > -1;
     	RestResponse<String> restResponse = null;
     	if(updateToken) {
     		log.info("now is going to wechatTokenRestServiceV1!");
@@ -99,6 +98,8 @@ public class RestAccessTokenProvider implements AccessTokenProvider {
 
     @Override
     public String getCardApiTicket() {
+    	String wechatTokenServerV1 = System.getProperty("wechat-token-server-v1");
+    	boolean updateToken = wechatTokenServerV1 != null && wechatTokenServerV1.indexOf("appid") > -1;
     	RestResponse<String> restResponse = null;
     	if(updateToken) {
     		log.info("now is going to wechatTokenRestServiceV1!");
@@ -132,6 +133,8 @@ public class RestAccessTokenProvider implements AccessTokenProvider {
      * @throws RuntimeException 请求access_token出错时, 通过异常传递微信返回的错误信息
      */
     protected String getAccessTokenFromWechat() {
+    	String wechatTokenServerV1 = System.getProperty("wechat-token-server-v1");
+    	boolean updateToken = wechatTokenServerV1 != null && wechatTokenServerV1.indexOf("appid") > -1;
     	log.info("getAccessTokenFromWechat appid>>" + appid);
     	if(StringUtils.isNotEmpty(appid) && appid.indexOf("com.d1m") > -1 && StringUtils.isNotEmpty(secret)) {
     		try {
