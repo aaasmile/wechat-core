@@ -81,7 +81,8 @@ public class RestAccessTokenProvider implements AccessTokenProvider {
     @Override
     public String getJsApiTicket() {
     	String wechatTokenServerV1 = System.getProperty("wechat-token-server-v1");
-    	boolean updateToken = wechatTokenServerV1 != null && wechatTokenServerV1.indexOf("appid") > -1;
+    	boolean updateToken = wechatTokenServerV1 != null && wechatTokenServerV1.indexOf(appid) > -1;
+    	log.info("getJsApiTicket wechatTokenServerV1>>" + wechatTokenServerV1 + ">>updateToken>>" + updateToken);
     	RestResponse<String> restResponse = null;
     	if(updateToken) {
     		log.info("now is going to wechatTokenRestServiceV1!");
@@ -99,7 +100,8 @@ public class RestAccessTokenProvider implements AccessTokenProvider {
     @Override
     public String getCardApiTicket() {
     	String wechatTokenServerV1 = System.getProperty("wechat-token-server-v1");
-    	boolean updateToken = wechatTokenServerV1 != null && wechatTokenServerV1.indexOf("appid") > -1;
+    	boolean updateToken = wechatTokenServerV1 != null && wechatTokenServerV1.indexOf(appid) > -1;
+    	log.info("getCardApiTicket wechatTokenServerV1>>" + wechatTokenServerV1 + ">>updateToken>>" + updateToken);
     	RestResponse<String> restResponse = null;
     	if(updateToken) {
     		log.info("now is going to wechatTokenRestServiceV1!");
@@ -134,7 +136,8 @@ public class RestAccessTokenProvider implements AccessTokenProvider {
      */
     protected String getAccessTokenFromWechat() {
     	String wechatTokenServerV1 = System.getProperty("wechat-token-server-v1");
-    	boolean updateToken = wechatTokenServerV1 != null && wechatTokenServerV1.indexOf("appid") > -1;
+    	boolean updateToken = wechatTokenServerV1 != null && wechatTokenServerV1.indexOf(appid) > -1;
+    	log.info("getAccessTokenFromWechat wechatTokenServerV1>>" + wechatTokenServerV1 + ">>updateToken>>" + updateToken);
     	log.info("getAccessTokenFromWechat appid>>" + appid);
     	if(StringUtils.isNotEmpty(appid) && appid.indexOf("com.d1m") > -1 && StringUtils.isNotEmpty(secret)) {
     		try {
