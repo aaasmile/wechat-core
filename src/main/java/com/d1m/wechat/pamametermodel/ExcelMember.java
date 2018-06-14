@@ -3,7 +3,7 @@ package com.d1m.wechat.pamametermodel;
 public class ExcelMember {
 	
 	private String nickname,gender,mobile,province,city,subscribe,subscribe_time,
-	bind,message_sent,tags,openid, unbund_at, created_at;
+	bind,message_sent,tags,openid, unbund_at, created_at, created;
 
 	public String getNickname() {
 		return nickname;
@@ -108,12 +108,20 @@ public class ExcelMember {
 	public void setCreated_at(String created_at) {
 		this.created_at = created_at;
 	}
+	public String getCreated() {
+		return created;
+	}
+
+	public void setCreated(String created) {
+		this.created = created;
+	}
 
 	@Override
 	public String toString() {
 		return "ExcelMember [nickname=" + nickname + ", gender=" + gender + ", mobile=" + mobile + ", province="
 				+ province + ", city=" + city + ", subscribe=" + subscribe + ", subscribe_time=" + subscribe_time
 				+ ", bind=" + bind + ", message_sent=" + message_sent + ", tags=" + tags + ", openid=" + openid
-				+ ", unbund_at=" + unbund_at + ", created_at=" + created_at + "]";
+				+ ", unbund_at=" + unbund_at + ", created_at=" + created_at + ", created=" + created + "]";
 	}
+
 }

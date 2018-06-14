@@ -769,7 +769,8 @@
 		  ai1.c_name as city,
 		  mmt.tags,
 		  unbund_at,
-		  created_at
+		  created_at,
+		  created_at as created
 		FROM
 			member m
 			LEFT JOIN area_info ai on m.province=ai.id

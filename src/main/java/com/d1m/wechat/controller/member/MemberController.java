@@ -476,7 +476,7 @@ public class MemberController extends BaseController {
 						dataRow.createCell(9).setCellValue(batchsendMonth);
 						dataRow.createCell(10).setCellValue(memberTags);
 						dataRow.createCell(11).setCellValue(temp.getOpenid());
-						dataRow.createCell(12).setCellValue(temp.getCreated_at());
+						dataRow.createCell(12).setCellValue(temp.getCreated());
 						j++;
 					}
 				}
