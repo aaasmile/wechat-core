@@ -1,9 +1,12 @@
 package com.d1m.wechat.pamametermodel;
 
+import java.util.Date;
+
 public class ExcelMember {
 	
 	private String nickname,gender,mobile,province,city,subscribe,subscribe_time,
-	bind,message_sent,tags,openid, unbund_at, created_at;
+	bind,message_sent,tags,openid, unbund_at;
+	private Date created_at;
 
 	public String getNickname() {
 		return nickname;
@@ -101,11 +104,11 @@ public class ExcelMember {
 		this.unbund_at = unbund_at;
 	}
 
-	public String getCreated_at() {
+	public Date getCreated_at() {
 		return created_at;
 	}
 
-	public void setCreated_at(String created_at) {
+	public void setCreated_at(Date created_at) {
 		this.created_at = created_at;
 	}
 
