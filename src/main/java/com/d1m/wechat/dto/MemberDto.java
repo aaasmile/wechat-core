@@ -64,6 +64,8 @@ public class MemberDto {
 	private Integer credits;
 	
 	private Integer bindStatus;
+	//绑定时间 对应member表bind_at字段
+	private String bindAt;
 
 	/**
 	 * 是否在线(48小时内发过消息并且是已关注状态)
@@ -306,4 +308,14 @@ public class MemberDto {
 	public void setBindStatus(Integer bindStatus) {
 		this.bindStatus = bindStatus;
 	}
+
+	public String getBindAt() {
+		return bindAt;
+	}
+
+	public void setBindAt(String bindAt) {
+		this.bindAt = bindAt;
+	}
+	
+	
 }
