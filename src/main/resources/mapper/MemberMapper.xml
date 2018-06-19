@@ -49,6 +49,7 @@
 		<result column="local_head_img_url" jdbcType="VARCHAR" property="localHeadImgUrl" />
 		<result column="head_img_url" jdbcType="VARCHAR" property="headImgUrl" />
 		<result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+		<result column="bind_at" jdbcType="TIMESTAMP" property="bindAt" />
 		<result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
 		<result column="member_group_id" jdbcType="INTEGER" property="memberGroupId" />
 		<result column="activity" jdbcType="TINYINT" property="activity" />
@@ -61,7 +62,6 @@
 		<result column="last_conversation_at" jdbcType="TIMESTAMP" property="lastConversationAt" />
 		<association column="{memberId=id}" javaType="INTEGER" property="conversationCount" select="getConversationCount" />
 		<collection column="{memberId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.MemberTagDto" property="memberTags" select="getMemberMemberTags" />
-		<result column="bind_at" jdbcType="VARCHAR" property="bindAt" />
 	</resultMap>
 	
 	<select id="getConversationCount" resultType="int">
