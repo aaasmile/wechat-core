@@ -1,18 +1,11 @@
 package com.d1m.wechat.controller.api;
 
-import javax.persistence.PreUpdate;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.d1m.wechat.util.SessionCacheUtil;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-
-import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +17,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.d1m.wechat.dto.MemberDto;
-import com.d1m.wechat.model.Member;
 import com.d1m.wechat.model.User;
 import com.d1m.wechat.model.UserInfo;
 import com.d1m.wechat.service.MemberService;
 import com.d1m.wechat.service.UserService;
+import com.d1m.wechat.util.SessionCacheUtil;
 
-import java.util.List;
-import java.util.Map;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
 
 @RestController
 @RequestMapping("/api/member")
@@ -81,8 +76,5 @@ public class MemberApiController extends ApiController {
 			return "member does not exist!";
 		}
 		return memberDto.getOpenId();
-	}
-	public static void main(String[] args) {
-		System.out.println(DigestUtils.sha256Hex("12345"));
 	}
 }

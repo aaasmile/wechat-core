@@ -23,6 +23,7 @@ import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.github.pagehelper.Page;
 import com.d1m.wechat.model.MemberTag;
 import com.d1m.wechat.model.MemberTagType;
+import com.d1m.wechat.model.Tag;
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.annotation.JobHander;
 
@@ -234,7 +235,7 @@ public class MemberTagSyncJob extends BaseJobHandler  {
         
         // 2. 同步各个标签下的用户
         String nextOpenid;
-        List<MemberMemberTag> memberMemberTagList = new ArrayList<MemberMemberTag>();
+        List<Tag> memberMemberTagList = new ArrayList<Tag>();
         log.info("TagIdMap>>" + TagIdMap);
         for (MemberTagDto memberTagDto : TagIdMap.values()) {
             int count = 0;
@@ -251,7 +252,7 @@ public class MemberTagSyncJob extends BaseJobHandler  {
                     for (String openId : openIdList) {
                         Member member = memberService.getMemberByOpenId(wechatId, openId);
 
-                        MemberMemberTag memberMemberTag = new MemberMemberTag();
+                        Tag memberMemberTag = new Tag();
                         memberMemberTag.setMemberId(member.getId());
                         memberMemberTag.setMemberTagId(memberTagDto.getId());
                         memberMemberTag.setWechatId(wechatId);

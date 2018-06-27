@@ -9,6 +9,7 @@ import tk.mybatis.mapper.common.Mapper;
 
 import com.d1m.wechat.mapper.MemberMemberTagMapper;
 import com.d1m.wechat.model.MemberMemberTag;
+import com.d1m.wechat.model.Tag;
 import com.d1m.wechat.service.MemberMemberTagService;
 
 @Service
@@ -49,8 +50,8 @@ public class MemberMemberTagServiceImpl extends BaseService<MemberMemberTag>
 	}
 
 	@Override
-	public void insertOrUpdateList(List<MemberMemberTag> memberMemberAddTags) {
-		memberMemberTagMapper.insertOrUpdateList(memberMemberAddTags);
+	public void insertOrUpdateList(List<Tag> tags) {
+		memberMemberTagMapper.insertOrUpdateList(tags);
 	}
 
 }
