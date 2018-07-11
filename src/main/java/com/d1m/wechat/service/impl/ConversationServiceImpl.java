@@ -1,6 +1,5 @@
 package com.d1m.wechat.service.impl;
 
-import java.util.*;
 
 import cn.d1m.wechat.client.model.WxMessage;
 import cn.d1m.wechat.client.model.request.WxArticleMessage;
@@ -35,6 +34,14 @@ import com.d1m.wechat.util.Message;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
 
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class ConversationServiceImpl extends BaseService<Conversation>
