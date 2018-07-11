@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.web.client.RestTemplate;
 
 import com.d1m.wechat.util.AppContextUtils;
 import com.d1m.wechat.wechatclient.ConsulProperties;
@@ -42,4 +44,18 @@ public class CoreApplication {
         return new AppContextUtils();
     }
 
+    @Bean
+	public SimpleClientHttpRequestFactory simpleClientHttpRequestFactory() {
+		SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+		factory.setConnectTimeout(5 * 1000);
+		factory.setReadTimeout(5 * 1000);
+		return factory;
+	}
+	
+	@Bean
+	public RestTemplate restTemplate() {
+		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.setRequestFactory(simpleClientHttpRequestFactory());
+		return restTemplate;
+	}
 }

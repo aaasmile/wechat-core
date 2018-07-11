@@ -3,6 +3,7 @@ package com.d1m.wechat.oauth.impl;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -21,11 +22,15 @@ import cn.d1m.wechat.client.model.WxUser;
 
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.model.Member;
+import com.d1m.wechat.model.OauthUrl;
 import com.d1m.wechat.oauth.IOauth;
 import com.d1m.wechat.service.ConfigService;
 import com.d1m.wechat.service.MemberService;
+import com.d1m.wechat.service.OauthUrlService;
+import com.d1m.wechat.util.Base64Util;
 import com.d1m.wechat.util.Constants;
 import com.d1m.wechat.util.SessionCacheUtil;
+import com.d1m.wechat.util.WXPayUtil;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.d1m.wechat.wechatclient.WechatCrmRestService;
 
@@ -54,6 +59,9 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 
 	@Autowired
 	private WechatCrmRestService wechatCrmRestService;
+	
+	@Autowired
+	private OauthUrlService oauthUrlService;
 
 	@Override
 	public void execute(HttpServletRequest request,
@@ -178,10 +186,36 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 						if (StringUtils.isNotBlank(campaign)
 								&& !StringUtils.contains(redirectUrl, campaign)) {
 							redirectUrl += ("?campaign=" + campaign);
+							
+							Map<String, String> respMap = new HashMap<String, String>();
+				            try {
+				            	WxUser wxuser = WechatClientDelegate.getUser(member.getWechatId(), wuser.getOpenid());
+				            	JSONObject memberJson = new JSONObject();
+				            	 memberJson.put("open_id", wuser.getOpenid());
+				                 memberJson.put("nickname", wxuser.getNickname());
+				                 memberJson.put("union_id", wxuser.getUnionid());
+				                 memberJson.put("head_img_url", wxuser.getHeadimgurl());
+				                 memberJson.put("country", wxuser.getCountry());
+				                 memberJson.put("subscribe", wxuser.getSubscribe());
+				                 memberJson.put("phone", member.getMobile());
+				                 memberJson.put("pmcode", member.getPmcode());
+				                 memberJson.put("names", member.getName());
+				                 log.info("bind memberJson>>" + memberJson.toString());
+				                 String data = Base64Util.getBase64(memberJson.toJSONString());
+				                 String sign = WXPayUtil.MD5(data + "D1M");
+				                 
+				                 respMap.put("data", data);
+				                 respMap.put("sign", sign);
+				                 log.info("respJson>>" + respMap.toString());
+				                 response.sendRedirect(campaign + "?data=" + data + "&sign=" + sign);
+							} catch (Exception e) {
+								log.error(e.getMessage(), e);
+							} 
+				            return;
 						}
 					}
 				}
-
+				
 				log.info("callbackUrl OK : {}", redirectUrl);
 				response.sendRedirect(redirectUrl);
 			} else {

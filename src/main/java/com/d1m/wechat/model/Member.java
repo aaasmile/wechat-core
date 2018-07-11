@@ -144,6 +144,12 @@ public class Member {
 	 */
 	@ApiModelProperty("手机号")
 	private String mobile;
+	
+	/**
+	 * 会员姓名
+	 */
+	@ApiModelProperty("会员姓名")
+	private String name;
 
 	/**
 	 * 备注
@@ -725,6 +731,13 @@ public class Member {
 	 */
 	public void setLevels(String levels) {
 		this.levels = levels;
+	}
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@Override
