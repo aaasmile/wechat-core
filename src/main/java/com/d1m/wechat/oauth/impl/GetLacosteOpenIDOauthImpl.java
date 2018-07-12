@@ -62,7 +62,7 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 	
 	@Autowired
 	private OauthUrlService oauthUrlService;
-
+	
 	@Override
 	public void execute(HttpServletRequest request,
 			HttpServletResponse response, WxUser wuser,
@@ -207,7 +207,11 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 				                 respMap.put("data", data);
 				                 respMap.put("sign", sign);
 				                 log.info("respJson>>" + respMap.toString());
-				                 response.sendRedirect(campaign + "?data=" + data + "&sign=" + sign);
+				                 String symbol = "?";
+				                 if(campaign.indexOf("?") >=0 ) {
+				                	 symbol = "&";
+				                 }
+				                 response.sendRedirect(campaign + symbol + "data=" + data + "&sign=" + sign);
 							} catch (Exception e) {
 								log.error(e.getMessage(), e);
 							} 
