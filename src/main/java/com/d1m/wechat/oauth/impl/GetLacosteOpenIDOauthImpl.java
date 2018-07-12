@@ -211,11 +211,14 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 				                 if(campaign.indexOf("?") >=0 ) {
 				                	 symbol = "&";
 				                 }
-				                 response.sendRedirect(campaign + symbol + "data=" + data + "&sign=" + sign);
+				                 if(campaign.indexOf("http") >= 0) {
+				                    response.sendRedirect(campaign + symbol + "data=" + data + "&sign=" + sign);
+				                    return;
+				                 }
 							} catch (Exception e) {
 								log.error(e.getMessage(), e);
 							} 
-				            return;
+				           
 						}
 					}
 				}
