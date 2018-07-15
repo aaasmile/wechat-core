@@ -116,11 +116,13 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 
 			log.info("callbackUrl : {}", redirectUrl);
 			if (StringUtils.isNotBlank(redirectUrl)) {
+				log.info("判断redirectUrl 是否为空");
 				String ip = getReallyIp(request);
 				addCookie(ip, request, response, member, 60 * 60 * 24 * 30);
 				SessionCacheUtil.addMember(member, ip);
-
+				
 				if (StringUtils.equals(needBind, NEED_BIND)) {
+					log.info("判断needBind 参数是否为1");
 					String status = null;
 					try {
 						status = wechatCrmRestService.getMemberStatus(wechatId,
@@ -134,30 +136,38 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 						status = SYSTEM_ERROR;
 					}
 					log.info("status : {}.", status);
+					log.info("判断用户member表status字段" + status);
 					if (StringUtils.equals(status, SYSTEM_ERROR)) {
+						log.info("如果返回-1则跳转到系统繁忙页");
 						log.info("get status runsa api error.");
 						redirectUrl = configService.getConfigValue(wechatId,
 								"LACOSTE_CRM", "SERVER_BUSY_URL");
 						log.info("get status server busy callbackUrl OK : {}",
 								redirectUrl);
 					} else if (StringUtils.equals(status, NOT_BIND)) {
+						log.info("如果返回0，则跳转到用户注册页，");
 						redirectUrl = configService.getConfigValue(wechatId,
 								"LACOSTE_CRM", "LACOSTE_MEMBER_REGISTER_URL");
 						if (StringUtils.isNotBlank(campaign)
 								&& !StringUtils.contains(redirectUrl, campaign)) {
+							log.info("如果返回0,如果campaign不为空，则带上campaign参数");
 							redirectUrl += ("?campaign=" + campaign);
 						}
 					} else if (StringUtils.equals(status, MERGE_CARD)) {
+						log.info("如果返回2，则跳转到用户注册页，带上参数mergeCardTips=1，如果campaign不为空，则带上campaign参数");
 						redirectUrl = configService.getConfigValue(wechatId,
 								"LACOSTE_CRM", "LACOSTE_MEMBER_REGISTER_URL");
 						redirectUrl += "?mergeCardTips=1";
 						if (StringUtils.isNotBlank(campaign)
 								&& !StringUtils.contains(redirectUrl, campaign)) {
+							log.info("如果返回2,如果campaign不为空，则带上campaign参数");
 							redirectUrl += ("&campaign=" + campaign);
 						}
 					} else if (StringUtils.equals(status, BIND)) {
+						log.info("如果返回1");
 						if (StringUtils.equals(toMemberCenterIfBind,
 								TO_MEMBER_CENTER_IF_BIND)) {
+							log.info("如果返回1，且toMemberCenterIfBind为1");
 							String val = configService.getConfigValue(wechatId,
 									"LACOSTE_CRM", "LACOSTE_MEMBER_CENTER_URL");
 							JSONObject json = JSONObject.parseObject(val);
@@ -167,7 +177,9 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 									"wechatId : {}, memberId : {}, levels : {}.",
 									wechatId, member.getId(), levels);
 							if (StringUtils.isNotBlank(levels)) {
+								log.info("如果返回1，且toMemberCenterIfBind为1,且用户等级不为空" + levels);
 								if (StringUtils.equals(levels, SYSTEM_ERROR)) {
+									log.info("如果返回1，且toMemberCenterIfBind为1,且获取用户等级时，系统异常");
 									log.info("runsa api error.");
 									redirectUrl = configService.getConfigValue(
 											wechatId, "LACOSTE_CRM",
@@ -175,6 +187,7 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 									log.info("server busy callbackUrl OK : {}",
 											redirectUrl);
 								} else {
+									log.info("如果返回1，且toMemberCenterIfBind为1,且则根据会员等级覆盖redirectUrl替换为为对应等级的会员中心页面");
 									String url = getRedirectUrl(levels, json);
 									log.info("url : {}.", url);
 									if (StringUtils.isNotBlank(url)) {
@@ -185,6 +198,7 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 						}
 						if (StringUtils.isNotBlank(campaign)
 								&& !StringUtils.contains(redirectUrl, campaign)) {
+							log.info("如果返回1，campaign不为空，则跳转到redirectUrl并带上campaign参数");
 							redirectUrl += ("?campaign=" + campaign);
 							
 							Map<String, String> respMap = new HashMap<String, String>();
@@ -212,6 +226,7 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 				                	 symbol = "&";
 				                 }
 				                 if(campaign.indexOf("http") >= 0) {
+				                	log.info("如果返回1，campaign不为空，如果campaign参数带http参数，则直接跳转到campaign页");
 				                    response.sendRedirect(campaign + symbol + "data=" + data + "&sign=" + sign);
 				                    return;
 				                 }
