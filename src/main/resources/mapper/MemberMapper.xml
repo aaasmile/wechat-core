@@ -753,7 +753,7 @@
 	</update>
 	
 	<select id="searchMember" parameterType="com.d1m.wechat.dto.MemberDto" resultType="com.d1m.wechat.dto.MemberDto">
-		select open_id from member where union_id = #{unionId}
+		select open_id from member where union_id = #{unionId} and is_subscribe = '1'
 	</select>
 	
 	<select id="totalMember" parameterType="HashMap" resultType="com.d1m.wechat.pamametermodel.ExcelMember">
