@@ -27,19 +27,13 @@
   
   <update id="insertOrUpdateList" parameterType="java.util.List">
   		insert into member_member_tag(member_id, member_tag_id, wechat_id, created_at, open_id) values
-  		<choose>
-  			<when test="item.memberId != null">
-			  	<foreach collection="list" item="item" index="index" separator=",">
-			  		 (#{item.memberId}, #{item.memberTagId}, #{item.wechatId}, now(), #{item.openId})
-			  	</foreach>
-  			</when>
-  			<otherwise>
+
   				<foreach collection="list" item="item" index="index" separator=",">
 			  		 ((select id from member where open_id=#{item.openId}), (select id from member_tag where name=#{item.memberTagName}), #{item.wechatId}, now(), #{item.openId})
-			  	</foreach>
-  			</otherwise>
-  		</choose>
-  		ON DUPLICATE KEY 
+			  	ON DUPLICATE KEY 
   		UPDATE member_id=VALUES(member_id),member_tag_id=VALUES(member_tag_id),wechat_id=VALUES(wechat_id),created_at=now(),open_id=VALUES(open_id)
+			  	</foreach>
+
+  		
   </update>
 </mapper>
