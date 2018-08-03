@@ -62,10 +62,10 @@ public class TagController {
 			else if(tags.size() > 1000) {
 				return Response.fail("", "tags size is more than 1000!");
 			}
-			DefaultTransactionDefinition definition = new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRED);
-			status = transactionManager.getTransaction(definition);
+
+		
 			memberMemberTagService.insertOrUpdateList(tags);
-			transactionManager.commit(status);
+	
 			return Response.successful("", "successful!");
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
