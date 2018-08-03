@@ -5,7 +5,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -27,8 +26,6 @@ public class TagController {
 	private static final Logger log = LoggerFactory.getLogger(TagController.class);
 	@Autowired
 	private MemberMemberTagService memberMemberTagService;
-	@Autowired
-	private DataSourceTransactionManager transactionManager;
 	@Autowired
 	private UserService userService;
 	
@@ -69,7 +66,6 @@ public class TagController {
 			return Response.successful("", "successful!");
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			transactionManager.rollback(status);
 			return Response.fail(userInfo.getTags(), e.getMessage());
 		}
 	}
