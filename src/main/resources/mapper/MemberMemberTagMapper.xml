@@ -26,10 +26,10 @@
   </select>
   
   <update id="insertOrUpdateList" parameterType="java.util.List">
-	<foreach collection="list" item="item" index="index" separator=";">
 		insert into member_member_tag(member_id, member_tag_id, wechat_id, created_at, open_id) values
+	<foreach collection="list" item="item" index="index" separator=",">
 		  ((select id from member where open_id=#{item.openId}), (select id from member_tag where name=#{item.memberTagName}), #{item.wechatId}, now(), #{item.openId}) 
-		  ON DUPLICATE KEY UPDATE member_id=VALUES(member_id),member_tag_id=VALUES(member_tag_id),wechat_id=VALUES(wechat_id),created_at=now(),open_id=VALUES(open_id)
 	</foreach>
+		  ON DUPLICATE KEY UPDATE member_id=VALUES(member_id),member_tag_id=VALUES(member_tag_id),wechat_id=VALUES(wechat_id),created_at=now(),open_id=VALUES(open_id)
   </update>
 </mapper>
