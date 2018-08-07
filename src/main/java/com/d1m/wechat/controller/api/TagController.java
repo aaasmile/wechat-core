@@ -63,7 +63,7 @@ public class TagController {
 				insert.add(tag);
 			}
 		
-			memberMemberTagService.insertOrUpdateList(tags);
+			memberMemberTagService.insertOrUpdateList(insert);
 	
 			return Response.successful("", "successful!");
 		} catch (Exception e) {
