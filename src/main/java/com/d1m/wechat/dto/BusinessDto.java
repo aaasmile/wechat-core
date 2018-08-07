@@ -48,6 +48,8 @@ public class BusinessDto {
 	private BigDecimal distance;
 	
 	private Integer isPush;
+	//分类
+	private String categories;
 
 	public BigDecimal getDistance() {
 		return distance;
@@ -209,4 +211,27 @@ public class BusinessDto {
 		this.isPush = isPush;
 	}
 
+	public Double getWxlng() {
+		return wxlng;
+	}
+
+	public void setWxlng(Double wxlng) {
+		this.wxlng = wxlng;
+	}
+
+	public Double getWxlat() {
+		return wxlat;
+	}
+
+	public void setWxlat(Double wxlat) {
+		this.wxlat = wxlat;
+	}
+
+	public String getCategories() {
+		return categories;
+	}
+
+	public void setCategories(String categories) {
+		this.categories = categories;
+	}
 }

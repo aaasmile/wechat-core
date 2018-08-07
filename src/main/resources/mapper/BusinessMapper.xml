@@ -33,7 +33,7 @@
   </resultMap>
   
   <select id="get" resultMap="BusinessGetResultMap">
- 	select id, address, avg_price, branch_name, business_name, city, district, introduction, latitude, longitude,wxlat,wxlng, province, special, telephone, wechat_id, open_time, business_code, bus, is_push from business
+ 	select id, address, avg_price, branch_name, business_name, city, district, introduction, latitude, longitude,wxlat,wxlng, province, special, telephone, wechat_id, open_time, business_code, bus, is_push,categories from business
    	<where>
    		id = #{id}
    		<if test="wechatId != null">
@@ -62,6 +62,7 @@
 	<result column="business_code" jdbcType="VARCHAR" property="businessCode" />
 	<result column="bus" jdbcType="VARCHAR" property="bus" />
 	<result column="is_push" jdbcType="TINYINT" property="isPush" />
+	<result column="categories" jdbcType="VARCHAR" property="categories" />
 	<collection column="{businessId=id}" javaType="ArrayList" ofType="java.lang.String" property="photoList" select="getBusinessPhoto" />
   </resultMap>
   <select id="getBusinessPhoto" resultMap="BusinessPhotoResultMap">
