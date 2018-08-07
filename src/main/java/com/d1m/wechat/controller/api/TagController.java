@@ -1,13 +1,11 @@
 package com.d1m.wechat.controller.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -44,7 +42,6 @@ public class TagController {
 	@RequestMapping("/api/tag/memberTag/createOrUpdate")
 	@ResponseBody
 	public Response memberTagCreate(@RequestBody UserInfo userInfo) {
-		TransactionStatus status = null;
 		try {
 			log.debug("userInfo>>" + userInfo.toString());
 			User user = userService.login(userInfo.getUsername(), userInfo.getPassword());
@@ -56,10 +53,15 @@ public class TagController {
 			if(tags == null || tags.isEmpty()) {
 				return Response.fail("", "tags is null!");
 			} 
-			else if(tags.size() > 1000) {
+			else if(tags.size() > 100) {
 				return Response.fail("", "tags size is more than 1000!");
 			}
 
+			List<Tag> insert = new ArrayList<Tag>();
+			for(Tag tag: tags) {
+				tag.setWechatId(Integer.valueOf(userInfo.getWechatId()));
+				insert.add(tag);
+			}
 		
 			memberMemberTagService.insertOrUpdateList(tags);
 	
