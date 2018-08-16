@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 
 @Controller
-@RequestMapping("/member-qrcodeStatistics")
+@RequestMapping("/api/member-qrcodeStatistics")
 @Api(value="会员扫码统计API", tags="会员扫码关注统计接口")
 public class MemberQRcodeStatisticsController extends BaseController {
 
