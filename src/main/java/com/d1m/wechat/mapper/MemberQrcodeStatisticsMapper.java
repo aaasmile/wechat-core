@@ -5,7 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import com.d1m.wechat.dto.QRcodeStatisticsDto;
-@Repository("memberQrcodeInvitedMapper")
-public interface MemberQrcodeStatisticsMapper {
+import com.d1m.wechat.util.MyMapper;
+@Repository("memberQrcodeStatisticsMapper")
+public interface MemberQrcodeStatisticsMapper extends MyMapper<QRcodeStatisticsDto>{
 	public List<QRcodeStatisticsDto> getListMemberQrcodeStatistics();
 }

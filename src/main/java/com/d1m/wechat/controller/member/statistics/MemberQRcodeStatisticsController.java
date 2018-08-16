@@ -27,9 +27,9 @@ import io.swagger.annotations.ApiResponse;
 @Controller
 @RequestMapping("/member-qrcodeStatistics")
 @Api(value="会员扫码统计API", tags="会员扫码关注统计接口")
-public class MemberQRcodeStatistics extends BaseController {
+public class MemberQRcodeStatisticsController extends BaseController {
 
-	private Logger log = LoggerFactory.getLogger(MemberQRcodeStatistics.class);
+	private Logger log = LoggerFactory.getLogger(MemberQRcodeStatisticsController.class);
 
 	
 	@Autowired
