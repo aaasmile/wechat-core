@@ -951,7 +951,11 @@ public enum Message {
 	WX_MEDIA_INVALID_SIGN(2, "无效的签名"),
 
 	WX_MEDIA_INVALID_ACCESS(3, "无效的接入"),
-
+	
+	/**
+	 * 
+	 */
+	MEMBER_QRCODE_STATISTICS(1,"查询会员扫码统计结果成功"),
 	;
 
 	private Integer code;
