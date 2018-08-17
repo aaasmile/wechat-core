@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.d1m.wechat.dto.MemberTagTypeDto;
 import com.d1m.wechat.model.MemberTagType;
-import com.d1m.wechat.model.User;
+import com.d1m.wechat.pamametermodel.MemberTagTypeInfoModel;
 import com.d1m.wechat.util.MyMapper;
 import com.github.pagehelper.Page;
 
@@ -26,4 +26,6 @@ public interface MemberTagTypeMapper extends MyMapper<MemberTagType> {
 	void deleteAllTags(@Param("wechatId") Integer wechatId, @Param("id") Integer id);
 	
 	void deleteAllChildTagTypes(@Param("wechatId") Integer wechatId, @Param("id") Integer id);
+
+	void saveMemberTagTypeInfo(MemberTagTypeInfoModel memberTagTypeModel);
 }

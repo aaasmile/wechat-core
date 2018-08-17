@@ -7,6 +7,7 @@ import com.d1m.wechat.dto.MemberTagDto;
 import com.d1m.wechat.dto.ReportMemberTagDto;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.model.MemberTag;
+import com.d1m.wechat.model.MemberTagTypeInput;
 import com.d1m.wechat.model.User;
 import com.d1m.wechat.pamametermodel.AddMemberTagModel;
 import com.d1m.wechat.pamametermodel.MemberTagModel;
@@ -42,5 +43,7 @@ public interface MemberTagService extends IService<MemberTag> {
 	List<MemberTagDto> searchName(Integer wechatId, MemberTagModel model);
 
 	List<MemberTag> exportList(Integer wechatId, MemberTagModel model);
+
+	void saveMemberTagTypeInfo(MemberTagTypeInput memberTagTypeInput);
 	
 }

@@ -55,5 +55,28 @@
 	<select id="selectAllTagTypes" resultMap="memberTagTypeResultMap">
 		select id, name, parent_id as parentId from member_tag_type where wechat_id = #{wechatId} and status=1
 	</select>
-
+	<insert id="saveMemberTagTypeInfo" parameterType="io.swagger.annotations.ApiModel.MemberTagTypeInfoModel" >
+		 <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Integer">
+            SELECT id from member_tag_type where name = #{name}
+        </selectKey>
+        <if test="id ==null or id != ''">
+        	insert into member_tag_type (
+        		name,
+        		created_at,
+        		wechat_id,
+        		creator_id
+        		status,
+        		parent_id
+        	) values(
+        		#{name},
+        		current_time,
+        		1,
+        		1,
+        		select id from member_tag_type where name =#{parentName}
+        	)
+        </if>
+        <if test="id != null ">
+        	select 1 
+        </if>
+	</insert>
 </mapper>

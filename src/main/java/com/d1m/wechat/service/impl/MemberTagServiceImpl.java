@@ -5,22 +5,24 @@ import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
-import com.d1m.common.ds.TenantContext;
-import com.d1m.wechat.schedule.SchedulerRestService;
-import com.xxl.job.core.biz.model.ReturnT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import tk.mybatis.mapper.common.Mapper;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
+import com.d1m.common.ds.TenantContext;
 import com.d1m.wechat.dto.MemberTagDto;
 import com.d1m.wechat.dto.ReportMemberTagDto;
 import com.d1m.wechat.exception.WechatException;
@@ -33,17 +35,23 @@ import com.d1m.wechat.model.MemberMemberTag;
 import com.d1m.wechat.model.MemberTag;
 import com.d1m.wechat.model.MemberTagCsv;
 import com.d1m.wechat.model.MemberTagType;
+import com.d1m.wechat.model.MemberTagTypeInput;
 import com.d1m.wechat.model.User;
 import com.d1m.wechat.model.enums.MemberTagCsvStatus;
 import com.d1m.wechat.model.enums.MemberTagStatus;
 import com.d1m.wechat.pamametermodel.AddMemberTagModel;
 import com.d1m.wechat.pamametermodel.MemberTagModel;
+import com.d1m.wechat.pamametermodel.MemberTagTypeInfoModel;
+import com.d1m.wechat.schedule.SchedulerRestService;
 import com.d1m.wechat.service.MemberTagCsvService;
 import com.d1m.wechat.service.MemberTagService;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.xxl.job.core.biz.model.ReturnT;
+
+import tk.mybatis.mapper.common.Mapper;
 
 @Service
 public class MemberTagServiceImpl extends BaseService<MemberTag> implements
@@ -395,5 +403,22 @@ public class MemberTagServiceImpl extends BaseService<MemberTag> implements
 		return memberTagMapper.search(wechatId, null, null, model.getIds(),
 				null, null);
 	}
+	@Override
+	@Transactional(rollbackFor=Exception.class)
+	public void saveMemberTagTypeInfo(MemberTagTypeInput memberTagTypeInput) {
 
+		MemberTagTypeInfoModel memberTagTypeModel = new MemberTagTypeInfoModel();
+		memberTagTypeModel.setName(memberTagTypeInput.getMemberTgTypeName());
+		memberTagTypeModel.setParentName(memberTagTypeInput.getParentMemberTgTypeName());
+		memberTagTypeMapper.saveMemberTagTypeInfo(memberTagTypeModel);
+		
+		MemberTagModel memberTagModel = new MemberTagModel();
+		
+		memberTagModel.setName(memberTagTypeInput.getMemberTgName());
+		memberTagModel.setMemberTagTypeId(memberTagTypeModel.getId());
+		memberTagMapper.saveMemberTagInfo(memberTagModel);
+		
+		
+		
+	}
 }

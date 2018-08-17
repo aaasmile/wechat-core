@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import com.d1m.wechat.dto.MemberTagDto;
 import com.d1m.wechat.dto.ReportMemberTagDto;
 import com.d1m.wechat.model.MemberTag;
+import com.d1m.wechat.pamametermodel.MemberTagModel;
 import com.d1m.wechat.util.MyMapper;
 import com.github.pagehelper.Page;
 
@@ -31,5 +32,7 @@ public interface MemberTagMapper extends MyMapper<MemberTag> {
 	List<MemberTagDto> getAllMemberTags(@Param("wechatId") Integer wechatId, @Param("memberTagTypeId") Integer memberTagTypeId);
 
 	List<MemberTagDto> searchName(@Param("wechatId") Integer wechatId, @Param("name") String name);
+
+	void saveMemberTagInfo(MemberTagModel memberTagModel);
 
 }

@@ -124,5 +124,28 @@
 			and member_tag_type_id = #{memberTagTypeId}
 		</if>
 	</select>
-
+	<insert id="saveMemberTagInfo" parameterType="io.swagger.annotations.ApiModel.MemberTagModel" >
+			 <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Integer">
+	            SELECT id from member_tag_type where name = #{name}
+	        </selectKey>
+	        <if test="id ==null or id != ''">
+	        	insert into member_tag (
+	        		name,
+	        		created_at,
+	        		wechat_id,
+	        		creator_id
+	        		status,
+	        		member_tag_type_id
+	        	) values(
+	        		#{name},
+	        		current_time,
+	        		1,
+	        		1,
+	        		#{memberTagTypeId}
+	        	)
+	        </if>
+	        <if test="id != null ">
+	        	select 1 
+	        </if>
+		</insert>
 </mapper>
