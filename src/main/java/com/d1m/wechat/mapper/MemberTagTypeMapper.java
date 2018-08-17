@@ -28,4 +28,6 @@ public interface MemberTagTypeMapper extends MyMapper<MemberTagType> {
 	void deleteAllChildTagTypes(@Param("wechatId") Integer wechatId, @Param("id") Integer id);
 
 	void saveMemberTagTypeInfo(MemberTagTypeInfoModel memberTagTypeModel);
+
+	Long selectID(String name);
 }

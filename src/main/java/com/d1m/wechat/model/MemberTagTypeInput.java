@@ -5,6 +5,9 @@ import java.io.Serializable;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.junit.Ignore;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class MemberTagTypeInput implements Serializable{
 
@@ -12,6 +15,7 @@ public class MemberTagTypeInput implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = -8731989242556714670L;
+	@JsonIgnore
 	private String parentMemberTgTypeName;
 
 	@NotBlank

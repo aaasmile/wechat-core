@@ -124,27 +124,28 @@
 			and member_tag_type_id = #{memberTagTypeId}
 		</if>
 	</select>
-	<insert id="saveMemberTagInfo" parameterType="io.swagger.annotations.ApiModel.MemberTagModel" >
+	<insert id="saveMemberTagInfo" parameterType="com.d1m.wechat.pamametermodel.MemberTagInfoModel" >
 			 <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Integer">
-	            SELECT id from member_tag_type where name = #{name}
+	            SELECT count(*) as id from member_tag where name = #{name} and member_tag_type_id=#{memberTagTypeId}
 	        </selectKey>
-	        <if test="id ==null or id != ''">
+	        <if test="id == 0 or id == null ">
 	        	insert into member_tag (
 	        		name,
 	        		created_at,
 	        		wechat_id,
-	        		creator_id
+	        		creator_id,
 	        		status,
 	        		member_tag_type_id
 	        	) values(
 	        		#{name},
 	        		current_time,
+	        		#{wechat_id},
 	        		1,
 	        		1,
 	        		#{memberTagTypeId}
 	        	)
 	        </if>
-	        <if test="id != null ">
+	        <if test="id != 0 and id != null">
 	        	select 1 
 	        </if>
 		</insert>

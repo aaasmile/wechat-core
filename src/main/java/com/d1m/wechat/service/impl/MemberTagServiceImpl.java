@@ -40,8 +40,10 @@ import com.d1m.wechat.model.User;
 import com.d1m.wechat.model.enums.MemberTagCsvStatus;
 import com.d1m.wechat.model.enums.MemberTagStatus;
 import com.d1m.wechat.pamametermodel.AddMemberTagModel;
+import com.d1m.wechat.pamametermodel.MemberTagInfoModel;
 import com.d1m.wechat.pamametermodel.MemberTagModel;
 import com.d1m.wechat.pamametermodel.MemberTagTypeInfoModel;
+import com.d1m.wechat.pamametermodel.MemberTagTypeModel;
 import com.d1m.wechat.schedule.SchedulerRestService;
 import com.d1m.wechat.service.MemberTagCsvService;
 import com.d1m.wechat.service.MemberTagService;
@@ -409,13 +411,15 @@ public class MemberTagServiceImpl extends BaseService<MemberTag> implements
 
 		MemberTagTypeInfoModel memberTagTypeModel = new MemberTagTypeInfoModel();
 		memberTagTypeModel.setName(memberTagTypeInput.getMemberTgTypeName());
+		memberTagTypeModel.setWechat_id(memberTagTypeInput.getWechatId());
 		memberTagTypeModel.setParentName(memberTagTypeInput.getParentMemberTgTypeName());
 		memberTagTypeMapper.saveMemberTagTypeInfo(memberTagTypeModel);
-		
-		MemberTagModel memberTagModel = new MemberTagModel();
+		Long id = memberTagTypeMapper.selectID(memberTagTypeInput.getMemberTgTypeName());
+		MemberTagInfoModel memberTagModel = new MemberTagInfoModel();
 		
 		memberTagModel.setName(memberTagTypeInput.getMemberTgName());
-		memberTagModel.setMemberTagTypeId(memberTagTypeModel.getId());
+		memberTagModel.setMemberTagTypeId(id.intValue());
+		memberTagModel.setWechat_id(memberTagTypeInput.getWechatId());
 		memberTagMapper.saveMemberTagInfo(memberTagModel);
 		
 		
