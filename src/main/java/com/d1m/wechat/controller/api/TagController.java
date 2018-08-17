@@ -90,7 +90,7 @@ public class TagController {
 			
 			memberTagService.saveMemberTagTypeInfo(memberTagTypeInput);
 	
-			return Response.successful("", "successful!");
+			return Response.successful("", "insert successful!");
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			return Response.fail("", e.getMessage());
