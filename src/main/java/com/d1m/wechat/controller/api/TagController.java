@@ -93,7 +93,7 @@ public class TagController {
 			return Response.successful("", "insert successful!");
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			return Response.fail("", e.getMessage());
+			return Response.fail("", "system error!");
 		}
 	}
 }
