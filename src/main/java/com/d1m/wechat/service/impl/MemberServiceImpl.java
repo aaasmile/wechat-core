@@ -236,32 +236,9 @@ public class MemberServiceImpl extends BaseService<Member> implements
 		List<MemberTag> memberTagsIn = getMemberTags(wechatId, user,
 				addMemberTagModel.getTags());
 
-		List<MemberDto> members = null;
-		if (addMemberTagModel.getMemberIds() == null
-				|| addMemberTagModel.getMemberIds().length == 0) {
-			MemberModel memberModel = addMemberTagModel.getMemberModel();
-			members = memberMapper.search(wechatId, memberModel.getOpenId(),
-					memberModel.getNickname(), memberModel.getSex(),
-					memberModel.getCountry(), memberModel.getProvince(),
-					memberModel.getCity(), memberModel.getSubscribe(),
-					memberModel.getActivityStartAt(), memberModel
-							.getActivityEndAt(), memberModel
-							.getBatchSendOfMonthStartAt(), memberModel
-							.getBatchSendOfMonthEndAt(), DateUtil
-							.getDateBegin(DateUtil.parse(memberModel
-									.getAttentionStartAt())), DateUtil
-							.getDateEnd(DateUtil.parse(memberModel
-									.getAttentionEndAt())), DateUtil
-							.getDateBegin(DateUtil.parse(memberModel
-									.getCancelSubscribeStartAt())), DateUtil
-							.getDateEnd(DateUtil.parse(memberModel
-									.getCancelSubscribeEndAt())), null, null,
-					memberModel.getMobile(), memberModel.getMemberTags(), null,
-					null, null, DateUtil.getDate(-2));
-		} else {
-			members = memberMapper.selectByMemberId(
+		List<MemberDto> members = memberMapper.selectByMemberId(
 					addMemberTagModel.getMemberIds(), wechatId, null);
-		}
+
 		if (members.isEmpty()) {
 			throw new WechatException(Message.MEMBER_NOT_BLANK);
 		}

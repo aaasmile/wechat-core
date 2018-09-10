@@ -396,7 +396,7 @@
 		select *, IF(ISNULL(status),2,status) as bindStatus from member
 		<where>
 			wechat_id = #{wechatId}
-			<if test="ids != null">
+			<if test="ids != null and ids.length &gt; 0">
 				and id in
 				<foreach close=")" collection="ids" index="index" item="item" open="(" separator=",">
 					#{item}
