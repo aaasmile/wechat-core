@@ -84,6 +84,7 @@ public class RestAccessTokenProvider implements AccessTokenProvider {
     	boolean updateToken = wechatTokenServerV1 != null && wechatTokenServerV1.indexOf(appid) > -1;
     	log.info("getJsApiTicket wechatTokenServerV1>>" + wechatTokenServerV1 + ">>updateToken>>" + updateToken);
     	RestResponse<String> restResponse = null;
+    	log.info("getJsApiTicket>>appid>>" + appid + ">>secret>>" + secret);
     	if(updateToken) {
     		log.info("now is going to wechatTokenRestServiceV1!");
     		restResponse = wechatTokenRestServiceV1.getJsApiTicket(appid, secret);
@@ -103,6 +104,7 @@ public class RestAccessTokenProvider implements AccessTokenProvider {
     	boolean updateToken = wechatTokenServerV1 != null && wechatTokenServerV1.indexOf(appid) > -1;
     	log.info("getCardApiTicket wechatTokenServerV1>>" + wechatTokenServerV1 + ">>updateToken>>" + updateToken);
     	RestResponse<String> restResponse = null;
+    	log.info("getCardApiTicket>>appid>>" + appid + ">>secret>>" + secret);
     	if(updateToken) {
     		log.info("now is going to wechatTokenRestServiceV1!");
     		restResponse = wechatTokenRestServiceV1.getCardApiTicket(appid, secret);
@@ -150,6 +152,7 @@ public class RestAccessTokenProvider implements AccessTokenProvider {
     		return null;
     	} else {
     		RestResponse<String> restResponse = null;
+    		log.info("getAccessTokenFromWechat>>appid>>" + appid + ">>secret>>" + secret);
     		if(updateToken) {
     			log.info("now is going to wechatTokenRestServiceV1!");
     			restResponse = wechatTokenRestServiceV1.refreshAccessToken(appid, secret);
