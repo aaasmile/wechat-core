@@ -49,7 +49,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
 	private Logger log = LoggerFactory.getLogger(MemberServiceImpl.class);
 	private static String defaultMedium = "qrcode";
 	//每批次处理数量
-	private static final Integer BATCHSIZE= 3;
+	private static final Integer BATCHSIZE= 10000;
 
 	ExecutorService service = Executors.newCachedThreadPool();
 
