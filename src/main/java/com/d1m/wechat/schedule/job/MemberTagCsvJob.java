@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.dto.MemberDto;
+import com.d1m.wechat.dto.MemberMemberTagDTO;
 import com.d1m.wechat.dto.MemberTagDto;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.model.*;
@@ -83,21 +84,11 @@ public class MemberTagCsvJob extends BaseJobHandler {
 
                     List<MemberTag> memberTags = getMemberTags(wechatId, creatorId,
                             memberTagModels);
-
-                    Date current = new Date();
+                    List<MemberDto> members = new ArrayList<MemberDto>();
                     MemberDto memberDto = memberService.selectByOpenId(openId, wechatId);
-                    List<MemberMemberTag> memberMemberAddTags = new ArrayList<>();
-                    List<MemberTagDto> existMemberTags = memberDto.getMemberTags();
-                    for (MemberTag memberTag : memberTags) {
-                        if (!contains(existMemberTags, memberTag)) {
-                            MemberMemberTag memberMemberTag = new MemberMemberTag();
-                            memberMemberTag.setMemberId(memberDto.getId());
-                            memberMemberTag.setMemberTagId(memberTag.getId());
-                            memberMemberTag.setWechatId(wechatId);
-                            memberMemberTag.setCreatedAt(current);
-                            memberMemberAddTags.add(memberMemberTag);
-                        }
-                    }
+                    members.add(memberDto);
+                    MemberMemberTagDTO memberTagDTO = memberService.getAddBatchMemberTagList(members,memberTags,wechatId);
+                    List<MemberMemberTag> memberMemberAddTags = memberTagDTO.getMemberTagList();
                     if (!memberMemberAddTags.isEmpty()) {
                         memberMemberTagService.insertList(memberMemberAddTags);
                     }

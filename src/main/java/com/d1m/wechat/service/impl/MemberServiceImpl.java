@@ -6,9 +6,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import cn.d1m.wechat.client.model.WxTag;
 import cn.d1m.wechat.client.model.WxUser;
+import com.d1m.wechat.util.*;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.d1m.wechat.dto.*;
 import com.d1m.wechat.exception.WechatException;
@@ -24,10 +28,6 @@ import com.d1m.wechat.pamametermodel.MemberModel;
 import com.d1m.wechat.pamametermodel.MemberTagModel;
 import com.d1m.wechat.service.MemberService;
 import com.d1m.wechat.service.MemberTagTypeService;
-import com.d1m.wechat.util.BeanUtil;
-import com.d1m.wechat.util.DateUtil;
-import com.d1m.wechat.util.FileUploadConfigUtil;
-import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
@@ -48,6 +48,8 @@ public class MemberServiceImpl extends BaseService<Member> implements
 
 	private Logger log = LoggerFactory.getLogger(MemberServiceImpl.class);
 	private static String defaultMedium = "qrcode";
+	//每批次处理数量
+	private static final Integer BATCHSIZE= 10000;
 
 	@Autowired
 	private MemberMapper memberMapper;
@@ -243,12 +245,104 @@ public class MemberServiceImpl extends BaseService<Member> implements
 			throw new WechatException(Message.MEMBER_NOT_BLANK);
 		}
 
+		MemberMemberTagDTO dto = getAddBatchMemberTagList(members,memberTagsIn,wechatId);
+		List<MemberMemberTag> list = dto.getMemberTagList();
+		List<MemberTag> memberTags = dto.getMemberTags();
+
+		if (!list.isEmpty()) {
+			if(list.size()>=BATCHSIZE){
+				//调用批量处理
+				this.batchProcessing(list);
+			}else {
+				memberMemberTagMapper.insertList(list);
+			}
+		}
+		List<MemberTagDto> memberTagDtos = new ArrayList<MemberTagDto>();
+		MemberTagDto memberTagDto = null;
+		for (MemberTag memberTag : memberTags) {
+			memberTagDto = new MemberTagDto();
+			memberTagDto.setId(memberTag.getId());
+			memberTagDto.setName(memberTag.getName());
+			memberTagDtos.add(memberTagDto);
+		}
+		return memberTagDtos;
+	}
+
+
+	/**
+	 * 批量插入
+	 * @param memberMemberAddTags
+	 */
+	private void batchProcessing(List<MemberMemberTag> memberMemberAddTags) {
+		Integer amount = memberMemberAddTags.size();
+		Integer times = 0;
+		Integer remainAmount = 0;
+		//1、判断将要插入的数量是否大于等于每批次执行的数量，若大于或等于就执行批量处理方法，否则直接插入。
+		Map<String, Integer> map = BatchUtils.getTimes(BATCHSIZE, amount);
+		times = map.get("times");
+		remainAmount = map.get("remainAmount");
+		Integer completedCount = 0;
+		Integer count = 0;
+		ExecutorService service = Executors.newFixedThreadPool(10);
+		final CyclicBarrier cb = new CyclicBarrier(10);
+		for(int i=0;i<times;i++){
+			int t = i;
+			Runnable runnable = new Runnable(){
+				public void run(){
+					try {
+						final  Integer exeCount = execute((BATCHSIZE*t),((BATCHSIZE*t)+BATCHSIZE),memberMemberAddTags);
+						log.info("线程："+Thread.currentThread().getName()+",已完成数量："+(exeCount*(t+1)));
+						final Integer ec  = (exeCount*(t+1));
+						cb.await();
+
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			};
+			service.execute(runnable);
+		}
+		service.shutdown();
+
+		if(remainAmount > 0) {
+			completedCount = execute((BATCHSIZE * times), amount,memberMemberAddTags);
+			log.info("剩余已完成数量：" + completedCount);
+		}else {
+			completedCount = 0;
+		}
+
+	}
+
+	/**
+	 * 执行批量插入
+	 * @param from
+	 * @param to
+	 * @param memberMemberAddTags
+	 * @return
+	 */
+	private Integer execute(Integer from,Integer to,List<MemberMemberTag> memberMemberAddTags){
+		//from 包含，to 不包含
+		List<MemberMemberTag> memberTagList = memberMemberAddTags.subList(from,to);
+		return memberMemberTagMapper.insertList(memberTagList);
+	}
+
+
+	/**
+	 * 获取需要加标签的批量数据
+	 * @param members
+	 * @param memberTagsIn
+	 * @param wechatId
+	 * @return
+	 */
+	public MemberMemberTagDTO getAddBatchMemberTagList (List<MemberDto> members,List<MemberTag> memberTagsIn,Integer wechatId) {
 		Date current = new Date();
 		List<MemberMemberTag> memberMemberAddTags = null;
 		List<MemberTagDto> memberMemberDeleteTags = null;
 		MemberMemberTag memberMemberTag = null;
 		List<MemberTagDto> existMemberTags = null;
 		List<MemberTag> memberTags = null;
+		MemberMemberTagDTO dto = new MemberMemberTagDTO();
+		List<MemberMemberTag> memberTagList = new ArrayList<MemberMemberTag>();
 		for (MemberDto memberDto : members) {
 			try {
 				memberTags = BeanUtil.copyTo(memberTagsIn, MemberTag.class);
@@ -278,6 +372,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
 						memberMemberTag.setCreatedAt(current);
 						memberMemberTag.setOpenId(memberDto.getOpenId());
 						memberMemberAddTags.add(memberMemberTag);
+						memberTagList.addAll(memberMemberAddTags);
 					}
 				}
 				for (MemberTagDto existMemberTag : existMemberTags) {
@@ -286,26 +381,17 @@ public class MemberServiceImpl extends BaseService<Member> implements
 					}
 				}
 			}
-			if (!memberMemberAddTags.isEmpty()) {
-				memberMemberTagMapper.insertList(memberMemberAddTags);
-			}
+
 			if (!memberMemberDeleteTags.isEmpty()) {
 				for (MemberTagDto memberTagDto : memberMemberDeleteTags) {
 					memberMemberTagMapper.deleteByPrimaryKey(memberTagDto
-							.getMemberMemberTagId());
+					.getMemberMemberTagId());
 				}
 			}
 		}
-
-		List<MemberTagDto> memberTagDtos = new ArrayList<MemberTagDto>();
-		MemberTagDto memberTagDto = null;
-		for (MemberTag memberTag : memberTags) {
-			memberTagDto = new MemberTagDto();
-			memberTagDto.setId(memberTag.getId());
-			memberTagDto.setName(memberTag.getName());
-			memberTagDtos.add(memberTagDto);
-		}
-		return memberTagDtos;
+		dto.setMemberTagList(memberTagList);
+		dto.setMemberTags(memberTags);
+		return dto;
 	}
 
 	private boolean contains(List<MemberTagDto> list, MemberTag memberTag) {
