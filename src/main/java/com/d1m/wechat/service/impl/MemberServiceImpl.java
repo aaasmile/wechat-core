@@ -263,7 +263,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
 			if (CollectionUtils.isNotEmpty(list)) {
 				if (list.size() >= BATCHSIZE) {
 					//调用批量处理
-					this.batchProcessing(list);
+					this.asyncBatch(list);
 				} else {
 					memberMemberTagMapper.insertList(list);
 				}
@@ -291,7 +291,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
 	 *
 	 * @param memberMemberAddTags
 	 */
-	private void batchProcessing(List<MemberMemberTag> memberMemberAddTags) {
+	private void asyncBatch(List<MemberMemberTag> memberMemberAddTags) {
 		Integer amount = memberMemberAddTags.size();
 		Integer times = 0;
 		Integer remainAmount = 0;
@@ -322,12 +322,19 @@ public class MemberServiceImpl extends BaseService<Member> implements
 			};
 			service.execute(runnable);
 		}
-		//service.shutdown();
 
 		//剩余数据处理
 		if (remainAmount > 0) {
-			completedCount = execute((BATCHSIZE * times), amount, memberMemberAddTags);
-			log.info("剩余已完成数量：" + completedCount);
+		    Integer finalTimes = times;
+		    Runnable remainRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    Integer  completedCount = execute((BATCHSIZE * finalTimes), amount, memberMemberAddTags);
+                    log.info("剩余已完成数量：" + completedCount);
+                }
+            };
+            service.execute(remainRunnable);
+
 		}
 
 	}
