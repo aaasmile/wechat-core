@@ -8,19 +8,19 @@
            http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 	<context:property-placeholder location="classpath:xxl-job-executor.properties"/>
-
-	<!-- 配置任务执行器 -->
+<!--
+	&lt;!&ndash; 配置任务执行器 &ndash;&gt;
 	<bean id="xxlJobExecutor" class="com.xxl.job.core.executor.XxlJobExecutor" init-method="start" destroy-method="destroy" >
-		<!-- 执行器IP[选填]，为空则自动获取 -->
+		&lt;!&ndash; 执行器IP[选填]，为空则自动获取 &ndash;&gt;
 		<property name="ip" value="${xxl.job.executor.ip}" />
-		<!-- 执行器端口号[必须] -->
+		&lt;!&ndash; 执行器端口号[必须] &ndash;&gt;
 		<property name="port" value="${xxl.job.executor.port}" />
-		<!-- 执行器AppName[选填]，为空则关闭自动注册 -->
+		&lt;!&ndash; 执行器AppName[选填]，为空则关闭自动注册 &ndash;&gt;
         <property name="appName" value="${xxl.job.executor.appname}" />
-        <!-- 执行器注册中心地址[选填]，为空则关闭自动注册 -->
+        &lt;!&ndash; 执行器注册中心地址[选填]，为空则关闭自动注册 &ndash;&gt;
 		<property name="adminAddresses" value="${xxl.job.admin.addresses}" />
-		<!-- 执行器日志路径[必填] -->
+		&lt;!&ndash; 执行器日志路径[必填] &ndash;&gt;
 		<property name="logPath" value="${xxl.job.executor.logpath}" />
-	</bean>
+	</bean>-->
 
 </beans>

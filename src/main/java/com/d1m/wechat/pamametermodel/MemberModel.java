@@ -40,6 +40,13 @@ public class MemberModel {
 
 	private Integer[] memberIds;
 
+	private String subscribeScene;
+
+	private Integer qrScene;
+
+	private String qrSceneStr;
+
+
 	/**
 	 * 1:不活跃,2:活跃
 	 */
@@ -203,5 +210,29 @@ public class MemberModel {
 
 	public void setWechatId(Integer wechatId) {
 		this.wechatId = wechatId;
+	}
+
+	public String getSubscribeScene() {
+		return subscribeScene;
+	}
+
+	public void setSubscribeScene(String subscribeScene) {
+		this.subscribeScene = subscribeScene;
+	}
+
+	public Integer getQrScene() {
+		return qrScene;
+	}
+
+	public void setQrScene(Integer qrScene) {
+		this.qrScene = qrScene;
+	}
+
+	public String getQrSceneStr() {
+		return qrSceneStr;
+	}
+
+	public void setQrSceneStr(String qrSceneStr) {
+		this.qrSceneStr = qrSceneStr;
 	}
 }

@@ -605,6 +605,9 @@ public class MemberServiceImpl extends BaseService<Member> implements
 		member.setOpenId(wxuser.getOpenid());
 		member.setWechatId(wechatId);
 		member.setIsSubscribe(wxuser.getSubscribe() == 1);
+		member.setSubscribeScene(wxuser.getSubscribe_scene());
+		member.setQrScene(wxuser.getQr_scene());
+		member.setQrSceneStr(wxuser.getQr_scene_str());
 		return member;
 	}
 
