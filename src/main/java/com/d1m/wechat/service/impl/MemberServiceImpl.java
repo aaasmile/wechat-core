@@ -534,6 +534,9 @@ public class MemberServiceImpl extends BaseService<Member> implements
 		}
 		member.setSubscribeAt(newMember.getSubscribeAt());
 		member.setIsSubscribe(newMember.getIsSubscribe());
+		member.setQrSceneStr(StringUtils.isNotBlank(newMember.getQrSceneStr()) ? newMember.getQrSceneStr():null);
+		member.setQrScene(newMember.getQrScene());
+		member.setSubscribeScene(newMember.getSubscribeScene());
 	}
 
 	@Override
