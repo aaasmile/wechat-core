@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.d1m.wechat.util.Constants;
+import com.d1m.wechat.util.ConstantsUtil;
 import com.d1m.wechat.util.DateUtil;
 
 public class MemberDto {
@@ -66,6 +67,13 @@ public class MemberDto {
 	private Integer bindStatus;
 	//绑定时间 对应member表bind_at字段
 	private String bindAt;
+	//渠道来源
+	private String subscribeScene;
+	//二维码扫码场景
+	private Integer qrScene;
+
+	//二维码扫码场景描述
+	private String qrSceneStr;
 
 	/**
 	 * 是否在线(48小时内发过消息并且是已关注状态)
@@ -316,6 +324,28 @@ public class MemberDto {
 	public void setBindAt(String bindAt) {
 		this.bindAt = bindAt;
 	}
-	
-	
+
+	public String getSubscribeScene() {
+		return ConstantsUtil.subscribeSceneMap.get(subscribeScene);
+	}
+
+	public void setSubscribeScene(String subscribeScene) {
+		this.subscribeScene = subscribeScene;
+	}
+
+	public Integer getQrScene() {
+		return qrScene;
+	}
+
+	public void setQrScene(Integer qrScene) {
+		this.qrScene = qrScene;
+	}
+
+	public String getQrSceneStr() {
+		return qrSceneStr;
+	}
+
+	public void setQrSceneStr(String qrSceneStr) {
+		this.qrSceneStr = qrSceneStr;
+	}
 }

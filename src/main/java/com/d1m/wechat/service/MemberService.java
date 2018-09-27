@@ -3,6 +3,7 @@ package com.d1m.wechat.service;
 import java.util.Date;
 import java.util.List;
 
+import com.d1m.wechat.model.MemberTag;
 import com.github.pagehelper.Page;
 
 import cn.d1m.wechat.client.model.WxUser;
@@ -77,4 +78,13 @@ public interface MemberService extends IService<Member> {
 	
 	List<ExcelMember> totalMember(Integer wechatId,
 			AddMemberTagModel addMemberTagModel, boolean queryCount);
+
+	/**
+	 * 获取需要加标签的批量数据
+	 * @param members
+	 * @param memberTagsIn
+	 * @param wechatId
+	 * @return
+	 */
+	public MemberMemberTagDTO getAddBatchMemberTagList (List<MemberDto> members, List<MemberTag> memberTagsIn, Integer wechatId);
 }

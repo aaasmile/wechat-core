@@ -3,12 +3,15 @@ package com.d1m.wechat.service.impl;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import cn.d1m.wechat.client.model.WxTag;
 import cn.d1m.wechat.client.model.WxUser;
+import com.d1m.wechat.util.*;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.d1m.wechat.dto.*;
 import com.d1m.wechat.exception.WechatException;
@@ -24,21 +27,18 @@ import com.d1m.wechat.pamametermodel.MemberModel;
 import com.d1m.wechat.pamametermodel.MemberTagModel;
 import com.d1m.wechat.service.MemberService;
 import com.d1m.wechat.service.MemberTagTypeService;
-import com.d1m.wechat.util.BeanUtil;
-import com.d1m.wechat.util.DateUtil;
-import com.d1m.wechat.util.FileUploadConfigUtil;
-import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.ibatis.mapping.MappedStatement;
-import org.mybatis.spring.SqlSessionTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.common.Mapper;
+
+import javax.annotation.Resource;
 
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
@@ -48,6 +48,10 @@ public class MemberServiceImpl extends BaseService<Member> implements
 
 	private Logger log = LoggerFactory.getLogger(MemberServiceImpl.class);
 	private static String defaultMedium = "qrcode";
+	//每批次处理数量
+	private static final Integer BATCHSIZE= 10000;
+
+	ExecutorService service = Executors.newCachedThreadPool();
 
 	@Autowired
 	private MemberMapper memberMapper;
@@ -72,6 +76,9 @@ public class MemberServiceImpl extends BaseService<Member> implements
 
 	@Autowired
 	private ConversationMapper conversationMapper;
+
+	@Resource
+	private RedisTemplate<String, Object> redisTemplate;
 
 	public void setMemberMapper(MemberMapper memberMapper) {
 		this.memberMapper = memberMapper;
@@ -228,50 +235,141 @@ public class MemberServiceImpl extends BaseService<Member> implements
 
 	@Override
 	public List<MemberTagDto> addMemberTag(Integer wechatId, User user,
-			AddMemberTagModel addMemberTagModel) throws WechatException {
+										   AddMemberTagModel addMemberTagModel) throws WechatException {
 		if (addMemberTagModel.emptyQuery()) {
 			throw new WechatException(Message.MEMBER_NOT_BLANK);
 		}
 
 		List<MemberTag> memberTagsIn = getMemberTags(wechatId, user,
-				addMemberTagModel.getTags());
+		addMemberTagModel.getTags());
 
-		List<MemberDto> members = null;
-		if (addMemberTagModel.getMemberIds() == null
-				|| addMemberTagModel.getMemberIds().length == 0) {
-			MemberModel memberModel = addMemberTagModel.getMemberModel();
-			members = memberMapper.search(wechatId, memberModel.getOpenId(),
-					memberModel.getNickname(), memberModel.getSex(),
-					memberModel.getCountry(), memberModel.getProvince(),
-					memberModel.getCity(), memberModel.getSubscribe(),
-					memberModel.getActivityStartAt(), memberModel
-							.getActivityEndAt(), memberModel
-							.getBatchSendOfMonthStartAt(), memberModel
-							.getBatchSendOfMonthEndAt(), DateUtil
-							.getDateBegin(DateUtil.parse(memberModel
-									.getAttentionStartAt())), DateUtil
-							.getDateEnd(DateUtil.parse(memberModel
-									.getAttentionEndAt())), DateUtil
-							.getDateBegin(DateUtil.parse(memberModel
-									.getCancelSubscribeStartAt())), DateUtil
-							.getDateEnd(DateUtil.parse(memberModel
-									.getCancelSubscribeEndAt())), null, null,
-					memberModel.getMobile(), memberModel.getMemberTags(), null,
-					null, null, DateUtil.getDate(-2));
-		} else {
-			members = memberMapper.selectByMemberId(
-					addMemberTagModel.getMemberIds(), wechatId, null);
-		}
+		List<MemberDto> members = memberMapper.selectByMemberId(
+		addMemberTagModel.getMemberIds(), wechatId, null);
+
 		if (members.isEmpty()) {
 			throw new WechatException(Message.MEMBER_NOT_BLANK);
 		}
 
+		MemberMemberTagDTO dto = getAddBatchMemberTagList(members, memberTagsIn, wechatId);
+		List<MemberMemberTag> memberMemberTagList = dto.getMemberTagList();
+		List<MemberTag> memberTags = dto.getMemberTags();
+		try {
+			//存入redis
+			String memberTagsList = MD5.MD5Encode("MEMBERTAGSLIST_"+System.currentTimeMillis());
+			redisTemplate.opsForValue().set(memberTagsList, memberMemberTagList);
+			//获取redis中的数据
+			List<MemberMemberTag> RedisDataList = (List<MemberMemberTag>) redisTemplate.opsForValue().get(memberTagsList);
+			List<MemberMemberTag> list = CollectionUtils.isNotEmpty(RedisDataList) ? RedisDataList : memberMemberTagList;
+			if (CollectionUtils.isNotEmpty(list)) {
+				if (list.size() >= BATCHSIZE) {
+					//调用批量处理
+					this.asyncBatch(list);
+				} else {
+					memberMemberTagMapper.insertList(list);
+				}
+			}
+			//删除redis
+			redisTemplate.delete(memberTagsList);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		List<MemberTagDto> memberTagDtos = new ArrayList<MemberTagDto>();
+		MemberTagDto memberTagDto = null;
+		for (MemberTag memberTag : memberTags) {
+			memberTagDto = new MemberTagDto();
+			memberTagDto.setId(memberTag.getId());
+			memberTagDto.setName(memberTag.getName());
+			memberTagDtos.add(memberTagDto);
+		}
+		return memberTagDtos;
+	}
+
+
+	/**
+	 * 批量插入
+	 *
+	 * @param memberMemberAddTags
+	 */
+	private void asyncBatch(List<MemberMemberTag> memberMemberAddTags) {
+		Integer amount = memberMemberAddTags.size();
+		Integer times = 0;
+		Integer remainAmount = 0;
+		//1、判断将要插入的数量是否大于等于每批次执行的数量，若大于或等于就执行批量处理方法，否则直接插入。
+		Map<String, Integer> map = BatchUtils.getTimes(BATCHSIZE, amount);
+		times = map.get("times");
+		remainAmount = map.get("remainAmount");
+		Integer completedCount = 0;
+		Integer count = 0;
+		//2、调用线程处理
+		final CyclicBarrier cb = new CyclicBarrier(10);
+		for (int i = 0; i < times; i++) {
+			int t = i;
+			Integer from = BATCHSIZE * t;
+			Integer to = BATCHSIZE * t + BATCHSIZE;
+			Runnable runnable = new Runnable() {
+				@Override
+				public void run() {
+					try {
+						Integer exeCount = execute(from, to, memberMemberAddTags);
+						log.info("线程：" + Thread.currentThread().getName() + ",已完成数量：" + exeCount * (t + 1));
+						cb.await();
+
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			};
+			service.execute(runnable);
+		}
+
+		//剩余数据处理
+		if (remainAmount > 0) {
+		    Integer finalTimes = times;
+		    Runnable remainRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    Integer  completedCount = execute((BATCHSIZE * finalTimes), amount, memberMemberAddTags);
+                    log.info("剩余已完成数量：" + completedCount);
+                }
+            };
+            service.execute(remainRunnable);
+
+		}
+
+	}
+
+
+	/**
+	 * 执行批量插入
+	 * @param from
+	 * @param to
+	 * @param memberMemberAddTags
+	 * @return
+	 */
+	private Integer execute(Integer from,Integer to,List<MemberMemberTag> memberMemberAddTags){
+		//from 包含，to 不包含
+		List<MemberMemberTag> memberTagList = memberMemberAddTags.subList(from,to);
+		return memberMemberTagMapper.insertList(memberTagList);
+	}
+
+
+	/**
+	 * 获取需要加标签的批量数据
+	 * @param members
+	 * @param memberTagsIn
+	 * @param wechatId
+	 * @return
+	 */
+	public MemberMemberTagDTO getAddBatchMemberTagList (List<MemberDto> members,List<MemberTag> memberTagsIn,Integer wechatId) {
 		Date current = new Date();
 		List<MemberMemberTag> memberMemberAddTags = null;
 		List<MemberTagDto> memberMemberDeleteTags = null;
 		MemberMemberTag memberMemberTag = null;
 		List<MemberTagDto> existMemberTags = null;
 		List<MemberTag> memberTags = null;
+		MemberMemberTagDTO dto = new MemberMemberTagDTO();
+		List<MemberMemberTag> memberTagList = new ArrayList<MemberMemberTag>();
 		for (MemberDto memberDto : members) {
 			try {
 				memberTags = BeanUtil.copyTo(memberTagsIn, MemberTag.class);
@@ -301,6 +399,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
 						memberMemberTag.setCreatedAt(current);
 						memberMemberTag.setOpenId(memberDto.getOpenId());
 						memberMemberAddTags.add(memberMemberTag);
+						memberTagList.addAll(memberMemberAddTags);
 					}
 				}
 				for (MemberTagDto existMemberTag : existMemberTags) {
@@ -309,26 +408,17 @@ public class MemberServiceImpl extends BaseService<Member> implements
 					}
 				}
 			}
-			if (!memberMemberAddTags.isEmpty()) {
-				memberMemberTagMapper.insertList(memberMemberAddTags);
-			}
+
 			if (!memberMemberDeleteTags.isEmpty()) {
 				for (MemberTagDto memberTagDto : memberMemberDeleteTags) {
 					memberMemberTagMapper.deleteByPrimaryKey(memberTagDto
-							.getMemberMemberTagId());
+					.getMemberMemberTagId());
 				}
 			}
 		}
-
-		List<MemberTagDto> memberTagDtos = new ArrayList<MemberTagDto>();
-		MemberTagDto memberTagDto = null;
-		for (MemberTag memberTag : memberTags) {
-			memberTagDto = new MemberTagDto();
-			memberTagDto.setId(memberTag.getId());
-			memberTagDto.setName(memberTag.getName());
-			memberTagDtos.add(memberTagDto);
-		}
-		return memberTagDtos;
+		dto.setMemberTagList(memberTagList);
+		dto.setMemberTags(memberTags);
+		return dto;
 	}
 
 	private boolean contains(List<MemberTagDto> list, MemberTag memberTag) {
@@ -444,6 +534,9 @@ public class MemberServiceImpl extends BaseService<Member> implements
 		}
 		member.setSubscribeAt(newMember.getSubscribeAt());
 		member.setIsSubscribe(newMember.getIsSubscribe());
+		member.setQrSceneStr(StringUtils.isNotBlank(newMember.getQrSceneStr()) ? newMember.getQrSceneStr():null);
+		member.setQrScene(newMember.getQrScene());
+		member.setSubscribeScene(newMember.getSubscribeScene());
 	}
 
 	@Override
@@ -515,6 +608,9 @@ public class MemberServiceImpl extends BaseService<Member> implements
 		member.setOpenId(wxuser.getOpenid());
 		member.setWechatId(wechatId);
 		member.setIsSubscribe(wxuser.getSubscribe() == 1);
+		member.setSubscribeScene(wxuser.getSubscribe_scene());
+		member.setQrScene(wxuser.getQr_scene());
+		member.setQrSceneStr(wxuser.getQr_scene_str());
 		return member;
 	}
 
