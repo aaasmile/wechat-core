@@ -367,6 +367,9 @@
         <result column="unsubscribe_at" jdbcType="TIMESTAMP" property="unsubscribeAt"/>
         <result column="fromwhere" jdbcType="TINYINT" property="fromwhere"/>
         <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
+        <result column="subscribe_scene" jdbcType="VARCHAR" property="subscribeScene"/>
+        <result column="qr_scene" jdbcType="INTEGER" property="qrScene"/>
+        <result column="qr_scene_str" jdbcType="VARCHAR" property="qrSceneStr"/>
 
     </resultMap>
 
@@ -697,6 +700,9 @@
         <result column="is_subscribe" jdbcType="BIT" property="isSubscribe"/>
         <result column="last_conversation_at" jdbcType="TIMESTAMP" property="lastConversationAt"/>
         <result column="bindStatus" jdbcType="INTEGER" property="bindStatus"/>
+        <result column="subscribe_scene" jdbcType="VARCHAR" property="subscribeScene"/>
+        <result column="qr_scene" jdbcType="INTEGER" property="qrScene"/>
+        <result column="qr_scene_str" jdbcType="VARCHAR" property="qrSceneStr"/>
     </resultMap>
 
     <select id="getMemberIdsByOpenIds" resultType="java.lang.Integer">
@@ -761,6 +767,9 @@
         <result column="is_subscribe" jdbcType="BIT" property="isSubscribe"/>
         <result column="last_conversation_at" jdbcType="TIMESTAMP" property="lastConversationAt"/>
         <result column="bindStatus" jdbcType="INTEGER" property="bindStatus"/>
+        <result column="subscribe_scene" jdbcType="VARCHAR" property="subscribeScene"/>
+        <result column="qr_scene" jdbcType="INTEGER" property="qrScene"/>
+        <result column="qr_scene_str" jdbcType="VARCHAR" property="qrSceneStr"/>
     </resultMap>
 
     <update id="updateBatchSendMonth">
