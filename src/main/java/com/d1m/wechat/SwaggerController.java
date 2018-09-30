@@ -26,8 +26,8 @@ public class SwaggerController {
     public String index() {
         System.out.println("swagger-ui.html");
         
-        String username = "d1m";
-        String password = "dev12345";
+        String username = "admin";
+        String password = "12345";
         
 		UsernamePasswordToken token = new UsernamePasswordToken(username, DigestUtils.sha256Hex(password));  
 	    //token.setRememberMe(true);  
