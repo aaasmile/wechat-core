@@ -333,6 +333,7 @@ public class MemberTagServiceImpl extends BaseService<MemberTag> implements
 				jobMap.put("executorParam", "-d"+ TenantContext.getCurrentTenant()+","+record.getId());
 
 				ReturnT<String> returnT = schedulerRestService.addJob(jobMap);
+				log.info("jobMap:"+JSON.toJSON(jobMap));
 				if (ReturnT.FAIL_CODE == returnT.getCode()){
 					throw new WechatException(
 							Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
