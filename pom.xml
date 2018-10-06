@@ -11,7 +11,7 @@
     <artifactId>wechat-core</artifactId>
     <packaging>jar</packaging>
     <description>第一秒wechat管理系统</description>
-    <version>4.2.1.6-RELEASE</version>
+    <version>latest</version>
     <url>http://maven.apache.org</url>
 
     <properties>
