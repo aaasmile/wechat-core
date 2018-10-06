@@ -45,7 +45,8 @@ public class ConstantsUtil {
      * @return
      */
     public static String subscribeSceneChangeLanguage(String key,String lang){
-        if(StringUtils.equals("1",lang)||StringUtils.equals("CN",lang)){
+        if(StringUtils.equals("1",lang)||StringUtils.equals("CN",lang)
+         ||StringUtils.equals("zh_CN",lang)){
             return subscribeSceneMap_CN.get(key);
         }else {
             return subscribeSceneMap_EN.get(key);

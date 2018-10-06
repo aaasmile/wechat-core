@@ -326,7 +326,7 @@ public class MemberDto {
 	}
 
 	public String getSubscribeScene() {
-		return ConstantsUtil.subscribeSceneChangeLanguage(language,subscribeScene);
+		return ConstantsUtil.subscribeSceneChangeLanguage(subscribeScene,language);
 	}
 
 	public void setSubscribeScene(String subscribeScene) {
