@@ -101,6 +101,7 @@ public class MemberController extends BaseController {
 					log.info("updateMemberInfo openId: {}", exist.getOpenId());
 					WxUser wxuser = WechatClientDelegate.getUser(wechatId, exist.getOpenId());
 					if(null!=wxuser){
+						log.info("WxUser:"+JSON.toJSON(wxuser));
 						Member newMember = memberService.getMemberByWxUser(wxuser, wechatId, current);
 						MemberServiceImpl.updateMemberByWxMember(exist,newMember);
 						memberService.updateAll(exist);
