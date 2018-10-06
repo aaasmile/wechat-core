@@ -128,7 +128,7 @@ public class ExcelMember {
 	}
 
 	public String getSubscribeScene() {
-		return ConstantsUtil.subscribeSceneMap_CN.get(subscribeScene);
+		return subscribeScene;
 	}
 
 	public void setSubscribeScene(String subscribeScene) {
