@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.report.ReportXlsxStreamView;
 import com.d1m.wechat.model.enums.Sex;
+import com.d1m.wechat.util.ConstantsUtil;
 import com.d1m.wechat.util.I18nUtil;
 import com.github.pagehelper.Page;
 import org.apache.commons.lang.StringUtils;
@@ -101,6 +102,7 @@ public class MemberController extends BaseController {
 					log.info("updateMemberInfo openId: {}", exist.getOpenId());
 					WxUser wxuser = WechatClientDelegate.getUser(wechatId, exist.getOpenId());
 					if(null!=wxuser){
+						log.info("WxUser:"+JSON.toJSON(wxuser));
 						Member newMember = memberService.getMemberByWxUser(wxuser, wechatId, current);
 						MemberServiceImpl.updateMemberByWxMember(exist,newMember);
 						memberService.updateAll(exist);
@@ -305,7 +307,7 @@ public class MemberController extends BaseController {
 				excelMemberList = memberService.totalMember(getWechatId(session), addMemberTagModel, false);
 			}
 			if(excelMemberList != null) {
-				view = excelMemberView(df, locale, name, titleVal, excelMemberList);
+				view = excelMemberView(df, locale, name, titleVal, excelMemberList,lang);
 				return new ModelAndView(view);
 			}
 		}
@@ -325,13 +327,13 @@ public class MemberController extends BaseController {
 			}
 		}
 		List<MemberDto> finalMemberDtos = memberDtos;
-		view = memberView(df, locale, name, titleVal, finalMemberDtos);
+		view = memberView(df, locale, name, titleVal, finalMemberDtos,lang);
 		return new ModelAndView(view);
 		
 	}
 
 	public ReportXlsxStreamView memberView(SimpleDateFormat df, Locale locale, String name, String[] titleVal,
-			List<MemberDto> finalMemberDtos) {
+			List<MemberDto> finalMemberDtos,String lang) {
 		ReportXlsxStreamView view;
 		view = new ReportXlsxStreamView(name,
 			new ReportXlsxStreamView.CellProcessor() {
@@ -404,7 +406,7 @@ public class MemberController extends BaseController {
 							dataRow.createCell(10).setCellValue(tags.toString());
 							dataRow.createCell(11).setCellValue(temp.getOpenId());
 							dataRow.createCell(12).setCellValue(temp.getBindAt());
-							dataRow.createCell(13).setCellValue(temp.getSubscribeScene());
+							dataRow.createCell(13).setCellValue(ConstantsUtil.subscribeSceneChangeLanguage(lang,temp.getSubscribeScene()));
 							dataRow.createCell(14).setCellValue(temp.getQrScene()!=null?temp.getQrScene():null);
 							dataRow.createCell(15).setCellValue(temp.getQrSceneStr());
 							dataRow.createCell(16).setCellValue(temp.getUnsubscribeAt());
@@ -417,7 +419,7 @@ public class MemberController extends BaseController {
 		return view;
 	}
 	
-	public ReportXlsxStreamView excelMemberView(SimpleDateFormat df, Locale locale, String name, String[] titleVal, List<ExcelMember> finalMemberDtos) {
+	public ReportXlsxStreamView excelMemberView(SimpleDateFormat df, Locale locale, String name, String[] titleVal, List<ExcelMember> finalMemberDtos,String lang) {
 		ReportXlsxStreamView view;
 		view = new ReportXlsxStreamView(name,
 				new ReportXlsxStreamView.CellProcessor() {
@@ -483,7 +485,7 @@ public class MemberController extends BaseController {
 						dataRow.createCell(10).setCellValue(memberTags);
 						dataRow.createCell(11).setCellValue(temp.getOpenid());
 						dataRow.createCell(12).setCellValue(temp.getBindat());
-						dataRow.createCell(13).setCellValue(temp.getSubscribeScene());
+						dataRow.createCell(13).setCellValue(ConstantsUtil.subscribeSceneChangeLanguage(lang,temp.getSubscribeScene()));
 						dataRow.createCell(14).setCellValue(temp.getQrScene()!=null?temp.getQrScene():null);
 						dataRow.createCell(15).setCellValue(temp.getQrSceneStr());
 						dataRow.createCell(16).setCellValue(temp.getUnsubscribeAt());
