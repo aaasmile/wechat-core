@@ -94,7 +94,7 @@ public class MemberController extends BaseController {
 			String msg="";
 			do{
 				//List<MemberDto> memberDtoList=memberService.searchBySql(wechatId,"is_subscribe =1 and nickname is null and (local_head_img_url is null or local_head_img_url ='') limit 0,1 ");
-				List<MemberDto> memberDtoList=memberService.searchBySql(wechatId,null);
+				List<MemberDto> memberDtoList=memberService.searchBySql(wechatId,"limit 0,1");
 				Date current = new Date();
 				if(memberDtoList.size()>0){
 					MemberDto memberDto=memberDtoList.get(0);
@@ -307,7 +307,7 @@ public class MemberController extends BaseController {
 				excelMemberList = memberService.totalMember(getWechatId(session), addMemberTagModel, false);
 			}
 			if(excelMemberList != null) {
-				view = excelMemberView(df, locale, name, titleVal, excelMemberList,lang);
+				view = excelMemberView(df, locale, name, titleVal, excelMemberList);
 				return new ModelAndView(view);
 			}
 		}
@@ -327,13 +327,13 @@ public class MemberController extends BaseController {
 			}
 		}
 		List<MemberDto> finalMemberDtos = memberDtos;
-		view = memberView(df, locale, name, titleVal, finalMemberDtos,lang);
+		view = memberView(df, locale, name, titleVal, finalMemberDtos);
 		return new ModelAndView(view);
 		
 	}
 
 	public ReportXlsxStreamView memberView(SimpleDateFormat df, Locale locale, String name, String[] titleVal,
-			List<MemberDto> finalMemberDtos,String lang) {
+			List<MemberDto> finalMemberDtos) {
 		ReportXlsxStreamView view;
 		view = new ReportXlsxStreamView(name,
 			new ReportXlsxStreamView.CellProcessor() {
@@ -406,7 +406,7 @@ public class MemberController extends BaseController {
 							dataRow.createCell(10).setCellValue(tags.toString());
 							dataRow.createCell(11).setCellValue(temp.getOpenId());
 							dataRow.createCell(12).setCellValue(temp.getBindAt());
-							dataRow.createCell(13).setCellValue(ConstantsUtil.subscribeSceneChangeLanguage(lang,temp.getSubscribeScene()));
+							dataRow.createCell(13).setCellValue(ConstantsUtil.subscribeSceneChangeLanguage(temp.getSubscribeScene(),locale.getCountry()));
 							dataRow.createCell(14).setCellValue(temp.getQrScene()!=null?temp.getQrScene():null);
 							dataRow.createCell(15).setCellValue(temp.getQrSceneStr());
 							dataRow.createCell(16).setCellValue(temp.getUnsubscribeAt());
@@ -419,7 +419,7 @@ public class MemberController extends BaseController {
 		return view;
 	}
 	
-	public ReportXlsxStreamView excelMemberView(SimpleDateFormat df, Locale locale, String name, String[] titleVal, List<ExcelMember> finalMemberDtos,String lang) {
+	public ReportXlsxStreamView excelMemberView(SimpleDateFormat df, Locale locale, String name, String[] titleVal, List<ExcelMember> finalMemberDtos) {
 		ReportXlsxStreamView view;
 		view = new ReportXlsxStreamView(name,
 				new ReportXlsxStreamView.CellProcessor() {
@@ -485,7 +485,7 @@ public class MemberController extends BaseController {
 						dataRow.createCell(10).setCellValue(memberTags);
 						dataRow.createCell(11).setCellValue(temp.getOpenid());
 						dataRow.createCell(12).setCellValue(temp.getBindat());
-						dataRow.createCell(13).setCellValue(ConstantsUtil.subscribeSceneChangeLanguage(lang,temp.getSubscribeScene()));
+						dataRow.createCell(13).setCellValue(ConstantsUtil.subscribeSceneChangeLanguage(temp.getSubscribeScene(),locale.getCountry()));
 						dataRow.createCell(14).setCellValue(temp.getQrScene()!=null?temp.getQrScene():null);
 						dataRow.createCell(15).setCellValue(temp.getQrSceneStr());
 						dataRow.createCell(16).setCellValue(temp.getUnsubscribeAt());
