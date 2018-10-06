@@ -128,7 +128,7 @@ public class ExcelMember {
 	}
 
 	public String getSubscribeScene() {
-		return ConstantsUtil.subscribeSceneMap.get(subscribeScene);
+		return ConstantsUtil.subscribeSceneMap_CN.get(subscribeScene);
 	}
 
 	public void setSubscribeScene(String subscribeScene) {
@@ -168,4 +168,5 @@ public class ExcelMember {
 				+ bindat +", subscribeScene=" + subscribeScene + ", qrScene=" + qrScene + ", qrSceneStr=" + qrSceneStr
 				+ ", unsubscribeAt=" + unsubscribeAt +"]";
 	}
+
 }
