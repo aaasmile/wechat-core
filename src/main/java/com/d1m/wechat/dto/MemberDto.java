@@ -3,10 +3,12 @@ package com.d1m.wechat.dto;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import com.d1m.wechat.util.Constants;
 import com.d1m.wechat.util.ConstantsUtil;
 import com.d1m.wechat.util.DateUtil;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 public class MemberDto {
 
@@ -326,7 +328,7 @@ public class MemberDto {
 	}
 
 	public String getSubscribeScene() {
-		return ConstantsUtil.subscribeSceneChangeLanguage(subscribeScene,language);
+		return subscribeScene;
 	}
 
 	public void setSubscribeScene(String subscribeScene) {
