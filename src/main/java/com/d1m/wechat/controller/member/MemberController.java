@@ -408,8 +408,8 @@ public class MemberController extends BaseController {
                          log.info("temp.getQrSceneStr():" + temp.getQrSceneStr());
                          //dataRow.createCell(14).setCellValue(temp.getQrScene());
                          dataRow.createCell(14).setCellValue(0);
-                         dataRow.createCell(15).setCellValue(temp.getQrSceneStr());
-                         dataRow.createCell(16).setCellValue(temp.getUnsubscribeAt());
+                         dataRow.createCell(15).setCellValue("");
+                         dataRow.createCell(16).setCellValue("");
                          j++;
                      }
                  }
