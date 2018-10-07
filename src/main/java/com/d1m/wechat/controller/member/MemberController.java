@@ -404,12 +404,13 @@ public class MemberController extends BaseController {
                          if (StringUtils.isNotBlank(temp.getSubscribeScene())) {
                              dataRow.createCell(13).setCellValue(ConstantsUtil.subscribeSceneChangeLanguage(temp.getSubscribeScene(), locale.getCountry()));
                          }
-                         log.info("temp:" + JSON.toJSON(temp));
                          if (temp.getQrScene() != null) dataRow.createCell(14).setCellValue(temp.getQrScene());
                          if (StringUtils.isNotBlank(temp.getQrSceneStr()))
                              dataRow.createCell(15).setCellValue(temp.getQrSceneStr());
-                         if (temp.getUnsubscribeAt() != null)
-                             dataRow.createCell(16).setCellValue(temp.getUnsubscribeAt());
+                         if (temp.getUnsubscribeAt() != null) {
+                             dataRow.createCell(16).setCellValue(df.format(temp.getUnsubscribeAt()));
+                         }
+
                          j++;
                      }
                  }
