@@ -408,6 +408,9 @@ public class MemberController extends BaseController {
 							dataRow.createCell(12).setCellValue(temp.getBindAt());
 							dataRow.createCell(13).setCellValue(ConstantsUtil.subscribeSceneChangeLanguage(temp.getSubscribeScene(),locale.getCountry()));
 							log.info("temp:"+JSON.toJSON(temp));
+							log.info("temp.getSubscribeScene():"+temp.getSubscribeScene());
+							log.info("temp.getQrScene():"+temp.getQrScene());
+							log.info("temp.getQrSceneStr():"+temp.getQrSceneStr());
 							dataRow.createCell(14).setCellValue(temp.getQrScene());
 							dataRow.createCell(15).setCellValue(temp.getQrSceneStr());
 							dataRow.createCell(16).setCellValue(temp.getUnsubscribeAt());
