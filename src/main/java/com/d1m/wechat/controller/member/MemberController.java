@@ -94,7 +94,7 @@ public class MemberController extends BaseController {
 			String msg="";
 			do{
 				//List<MemberDto> memberDtoList=memberService.searchBySql(wechatId,"is_subscribe =1 and nickname is null and (local_head_img_url is null or local_head_img_url ='') limit 0,1 ");
-				List<MemberDto> memberDtoList=memberService.searchBySql(wechatId,"limit 0,1");
+				List<MemberDto> memberDtoList=memberService.searchBySql(wechatId,"is_subscribe =1 limit 0,1");
 				Date current = new Date();
 				if(memberDtoList.size()>0){
 					MemberDto memberDto=memberDtoList.get(0);
@@ -407,7 +407,7 @@ public class MemberController extends BaseController {
 							dataRow.createCell(11).setCellValue(temp.getOpenId());
 							dataRow.createCell(12).setCellValue(temp.getBindAt());
 							dataRow.createCell(13).setCellValue(ConstantsUtil.subscribeSceneChangeLanguage(temp.getSubscribeScene(),locale.getCountry()));
-							dataRow.createCell(14).setCellValue(temp.getQrScene()!=null?temp.getQrScene():null);
+							dataRow.createCell(14).setCellValue(temp.getQrScene());
 							dataRow.createCell(15).setCellValue(temp.getQrSceneStr());
 							dataRow.createCell(16).setCellValue(temp.getUnsubscribeAt());
 							j++;
@@ -486,7 +486,7 @@ public class MemberController extends BaseController {
 						dataRow.createCell(11).setCellValue(temp.getOpenid());
 						dataRow.createCell(12).setCellValue(temp.getBindat());
 						dataRow.createCell(13).setCellValue(ConstantsUtil.subscribeSceneChangeLanguage(temp.getSubscribeScene(),locale.getCountry()));
-						dataRow.createCell(14).setCellValue(temp.getQrScene()!=null?temp.getQrScene():null);
+						dataRow.createCell(14).setCellValue(temp.getQrScene());
 						dataRow.createCell(15).setCellValue(temp.getQrSceneStr());
 						dataRow.createCell(16).setCellValue(temp.getUnsubscribeAt());
 						j++;
