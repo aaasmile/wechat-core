@@ -245,7 +245,7 @@ public class MemberController extends BaseController {
             }
             Page<MemberDto> page = memberService.search(getWechatId(session),
              addMemberTagModel, true);
-            log.info("Country:" + RequestContextUtils.getLocale(request).getCountry());
+            log.info("Country:"+RequestContextUtils.getLocale(request).getCountry());
             if (CollectionUtils.isNotEmpty(page)) {
                 for (MemberDto dto : page.getResult()) {
                     dto.setSubscribeScene(ConstantsUtil.subscribeSceneChangeLanguage(dto.getSubscribeScene()
@@ -408,7 +408,7 @@ public class MemberController extends BaseController {
                          log.info("temp.getQrSceneStr():" + temp.getQrSceneStr());
                          //dataRow.createCell(14).setCellValue(temp.getQrScene());
                          dataRow.createCell(14).setCellValue(0);
-                         dataRow.createCell(15).setCellValue(temp.getQrSceneStr() == null ? 0 : temp.getQrScene());
+                         dataRow.createCell(15).setCellValue(temp.getQrSceneStr());
                          dataRow.createCell(16).setCellValue(temp.getUnsubscribeAt());
                          j++;
                      }
