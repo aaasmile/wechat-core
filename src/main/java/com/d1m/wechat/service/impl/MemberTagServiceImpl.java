@@ -334,6 +334,7 @@ public class MemberTagServiceImpl extends BaseService<MemberTag> implements
 
 				ReturnT<String> returnT = schedulerRestService.addJob(jobMap);
 				log.info("jobMap:"+JSON.toJSON(jobMap));
+				log.info("returnT执行结果:"+JSON.toJSON(returnT));
 				if (ReturnT.FAIL_CODE == returnT.getCode()){
 					throw new WechatException(
 							Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
