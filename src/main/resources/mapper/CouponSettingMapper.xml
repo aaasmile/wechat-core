@@ -47,7 +47,7 @@
   <select id="search" resultMap="CouponSettingListResultMap">
    	select id, name, grno, channel, type, gift_type from coupon_setting
    	<where>
-   		wechat_id = #{wechatId} and id not in (SELECT DISTINCT coupon_setting_id from activity_coupon_setting)
+   		wechat_id = #{wechatId}
    		<if test="query != null">
 			and (name like CONCAT('%','${query}','%' ) or grno like CONCAT('%','${query}','%' ))
 		</if>
