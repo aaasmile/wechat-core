@@ -486,10 +486,15 @@ public class MemberController extends BaseController {
                          dataRow.createCell(10).setCellValue(memberTags);
                          dataRow.createCell(11).setCellValue(temp.getOpenid());
                          dataRow.createCell(12).setCellValue(temp.getBindat());
-                         dataRow.createCell(13).setCellValue(ConstantsUtil.subscribeSceneChangeLanguage(temp.getSubscribeScene(), locale.getCountry()));
-                         dataRow.createCell(14).setCellValue(temp.getQrScene());
-                         dataRow.createCell(15).setCellValue(temp.getQrSceneStr());
-                         dataRow.createCell(16).setCellValue(temp.getUnsubscribeAt());
+                         if (StringUtils.isNotBlank(temp.getSubscribeScene())) {
+                             dataRow.createCell(13).setCellValue(ConstantsUtil.subscribeSceneChangeLanguage(temp.getSubscribeScene(), locale.getCountry()));
+                         }
+                         if (temp.getQrScene() != null) dataRow.createCell(14).setCellValue(temp.getQrScene());
+                         if (StringUtils.isNotBlank(temp.getQrSceneStr()))
+                             dataRow.createCell(15).setCellValue(temp.getQrSceneStr());
+                         if (temp.getUnsubscribeAt() != null) {
+                             dataRow.createCell(16).setCellValue(df.format(temp.getUnsubscribeAt()));
+                         }
                          j++;
                      }
                  }
