@@ -268,7 +268,7 @@ public class ActivityServiceImpl extends BaseService<Activity> implements
 		oauthUrlService.save(ou);
 
 		String activityBackendUrl = String.format(
-				config.getValue(null, "activity_backend_url"), ou.getShortUrl());
+				config.getValue(wechatId, "activity_backend_url"), ou.getShortUrl());
 		log.info("activityBackendUrl : {}", activityBackendUrl);
 		try {
 			QrcodeUtils.encode(activityBackendUrl, dir.getAbsolutePath(),
