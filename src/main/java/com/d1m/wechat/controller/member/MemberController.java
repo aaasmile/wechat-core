@@ -408,7 +408,7 @@ public class MemberController extends BaseController {
                          if (StringUtils.isNotBlank(temp.getQrSceneStr()))
                              dataRow.createCell(15).setCellValue(temp.getQrSceneStr());
                          if (temp.getUnsubscribeAt() != null) {
-                             dataRow.createCell(16).setCellValue(df.format(temp.getUnsubscribeAt()));
+                             dataRow.createCell(16).setCellValue(temp.getUnsubscribeAt());
                          }
 
                          j++;
@@ -493,7 +493,7 @@ public class MemberController extends BaseController {
                          if (StringUtils.isNotBlank(temp.getQrSceneStr()))
                              dataRow.createCell(15).setCellValue(temp.getQrSceneStr());
                          if (temp.getUnsubscribeAt() != null) {
-                             dataRow.createCell(16).setCellValue(df.format(temp.getUnsubscribeAt()));
+                             dataRow.createCell(16).setCellValue(temp.getUnsubscribeAt());
                          }
                          j++;
                      }
