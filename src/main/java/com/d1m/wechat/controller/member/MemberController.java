@@ -283,9 +283,9 @@ public class MemberController extends BaseController {
         Locale locale = RequestContextUtils.getLocale(request);
         String name = I18nUtil.getMessage("follwer.list", locale);
         String[] keys = {"no", "nickname", "gender", "mobile", "province",
-         "city", "subscribe.status", "bind.status", "subscribe.time",
+         "city", "subscribe.status", "bind.status", "subscribe.at",
          "group.message.sent", "tag", "customer.service.open.id", "bind.at",
-         "subscribe.scene", "qr.scene", "qr.scene.str", "unsubscribe.time"};
+         "subscribe.scene", "qr.scene", "qr.scene.str", "unsubscribe.at"};
         String[] titleVal = I18nUtil.getMessage(keys, locale);
         String lang = RequestContextUtils.getLocale(request).getCountry();
 
@@ -386,8 +386,7 @@ public class MemberController extends BaseController {
 
 
                          if (subscribeAt != null && isSubscribe) {
-                             String attentionTime = df.format(subscribeAt);
-                             dataRow.createCell(8).setCellValue(attentionTime);
+                             dataRow.createCell(8).setCellValue(subscribeAt);
                          }
 
                          dataRow.createCell(9).setCellValue(batchsendMonth == null ? 0 : batchsendMonth);
@@ -443,7 +442,7 @@ public class MemberController extends BaseController {
                          Boolean isSubscribe = "1".equals(temp.getSubscribe()) ? true : false;
                          String unsubscribeAt = temp.getUnbund_at();
                          String attentionStatus = "subscribe";
-                         String subscribeAt = temp.getSubscribe_time();
+                         String subscribeAt = temp.getSubscribeAt();
                          Integer batchsendMonth = temp.getMessage_sent() != null ? Integer.valueOf(temp.getMessage_sent()) : 0;
                          String memberTags = temp.getTags();
                          String bindStatus = temp.getBind();
@@ -478,8 +477,7 @@ public class MemberController extends BaseController {
 
 
                          if (subscribeAt != null && isSubscribe) {
-                             String attentionTime = df.format(subscribeAt);
-                             dataRow.createCell(8).setCellValue(attentionTime);
+                             dataRow.createCell(8).setCellValue(subscribeAt);
                          }
 
                          dataRow.createCell(9).setCellValue(batchsendMonth);
