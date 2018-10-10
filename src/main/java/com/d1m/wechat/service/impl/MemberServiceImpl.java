@@ -399,9 +399,9 @@ public class MemberServiceImpl extends BaseService<Member> implements
 						memberMemberTag.setCreatedAt(current);
 						memberMemberTag.setOpenId(memberDto.getOpenId());
 						memberMemberAddTags.add(memberMemberTag);
-						memberTagList.addAll(memberMemberAddTags);
 					}
 				}
+				memberTagList.addAll(memberMemberAddTags);
 				for (MemberTagDto existMemberTag : existMemberTags) {
 					if (!contains(memberTags, existMemberTag)) {
 						memberMemberDeleteTags.add(existMemberTag);
