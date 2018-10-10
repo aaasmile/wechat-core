@@ -4,7 +4,7 @@ import com.d1m.wechat.util.ConstantsUtil;
 
 public class ExcelMember {
 	
-	private String nickname,gender,mobile,province,city,subscribe,subscribe_time,
+	private String nickname,gender,mobile,province,city,subscribe,subscribeAt,
 	bind,message_sent,tags,openid, unbund_at, created_at, created,bindat,subscribeScene,
 	qrScene,qrSceneStr,unsubscribeAt;
 
@@ -56,12 +56,12 @@ public class ExcelMember {
 		this.subscribe = subscribe;
 	}
 
-	public String getSubscribe_time() {
-		return subscribe_time;
+	public String getSubscribeAt() {
+		return subscribeAt;
 	}
 
-	public void setSubscribe_time(String subscribe_time) {
-		this.subscribe_time = subscribe_time;
+	public void setSubscribeAt(String subscribeAt) {
+		this.subscribeAt = subscribeAt;
 	}
 
 	public String getBind() {
@@ -162,7 +162,7 @@ public class ExcelMember {
 	@Override
 	public String toString() {
 		return "ExcelMember [nickname=" + nickname + ", gender=" + gender + ", mobile=" + mobile + ", province="
-				+ province + ", city=" + city + ", subscribe=" + subscribe + ", subscribe_time=" + subscribe_time
+				+ province + ", city=" + city + ", subscribe=" + subscribe + ", subscribeAt=" + subscribeAt
 				+ ", bind=" + bind + ", message_sent=" + message_sent + ", tags=" + tags + ", openid=" + openid
 				+ ", unbund_at=" + unbund_at + ", created_at=" + created_at + ", created=" + created + ", bindat="
 				+ bindat +", subscribeScene=" + subscribeScene + ", qrScene=" + qrScene + ", qrSceneStr=" + qrSceneStr
