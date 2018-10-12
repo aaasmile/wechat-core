@@ -416,7 +416,7 @@
         <dependency>
             <groupId>cn.d1m.wechat</groupId>
             <artifactId>wechat-client</artifactId>
-            <version>1.0.10-SNAPSHOT</version>
+            <version>1.0.10-RELEASE</version>
         </dependency>
         <dependency>
             <groupId>com.d1m.common</groupId>

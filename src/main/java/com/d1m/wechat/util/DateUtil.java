@@ -420,4 +420,13 @@ public class DateUtil {
 	    return dateList;
 	}
 
+	/**
+	 * 日期格式化
+	 * @param date
+	 * @return
+	 */
+	public static String formatDate(Date date){
+		return new SimpleDateFormat(default_format).format(date);
+	}
+
 }

@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.d1m.wechat.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -459,35 +460,35 @@ public class WechatClientDelegate {
     }
 
     public static WxList<WxArticleData> getArticleSummary(Serializable key, Date begin_date, Date end_date) {
-        return get(key).getArticleSummary(begin_date, end_date);
+        return get(key).getArticleSummary(DateUtil.formatDate(begin_date), DateUtil.formatDate(end_date));
     }
 
     public static WxList<WxArticleData> getArticleTotal(Serializable key, Date begin_date, Date end_date) {
-        return get(key).getArticleTotal(begin_date, end_date);
+        return get(key).getArticleTotal(DateUtil.formatDate(begin_date), DateUtil.formatDate(end_date));
     }
 
     public static WxList<WxUserCumulate> getUserCumulate(Serializable key, Date begin_date, Date end_date) {
-        return get(key).getUserCumulate(begin_date, end_date);
+        return get(key).getUserCumulate(DateUtil.formatDate(begin_date), DateUtil.formatDate(end_date));
     }
 
     public static WxList<WxArticleData> getUserRead(Serializable key, Date begin_date, Date end_date) {
-        return get(key).getUserRead(begin_date, end_date);
+        return get(key).getUserRead(DateUtil.formatDate(begin_date), DateUtil.formatDate(end_date));
     }
 
     public static WxList<WxArticleData> getUserReadHour(Serializable key, Date begin_date, Date end_date) {
-        return get(key).getUserReadHour(begin_date, end_date);
+        return get(key).getUserReadHour(DateUtil.formatDate(begin_date), DateUtil.formatDate(end_date));
     }
 
     public static WxList<WxArticleData> getUserShare(Serializable key, Date begin_date, Date end_date) {
-        return get(key).getUserShare(begin_date, end_date);
+        return get(key).getUserShare(DateUtil.formatDate(begin_date), DateUtil.formatDate(end_date));
     }
 
     public static WxList<WxArticleData> getUserShareHour(Serializable key, Date begin_date, Date end_date) {
-        return get(key).getUserShareHour(begin_date, end_date);
+        return get(key).getUserShareHour(DateUtil.formatDate(begin_date), DateUtil.formatDate(end_date));
     }
 
     public static WxList<WxUserSummary> getUserSummary(Serializable key, Date begin_date, Date end_date) {
-        return get(key).getUserSummary(begin_date, end_date);
+        return get(key).getUserSummary(DateUtil.formatDate(begin_date), DateUtil.formatDate(end_date));
     }
 
     public static WxMedia uploadVideoFile(Serializable key, String media_id, String title, String description) {
