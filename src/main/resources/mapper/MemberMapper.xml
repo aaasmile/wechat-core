@@ -34,9 +34,6 @@
         <result column="status" jdbcType="TINYINT" property="status"/>
         <result column="pmcode" jdbcType="VARCHAR" property="pmcode"/>
         <result column="levels" jdbcType="VARCHAR" property="levels"/>
-        <result column="subscribe_scene" jdbcType="VARCHAR" property="subscribeScene"/>
-        <result column="qr_scene" jdbcType="INTEGER" property="qrScene"/>
-        <result column="qr_scene_str" jdbcType="VARCHAR" property="qrSceneStr"/>
     </resultMap>
 
     <resultMap id="MemberDtoResultMap" type="com.d1m.wechat.dto.MemberDto">
@@ -63,9 +60,6 @@
         <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
         <result column="is_subscribe" jdbcType="BIT" property="isSubscribe"/>
         <result column="last_conversation_at" jdbcType="TIMESTAMP" property="lastConversationAt"/>
-        <result column="subscribe_scene" jdbcType="VARCHAR" property="subscribeScene"/>
-        <result column="qr_scene" jdbcType="INTEGER" property="qrScene"/>
-        <result column="qr_scene_str" jdbcType="VARCHAR" property="qrSceneStr"/>
         <association column="{memberId=id}" javaType="INTEGER" property="conversationCount"
                      select="getConversationCount"/>
         <collection column="{memberId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.MemberTagDto"
@@ -276,9 +270,6 @@
         m.address,
         m.pmcode,
         m.levels,
-        m.subscribe_scene,
-        m.qr_scene,
-        m.qr_scene_str,
         IF(ISNULL(m.status),2,m.status) as bindStatus
         from member as m
         <include refid="searchM"></include>
@@ -410,9 +401,6 @@
         <result column="unsubscribe_at" jdbcType="TIMESTAMP" property="unsubscribeAt"/>
         <result column="fromwhere" jdbcType="TINYINT" property="fromwhere"/>
         <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
-        <result column="subscribe_scene" jdbcType="VARCHAR" property="subscribeScene"/>
-        <result column="qr_scene" jdbcType="INTEGER" property="qrScene"/>
-        <result column="qr_scene_str" jdbcType="VARCHAR" property="qrSceneStr"/>
 
     </resultMap>
 
@@ -710,9 +698,6 @@
         <result column="is_subscribe" jdbcType="BIT" property="isSubscribe"/>
         <result column="last_conversation_at" jdbcType="TIMESTAMP" property="lastConversationAt"/>
         <result column="bindStatus" jdbcType="INTEGER" property="bindStatus"/>
-        <result column="subscribe_scene" jdbcType="VARCHAR" property="subscribeScene"/>
-        <result column="qr_scene" jdbcType="INTEGER" property="qrScene"/>
-        <result column="qr_scene_str" jdbcType="VARCHAR" property="qrSceneStr"/>
         <association column="{memberId=id}" javaType="INTEGER" property="conversationCount"
                      select="getConversationCount"/>
         <collection column="{memberId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.MemberTagDto"
@@ -743,9 +728,6 @@
         <result column="is_subscribe" jdbcType="BIT" property="isSubscribe"/>
         <result column="last_conversation_at" jdbcType="TIMESTAMP" property="lastConversationAt"/>
         <result column="bindStatus" jdbcType="INTEGER" property="bindStatus"/>
-        <result column="subscribe_scene" jdbcType="VARCHAR" property="subscribeScene"/>
-        <result column="qr_scene" jdbcType="INTEGER" property="qrScene"/>
-        <result column="qr_scene_str" jdbcType="VARCHAR" property="qrSceneStr"/>
     </resultMap>
 
     <select id="getMemberIdsByOpenIds" resultType="java.lang.Integer">
@@ -810,9 +792,6 @@
         <result column="is_subscribe" jdbcType="BIT" property="isSubscribe"/>
         <result column="last_conversation_at" jdbcType="TIMESTAMP" property="lastConversationAt"/>
         <result column="bindStatus" jdbcType="INTEGER" property="bindStatus"/>
-        <result column="subscribe_scene" jdbcType="VARCHAR" property="subscribeScene"/>
-        <result column="qr_scene" jdbcType="INTEGER" property="qrScene"/>
-        <result column="qr_scene_str" jdbcType="VARCHAR" property="qrSceneStr"/>
     </resultMap>
 
     <update id="updateBatchSendMonth">
@@ -846,9 +825,6 @@
         m.created_at,
         m.created_at as created,
         m.bind_at as bindat,
-        m.subscribe_scene as subscribeScene,
-        m.qr_scene as qrScene,
-        m.qr_scene_str as qrSceneStr,
         DATE_FORMAT( m.unsubscribe_at, '%Y-%m-%d %T' ) as unsubscribeAt
         FROM
         member m

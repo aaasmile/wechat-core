@@ -201,43 +201,6 @@ public class Member {
 	@ApiModelProperty("卡级别")
 	private String levels;
 
-	@ApiModelProperty("渠道来源")
-	@Column(name = "subscribe_scene")
-	private String subscribeScene;
-
-	@ApiModelProperty("二维码扫码场景（开发者自定义）")
-	@Column(name = "qr_scene")
-	private Integer qrScene;
-
-	@ApiModelProperty("二维码扫码场景描述")
-	@Column(name = "qr_scene_str")
-	private String qrSceneStr;
-
-
-
-	public String getSubscribeScene() {
-		return subscribeScene;
-	}
-
-	public void setSubscribeScene(String subscribeScene) {
-		this.subscribeScene = subscribeScene;
-	}
-
-	public Integer getQrScene() {
-		return qrScene;
-	}
-
-	public void setQrScene(Integer qrScene) {
-		this.qrScene = qrScene;
-	}
-
-	public String getQrSceneStr() {
-		return qrSceneStr;
-	}
-
-	public void setQrSceneStr(String qrSceneStr) {
-		this.qrSceneStr = qrSceneStr;
-	}
 
 	/**
 	 * 获取活跃度
@@ -795,9 +758,6 @@ public class Member {
 				+ ", lastConversationAt=" + lastConversationAt + ", source='"
 				+ source + '\'' + ", keyword='" + keyword + '\'' + ", status='"
 				+ status + '\'' + ", pmcode='" + pmcode + '\'' + ", levels='"
-				+ levels + '\'' +", subscribeScene='"
-		+ subscribeScene + '\'' +", qrScene='"
-		+ qrScene + '\'' +", qrSceneStr='"
-		+ qrSceneStr + '\'' + '}';
+				+ levels + '\'' + '}';
 	}
 }

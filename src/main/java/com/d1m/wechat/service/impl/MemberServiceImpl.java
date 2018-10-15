@@ -534,9 +534,9 @@ public class MemberServiceImpl extends BaseService<Member> implements
 		}
 		member.setSubscribeAt(newMember.getSubscribeAt());
 		member.setIsSubscribe(newMember.getIsSubscribe());
-		member.setQrSceneStr(StringUtils.isNotBlank(newMember.getQrSceneStr()) ? newMember.getQrSceneStr():null);
+		/*member.setQrSceneStr(StringUtils.isNotBlank(newMember.getQrSceneStr()) ? newMember.getQrSceneStr():null);
 		member.setQrScene(newMember.getQrScene());
-		member.setSubscribeScene(newMember.getSubscribeScene());
+		member.setSubscribeScene(newMember.getSubscribeScene());*/
 	}
 
 	@Override
@@ -608,9 +608,9 @@ public class MemberServiceImpl extends BaseService<Member> implements
 		member.setOpenId(wxuser.getOpenid());
 		member.setWechatId(wechatId);
 		member.setIsSubscribe(wxuser.getSubscribe() == 1);
-		member.setSubscribeScene(wxuser.getSubscribe_scene());
+		/*member.setSubscribeScene(wxuser.getSubscribe_scene());
 		member.setQrScene(wxuser.getQr_scene());
-		member.setQrSceneStr(wxuser.getQr_scene_str());
+		member.setQrSceneStr(wxuser.getQr_scene_str());*/
 		return member;
 	}
 

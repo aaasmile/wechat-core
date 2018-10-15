@@ -95,8 +95,8 @@ public class MemberController extends BaseController {
             boolean isNext = true;
             String msg = "";
             do {
-                //List<MemberDto> memberDtoList=memberService.searchBySql(wechatId,"is_subscribe =1 and nickname is null and (local_head_img_url is null or local_head_img_url ='') limit 0,1 ");
-                List<MemberDto> memberDtoList = memberService.searchBySql(wechatId, "is_subscribe =1");
+                List<MemberDto> memberDtoList=memberService.searchBySql(wechatId,"is_subscribe =1 and nickname is null and (local_head_img_url is null or local_head_img_url ='') limit 0,1 ");
+                //List<MemberDto> memberDtoList = memberService.searchBySql(wechatId, "is_subscribe =1");
                 Date current = new Date();
                 if (memberDtoList.size() > 0) {
                     MemberDto memberDto = memberDtoList.get(0);
@@ -284,8 +284,8 @@ public class MemberController extends BaseController {
         String name = I18nUtil.getMessage("follwer.list", locale);
         String[] keys = {"no", "nickname", "gender", "mobile", "province",
          "city", "subscribe.status", "bind.status", "subscribe.at",
-         "group.message.sent", "tag", "customer.service.open.id", "bind.at",
-         "subscribe.scene", "qr.scene", "qr.scene.str", "unsubscribe.at"};
+         "group.message.sent", "tag", "customer.service.open.id"
+         , "bind.at", "unsubscribe.at"};
         String[] titleVal = I18nUtil.getMessage(keys, locale);
         String lang = RequestContextUtils.getLocale(request).getCountry();
 
@@ -400,14 +400,14 @@ public class MemberController extends BaseController {
                          dataRow.createCell(10).setCellValue(tags.toString());
                          dataRow.createCell(11).setCellValue(temp.getOpenId());
                          dataRow.createCell(12).setCellValue(temp.getBindAt());
-                         if (StringUtils.isNotBlank(temp.getSubscribeScene())) {
+                         /*if (StringUtils.isNotBlank(temp.getSubscribeScene())) {
                              dataRow.createCell(13).setCellValue(ConstantsUtil.subscribeSceneChangeLanguage(temp.getSubscribeScene(), locale.getCountry()));
                          }
                          if (temp.getQrScene() != null) dataRow.createCell(14).setCellValue(temp.getQrScene());
                          if (StringUtils.isNotBlank(temp.getQrSceneStr()))
-                             dataRow.createCell(15).setCellValue(temp.getQrSceneStr());
+                             dataRow.createCell(15).setCellValue(temp.getQrSceneStr());*/
                          if (temp.getUnsubscribeAt() != null) {
-                             dataRow.createCell(16).setCellValue(temp.getUnsubscribeAt());
+                             dataRow.createCell(13).setCellValue(temp.getUnsubscribeAt());
                          }
 
                          j++;
@@ -484,14 +484,14 @@ public class MemberController extends BaseController {
                          dataRow.createCell(10).setCellValue(memberTags);
                          dataRow.createCell(11).setCellValue(temp.getOpenid());
                          dataRow.createCell(12).setCellValue(temp.getBindat());
-                         if (StringUtils.isNotBlank(temp.getSubscribeScene())) {
+                         /*if (StringUtils.isNotBlank(temp.getSubscribeScene())) {
                              dataRow.createCell(13).setCellValue(ConstantsUtil.subscribeSceneChangeLanguage(temp.getSubscribeScene(), locale.getCountry()));
                          }
                          if (temp.getQrScene() != null) dataRow.createCell(14).setCellValue(temp.getQrScene());
                          if (StringUtils.isNotBlank(temp.getQrSceneStr()))
-                             dataRow.createCell(15).setCellValue(temp.getQrSceneStr());
+                             dataRow.createCell(15).setCellValue(temp.getQrSceneStr());*/
                          if (temp.getUnsubscribeAt() != null) {
-                             dataRow.createCell(16).setCellValue(temp.getUnsubscribeAt());
+                             dataRow.createCell(13).setCellValue(temp.getUnsubscribeAt());
                          }
                          j++;
                      }
