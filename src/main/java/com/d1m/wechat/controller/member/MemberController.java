@@ -95,7 +95,7 @@ public class MemberController extends BaseController {
             boolean isNext = true;
             String msg = "";
             do {
-                List<MemberDto> memberDtoList=memberService.searchBySql(wechatId,"is_subscribe =1 and nickname is null and (local_head_img_url is null or local_head_img_url ='') limit 0,1 ");
+                List<MemberDto> memberDtoList = memberService.searchBySql(wechatId, "is_subscribe =1 and nickname is null and (local_head_img_url is null or local_head_img_url ='') limit 0,1 ");
                 //List<MemberDto> memberDtoList = memberService.searchBySql(wechatId, "is_subscribe =1");
                 Date current = new Date();
                 if (memberDtoList.size() > 0) {
@@ -532,8 +532,7 @@ public class MemberController extends BaseController {
     public JSONObject addMemberTag(
      @ApiParam(name = "AddMemberTagModel", required = false)
      @RequestBody(required = false) AddMemberTagModel addMemberTagModel,
-     HttpSession session, HttpServletRequest request,
-     HttpServletResponse response) {
+     HttpSession session) {
         try {
             List<MemberTagDto> memberTagDtos = memberService.addMemberTag(
              getWechatId(session), getUser(session), addMemberTagModel);
