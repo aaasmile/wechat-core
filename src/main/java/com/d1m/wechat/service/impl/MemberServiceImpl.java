@@ -339,13 +339,13 @@ public class MemberServiceImpl extends BaseService<Member> implements
         batchDto.setRemainAmount(remainAmount);
         batchDto.setTagsList(memberMemberAddTags);
         batchDto.setAmount(amount);
+        batchDto.setBatchSize(batchSize);
         //获取租户标识
         batchDto.setTenant(TenantContext.getCurrentTenant());
         Future<Integer> future = execute(batchDto);
         try {
-            Integer completedCount = future.get();
-            if (completedCount == amount) {
-                log.info("============执行成功，总数量：" + amount + "===========");
+            if (future.get() == amount) {
+                log.info("===================执行成功，总数量：" + amount + "===============");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -362,14 +362,14 @@ public class MemberServiceImpl extends BaseService<Member> implements
      */
     @Async("callerRunsExecutor")
     public Future<Integer> execute(TagsBatchDto batchDto) {
-        Integer batchSize = getBatchSize(batchDto.getTagsList().get(0).getWechatId()) != null ? getBatchSize(batchDto.getTagsList().get(0).getWechatId()) : BATCHSIZE;
+        log.info("执行开始时间：" + DateUtil.formatYYYYMMDDHHMMSSS(new Date()));
         TenantContext.setCurrentTenant(batchDto.getTenant());
         Integer operatedCount = 0;//已执行数量
         Integer remainCompletedCount = 0;//剩余数据已执行数量
         //批量数据处理
         for (int i = 0; i < batchDto.getTimes(); i++) {
-            List<MemberMemberTag> memberTagList = batchDto.getTagsList().subList((batchSize * i)
-             , (batchSize * i + batchSize));
+            List<MemberMemberTag> memberTagList = batchDto.getTagsList().subList((batchDto.getBatchSize() * i)
+             , (batchDto.getBatchSize() * i + batchDto.getBatchSize()));
             Integer exeCount = memberMemberTagMapper.insertList(memberTagList);
             operatedCount = exeCount * (i + 1);
             log.info("线程：" + Thread.currentThread().getName() + ",已完成数量：" + exeCount * (i + 1));
@@ -377,14 +377,15 @@ public class MemberServiceImpl extends BaseService<Member> implements
 
         //剩余数据处理
         if (batchDto.getRemainAmount() > 0) {
-            List<MemberMemberTag> memberTagList = batchDto.getTagsList().subList((batchSize * batchDto.getTimes())
+            List<MemberMemberTag> memberTagList = batchDto.getTagsList().subList((batchDto.getBatchSize() * batchDto.getTimes())
              , batchDto.getAmount());
             remainCompletedCount = memberMemberTagMapper.insertList(memberTagList);
-            log.info("剩余已完成数量：" + remainCompletedCount);
+            log.info("线程：" + Thread.currentThread().getName() + "剩余已完成数量：" + remainCompletedCount);
         }
         //已完成总数量
         Integer completedCount = operatedCount + remainCompletedCount;
         log.info("已完成总数量：" + completedCount);
+        log.info("执行结束时间：" + DateUtil.formatYYYYMMDDHHMMSSS(new Date()));
         return new AsyncResult<>(completedCount);
     }
 
@@ -395,9 +396,13 @@ public class MemberServiceImpl extends BaseService<Member> implements
      * @return
      */
     private Integer getBatchSize(Integer wechatId) {
-        ConfigDto configDto = configService.getConfigDto(wechatId, "INIT", "tag_batch_size");
-        log.info("从数据库获取每批次的数量："+configDto.getValue());
-        return Integer.parseInt(configDto.getValue());
+        Integer value = null;
+        ConfigDto configDto = configService.getConfigDto(wechatId, "INIT", "TAG_BATCH_SIZE");
+        if (configDto != null) {
+            value = Integer.parseInt(configDto.getValue());
+        }
+        log.info("从数据库获取每批次的数量：" + value);
+        return value;
     }
 
     /**
