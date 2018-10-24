@@ -22,6 +22,8 @@ public class TagsBatchDto implements Serializable {
     private Integer times;
     //剩余总数量
     private Integer remainAmount;
+    //每批次执行数量
+    private Integer batchSize;
 
     public Integer getAmount() {
         return amount;
@@ -61,5 +63,13 @@ public class TagsBatchDto implements Serializable {
 
     public void setRemainAmount(Integer remainAmount) {
         this.remainAmount = remainAmount;
+    }
+
+    public Integer getBatchSize() {
+        return batchSize;
+    }
+
+    public void setBatchSize(Integer batchSize) {
+        this.batchSize = batchSize;
     }
 }
