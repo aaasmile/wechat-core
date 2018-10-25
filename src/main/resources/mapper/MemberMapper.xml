@@ -792,8 +792,6 @@
         <result column="is_subscribe" jdbcType="BIT" property="isSubscribe"/>
         <result column="last_conversation_at" jdbcType="TIMESTAMP" property="lastConversationAt"/>
         <result column="bindStatus" jdbcType="INTEGER" property="bindStatus"/>
-        <association column="{memberId=id}" javaType="INTEGER" property="conversationCount"
-                     select="getConversationCount"/>
         <collection column="{memberId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.MemberTagDto"
                     property="memberTags" select="getMemberMemberTags"/>
     </resultMap>

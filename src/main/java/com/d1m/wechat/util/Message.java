@@ -93,6 +93,7 @@ public enum Message {
 	MEMBER_TAG_MOVE_SUCCESS(1, "会员标签移动成功"),
 
 	MEMBER_TAG_SEARCH_SUCCESS(1, "会员标签查询成功"),
+	MEMBER_TAG_BATCH_FAIL(1022, "批量添加会员标签失败"),
 
 	/**
 	 * qrcode

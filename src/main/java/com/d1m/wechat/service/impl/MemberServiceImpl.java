@@ -51,8 +51,8 @@ public class MemberServiceImpl extends BaseService<Member> implements
 
     private Logger log = LoggerFactory.getLogger(MemberServiceImpl.class);
     private static String defaultMedium = "qrcode";
-    //每批次处理数量
-    private static final Integer BATCHSIZE = 10;
+    //默认每批次处理数量
+    private static final Integer BATCHSIZE = 100;
 
     @Autowired
     private ConfigService configService;
@@ -326,7 +326,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
      *
      * @param memberMemberAddTags
      */
-    private void asyncBatch(List<MemberMemberTag> memberMemberAddTags) {
+    private void asyncBatch(List<MemberMemberTag> memberMemberAddTags) throws WechatException {
         Integer amount = memberMemberAddTags.size();
         Integer batchSize = getBatchSize(memberMemberAddTags.get(0).getWechatId()) != null ? getBatchSize(memberMemberAddTags.get(0).getWechatId()) : BATCHSIZE;
         //1、判断将要插入的数量是否大于等于每批次执行的数量，若大于或等于就执行批量处理方法，否则直接插入。
@@ -342,13 +342,13 @@ public class MemberServiceImpl extends BaseService<Member> implements
         batchDto.setBatchSize(batchSize);
         //获取租户标识
         batchDto.setTenant(TenantContext.getCurrentTenant());
-        Future<Integer> future = execute(batchDto);
         try {
+            Future<Integer> future = execute(batchDto);
             if (future.get() == amount) {
                 log.info("===================执行成功，总数量：" + amount + "===============");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new WechatException(Message.MEMBER_TAG_BATCH_FAIL);
         }
 
 
@@ -380,8 +380,9 @@ public class MemberServiceImpl extends BaseService<Member> implements
             List<MemberMemberTag> memberTagList = batchDto.getTagsList().subList((batchDto.getBatchSize() * batchDto.getTimes())
              , batchDto.getAmount());
             remainCompletedCount = memberMemberTagMapper.insertList(memberTagList);
-            log.info("线程：" + Thread.currentThread().getName() + "剩余已完成数量：" + remainCompletedCount);
+            log.info("线程：" + Thread.currentThread().getName() + ",剩余已完成数量：" + remainCompletedCount);
         }
+
         //已完成总数量
         Integer completedCount = operatedCount + remainCompletedCount;
         log.info("已完成总数量：" + completedCount);
