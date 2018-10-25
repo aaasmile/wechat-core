@@ -35,7 +35,7 @@ public class CoreApplication {
 
     public static void main(String[] args) {
     	ConsulProperties consulProperties = new ConsulProperties();
-		//consulProperties.onStartup();
+		consulProperties.onStartup();
         SpringApplication.run(CoreApplication.class, args);
     }
 
