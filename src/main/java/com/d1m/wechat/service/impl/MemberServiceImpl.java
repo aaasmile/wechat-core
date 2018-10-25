@@ -1,10 +1,6 @@
 package com.d1m.wechat.service.impl;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 
 import cn.d1m.wechat.client.model.WxTag;
@@ -238,9 +234,18 @@ public class MemberServiceImpl extends BaseService<Member> implements
         return memberMapper.searchBySql(wechatId, sql);
     }
 
-    private List<MemberDto> queryMember(Integer wechatId, AddMemberTagModel addMemberTagModel) {
-
-        List<MemberDto> members = new ArrayList<>();
+    /**
+     * 查询需要添加标签的members
+     * @param wechatId
+     * @param addMemberTagModel
+     * @param tenant
+     * @return
+     */
+    @Async("callerRunsExecutor")
+    public List<MemberDto> queryMember(Integer wechatId, AddMemberTagModel addMemberTagModel, String tenant) {
+        log.info("执行查询开始时间：" + DateUtil.formatYYYYMMDDHHMMSSS(new Date()));
+        TenantContext.setCurrentTenant(tenant);
+        List<MemberDto> members = Collections.synchronizedList(new ArrayList<>());
         if (ObjectUtils.isEmpty(addMemberTagModel.getMemberIds())) {
             MemberModel memberModel = addMemberTagModel.getMemberModel();
             members = memberMapper.search(wechatId, memberModel.getOpenId(),
@@ -265,6 +270,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
             members = memberMapper.selectByMemberId(
              addMemberTagModel.getMemberIds(), wechatId, null);
         }
+        log.info("执行查询结束时间：" + DateUtil.formatYYYYMMDDHHMMSSS(new Date()));
         return members;
 
     }
@@ -279,7 +285,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
         List<MemberTag> memberTagsIn = getMemberTags(wechatId, user,
          addMemberTagModel.getTags());
 
-        List<MemberDto> members = queryMember(wechatId, addMemberTagModel);
+        List<MemberDto> members = queryMember(wechatId, addMemberTagModel, TenantContext.getCurrentTenant());
 
         if (members.isEmpty()) {
             throw new WechatException(Message.MEMBER_NOT_BLANK);
@@ -350,7 +356,6 @@ public class MemberServiceImpl extends BaseService<Member> implements
         } catch (Exception e) {
             throw new WechatException(Message.MEMBER_TAG_BATCH_FAIL);
         }
-
 
     }
 
