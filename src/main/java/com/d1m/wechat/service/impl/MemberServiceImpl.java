@@ -390,6 +390,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
         return new AsyncResult<>(completedCount);
     }
 
+
     /**
      * 获取批量参数
      *
