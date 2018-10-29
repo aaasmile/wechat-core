@@ -285,6 +285,7 @@ public class MemberTagServiceImpl extends BaseService<MemberTag> implements
 									JSONObject subjson = new JSONObject();
 									subjson.put(r.get("TYPE"), r.get("TAG"));
 									json.put(openId, subjson);
+									log.info("data数据："+json);
 								}
 							}
 						}else{
