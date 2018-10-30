@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.alibaba.fastjson.JSONArray;
 import com.d1m.wechat.dto.CsvDto;
 import com.d1m.wechat.dto.ImportCsvDto;
 import io.netty.util.internal.ObjectUtil;
@@ -417,23 +418,21 @@ public class MemberTagServiceImpl extends BaseService<MemberTag> implements
                     break;
                 }
 
-                /*Map<String, Object> map = new HashMap<>();
-                map.put(typeName, tag);*/
-                /*
-                csvDto.setOpenId(openId);
-                csvDto.setTag(tag);
-                csvDto.setTypeName(typeName);*/
+                //拼接Json数据
+                JSONArray ja = (JSONArray) json.get(openId);
+                if (ja == null) {
+                    ja = new JSONArray();
+                }
                 JSONObject subjson = new JSONObject();
-                subjson.put(r.get("TYPE"), r.get("TAG"));
-                json.put(openId, subjson);
+                subjson.put(typeName, tag);
+                ja.add(subjson);
+                json.put(openId, ja);
 
 
             }
-            /*list.add(csvDto);
-            log.info("csvDto:" + JSON.toJSON(csvDto));*/
             wr.close();
             r.close();
-
+            log.info("json:"+json);
             //3、保存csv格式标签数据，并发起任务调度
             saveResolveCsvTags(json, except, dto);
         } catch (Exception e) {
