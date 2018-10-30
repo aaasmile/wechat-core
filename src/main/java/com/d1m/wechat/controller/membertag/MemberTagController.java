@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.dto.ImportCsvDto;
+import com.d1m.wechat.schedule.job.MemberTagCsvJob;
 import com.github.pagehelper.Page;
 
 import io.swagger.annotations.Api;
@@ -56,6 +57,9 @@ public class MemberTagController extends BaseController {
 
     @Autowired
     private MemberTagSyncJob memberTagSyncJob;
+
+    @Autowired
+    private MemberTagCsvJob memberTagCsvJob;
 
     @ApiOperation(value = "创建会员标签", tags = "会员标签接口")
     @ApiResponse(code = 200, message = "1-创建会员标签成功")
@@ -245,6 +249,22 @@ public class MemberTagController extends BaseController {
             String wechatid = getWechatId(session).toString();
             log.info("shopname>>" + shopname);
             memberTagSyncJob.run(wechatid, shopname);
+            return representation(Message.MEMBER_TAG_DELETE_SUCCESS);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return wrapException(e);
+        }
+    }
+
+
+    @ApiOperation(value = "调度会员加标签", tags = "调度会员加标签")
+    @ApiResponse(code = 200, message = "1-调度会员加标签")
+    @RequestMapping(value = "runtags.json", method = RequestMethod.GET)
+    public JSONObject runtags(String id) {
+        try {
+            String wechatid = getWechatId().toString();
+            log.info("id>>" + id);
+            memberTagCsvJob.run(id,wechatid);
             return representation(Message.MEMBER_TAG_DELETE_SUCCESS);
         } catch (Exception e) {
             log.error(e.getMessage());
