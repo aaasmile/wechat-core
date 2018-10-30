@@ -3,7 +3,6 @@ package com.d1m.wechat.service.impl;
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -13,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.alibaba.fastjson.JSONArray;
 import com.d1m.wechat.dto.CsvDto;
 import com.d1m.wechat.dto.ImportCsvDto;
-import io.netty.util.internal.ObjectUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +47,6 @@ import com.d1m.wechat.pamametermodel.AddMemberTagModel;
 import com.d1m.wechat.pamametermodel.MemberTagInfoModel;
 import com.d1m.wechat.pamametermodel.MemberTagModel;
 import com.d1m.wechat.pamametermodel.MemberTagTypeInfoModel;
-import com.d1m.wechat.pamametermodel.MemberTagTypeModel;
 import com.d1m.wechat.schedule.SchedulerRestService;
 import com.d1m.wechat.service.MemberTagCsvService;
 import com.d1m.wechat.service.MemberTagService;
@@ -417,23 +415,21 @@ public class MemberTagServiceImpl extends BaseService<MemberTag> implements
                     break;
                 }
 
-                /*Map<String, Object> map = new HashMap<>();
-                map.put(typeName, tag);*/
-                /*
-                csvDto.setOpenId(openId);
-                csvDto.setTag(tag);
-                csvDto.setTypeName(typeName);*/
+                //拼接Json数据
+                JSONArray ja = (JSONArray) json.get(openId);
+                if (ja == null) {
+                    ja = new JSONArray();
+                }
                 JSONObject subjson = new JSONObject();
-                subjson.put(r.get("TYPE"), r.get("TAG"));
-                json.put(openId, subjson);
+                subjson.put(typeName, tag);
+                ja.add(subjson);
+                json.put(openId, ja);
 
 
             }
-            /*list.add(csvDto);
-            log.info("csvDto:" + JSON.toJSON(csvDto));*/
             wr.close();
             r.close();
-
+            log.info("json:"+json);
             //3、保存csv格式标签数据，并发起任务调度
             saveResolveCsvTags(json, except, dto);
         } catch (Exception e) {
