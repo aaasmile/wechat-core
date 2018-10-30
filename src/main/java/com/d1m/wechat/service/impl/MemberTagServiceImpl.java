@@ -3,6 +3,7 @@ package com.d1m.wechat.service.impl;
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -12,6 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.d1m.wechat.dto.CsvDto;
+import com.d1m.wechat.dto.ImportCsvDto;
+import io.netty.util.internal.ObjectUtil;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,375 +62,580 @@ import tk.mybatis.mapper.common.Mapper;
 
 @Service
 public class MemberTagServiceImpl extends BaseService<MemberTag> implements
-		MemberTagService {
-	
-	private static Logger log = LoggerFactory.getLogger(MemberTagServiceImpl.class);
+ MemberTagService {
 
-	@Autowired
-	private MemberTagMapper memberTagMapper;
+    private static Logger log = LoggerFactory.getLogger(MemberTagServiceImpl.class);
 
-	@Autowired
-	private MemberTagTypeMapper memberTagTypeMapper;
-	
-	@Autowired
-	private MemberTagCsvService memberTagCsvService;
+    @Autowired
+    private MemberTagMapper memberTagMapper;
 
-	@Autowired
-	private SchedulerRestService schedulerRestService;
-	
-	@Autowired
-	private MemberMapper memberMapper;
+    @Autowired
+    private MemberTagTypeMapper memberTagTypeMapper;
 
-	@Autowired
-	private MemberMemberTagMapper memberMemberTagMapper;
+    @Autowired
+    private MemberTagCsvService memberTagCsvService;
 
-	@Override
-	public Mapper<MemberTag> getGenericMapper() {
-		return memberTagMapper;
-	}
+    @Autowired
+    private SchedulerRestService schedulerRestService;
 
-	public void setMemberTagMapper(MemberTagMapper memberTagMapper) {
-		this.memberTagMapper = memberTagMapper;
-	}
+    @Autowired
+    private MemberMapper memberMapper;
 
-	public void setMemberTagTypeMapper(MemberTagTypeMapper memberTagTypeMapper) {
-		this.memberTagTypeMapper = memberTagTypeMapper;
-	}
+    @Autowired
+    private MemberMemberTagMapper memberMemberTagMapper;
 
-	@Override
-	public List<MemberTagDto> create(User user, Integer wechatId,
-			AddMemberTagModel tags) throws WechatException {
-		notBlank(tags, Message.MEMBER_TAG_NOT_BLANK);
-		List<MemberTagModel> memberTags = tags.getTags();
-		notBlank(memberTags, Message.MEMBER_TAG_NOT_BLANK);
-		List<MemberTagDto> memberTagDtos = new ArrayList<MemberTagDto>();
-		MemberTagDto memberTagDto = null;
-		for (MemberTagModel memberTagModel : memberTags) {
-			if (memberTagModel.getId() != null) {
-				memberTagDto = new MemberTagDto();
-				memberTagDto.setId(memberTagModel.getId());
-				memberTagDto.setName(memberTagModel.getName());
-				memberTagDto.setMemberTagTypeId(memberTagModel.getMemberTagTypeId());
-				memberTagDtos.add(memberTagDto);
-				continue;
-			}
-			notBlank(memberTagModel.getName(),
-					Message.MEMBER_TAG_TYPE_NAME_NOT_EMPTY);
-			MemberTagType memberTagType = getMemberTagType(wechatId,
-					memberTagModel.getMemberTagTypeId());
-			MemberTag record = new MemberTag();
-			record.setWechatId(wechatId);
-			record.setName(memberTagModel.getName());
-			if (memberTagMapper.selectCount(record) > 0) {
-				throw new WechatException(Message.MEMBER_TAG_NAME_EXIST);
-			}
-			record.setCreatedAt(new Date());
-			record.setCreatorId(user.getId());
-			record.setStatus(MemberTagStatus.INUSED.getValue());
-			if (memberTagType != null) {
-				record.setMemberTagTypeId(memberTagModel.getMemberTagTypeId());
-			}
-			memberTagMapper.insert(record);
-			memberTagDto = new MemberTagDto();
-			memberTagDto.setId(record.getId());
-			memberTagDto.setName(record.getName());
-			memberTagDtos.add(memberTagDto);
-		}
-		return memberTagDtos;
-	}
+    @Override
+    public Mapper<MemberTag> getGenericMapper() {
+        return memberTagMapper;
+    }
 
-	@Override
-	public MemberTag update(User user, Integer wechatId, Integer id,
-			Integer memberTagTypeId, String name) throws WechatException {
-		notBlank(id, Message.MEMBER_TAG_ID_NOT_EMPTY);
-		notBlank(name, Message.MEMBER_TAG_NAME_NOT_EMPTY);
-		MemberTagType memberTagType = getMemberTagType(wechatId,
-				memberTagTypeId);
-		MemberTag record = get(wechatId, id);
-		notBlank(record, Message.MEMBER_TAG_NOT_EXIST);
-		checkUpdateTagDuplicate(wechatId, id, name);
-		record.setName(name);
-		if (memberTagType != null) {
-			record.setMemberTagTypeId(memberTagTypeId);
-		}
-		memberTagMapper.updateByPrimaryKey(record);
-		return record;
-	}
+    public void setMemberTagMapper(MemberTagMapper memberTagMapper) {
+        this.memberTagMapper = memberTagMapper;
+    }
 
-	private void checkUpdateTagDuplicate(Integer wechatId, Integer id,
-			String name) {
-		MemberTag memberTag = new MemberTag();
-		memberTag.setName(name);
-		memberTag.setWechatId(wechatId);
-		if(memberTagMapper.selectCount(memberTag)>1){
-			throw new WechatException(Message.MEMBER_TAG_NAME_EXIST);
-		}
-		memberTag = memberTagMapper.selectOne(memberTag);
-		if(memberTag!=null && memberTag.getId()!=id){
-			throw new WechatException(Message.MEMBER_TAG_NAME_EXIST);
-		}
-	}
+    public void setMemberTagTypeMapper(MemberTagTypeMapper memberTagTypeMapper) {
+        this.memberTagTypeMapper = memberTagTypeMapper;
+    }
 
-	@Override
-	public MemberTag get(Integer wechatId, Integer id) {
-		MemberTag record = new MemberTag();
-		record.setId(id);
-		record.setWechatId(wechatId);
-		return memberTagMapper.selectOne(record);
-	}
+    @Override
+    public List<MemberTagDto> create(User user, Integer wechatId,
+                                     AddMemberTagModel tags) throws WechatException {
+        notBlank(tags, Message.MEMBER_TAG_NOT_BLANK);
+        List<MemberTagModel> memberTags = tags.getTags();
+        notBlank(memberTags, Message.MEMBER_TAG_NOT_BLANK);
+        List<MemberTagDto> memberTagDtos = new ArrayList<MemberTagDto>();
+        MemberTagDto memberTagDto = null;
+        for (MemberTagModel memberTagModel : memberTags) {
+            if (memberTagModel.getId() != null) {
+                memberTagDto = new MemberTagDto();
+                memberTagDto.setId(memberTagModel.getId());
+                memberTagDto.setName(memberTagModel.getName());
+                memberTagDto.setMemberTagTypeId(memberTagModel.getMemberTagTypeId());
+                memberTagDtos.add(memberTagDto);
+                continue;
+            }
+            notBlank(memberTagModel.getName(),
+             Message.MEMBER_TAG_TYPE_NAME_NOT_EMPTY);
+            MemberTagType memberTagType = getMemberTagType(wechatId,
+             memberTagModel.getMemberTagTypeId());
+            MemberTag record = new MemberTag();
+            record.setWechatId(wechatId);
+            record.setName(memberTagModel.getName());
+            if (memberTagMapper.selectCount(record) > 0) {
+                throw new WechatException(Message.MEMBER_TAG_NAME_EXIST);
+            }
+            record.setCreatedAt(new Date());
+            record.setCreatorId(user.getId());
+            record.setStatus(MemberTagStatus.INUSED.getValue());
+            if (memberTagType != null) {
+                record.setMemberTagTypeId(memberTagModel.getMemberTagTypeId());
+            }
+            memberTagMapper.insert(record);
+            memberTagDto = new MemberTagDto();
+            memberTagDto.setId(record.getId());
+            memberTagDto.setName(record.getName());
+            memberTagDtos.add(memberTagDto);
+        }
+        return memberTagDtos;
+    }
 
-	private MemberTagType getMemberTagType(Integer wechatId,
-			Integer memberTagTypeId) throws WechatException {
-		if (memberTagTypeId == null) {
-			return null;
-		}
-		MemberTagType memberTagType = null;
-		memberTagType = new MemberTagType();
-		memberTagType.setId(memberTagTypeId);
-		memberTagType.setWechatId(wechatId);
-		memberTagType = memberTagTypeMapper.selectOne(memberTagType);
-		notBlank(memberTagType, Message.MEMBER_TAG_TYPE_NOT_EXIST);
-		return memberTagType;
-	}
+    @Override
+    public MemberTag update(User user, Integer wechatId, Integer id,
+                            Integer memberTagTypeId, String name) throws WechatException {
+        notBlank(id, Message.MEMBER_TAG_ID_NOT_EMPTY);
+        notBlank(name, Message.MEMBER_TAG_NAME_NOT_EMPTY);
+        MemberTagType memberTagType = getMemberTagType(wechatId,
+         memberTagTypeId);
+        MemberTag record = get(wechatId, id);
+        notBlank(record, Message.MEMBER_TAG_NOT_EXIST);
+        checkUpdateTagDuplicate(wechatId, id, name);
+        record.setName(name);
+        if (memberTagType != null) {
+            record.setMemberTagTypeId(memberTagTypeId);
+        }
+        memberTagMapper.updateByPrimaryKey(record);
+        return record;
+    }
 
-	@Override
-	public void delete(User user, Integer wechatId, Integer id)
-			throws WechatException {
-		notBlank(id, Message.MEMBER_TAG_ID_NOT_EMPTY);
-		MemberTag record = get(wechatId, id);
-		notBlank(record, Message.MEMBER_TAG_NOT_EXIST);
+    private void checkUpdateTagDuplicate(Integer wechatId, Integer id,
+                                         String name) {
+        MemberTag memberTag = new MemberTag();
+        memberTag.setName(name);
+        memberTag.setWechatId(wechatId);
+        if (memberTagMapper.selectCount(memberTag) > 1) {
+            throw new WechatException(Message.MEMBER_TAG_NAME_EXIST);
+        }
+        memberTag = memberTagMapper.selectOne(memberTag);
+        if (memberTag != null && memberTag.getId() != id) {
+            throw new WechatException(Message.MEMBER_TAG_NAME_EXIST);
+        }
+    }
 
-		// don't delete when existed in member_member_tag
-		MemberMemberTag memberMemberTag = new MemberMemberTag();
-		memberMemberTag.setMemberTagId(id);
-		memberMemberTag.setWechatId(wechatId);
-		int existCount = memberMemberTagMapper.selectCount(memberMemberTag);
-		if(existCount > 0){
-			throw new WechatException(Message.MEMBER_TAG_OWN_MEMBER);
-		}
+    @Override
+    public MemberTag get(Integer wechatId, Integer id) {
+        MemberTag record = new MemberTag();
+        record.setId(id);
+        record.setWechatId(wechatId);
+        return memberTagMapper.selectOne(record);
+    }
+
+    private MemberTagType getMemberTagType(Integer wechatId,
+                                           Integer memberTagTypeId) throws WechatException {
+        if (memberTagTypeId == null) {
+            return null;
+        }
+        MemberTagType memberTagType = null;
+        memberTagType = new MemberTagType();
+        memberTagType.setId(memberTagTypeId);
+        memberTagType.setWechatId(wechatId);
+        memberTagType = memberTagTypeMapper.selectOne(memberTagType);
+        notBlank(memberTagType, Message.MEMBER_TAG_TYPE_NOT_EXIST);
+        return memberTagType;
+    }
+
+    @Override
+    public void delete(User user, Integer wechatId, Integer id)
+     throws WechatException {
+        notBlank(id, Message.MEMBER_TAG_ID_NOT_EMPTY);
+        MemberTag record = get(wechatId, id);
+        notBlank(record, Message.MEMBER_TAG_NOT_EXIST);
+
+        // don't delete when existed in member_member_tag
+        MemberMemberTag memberMemberTag = new MemberMemberTag();
+        memberMemberTag.setMemberTagId(id);
+        memberMemberTag.setWechatId(wechatId);
+        int existCount = memberMemberTagMapper.selectCount(memberMemberTag);
+        if (existCount > 0) {
+            throw new WechatException(Message.MEMBER_TAG_OWN_MEMBER);
+        }
 
 		/*record.setStatus(MemberTagStatus.DELETED.getValue());
 		memberTagMapper.updateByPrimaryKey(record);*/
-		memberTagMapper.delete(record);
-	}
+        memberTagMapper.delete(record);
+    }
 
-	@Override
-	public Page<MemberTag> search(Integer wechatId, Integer memberTagTypeId,
-			String name, String sortName, String sortDir, Integer pageNum,
-			Integer pageSize, boolean queryCount) {
-		PageHelper.startPage(pageNum, pageSize, queryCount);
-		List<Integer> memberTagTypeIds = memberTagTypeChildren(wechatId, memberTagTypeId);
-		memberTagTypeIds.add(memberTagTypeId);
-		return memberTagMapper.search(wechatId, name, memberTagTypeIds, null,
-				sortName, sortDir);
-	}
+    @Override
+    public Page<MemberTag> search(Integer wechatId, Integer memberTagTypeId,
+                                  String name, String sortName, String sortDir, Integer pageNum,
+                                  Integer pageSize, boolean queryCount) {
+        PageHelper.startPage(pageNum, pageSize, queryCount);
+        List<Integer> memberTagTypeIds = memberTagTypeChildren(wechatId, memberTagTypeId);
+        memberTagTypeIds.add(memberTagTypeId);
+        return memberTagMapper.search(wechatId, name, memberTagTypeIds, null,
+         sortName, sortDir);
+    }
 
-	private List<Integer> memberTagTypeChildren(Integer wechatId,
-			Integer memberTagTypeId) {
-		List<Integer> memberTagTypeIds = new ArrayList<Integer>();
-		MemberTagType rec = new MemberTagType();
-		rec.setWechatId(wechatId);
-		rec.setParentId(memberTagTypeId);
-		rec.setStatus((byte)1);
-		List<MemberTagType> recList = memberTagTypeMapper.select(rec);
-		if(recList!=null){
-			for(MemberTagType tagType:recList){
-				memberTagTypeIds.add(tagType.getId());
-				List<Integer> tagTypeIds = memberTagTypeChildren(wechatId, tagType.getId());
-				if(tagTypeIds.isEmpty()){
-					continue;
-				}else{
-					memberTagTypeIds.addAll(tagTypeIds);
-				}
-			}
-		}
-		return memberTagTypeIds;
-	}
+    private List<Integer> memberTagTypeChildren(Integer wechatId,
+                                                Integer memberTagTypeId) {
+        List<Integer> memberTagTypeIds = new ArrayList<Integer>();
+        MemberTagType rec = new MemberTagType();
+        rec.setWechatId(wechatId);
+        rec.setParentId(memberTagTypeId);
+        rec.setStatus((byte) 1);
+        List<MemberTagType> recList = memberTagTypeMapper.select(rec);
+        if (recList != null) {
+            for (MemberTagType tagType : recList) {
+                memberTagTypeIds.add(tagType.getId());
+                List<Integer> tagTypeIds = memberTagTypeChildren(wechatId, tagType.getId());
+                if (tagTypeIds.isEmpty()) {
+                    continue;
+                } else {
+                    memberTagTypeIds.addAll(tagTypeIds);
+                }
+            }
+        }
+        return memberTagTypeIds;
+    }
 
-	@Override
-	public Page<ReportMemberTagDto> tagUser(Integer wechatId, Date start,
-			Date end, Integer top) {
-		// TODO Auto-generated method stub
-		notBlank(wechatId, null);
-		notBlank(start, null);
-		notBlank(end, null);
-		PageHelper.startPage(1, top, true);
-		return memberTagMapper.tagUser(wechatId, start, end, top);
-	}
+    @Override
+    public Page<ReportMemberTagDto> tagUser(Integer wechatId, Date start,
+                                            Date end, Integer top) {
+        // TODO Auto-generated method stub
+        notBlank(wechatId, null);
+        notBlank(start, null);
+        notBlank(end, null);
+        PageHelper.startPage(1, top, true);
+        return memberTagMapper.tagUser(wechatId, start, end, top);
+    }
 
-	@Override
-	public synchronized void csvAddMemberTag(Integer wechatId, String uploadPath, 
-			Integer userId, String oriFileName, String csv, String csvName) {
-		try {
-			// produce exception file and check OpenId and TagType Not Blank
-			log.info("wechatId>>" + wechatId + ">>uploadPath>>" + uploadPath + ">>userId>>" + userId + ">>oriFileName>>" + csv + ">>csvName>>" + csvName);
-			CsvReader r = new CsvReader(uploadPath, ',', Charset.forName("UTF-8"));
-			JSONObject json = new JSONObject();
-			r.readHeaders();
-			String[] except = createExceptionFile(uploadPath, csv, csvName);
-			CsvWriter wr = new CsvWriter(except[0], ',', Charset.forName("UTF-8"));
-			String[] head = {"OPEN_ID","TYPE","TAG","Fail_Reason"};
-			wr.writeRecord(head);
-			while (r.readRecord()) {
-				log.debug("csvAddMemberTag>>" + r.getRawRecord());
-				String openId = r.getRawRecord().split(",")[0];
-				if(!openId.equals("")){
-					Member member = new Member();
-					member.setOpenId(openId);
-					if (memberMapper.selectCount(member)>0){
-						if(r.get("TYPE")!=""){
-							MemberTagType memberTagType = new MemberTagType();
-							memberTagType.setName(r.get("TYPE"));
-							memberTagType.setWechatId(wechatId);
-							int result = memberTagTypeMapper.selectCount(memberTagType);
-							if (result == 0){
-								wr.writeRecord(produceException(r, "不存在此类标签类型"));
-							}else{
-								if(r.get("TAG")!=""){
-									JSONObject subjson = new JSONObject();
-									subjson.put(r.get("TYPE"), r.get("TAG"));
-									json.put(openId, subjson);
-									log.info("data数据："+json);
-								}
-							}
-						}else{
-							wr.writeRecord(produceException(r, "标签类型不能为空"));
-						}
-					}else{
-						wr.writeRecord(produceException(r, "不存在此会员OpenID"));
-					}
-				}else{
-					wr.writeRecord(produceException(r, "会员OpenID不能为空"));
-				}
-			}
-			wr.close();
-			r.close();
-			
-			Date current = new Date();
-			long currentTime=System.currentTimeMillis(); 
-			long m = 1L * 60L * 1000L;
-			long runAt = currentTime + m;
-			Date runTask = new Date(runAt);
-			String dateTask = DateUtil.formatYYYYMMDDHHMMSS(runTask);
-			String taskName = "MemberAddTagCSV_" + dateTask;
-			String data = JSON.toJSONString(json);
-			
-			// save csv and exception to DB
-			MemberTagCsv record = new MemberTagCsv();
-			record.setCsv(csv);
-			record.setException(except[1]);
-			record.setStatus(MemberTagCsvStatus.PREPARE.getValue());
-			record.setWechatId(wechatId);
-			record.setCreatorId(userId);
-			record.setTask(taskName);
-			record.setData(data);
-			record.setCreatedAt(current);
-			record.setOriFile(oriFileName);
-			int result = memberTagCsvService.save(record);
-			log.info("save csv&exception: {}", result);
-			
-			// handle task
-			try {
-				Map<String,Object> jobMap = new HashMap<String,Object>();
-				jobMap.put("jobGroup",1);
-				jobMap.put("jobDesc",taskName);
-				jobMap.put("jobCron",DateUtil.cron.format(runTask));
-				jobMap.put("executorHandler","memberTagCsvJob");
-				jobMap.put("executorParam", "-d"+ TenantContext.getCurrentTenant()+","+record.getId());
+    @Override
+    public synchronized void csvAddMemberTag(Integer wechatId, String uploadPath,
+                                             Integer userId, String oriFileName, String csv, String csvName) {
+        try {
+            // produce exception file and check OpenId and TagType Not Blank
+            log.info("wechatId>>" + wechatId + ">>uploadPath>>" + uploadPath + ">>userId>>" + userId + ">>oriFileName>>" + csv + ">>csvName>>" + csvName);
+            CsvReader r = new CsvReader(uploadPath, ',', Charset.forName("UTF-8"));
+            JSONObject json = new JSONObject();
+            r.readHeaders();
+            String[] except = createExceptionFile(uploadPath, csv, csvName);
+            CsvWriter wr = new CsvWriter(except[0], ',', Charset.forName("UTF-8"));
+            String[] head = {"OPEN_ID", "TYPE", "TAG", "Fail_Reason"};
+            wr.writeRecord(head);
+            while (r.readRecord()) {
+                log.debug("csvAddMemberTag>>" + r.getRawRecord());
+                String openId = r.getRawRecord().split(",")[0];
+                if (!openId.equals("")) {
+                    Member member = new Member();
+                    member.setOpenId(openId);
+                    if (memberMapper.selectCount(member) > 0) {
+                        if (r.get("TYPE") != "") {
+                            MemberTagType memberTagType = new MemberTagType();
+                            memberTagType.setName(r.get("TYPE"));
+                            memberTagType.setWechatId(wechatId);
+                            int result = memberTagTypeMapper.selectCount(memberTagType);
+                            if (result == 0) {
+                                wr.writeRecord(produceException(r, "不存在此类标签类型"));
+                            } else {
+                                if (r.get("TAG") != "") {
+                                    JSONObject subjson = new JSONObject();
+                                    subjson.put(r.get("TYPE"), r.get("TAG"));
+                                    json.put(openId, subjson);
+                                    log.info("data数据：" + json);
+                                }
+                            }
+                        } else {
+                            wr.writeRecord(produceException(r, "标签类型不能为空"));
+                        }
+                    } else {
+                        wr.writeRecord(produceException(r, "不存在此会员OpenID"));
+                    }
+                } else {
+                    wr.writeRecord(produceException(r, "会员OpenID不能为空"));
+                }
+            }
+            wr.close();
+            r.close();
 
-				ReturnT<String> returnT = schedulerRestService.addJob(jobMap);
-				log.info("jobMap:"+JSON.toJSON(jobMap));
-				log.info("returnT执行结果:"+JSON.toJSON(returnT));
-				if (ReturnT.FAIL_CODE == returnT.getCode()){
-					throw new WechatException(
-							Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
-				}
-			} catch (Exception e) {
-				log.error(e.getLocalizedMessage(), e);
-				throw new WechatException(
-						Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
-			}
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-			return;
-		}
-	}
+            Date current = new Date();
+            long currentTime = System.currentTimeMillis();
+            long m = 1L * 60L * 1000L;
+            long runAt = currentTime + m;
+            Date runTask = new Date(runAt);
+            String dateTask = DateUtil.formatYYYYMMDDHHMMSS(runTask);
+            String taskName = "MemberAddTagCSV_" + dateTask;
+            String data = JSON.toJSONString(json);
 
-	private String[] produceException(CsvReader r, String error) throws IOException {
-		String[] exception = new String[4];
-		exception[0] = r.getRawRecord().split(",")[0];
-		exception[1] = r.get("TYPE");
-		exception[2] = r.get("TAG");
-		exception[3] = error;
-		return exception;
-	}
+            // save csv and exception to DB
+            MemberTagCsv record = new MemberTagCsv();
+            record.setCsv(csv);
+            record.setException(except[1]);
+            record.setStatus(MemberTagCsvStatus.PREPARE.getValue());
+            record.setWechatId(wechatId);
+            record.setCreatorId(userId);
+            record.setTask(taskName);
+            record.setData(data);
+            record.setCreatedAt(current);
+            record.setOriFile(oriFileName);
+            int result = memberTagCsvService.save(record);
+            log.info("save csv&exception: {}", result);
 
-	private String[] createExceptionFile(String uploadPath, String csv, String csvName) throws IOException {
-		File f = new File(uploadPath);
-		String uuid = UUID.randomUUID().toString().replace("-", "_");
-		String[] content = new String[2];
-		content[0] = f.getParent()+ "//" + uuid + ".csv";
-		String exceptionPath = csv.replace(csvName, "");
-		content[1] = exceptionPath + uuid + ".csv";
-		return content;
-	}
+            // handle task
+            try {
+                Map<String, Object> jobMap = new HashMap<String, Object>();
+                jobMap.put("jobGroup", 1);
+                jobMap.put("jobDesc", taskName);
+                jobMap.put("jobCron", DateUtil.cron.format(runTask));
+                jobMap.put("executorHandler", "memberTagCsvJob");
+                jobMap.put("executorParam", "-d" + TenantContext.getCurrentTenant() + "," + record.getId());
 
-	@Override
-	public MemberTag selectOne(MemberTag memberTag) {
-		return memberTagMapper.selectOne(memberTag);
-	}
+                ReturnT<String> returnT = schedulerRestService.addJob(jobMap);
+                log.info("jobMap:" + JSON.toJSON(jobMap));
+                log.info("returnT执行结果:" + JSON.toJSON(returnT));
+                if (ReturnT.FAIL_CODE == returnT.getCode()) {
+                    throw new WechatException(
+                     Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
+                }
+            } catch (Exception e) {
+                log.error(e.getLocalizedMessage(), e);
+                throw new WechatException(
+                 Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return;
+        }
+    }
 
-	@Override
-	public List<MemberTagDto> getAllMemberTags(Integer wechatId, Integer memberTagTypeId) {
-		return memberTagMapper.getAllMemberTags(wechatId, memberTagTypeId);
-	}
 
-	@Override
-	public void moveTag(Integer wechatId, MemberTagModel model) {
-		if(model.getIds()==null||model.getIds().isEmpty()){
-			throw new WechatException(Message.MEMBER_TAG_NOT_BLANK);
-		}
-		notBlank(model.getMemberTagTypeId(), Message.MEMBER_TAG_TYPE_NOT_BLANK);
-		for(Integer id:model.getIds()){
-			MemberTag record = new MemberTag();
-			record.setId(id);
-			record.setMemberTagTypeId(model.getMemberTagTypeId());
-			memberTagMapper.updateByPrimaryKeySelective(record);
-		}
-	}
+    /**
+     * 解析csv上传文件并保存
+     *
+     * @param dto
+     */
+    public synchronized void csvAddMemberTag(ImportCsvDto dto) {
+        log.info("解析csv上传文件并保存ImportCsvDto：" + JSON.toJSONString(dto));
+        JSONObject json = new JSONObject();
+        try {
+            //1、获取表头
+            CsvReader r = new CsvReader(dto.getUploadPath(), ',', Charset.forName("UTF-8"));
+            r.readHeaders();
+            String[] except = createExceptionFile(dto.getUploadPath(), dto.getCsv(), dto.getCsvName());
+            CsvWriter wr = new CsvWriter(except[0], ',', Charset.forName("UTF-8"));
+            String[] head = {"OPEN_ID", "TYPE", "TAG", "Fail_Reason"};
+            wr.writeRecord(head);
+            List<CsvDto> list = new ArrayList<>();
+            CsvDto csvDto = new CsvDto();
+            //2、遍历数据
+            while (r.readRecord()) {
+                log.debug("csvAddMemberTag>>" + r.getRawRecord());
+                //校验OpenID
+                String openId = r.getRawRecord().split(",")[0];
+                if (StringUtils.isEmpty(openId)) {
+                    wr.writeRecord(produceException(r, "会员OpenID不能为空"));
+                    break;
+                }
 
-	@Override
-	public List<MemberTagDto> searchName(Integer wechatId, MemberTagModel model) {
-		if(model.getName()==null || model.getName().length()==0){
-			throw new WechatException(Message.MEMBER_TAG_NAME_NOT_EMPTY);
-		}
-		List<MemberTagDto> dtos =  memberTagMapper.searchName(wechatId, model.getName());
-		return dtos;
-	}
+                //校验标签类型
+                String typeName = r.get("TYPE");
+                if (StringUtils.isEmpty(typeName)) {
+                    wr.writeRecord(produceException(r, "标签类型不能为空"));
+                    break;
+                }
 
-	@Override
-	public List<MemberTag> exportList(Integer wechatId, MemberTagModel model) {
-		return memberTagMapper.search(wechatId, null, null, model.getIds(),
-				null, null);
-	}
-	@Override
-	@Transactional(rollbackFor=Exception.class)
-	public void saveMemberTagTypeInfo(MemberTagTypeInput memberTagTypeInput) {
+                //校验标签
+                String tag = r.get("TAG");
+                if (StringUtils.isEmpty(tag)) {
+                    wr.writeRecord(produceException(r, "标签不能为空"));
+                    break;
+                }
 
-		MemberTagTypeInfoModel memberTagTypeModel = new MemberTagTypeInfoModel();
-		memberTagTypeModel.setName(memberTagTypeInput.getMemberTgTypeName());
-		memberTagTypeModel.setWechat_id(memberTagTypeInput.getWechatId());
-		memberTagTypeModel.setParentName(memberTagTypeInput.getParentMemberTgTypeName());
-		memberTagTypeMapper.saveMemberTagTypeInfo(memberTagTypeModel);
-		Long id = memberTagTypeMapper.selectID(memberTagTypeInput.getMemberTgTypeName());
-		MemberTagInfoModel memberTagModel = new MemberTagInfoModel();
-		
-		memberTagModel.setName(memberTagTypeInput.getMemberTgName());
-		memberTagModel.setMemberTagTypeId(id.intValue());
-		memberTagModel.setWechat_id(memberTagTypeInput.getWechatId());
-		memberTagMapper.saveMemberTagInfo(memberTagModel);
-		
-		
-		
-	}
+                //检查openID是否存在
+                if (selectCount(openId) <= 0) {
+                    wr.writeRecord(produceException(r, "不存在此会员OpenID"));
+                    break;
+                }
+
+                //检查标签类型是否存在
+                if (selectOne(typeName, dto.getWechatId()) == null) {
+                    wr.writeRecord(produceException(r, "不存在此类标签类型"));
+                    break;
+                }
+
+                //检查对应类型的标签是否存在
+                if (!checkTagsIsExist(tag, typeName, dto.getWechatId())) {
+                    wr.writeRecord(produceException(r, "不存在此标签"));
+                    break;
+                }
+
+                /*Map<String, Object> map = new HashMap<>();
+                map.put(typeName, tag);*/
+                /*
+                csvDto.setOpenId(openId);
+                csvDto.setTag(tag);
+                csvDto.setTypeName(typeName);*/
+                JSONObject subjson = new JSONObject();
+                subjson.put(r.get("TYPE"), r.get("TAG"));
+                json.put(openId, subjson);
+
+
+            }
+            /*list.add(csvDto);
+            log.info("csvDto:" + JSON.toJSON(csvDto));*/
+            wr.close();
+            r.close();
+
+            //3、保存csv格式标签数据，并发起任务调度
+            saveResolveCsvTags(json, except, dto);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * 发起异步任务调度
+     *
+     * @param taskName
+     * @param runTask
+     * @param record
+     */
+    public void schedulerTask(String taskName, Date runTask, MemberTagCsv record) {
+        try {
+            Map<String, Object> jobMap = new HashMap<String, Object>();
+            jobMap.put("jobGroup", 1);
+            jobMap.put("jobDesc", taskName);
+            jobMap.put("jobCron", DateUtil.cron.format(runTask));
+            jobMap.put("executorHandler", "memberTagCsvJob");
+            jobMap.put("executorParam", "-d" + TenantContext.getCurrentTenant() + "," + record.getId());
+
+            ReturnT<String> returnT = schedulerRestService.addJob(jobMap);
+            log.info("jobMap:" + JSON.toJSON(jobMap));
+            log.info("returnT执行结果:" + JSON.toJSON(returnT));
+            if (ReturnT.FAIL_CODE == returnT.getCode()) {
+                throw new WechatException(
+                 Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
+            }
+        } catch (Exception e) {
+            log.error(e.getLocalizedMessage(), e);
+            throw new WechatException(
+             Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
+        }
+    }
+
+    /**
+     * 保存csv格式标签数据
+     *
+     * @param json
+     * @param except
+     * @param dto
+     * @return
+     */
+    public int saveResolveCsvTags(JSONObject json, String[] except, ImportCsvDto dto) {
+        Date current = new Date();
+        long currentTime = System.currentTimeMillis();
+        long m = 1L * 60L * 1000L;
+        long runAt = currentTime + m;
+        Date runTask = new Date(runAt);
+        String dateTask = DateUtil.formatYYYYMMDDHHMMSS(runTask);
+        String taskName = "MemberAddTagCSV_" + dateTask;
+        String data = JSON.toJSONString(json);
+
+        MemberTagCsv record = new MemberTagCsv();
+        record.setCsv(dto.getCsv());
+        record.setException(except[1]);
+        record.setStatus(MemberTagCsvStatus.PREPARE.getValue());
+        record.setWechatId(dto.getWechatId());
+        record.setCreatorId(dto.getUserId());
+        record.setTask(taskName);
+        record.setData(data);
+        record.setCreatedAt(current);
+        record.setOriFile(dto.getOriFileName());
+        int result = memberTagCsvService.save(record);
+        log.info("save csv&exception: {}", result);
+        //发起任务调度
+        schedulerTask(taskName, runTask, record);
+        return result;
+    }
+
+    /**
+     * 获取标签信息
+     *
+     * @param typeName
+     * @param wechatId
+     * @return
+     */
+    public MemberTagType selectOne(String typeName, Integer wechatId) {
+        MemberTagType memberTagType = new MemberTagType();
+        memberTagType.setName(typeName);
+        memberTagType.setWechatId(wechatId);
+        return memberTagTypeMapper.selectOne(memberTagType);
+    }
+
+
+    /**
+     * 查询openID是否存在
+     *
+     * @param openId
+     * @return
+     */
+    public Integer selectCount(String openId) {
+        Member member = new Member();
+        member.setOpenId(openId);
+        return memberMapper.selectCount(member);
+
+    }
+
+
+    /**
+     * 检查标签是否存在
+     *
+     * @param tagStr
+     * @param typeName
+     * @param wechatId
+     * @return
+     */
+    public Boolean checkTagsIsExist(String tagStr, String typeName, Integer wechatId) {
+        MemberTagType memberTagType = selectOne(typeName, wechatId);
+        String[] tags = tagStr.split("\\|");
+        for (String tag : tags) {
+            MemberTag memberTag = new MemberTag();
+            memberTag.setMemberTagTypeId(memberTagType.getId());
+            memberTag.setName(tag);
+            memberTag.setWechatId(wechatId);
+            memberTag.setStatus((byte) 1);
+            memberTag = memberTagMapper.selectOne(memberTag);
+            if (memberTag == null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private String[] produceException(CsvReader r, String error) throws IOException {
+        String[] exception = new String[4];
+        exception[0] = r.getRawRecord().split(",")[0];
+        exception[1] = r.get("TYPE");
+        exception[2] = r.get("TAG");
+        exception[3] = error;
+        return exception;
+    }
+
+    private String[] createExceptionFile(String uploadPath, String csv, String csvName) throws IOException {
+        File f = new File(uploadPath);
+        String uuid = UUID.randomUUID().toString().replace("-", "_");
+        String[] content = new String[2];
+        content[0] = f.getParent() + "//" + uuid + ".csv";
+        String exceptionPath = csv.replace(csvName, "");
+        content[1] = exceptionPath + uuid + ".csv";
+        return content;
+    }
+
+    @Override
+    public MemberTag selectOne(MemberTag memberTag) {
+        return memberTagMapper.selectOne(memberTag);
+    }
+
+    @Override
+    public List<MemberTagDto> getAllMemberTags(Integer wechatId, Integer memberTagTypeId) {
+        return memberTagMapper.getAllMemberTags(wechatId, memberTagTypeId);
+    }
+
+    @Override
+    public void moveTag(Integer wechatId, MemberTagModel model) {
+        if (model.getIds() == null || model.getIds().isEmpty()) {
+            throw new WechatException(Message.MEMBER_TAG_NOT_BLANK);
+        }
+        notBlank(model.getMemberTagTypeId(), Message.MEMBER_TAG_TYPE_NOT_BLANK);
+        for (Integer id : model.getIds()) {
+            MemberTag record = new MemberTag();
+            record.setId(id);
+            record.setMemberTagTypeId(model.getMemberTagTypeId());
+            memberTagMapper.updateByPrimaryKeySelective(record);
+        }
+    }
+
+    @Override
+    public List<MemberTagDto> searchName(Integer wechatId, MemberTagModel model) {
+        if (model.getName() == null || model.getName().length() == 0) {
+            throw new WechatException(Message.MEMBER_TAG_NAME_NOT_EMPTY);
+        }
+        List<MemberTagDto> dtos = memberTagMapper.searchName(wechatId, model.getName());
+        return dtos;
+    }
+
+    @Override
+    public List<MemberTag> exportList(Integer wechatId, MemberTagModel model) {
+        return memberTagMapper.search(wechatId, null, null, model.getIds(),
+         null, null);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveMemberTagTypeInfo(MemberTagTypeInput memberTagTypeInput) {
+
+        MemberTagTypeInfoModel memberTagTypeModel = new MemberTagTypeInfoModel();
+        memberTagTypeModel.setName(memberTagTypeInput.getMemberTgTypeName());
+        memberTagTypeModel.setWechat_id(memberTagTypeInput.getWechatId());
+        memberTagTypeModel.setParentName(memberTagTypeInput.getParentMemberTgTypeName());
+        memberTagTypeMapper.saveMemberTagTypeInfo(memberTagTypeModel);
+        Long id = memberTagTypeMapper.selectID(memberTagTypeInput.getMemberTgTypeName());
+        MemberTagInfoModel memberTagModel = new MemberTagInfoModel();
+
+        memberTagModel.setName(memberTagTypeInput.getMemberTgName());
+        memberTagModel.setMemberTagTypeId(id.intValue());
+        memberTagModel.setWechat_id(memberTagTypeInput.getWechatId());
+        memberTagMapper.saveMemberTagInfo(memberTagModel);
+
+
+    }
 }
