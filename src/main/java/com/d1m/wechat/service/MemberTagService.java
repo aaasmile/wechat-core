@@ -3,6 +3,7 @@ package com.d1m.wechat.service;
 import java.util.Date;
 import java.util.List;
 
+import com.d1m.wechat.dto.ImportCsvDto;
 import com.d1m.wechat.dto.MemberTagDto;
 import com.d1m.wechat.dto.ReportMemberTagDto;
 import com.d1m.wechat.exception.WechatException;
@@ -33,6 +34,12 @@ public interface MemberTagService extends IService<MemberTag> {
 			Integer top);
 
 	void csvAddMemberTag(Integer wechatId, String uploadPath, Integer userId, String oriFileName, String csv, String csvName);
+
+	/**
+	 * 解析csv上传文件并保存
+	 * @param dto
+	 */
+	void csvAddMemberTag(ImportCsvDto dto);
 
 	MemberTag selectOne(MemberTag memberTag);
 	
