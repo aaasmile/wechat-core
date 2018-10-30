@@ -371,8 +371,6 @@ public class MemberTagServiceImpl extends BaseService<MemberTag> implements
             CsvWriter wr = new CsvWriter(except[0], ',', Charset.forName("UTF-8"));
             String[] head = {"OPEN_ID", "TYPE", "TAG", "Fail_Reason"};
             wr.writeRecord(head);
-            List<CsvDto> list = new ArrayList<>();
-            CsvDto csvDto = new CsvDto();
             //2、遍历数据
             while (r.readRecord()) {
                 log.debug("csvAddMemberTag>>" + r.getRawRecord());
