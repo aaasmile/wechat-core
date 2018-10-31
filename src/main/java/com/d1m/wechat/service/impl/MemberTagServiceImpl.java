@@ -373,7 +373,7 @@ public class MemberTagServiceImpl extends BaseService<MemberTag> implements
             wr.writeRecord(head);
             //2、遍历数据
             while (r.readRecord()) {
-                log.debug("csvAddMemberTag>>" + r.getRawRecord());
+                log.info("csvAddMemberTag>>" + r.getRawRecord());
                 //校验OpenID
                 String openId = r.getRawRecord().split(",")[0];
                 if (StringUtils.isEmpty(openId)) {
