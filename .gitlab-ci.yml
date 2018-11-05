@@ -19,7 +19,7 @@ deploy-dev:
   tags:
     - shell-dev
   script:
-    - cd /root/docker-swarm/
+    - cd /etc/docker-swarm/
     - docker stack deploy -c wechat.yml wechat
 
 push-dev:
@@ -28,33 +28,5 @@ push-dev:
     - dev
   tags:
     - shell-dev
-  script:
-    - mvn docker:push
-
-build-uat:
-  stage: build
-  only:
-    - uat
-  tags:
-    - shell-uat
-  script:
-    - mvn -Dmaven.test.skip=true clean package
-
-deploy-uat:
-  stage: deploy
-  only:
-    - uat
-  tags:
-    - shell-uat
-  script:
-    - cd /root/docker-swarm/
-    - docker stack deploy -c wechat.yml wechat
-
-push-uat:
-  stage: push
-  only:
-    - uat
-  tags:
-    - shell-uat
   script:
     - mvn docker:push
