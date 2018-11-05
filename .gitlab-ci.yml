@@ -29,4 +29,4 @@ deploy-dev:
     - shell-53
   script:
     - cd /etc/docker-swarm/
-    - docker stack deploy -c wechat.yml wechat
+    - docker stack deploy -c wechat1.yml wechat1
