@@ -792,6 +792,8 @@
         <result column="is_subscribe" jdbcType="BIT" property="isSubscribe"/>
         <result column="last_conversation_at" jdbcType="TIMESTAMP" property="lastConversationAt"/>
         <result column="bindStatus" jdbcType="INTEGER" property="bindStatus"/>
+        <collection column="{memberId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.MemberTagDto"
+                    property="memberTags" select="getMemberMemberTags"/>
     </resultMap>
 
     <update id="updateBatchSendMonth">
