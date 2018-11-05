@@ -30,3 +30,13 @@ deploy-dev:
   script:
     - cd /etc/docker-swarm/
     - docker stack deploy -c wechat1.yml wechat1
+    
+deploy-uat:
+  stage: deploy
+  only:
+    - uat
+  tags:
+    - shell-122
+  script:
+    - cd /root/docker-swarm/
+    - docker stack deploy -c wechat1.yml wechat1
