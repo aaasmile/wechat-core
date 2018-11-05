@@ -1,7 +1,7 @@
 stages:
   - build
-  - deploy
   - push
+  - deploy
 
 build-dev:
   stage: build
