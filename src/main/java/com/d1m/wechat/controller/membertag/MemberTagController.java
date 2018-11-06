@@ -188,24 +188,24 @@ public class MemberTagController extends BaseController {
 
     }
 
-
-    @ApiOperation(value = "会员标签CSV批量导入", tags = "会员标签接口")
-    @ApiResponse(code = 200, message = "1-会员标签CSV批量导入成功")
-    @RequestMapping(value = "tag-task.json", method = RequestMethod.POST)
-    @ResponseBody
-    public JSONObject addMemberTagTaskList(
-     @ApiParam(name = "AddMemberTagTaskModel", required = false)
-     @RequestBody(required = false) AddMemberTagTaskModel tagTask,
-     HttpSession session, HttpServletRequest request,
-     HttpServletResponse response) {
-        if (tagTask == null) {
-            tagTask = new AddMemberTagTaskModel();
-        }
-        Page<MemberTagCsv> memberTagCsvs = memberTagCsvService.searchTask(
-         getWechatId(session), tagTask, true);
-        return representation(Message.MEMBER_TAG_TASK_LIST_SUCCESS, memberTagCsvs.getResult(),
-         tagTask.getPageNum(), tagTask.getPageSize(), memberTagCsvs.getTotal());
-    }
+//
+//    @ApiOperation(value = "会员标签CSV批量导入", tags = "会员标签接口")
+//    @ApiResponse(code = 200, message = "1-会员标签CSV批量导入成功")
+//    @RequestMapping(value = "tag-task.json", method = RequestMethod.POST)
+//    @ResponseBody
+//    public JSONObject addMemberTagTaskList(
+//     @ApiParam(name = "AddMemberTagTaskModel", required = false)
+//     @RequestBody(required = false) AddMemberTagTaskModel tagTask,
+//     HttpSession session, HttpServletRequest request,
+//     HttpServletResponse response) {
+//        if (tagTask == null) {
+//            tagTask = new AddMemberTagTaskModel();
+//        }
+//        Page<MemberTagCsv> memberTagCsvs = memberTagCsvService.searchTask(
+//         getWechatId(session), tagTask, true);
+//        return representation(Message.MEMBER_TAG_TASK_LIST_SUCCESS, memberTagCsvs.getResult(),
+//         tagTask.getPageNum(), tagTask.getPageSize(), memberTagCsvs.getTotal());
+//    }
 
     @ApiOperation(value = "会员标签移动", tags = "会员标签接口")
     @ApiResponse(code = 200, message = "1-会员标签移动成功")
