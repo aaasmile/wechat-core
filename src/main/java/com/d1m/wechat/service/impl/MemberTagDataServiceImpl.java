@@ -5,11 +5,14 @@ import cn.afterturn.easypoi.excel.annotation.Excel;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
 import com.d1m.wechat.domain.entity.MemberTagCsv;
 import com.d1m.wechat.domain.entity.MemberTagData;
+import com.d1m.wechat.exception.BatchAddTagException;
+import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.MemberTagDataMapper;
 import com.d1m.wechat.model.enums.MemberTagCsvStatus;
 import com.d1m.wechat.model.enums.MemberTagDataStatus;
 import com.d1m.wechat.service.MemberTagCsvService;
 import com.d1m.wechat.service.MemberTagDataService;
+import com.d1m.wechat.util.Message;
 import com.d1m.wechat.util.MyMapper;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.MappingIterator;
@@ -83,16 +86,20 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
     }
 
     private void entitiesProcess(Collection<BatchEntity> entities, Integer fileId) {
-        final int result = memberTagCsvService.updateByPrimaryKeySelective(MemberTagCsv
-                .builder()
-                .fileId(fileId)
-                .rows(entities.size())
-                .lastUpdateTime(Timestamp.valueOf(LocalDateTime.now()))
-                .status(MemberTagCsvStatus.ALREADY_IMPORTED)
-                .build());
-        if (result < 1 || CollectionUtils.isEmpty(entities)) {
+        final MemberTagCsv memberTagCsv = memberTagCsvService
+                .selectByKey(MemberTagCsv.builder().fileId(fileId).build());
+        if (Objects.isNull(memberTagCsv)) {
+            throw new WechatException(Message.FILE_EXT_NOT_SUPPORT);
+        }
+        memberTagCsv.setStatus(MemberTagCsvStatus.ALREADY_IMPORTED);
+        memberTagCsv.setRows(entities.size());
+        memberTagCsv.setLastUpdateTime(Timestamp.valueOf(LocalDateTime.now()));
+
+        memberTagCsvService.updateByPrimaryKeySelective(memberTagCsv);
+
+        if (CollectionUtils.isEmpty(entities)) {
             log.warn("fileId有误，或者成功解析0行数据！");
-            throw new RuntimeException("");
+            throw new BatchAddTagException("解析失败，请下载excel模板按照格式添加数据！");
         }
 
         final List<MemberTagData> memberTagDataList = entities.stream().map(e ->
@@ -100,6 +107,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                         .builder()
                         .fileId(fileId)
                         .openId(e.getOpenid())
+                        .wechatId(memberTagCsv.getWechatId())
                         .originalTag(e.getTag())
                         .status(MemberTagDataStatus.UNTREATED)
                         .createdAt(Timestamp.valueOf(LocalDateTime.now()))

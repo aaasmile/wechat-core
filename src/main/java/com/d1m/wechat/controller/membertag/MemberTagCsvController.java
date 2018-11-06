@@ -3,6 +3,7 @@ package com.d1m.wechat.controller.membertag;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.domain.entity.MemberTagCsv;
 import com.d1m.wechat.domain.web.BaseResponse;
+import com.d1m.wechat.exception.BatchAddTagException;
 import com.d1m.wechat.model.enums.MemberTagCsvStatus;
 import com.d1m.wechat.service.MemberTagCsvService;
 import com.d1m.wechat.service.MemberTagDataService;
@@ -72,11 +73,24 @@ public class MemberTagCsvController extends BaseController {
             memberTagCsvBuilder.encoding("UTF-8");
         }
         final MemberTagCsv memberTagCsv = memberTagCsvBuilder.build();
-        memberTagCsvService.insert(memberTagCsv);
-        if (originalFilename.endsWith(".csv")) {
-            memberTagDataService.batchInsertFromCsv(memberTagCsv.getFileId(), targetFile);
-        } else {
-            memberTagDataService.batchInsertFromExcel(memberTagCsv.getFileId(), targetFile);
+        try {
+            memberTagCsvService.insert(memberTagCsv);
+            if (originalFilename.endsWith(".csv")) {
+                memberTagDataService.batchInsertFromCsv(memberTagCsv.getFileId(), targetFile);
+            } else {
+                memberTagDataService.batchInsertFromExcel(memberTagCsv.getFileId(), targetFile);
+            }
+        } catch (RuntimeException e) {
+            memberTagCsvService.updateByPrimaryKeySelective(MemberTagCsv.builder()
+                    .fileId(memberTagCsv.getFileId())
+                    .status(MemberTagCsvStatus.PROCESS_FAILURE)
+                    .errorMsg(e.getMessage())
+                    .build());
+
+            return BaseResponse.builder()
+                    .resultCode(Message.CSV_OR_EXCEL_PARSER_FAIL.getCode())
+                    .msg(Message.CSV_OR_EXCEL_PARSER_FAIL.getName())
+                    .build();
         }
         return BaseResponse.builder()
                 .resultCode(Message.FILE_UPLOAD_SUCCESS.getCode())
