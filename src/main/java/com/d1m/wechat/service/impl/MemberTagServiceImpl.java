@@ -422,35 +422,7 @@ public class MemberTagServiceImpl extends BaseService<MemberTag> implements
 
     }
 
-    /**
-     * 发起异步任务调度
-     *
-     * @param taskName
-     * @param runTask
-     * @param record
-     */
-    public void schedulerTask(String taskName, Date runTask, MemberTagCsv record) {
-        try {
-            Map<String, Object> jobMap = new HashMap<String, Object>();
-            jobMap.put("jobGroup", 1);
-            jobMap.put("jobDesc", taskName);
-            jobMap.put("jobCron", DateUtil.cron.format(runTask));
-            jobMap.put("executorHandler", "memberTagCsvJob");
-            jobMap.put("executorParam", "-d" + TenantContext.getCurrentTenant() + "," + record.getId());
 
-            ReturnT<String> returnT = schedulerRestService.addJob(jobMap);
-            log.info("jobMap:" + JSON.toJSON(jobMap));
-            log.info("returnT执行结果:" + JSON.toJSON(returnT));
-            if (ReturnT.FAIL_CODE == returnT.getCode()) {
-                throw new WechatException(
-                        Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
-            }
-        } catch (Exception e) {
-            log.error(e.getLocalizedMessage(), e);
-            throw new WechatException(
-                    Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
-        }
-    }
 
     /**
      * 保存csv格式标签数据

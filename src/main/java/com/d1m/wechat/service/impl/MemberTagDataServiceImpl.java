@@ -3,8 +3,10 @@ package com.d1m.wechat.service.impl;
 import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.d1m.common.ds.TenantContext;
 import com.d1m.wechat.domain.entity.MemberTagCsv;
 import com.d1m.wechat.domain.entity.MemberTagData;
 import com.d1m.wechat.exception.BatchAddTagException;
@@ -14,18 +16,20 @@ import com.d1m.wechat.mapper.MemberTagDataMapper;
 import com.d1m.wechat.mapper.MemberTagMapper;
 import com.d1m.wechat.model.Member;
 import com.d1m.wechat.model.MemberTag;
-import com.d1m.wechat.model.MemberTagType;
 import com.d1m.wechat.model.enums.MemberTagCsvStatus;
 import com.d1m.wechat.model.enums.MemberTagDataStatus;
+import com.d1m.wechat.schedule.SchedulerRestService;
 import com.d1m.wechat.service.MemberTagCsvService;
 import com.d1m.wechat.service.MemberTagDataService;
 import com.d1m.wechat.service.MemberTagService;
+import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
 import com.d1m.wechat.util.MyMapper;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.xxl.job.core.biz.model.ReturnT;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -38,9 +42,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -65,6 +67,9 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
     @Autowired
     private MemberMapper memberMapper;
+
+    @Autowired
+    private SchedulerRestService schedulerRestService;
 
     private CsvMapper csvMapper = new CsvMapper();
 
@@ -104,6 +109,13 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
     }
 
     private void entitiesProcess(Collection<BatchEntity> entities, Integer fileId) {
+        long currentTime = System.currentTimeMillis();
+        long m = 1L * 60L * 1000L;
+        long runAt = currentTime + m;
+        Date runTask = new Date(runAt);
+        String dateTask = DateUtil.formatYYYYMMDDHHMMSS(runTask);
+        String taskName = "MemberAddTagCSV_" + dateTask;
+
         final MemberTagCsv memberTagCsv = memberTagCsvService
          .selectByKey(MemberTagCsv.builder().fileId(fileId).build());
         if (Objects.isNull(memberTagCsv)) {
@@ -112,7 +124,8 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         memberTagCsv.setStatus(MemberTagCsvStatus.ALREADY_IMPORTED);
         memberTagCsv.setRows(entities.size());
         memberTagCsv.setLastUpdateTime(Timestamp.valueOf(LocalDateTime.now()));
-
+        memberTagCsv.setTask(dateTask);
+        memberTagCsv.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
         memberTagCsvService.updateByPrimaryKeySelective(memberTagCsv);
 
         if (CollectionUtils.isEmpty(entities)) {
@@ -135,8 +148,41 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         memberTagDataMapper.insertList(memberTagDataList);
 
         log.info("Batch insert finish!");
+
+        //发起任务调度
+        schedulerTask(taskName, runTask, memberTagCsv);
+        log.info("Batch schedulerTask finish!");
     }
 
+    /**
+     * 发起异步任务调度
+     *
+     * @param taskName
+     * @param runTask
+     * @param record
+     */
+    public void schedulerTask(String taskName, Date runTask, MemberTagCsv record) {
+        try {
+            Map<String, Object> jobMap = new HashMap<String, Object>();
+            jobMap.put("jobGroup", 1);
+            jobMap.put("jobDesc", taskName);
+            jobMap.put("jobCron", DateUtil.cron.format(runTask));
+            jobMap.put("executorHandler", "memberTagCsvJob");
+            jobMap.put("executorParam", "-d" + TenantContext.getCurrentTenant() + "," + record.getFileId());
+
+            ReturnT<String> returnT = schedulerRestService.addJob(jobMap);
+            log.info("jobMap:" + JSON.toJSON(jobMap));
+            log.info("returnT执行结果:" + JSON.toJSON(returnT));
+            if (ReturnT.FAIL_CODE == returnT.getCode()) {
+                throw new WechatException(
+                 Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
+            }
+        } catch (Exception e) {
+            log.error(e.getLocalizedMessage(), e);
+            throw new WechatException(
+             Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
+        }
+    }
 
     @SuppressWarnings("WeakerAccess")
     @Data
@@ -164,21 +210,21 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                 //校验OpenID
                 if (StringUtils.isEmpty(memberTagData.getOpenId())) {
                     updateErrorMsg(memberTagData.getDataId(), "会员OpenID不能为空");
-                    log.info("dataId:"+memberTagData.getDataId()+"，会员OpenID不能为空！");
+                    log.info("dataId:" + memberTagData.getDataId() + "，会员OpenID不能为空！");
                     list.remove(memberTagData);
                 }
 
                 //校验标签
                 if (StringUtils.isEmpty(memberTagData.getOriginalTag())) {
                     updateErrorMsg(memberTagData.getDataId(), "标签不能为空");
-                    log.info("dataId:"+memberTagData.getDataId()+"，标签不能为空！");
+                    log.info("dataId:" + memberTagData.getDataId() + "，标签不能为空！");
                     list.remove(memberTagData);
                 }
 
                 //检查openID是否存在
                 if (selectCount(memberTagData.getOpenId()) <= 0) {
                     updateErrorMsg(memberTagData.getDataId(), "不存在此会员OpenID");
-                    log.info("dataId:"+memberTagData.getDataId()+"，不存在此会员OpenID！");
+                    log.info("dataId:" + memberTagData.getDataId() + "，不存在此会员OpenID！");
                     list.remove(memberTagData);
                 }
 
@@ -227,8 +273,8 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                 memberTagData.setDataId(dataId);
                 memberTagData.setCheckStatus(false);
                 int t = memberTagDataMapper.updateByPrimaryKey(memberTagData);
-                if(t==1){
-                    log.info("原始标签"+originalTag+"，都不存在！");
+                if (t == 1) {
+                    log.info("原始标签" + originalTag + "，都不存在！");
                 }
             }
         } catch (Exception e) {
@@ -331,7 +377,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                 //Integer dataId, String errorMsg, String tag, String errorTag
                 updateErrorTagAndErrorMsg(dataId, errorMsg, null, tag);
             } else {
-                updateErrorTagAndErrorMsg(dataId,null, tag, null);
+                updateErrorTagAndErrorMsg(dataId, null, tag, null);
             }
         }
     }
