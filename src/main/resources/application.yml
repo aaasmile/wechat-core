@@ -62,8 +62,6 @@ jdbc.user: ${MYSQL_USER:root}
 jdbc.password: ${MYSQL_PASSWORD:root}
 jdbc.enableDynamic: ${ENABLE_DYNAMIC:false}
 
-batch-add-tags:
-  file-dir: /tmp/
 
 ---
 #云环境配置

@@ -35,9 +35,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -56,7 +56,7 @@ public class MemberTagCsvController extends BaseController {
     @Autowired
     private MemberTagDataService memberTagDataService;
 
-    @Value("${batch-add-tags.file-dir}")
+    @Value("${upload.path}")
     private String fileDir;
 
     @PostMapping("/csv_excel")
@@ -70,7 +70,8 @@ public class MemberTagCsvController extends BaseController {
             return BaseResponse.builder().msg("不支持的文件格式").build();
         }
 
-        String fileFullName = fileDir + LocalDate.now().toString() + "/" + LocalTime.now().toString() + "_" + file.getOriginalFilename();
+
+        String fileFullName = fileDir + LocalDate.now().toString() + "/" + UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 
         final File targetFile = new File(fileFullName);
 
