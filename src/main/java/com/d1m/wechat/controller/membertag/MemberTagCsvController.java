@@ -57,9 +57,6 @@ public class MemberTagCsvController extends BaseController {
     @Autowired
     private MemberTagDataService memberTagDataService;
 
-    @Value("${upload.path}")
-    private String fileDir;
-
     @PostMapping("/csv_excel")
     @ApiOperation(value = "上传excel或者csv批量为用户打标签")
     public BaseResponse batchAddTagsOnCsv(@RequestParam MultipartFile file) throws Exception {
