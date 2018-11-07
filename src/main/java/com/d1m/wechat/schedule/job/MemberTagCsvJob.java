@@ -19,19 +19,11 @@ import com.xxl.job.core.handler.annotation.JobHander;
 import com.xxl.job.core.log.XxlJobLogger;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
-import static com.d1m.wechat.model.enums.MemberTagCsvStatus.IN_IMPORT;
-import static com.d1m.wechat.model.enums.MemberTagCsvStatus.PROCESS_FAILURE;
-import static com.d1m.wechat.model.enums.MemberTagCsvStatus.PROCESS_SUCCEED;
-import static com.d1m.wechat.model.enums.MemberTagDataStatus.IN_PROCESS;
 
 @JobHander(value = "memberTagCsvJob")
 @Component
@@ -60,38 +52,43 @@ public class MemberTagCsvJob extends BaseJobHandler {
     public ReturnT<String> run(String... strings) throws Exception {
         String errorMsg = null;
         try {
-        if (strings != null) {
-            //获取导入文件id
-            Integer fileId = ParamUtil.getInt(strings[0], null);
-            XxlJobLogger.log("获取导入文件id : " + fileId);
-            //设置上传文件为导入中状态
-            updateFileStatus(fileId, IN_IMPORT);
-            //设置上传数据状态为处理中
-            updateDataStatus(fileId, IN_PROCESS);
-            //数据标签检查
-            List<MemberTagData> list = getMembertagCsvData(fileId);
-            if (CollectionUtils.isNotEmpty(list)) {
-                log.info("======准备数据标签检查》》》》》============");
-                memberTagDataService.checkDataIsOK(list);
-            } else {
-                errorMsg = "没有找到数据！";
-                updateCsv(fileId, errorMsg);
-                log.info("fileId:" + fileId + "," + errorMsg);
-            }
 
-            //获取待加签的正确数据
-            List<MemberTagData> addTagsDataList = getCsvData(fileId);
-            if (CollectionUtils.isNotEmpty(list)) {
-                log.info("======准备加签》》》》》============");
-                addTags(addTagsDataList, fileId);
-            } else {
-                errorMsg = "没有找到正确数据！";
-                updateCsv(fileId, errorMsg);
-                log.info("fileId:" + fileId + "," + errorMsg);
+            if (strings != null) {
+                //获取导入文件id
+                Integer fileId = ParamUtil.getInt(strings[0], null);
+                XxlJobLogger.log("获取导入文件id : " + fileId);
+                //设置上传文件为导入中状态
+                updateFileStatus(fileId, MemberTagCsvStatus.IN_IMPORT);
+                //设置上传数据状态为处理中
+                updateDataStatus(fileId, MemberTagDataStatus.IN_PROCESS);
+                //数据标签检查
+                List<MemberTagData> list = getMembertagCsvData(fileId);
+                if (CollectionUtils.isNotEmpty(list)) {
+                    log.info("======准备数据标签检查》》》》》============");
+                    memberTagDataService.checkDataIsOK(list);
+                } else {
+                    errorMsg = "没有找到数据！";
+                    updateCsv(fileId, errorMsg);
+                    log.info("fileId:" + fileId + "," + errorMsg);
+                }
+
+                //获取待加签的正确数据
+                List<MemberTagData> addTagsDataList = getCsvData(fileId);
+                if (CollectionUtils.isNotEmpty(list)) {
+                    log.info("======准备加签》》》》》============");
+                    addTags(addTagsDataList);
+                } else {
+                    errorMsg = "没有找到正确数据！";
+                    updateCsv(fileId, errorMsg);
+                    log.info("fileId:" + fileId + "," + errorMsg);
+                }
+
+                //统计结果
+                log.info("======统计结果》》》》》============");
+                updateCountCsv(fileId);
             }
-        }
             return ReturnT.SUCCESS;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             XxlJobLogger.log("会员导入批量加标签失败：" + e.getMessage());
             return ReturnT.FAIL;
@@ -110,7 +107,7 @@ public class MemberTagCsvJob extends BaseJobHandler {
         csv.setErrorMsg(errorMsg);
         csv.setSuccessCount(0);
         csv.setFailCount(0);
-        csv.setStatus(PROCESS_SUCCEED);
+        csv.setStatus(MemberTagCsvStatus.PROCESS_SUCCEED);
         memberTagCsvMapper.updateByPrimaryKey(csv);
     }
 
@@ -137,14 +134,14 @@ public class MemberTagCsvJob extends BaseJobHandler {
 
 
     /**
-     * 批量加标签
+     * 批量导入加标签处理
      *
      * @param list
      * @throws Exception
      */
-    public void addTags(List<MemberTagData> list, Integer fileId) throws Exception {
+    public Boolean addTags(List<MemberTagData> list) throws Exception {
         List<MemberMemberTag> tagsList = new ArrayList<>();
-        MemberTagCsvStatus status = null;
+        MemberTagDataStatus status = null;
         String errorMsg = null;
         Boolean result = false;
         int suceessCount = 0;
@@ -181,24 +178,27 @@ public class MemberTagCsvJob extends BaseJobHandler {
             log.info("待加标签数据：" + JSON.toJSON(tagsList));
             if (CollectionUtils.isNotEmpty(tagsList)) {
                 suceessCount = memberMemberTagMapper.insertList(tagsList);
-                suceessCount++;
                 log.info("======加签中，已完成：》》》》》=" + suceessCount + "===========");
+                suceessCount++;
             }
-            //status=PROCESS_SUCCEED;
+            status = MemberTagDataStatus.PROCESS_SUCCEED;
             result = true;
         } catch (Exception e) {
-            status = PROCESS_FAILURE;
+            status = MemberTagDataStatus.PROCESS_FAILURE;
             errorMsg = "数据执行加签异常！";
             e.printStackTrace();
             log.info(errorMsg + e.getMessage());
         } finally {
-            MemberTagCsv csv = new MemberTagCsv();
-            csv.setFileId(fileId);
-            csv.setStatus(status);
-            csv.setErrorMsg(errorMsg);
-            int t = memberTagCsvMapper.updateByPrimaryKeySelective(csv);
-            log.info("更新导入加签数据结果：" + t);
+            for (MemberTagData memberTagData : list) {
+                MemberTagData tagData = new MemberTagData();
+                tagData.setStatus(status);
+                tagData.setDataId(memberTagData.getDataId());
+                tagData.setErrorTag(errorMsg);
+                int t = memberTagDataMapper.updateByPrimaryKeySelective(tagData);
+                log.info("批量导入加标签处理方法:" + t);
+            }
         }
+        return result;
     }
 
 

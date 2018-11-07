@@ -1,23 +1,29 @@
 package com.d1m.wechat.controller.membertag;
 
+import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.domain.entity.MemberTagCsv;
 import com.d1m.wechat.domain.web.BaseResponse;
 import com.d1m.wechat.exception.BatchAddTagException;
 import com.d1m.wechat.model.enums.MemberTagCsvStatus;
+import com.d1m.wechat.pamametermodel.AddMemberTagTaskModel;
 import com.d1m.wechat.service.MemberTagCsvService;
 import com.d1m.wechat.service.MemberTagDataService;
 import com.d1m.wechat.util.Message;
+import com.github.pagehelper.Page;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -97,4 +103,20 @@ public class MemberTagCsvController extends BaseController {
                 .msg(Message.FILE_UPLOAD_SUCCESS.getName()).build();
     }
 
+
+    @ApiOperation(value = "会员标签CSV批量导入", tags = "会员标签接口")
+   @ApiResponse(code = 200, message = "1-会员标签CSV批量导入成功")
+    @RequestMapping(value = "tag-task.json", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject addMemberTagTaskList(
+     @ApiParam(name = "AddMemberTagTaskModel", required = false)
+     @RequestBody(required = false) AddMemberTagTaskModel tagTask) {
+        if (tagTask == null) {
+           tagTask = new AddMemberTagTaskModel();
+        }
+        Page<MemberTagCsv> memberTagCsvs = memberTagCsvService.searchTask(
+         getWechatId(), tagTask);
+       return representation(Message.MEMBER_TAG_TASK_LIST_SUCCESS, memberTagCsvs.getResult(),
+         tagTask.getPageNum(), tagTask.getPageSize(), memberTagCsvs.getTotal());
+    }
 }
