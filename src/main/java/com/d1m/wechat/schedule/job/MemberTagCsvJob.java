@@ -57,6 +57,7 @@ public class MemberTagCsvJob extends BaseJobHandler {
                 //获取导入文件id
                 Integer fileId = ParamUtil.getInt(strings[0], null);
                 XxlJobLogger.log("获取导入文件id : " + fileId);
+                log.info("获取导入文件id : " + fileId);
                 //设置上传文件为导入中状态
                 updateFileStatus(fileId, MemberTagCsvStatus.IN_IMPORT);
                 //设置上传数据状态为处理中
