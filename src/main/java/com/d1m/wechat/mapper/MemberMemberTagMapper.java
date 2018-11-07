@@ -9,4 +9,13 @@ import com.d1m.wechat.util.MyMapper;
 public interface MemberMemberTagMapper extends MyMapper<MemberMemberTag> {
 	public List<MemberMemberTag> getMemberMemberTagList(MemberMemberTag memberMemberTag);
 	public void insertOrUpdateList(List<Tag> tags);
+
+	/**
+	 * 查询标签name是否存在
+	 * @param openId
+	 * @param name
+	 * @param wechatId
+	 * @return
+	 */
+	List<MemberMemberTag> selecteIsExist(String openId,String name,Integer wechatId);
 }
