@@ -43,10 +43,10 @@ spring:
   cache:
     type: redis
     cache-names:
-      - storeCache
-      - member-session
-      - token-member
-      - member-token
+    - storeCache
+    - member-session
+    - token-member
+    - member-token
   jackson:
     date-format: 'yyyy-MM-dd HH:mm:ss'
     serialization:
@@ -61,6 +61,9 @@ jdbc.url: jdbc:mysql://${MYSQL_HOST:${ENV_HOST}}:${MYSQL_PORT:3306}/${MYSQL_DB:d
 jdbc.user: ${MYSQL_USER:root}
 jdbc.password: ${MYSQL_PASSWORD:root}
 jdbc.enableDynamic: ${ENABLE_DYNAMIC:false}
+
+batch-add-tags:
+  file-dir: /tmp/
 
 ---
 #云环境配置
