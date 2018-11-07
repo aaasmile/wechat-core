@@ -123,11 +123,11 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
     @SuppressWarnings("WeakerAccess")
     @Data
     public static class BatchEntity {
-        @Excel(name = "OPEN_ID")
-        @JsonProperty(value = "OPEN_ID")
+        @Excel(name = "OPEN_ID", isImportField = "true")
+        @JsonProperty(value = "OPEN_ID", required = true)
         private String openid;
-        @Excel(name = "TAG")
-        @JsonProperty(value = "TAG")
+        @Excel(name = "TAG", isImportField = "true")
+        @JsonProperty(value = "TAG", required = true)
         private String tag;
     }
 }
