@@ -410,6 +410,8 @@ public class MemberDto {
 		if (getUnsubscribeAt() != null) {
 			dataRow.createCell(13).setCellValue(DF.format(unsubscribeAt));
 		}
-		dataRow.createCell(14).setCellValue(unionId);
+		if(unionId != null) {
+			dataRow.createCell(14).setCellValue(unionId);
+		}
 	}
 }

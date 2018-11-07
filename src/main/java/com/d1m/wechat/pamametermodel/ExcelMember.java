@@ -219,13 +219,20 @@ public class ExcelMember {
 		} else {
 			dataRow.createCell(7).setCellValue(I18nUtil.getMessage("unbind", locale));
 		}
-
-		dataRow.createCell(8).setCellValue(subscribeat);
+		if(subscribeat != null) {
+			dataRow.createCell(8).setCellValue(subscribeat);
+		}
 		dataRow.createCell(9).setCellValue(batchsendMonth);
 		dataRow.createCell(10).setCellValue(tags);
 		dataRow.createCell(11).setCellValue(openid);
-		dataRow.createCell(12).setCellValue(bindat);
-		dataRow.createCell(13).setCellValue(unsubscribeat);
-		dataRow.createCell(14).setCellValue(unionid);
+		if(bindat != null) {
+			dataRow.createCell(12).setCellValue(bindat);
+		}
+		if(unsubscribeat != null) {
+			dataRow.createCell(13).setCellValue(unsubscribeat);
+		}
+		if(unionid != null) {
+			dataRow.createCell(14).setCellValue(unionid);
+		}
 	}
 }
