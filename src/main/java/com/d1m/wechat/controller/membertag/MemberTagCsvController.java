@@ -15,10 +15,7 @@ import com.d1m.wechat.service.MemberTagCsvService;
 import com.d1m.wechat.service.MemberTagDataService;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.*;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -27,10 +24,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tk.mybatis.mapper.entity.Example;
@@ -40,7 +33,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -124,12 +116,17 @@ public class MemberTagCsvController extends BaseController {
                 .msg(Message.FILE_UPLOAD_SUCCESS.getName()).build();
     }
 
-    @GetMapping(path = "/{id}/fail_export", consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @GetMapping(path = "/{id}/fail_export")
+    @ApiResponses(value = {@ApiResponse(code = 200, response = Void.class,
+            message = "curl -H \"Cookie: Idea-673fdd47=c963a16f-dd3b-4412-89e5-84ec8b648975; SESSION=88ad87ee-37ab-4e01-97ea-f0de7e2810f4\" -O http://host:port/member-tag/batch/64/fail_export")})
     @ApiOperation(value = "失败数据下载")
-    public ResponseEntity<Resource> failDataExport(@PathVariable Integer id, HttpServletResponse response) {
+    public BaseResponse failDataExport(@PathVariable Integer id, HttpServletResponse response) {
         final MemberTagCsv memberTagCsv = memberTagCsvService.selectByKey(id);
         if (Objects.isNull(memberTagCsv)) {
-            return ResponseEntity.ok().body(new ByteArrayResource(("{\"resultCode\": 0,\"msg\":\"找不到上传文件\"}").getBytes(StandardCharsets.UTF_8)));
+            return BaseResponse.builder()
+                    .resultCode(0)
+                    .msg("找不到上传文件")
+                    .build();
         }
         final Example example = new Example(MemberTagData.class);
         example.createCriteria()
@@ -137,13 +134,16 @@ public class MemberTagCsvController extends BaseController {
         example.or().andEqualTo("checkStatus", false);
         final List<MemberTagData> memberTagDatas = memberTagDataService.selectByExample(example);
         if (CollectionUtils.isEmpty(memberTagDatas)) {
-            return ResponseEntity.ok().body(new ByteArrayResource(("{\"resultCode\": 0,\"msg\":\"没有错误数据\"}").getBytes(StandardCharsets.UTF_8)));
+            return BaseResponse.builder()
+                    .resultCode(0)
+                    .msg("没有错误数据")
+                    .build();
         }
         final List<FailDataExport> failDataExports = memberTagDatas
                 .stream()
                 .map(FailDataExport::convert)
                 .collect(Collectors.toList());
-        ResponseEntity<Resource> responseEntity = null;
+
         try (final Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), FailDataExport.class, failDataExports)) {
 
             try (final ServletOutputStream outputStream = response.getOutputStream()) {
@@ -155,16 +155,11 @@ public class MemberTagCsvController extends BaseController {
                 response.setHeader("Content-Disposition", "attachment;filename=\"" + URLEncoder.encode(LocalDate.now() + "失败数据.xls", "UTF-8") + "\"");
 
                 workbook.write(outputStream);
-
-                responseEntity = ResponseEntity.ok()
-                        .contentType(MediaType.parseMediaType("application/x-msdownload"))
-                        .build();
-
             }
         } catch (IOException e) {
             log.error("Export fail file error", e);
         }
-        return responseEntity;
+        return null;
     }
 
     @Data
