@@ -257,8 +257,8 @@ public class MemberController extends BaseController {
 
 	public ReportXlsxStreamView memberView(Locale locale, String name,
 			List<MemberDto> memberDtoList, AreaInfoService areaInfoService, String lang) {
-		ReportXlsxStreamView view;
-		view = new ReportXlsxStreamView(name, new ReportXlsxStreamView.CellProcessor() {
+		 log.info("memberView...name..." + name + "...lang..." + lang);
+		 ReportXlsxStreamView view = new ReportXlsxStreamView(name, new ReportXlsxStreamView.CellProcessor() {
 			@Override
 			public void process(Map<String, Object> map, Workbook workbook, HttpServletRequest httpServletRequest,
 					HttpServletResponse httpServletResponse) {
@@ -289,8 +289,8 @@ public class MemberController extends BaseController {
 
 	public ReportXlsxStreamView excelMemberView(Locale locale, String name,
 			List<ExcelMember> excelMemberList) {
-		ReportXlsxStreamView view;
-		view = new ReportXlsxStreamView(name, new ReportXlsxStreamView.CellProcessor() {
+		log.info("excelMemberView...name..." + name);
+		ReportXlsxStreamView view = new ReportXlsxStreamView(name, new ReportXlsxStreamView.CellProcessor() {
 			@Override
 			public void process(Map<String, Object> map, Workbook workbook, HttpServletRequest httpServletRequest,
 					HttpServletResponse httpServletResponse) {
