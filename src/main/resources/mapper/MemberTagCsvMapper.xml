@@ -33,10 +33,33 @@
         fail_count, error_msg, remark
     </sql>
 
-    <select id="searchTask" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"/>
-        from member_tag_csv
+    <select id="searchTask" resultType="com.d1m.wechat.dto.MemberTagCsvDto">
+        SELECT
+        file_id,
+        ori_file,
+        task,
+        wechat_id,
+        creator_id,
+        created_at,
+        source_file_path,
+        exception_file_path,
+        file_size,
+        rows,
+        format,
+        encoding,
+        last_update_time,
+        success_count,
+        fail_count,
+        error_msg,
+        remark,
+        CASE `status`
+        WHEN 1 THEN 0
+        WHEN 2 THEN 0
+        WHEN 3 THEN 1
+        WHEN 4 THEN 2
+        WHEN 5 THEN 2 ELSE 0
+        END AS `status`
+        FROM member_tag_csv
         <where>
             wechat_id = #{wechatId}
             <if test="status != null">
