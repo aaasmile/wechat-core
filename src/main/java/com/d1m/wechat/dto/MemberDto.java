@@ -1,17 +1,22 @@
 package com.d1m.wechat.dto;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.poi.ss.usermodel.Row;
+
+import com.d1m.wechat.model.enums.Sex;
+import com.d1m.wechat.service.AreaInfoService;
 import com.d1m.wechat.util.Constants;
-import com.d1m.wechat.util.ConstantsUtil;
 import com.d1m.wechat.util.DateUtil;
-import org.springframework.web.servlet.support.RequestContextUtils;
+import com.d1m.wechat.util.I18nUtil;
 
 public class MemberDto {
 
+	private static final SimpleDateFormat DF = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	private Integer id;
 
 	private String unionId;
@@ -61,20 +66,20 @@ public class MemberDto {
 	private Integer conversationCount;
 
 	private Date lastConversationAt;
-	
+
 	private String level;
-	
+
 	private Integer credits;
-	
+
 	private Integer bindStatus;
-	//绑定时间 对应member表bind_at字段
+	// 绑定时间 对应member表bind_at字段
 	private String bindAt;
-	//渠道来源
+	// 渠道来源
 	private String subscribeScene;
-	//二维码扫码场景
+	// 二维码扫码场景
 	private Integer qrScene;
 
-	//二维码扫码场景描述
+	// 二维码扫码场景描述
 	private String qrSceneStr;
 
 	/**
@@ -183,11 +188,8 @@ public class MemberDto {
 	}
 
 	public boolean isOnline() {
-		return (isSubscribe != null && isSubscribe)
-				&& (lastConversationAt != null && lastConversationAt
-						.compareTo(DateUtil.changeDate(new Date(),
-								Calendar.HOUR_OF_DAY,
-								-Constants.CONVERSATION_HOUR_LIMIT)) >= 0);
+		return (isSubscribe != null && isSubscribe) && (lastConversationAt != null && lastConversationAt.compareTo(
+				DateUtil.changeDate(new Date(), Calendar.HOUR_OF_DAY, -Constants.CONVERSATION_HOUR_LIMIT)) >= 0);
 	}
 
 	public void setActivity(Byte activity) {
@@ -243,8 +245,7 @@ public class MemberDto {
 	}
 
 	public void setLocalHeadImgUrl(String localHeadImgUrl) {
-		this.localHeadImgUrl = localHeadImgUrl == null ? null : localHeadImgUrl
-				.trim();
+		this.localHeadImgUrl = localHeadImgUrl == null ? null : localHeadImgUrl.trim();
 	}
 
 	public void setMemberGroupId(Integer memberGroupId) {
@@ -349,5 +350,68 @@ public class MemberDto {
 
 	public void setQrSceneStr(String qrSceneStr) {
 		this.qrSceneStr = qrSceneStr;
+	}
+
+	/**
+	 * 条件查询，不建议全量导出
+	 * @param dataRow
+	 * @param locale
+	 * @param areaInfoService
+	 * @param lang
+	 */
+	public void fillRows(Row dataRow, Locale locale, AreaInfoService areaInfoService, String lang) {
+		String attentionStatus = "subscribe";
+		dataRow.createCell(1).setCellValue(nickname);
+		if (sex != null) {
+			dataRow.createCell(2).setCellValue(I18nUtil.getMessage(Sex.getByValue(sex).name().toLowerCase(), locale));
+		}
+        if (province != null) {
+            province = areaInfoService.selectNameById(Integer.parseInt(province), lang);
+        }
+        if (city != null) {
+        	city = areaInfoService.selectNameById(Integer.parseInt(city), lang);
+        }
+        
+		dataRow.createCell(3).setCellValue(mobile);
+		dataRow.createCell(4).setCellValue(province);
+		dataRow.createCell(5).setCellValue(city);
+
+		if (isSubscribe != null && !isSubscribe) {
+			if (unsubscribeAt != null) {
+				attentionStatus = "cancel.subscribe";
+			} else {
+				attentionStatus = "unsubscribe";
+			}
+		}
+		dataRow.createCell(6).setCellValue(I18nUtil.getMessage(attentionStatus, locale));
+
+		if (bindStatus != null && bindStatus == 1) {
+			dataRow.createCell(7).setCellValue(I18nUtil.getMessage("bind", locale));
+		} else {
+			dataRow.createCell(7).setCellValue(I18nUtil.getMessage("unbind", locale));
+		}
+
+		if (subscribeAt != null) {
+			dataRow.createCell(8).setCellValue(DF.format(subscribeAt));
+		}
+
+		dataRow.createCell(9).setCellValue(batchsendMonth == null ? 0 : batchsendMonth);
+		StringBuffer tags = new StringBuffer();
+		if (memberTags != null && !memberTags.isEmpty()) {
+			for (MemberTagDto mt : memberTags) {
+				tags.append(mt.getName()).append(" | ");
+			}
+		}
+		dataRow.createCell(10).setCellValue(tags.toString());
+		dataRow.createCell(11).setCellValue(openId);
+		if(bindAt != null) {
+			dataRow.createCell(12).setCellValue(DF.format(bindAt));
+		}
+		if (getUnsubscribeAt() != null) {
+			dataRow.createCell(13).setCellValue(DF.format(unsubscribeAt));
+		}
+		if(unionId != null) {
+			dataRow.createCell(14).setCellValue(unionId);
+		}
 	}
 }

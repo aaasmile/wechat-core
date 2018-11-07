@@ -1,12 +1,16 @@
 package com.d1m.wechat.pamametermodel;
 
-import com.d1m.wechat.util.ConstantsUtil;
+import java.util.Locale;
+
+import org.apache.poi.ss.usermodel.Row;
+
+import com.d1m.wechat.model.enums.Sex;
+import com.d1m.wechat.util.I18nUtil;
 
 public class ExcelMember {
-	
-	private String nickname,gender,mobile,province,city,subscribe,subscribeAt,
-	bind,message_sent,tags,openid, unbund_at, created_at, created,bindat,subscribeScene,
-	qrScene,qrSceneStr,unsubscribeAt;
+
+	private String nickname, gender, mobile, province, city, subscribe, subscribeat, bind, message_sent, tags, openid,
+			unbund_at, created_at, created, bindat, subscribe_scene, qr_scene, qr_scene_str, unsubscribeat, unionid;
 
 	public String getNickname() {
 		return nickname;
@@ -56,12 +60,20 @@ public class ExcelMember {
 		this.subscribe = subscribe;
 	}
 
-	public String getSubscribeAt() {
-		return subscribeAt;
+	public String getSubscribeat() {
+		return subscribeat;
 	}
 
-	public void setSubscribeAt(String subscribeAt) {
-		this.subscribeAt = subscribeAt;
+	public void setSubscribeat(String subscribeat) {
+		this.subscribeat = subscribeat;
+	}
+
+	public String getUnsubscribeat() {
+		return unsubscribeat;
+	}
+
+	public void setUnsubscribeat(String unsubscribeat) {
+		this.unsubscribeat = unsubscribeat;
 	}
 
 	public String getBind() {
@@ -111,6 +123,7 @@ public class ExcelMember {
 	public void setCreated_at(String created_at) {
 		this.created_at = created_at;
 	}
+
 	public String getCreated() {
 		return created;
 	}
@@ -127,46 +140,99 @@ public class ExcelMember {
 		this.bindat = bindat;
 	}
 
-	public String getSubscribeScene() {
-		return subscribeScene;
+	public String getSubscribe_scene() {
+		return subscribe_scene;
 	}
 
-	public void setSubscribeScene(String subscribeScene) {
-		this.subscribeScene = subscribeScene;
+	public void setSubscribe_scene(String subscribe_scene) {
+		this.subscribe_scene = subscribe_scene;
 	}
 
-	public String getQrScene() {
-		return qrScene;
+	public String getQr_scene() {
+		return qr_scene;
 	}
 
-	public void setQrScene(String qrScene) {
-		this.qrScene = qrScene;
+	public void setQr_scene(String qr_scene) {
+		this.qr_scene = qr_scene;
 	}
 
-	public String getQrSceneStr() {
-		return qrSceneStr;
+	public String getQr_scene_str() {
+		return qr_scene_str;
 	}
 
-	public void setQrSceneStr(String qrSceneStr) {
-		this.qrSceneStr = qrSceneStr;
-	}
-
-	public String getUnsubscribeAt() {
-		return unsubscribeAt;
-	}
-
-	public void setUnsubscribeAt(String unsubscribeAt) {
-		this.unsubscribeAt = unsubscribeAt;
+	public void setQr_scene_str(String qr_scene_str) {
+		this.qr_scene_str = qr_scene_str;
 	}
 
 	@Override
 	public String toString() {
 		return "ExcelMember [nickname=" + nickname + ", gender=" + gender + ", mobile=" + mobile + ", province="
-				+ province + ", city=" + city + ", subscribe=" + subscribe + ", subscribeAt=" + subscribeAt
-				+ ", bind=" + bind + ", message_sent=" + message_sent + ", tags=" + tags + ", openid=" + openid
-				+ ", unbund_at=" + unbund_at + ", created_at=" + created_at + ", created=" + created + ", bindat="
-				+ bindat +", subscribeScene=" + subscribeScene + ", qrScene=" + qrScene + ", qrSceneStr=" + qrSceneStr
-				+ ", unsubscribeAt=" + unsubscribeAt +"]";
+				+ province + ", city=" + city + ", subscribe=" + subscribe + ", subscribeat=" + subscribeat + ", bind="
+				+ bind + ", message_sent=" + message_sent + ", tags=" + tags + ", openid=" + openid + ", unbund_at="
+				+ unbund_at + ", created_at=" + created_at + ", created=" + created + ", bindat=" + bindat
+				+ ", subscribe_scene=" + subscribe_scene + ", qr_scene=" + qr_scene + ", qr_scene_str=" + qr_scene_str
+				+ ", unsubscribeat=" + unsubscribeat + ", unionid=" + unionid + "]";
 	}
 
+
+	public static final String[] keys = { "no", "nickname", "gender", "mobile", "province", "city", "subscribe.status",
+			"bind.status", "subscribe.at", "group.message.sent", "tag", "customer.service.open.id", "bind.at",
+			"unsubscribe.at", "unionid" };
+	
+	public static void fillTitles(Row titleRow, Locale locale) {
+		String[] titleVal = I18nUtil.getMessage(keys, locale);
+		for (int i = 0; i < titleVal.length; i++) {
+			titleRow.createCell(i).setCellValue(titleVal[i]);
+		}
+	}
+
+	/**
+	 * 全量导出
+	 * @param dataRow
+	 * @param locale
+	 */
+	public void fillRows(Row dataRow, Locale locale) {
+		String attentionStatus = "subscribe";
+		Byte sex = getGender() != null ? Byte.valueOf(gender) : Byte.valueOf("1");
+		Boolean isSubscribe = "1".equals(subscribe) ? true : false;
+		Integer batchsendMonth = message_sent != null ? Integer.valueOf(message_sent) : 0;
+
+		dataRow.createCell(1).setCellValue(nickname);
+		if (sex != null) {
+			dataRow.createCell(2).setCellValue(I18nUtil.getMessage(Sex.getByValue(sex).name().toLowerCase(), locale));
+		}
+		dataRow.createCell(3).setCellValue(mobile);
+		dataRow.createCell(4).setCellValue(province);
+		dataRow.createCell(5).setCellValue(city);
+
+		if (isSubscribe != null && !isSubscribe) {
+			if (unsubscribeat != null) {
+				attentionStatus = "cancel.subscribe";
+			} else {
+				attentionStatus = "unsubscribe";
+			}
+		}
+		dataRow.createCell(6).setCellValue(I18nUtil.getMessage(attentionStatus, locale));
+
+		if (bind != null && "1".equals(bind)) {
+			dataRow.createCell(7).setCellValue(I18nUtil.getMessage("bind", locale));
+		} else {
+			dataRow.createCell(7).setCellValue(I18nUtil.getMessage("unbind", locale));
+		}
+		if(subscribeat != null) {
+			dataRow.createCell(8).setCellValue(subscribeat);
+		}
+		dataRow.createCell(9).setCellValue(batchsendMonth);
+		dataRow.createCell(10).setCellValue(tags);
+		dataRow.createCell(11).setCellValue(openid);
+		if(bindat != null) {
+			dataRow.createCell(12).setCellValue(bindat);
+		}
+		if(unsubscribeat != null) {
+			dataRow.createCell(13).setCellValue(unsubscribeat);
+		}
+		if(unionid != null) {
+			dataRow.createCell(14).setCellValue(unionid);
+		}
+	}
 }
