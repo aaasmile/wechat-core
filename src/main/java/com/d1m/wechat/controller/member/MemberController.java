@@ -269,11 +269,16 @@ public class MemberController extends BaseController {
 				if (memberDtoList != null && !memberDtoList.isEmpty()) {
 					int j = 1;
 					for (MemberDto memberDto : memberDtoList) {
-						Row dataRow = sheet.createRow(j);
-						dataRow.setHeight((short) 600);
-						dataRow.createCell(0).setCellValue(j);
-						memberDto.fillRows(dataRow, locale, areaInfoService, lang);
-						j++;
+						try {
+							Row dataRow = sheet.createRow(j);
+							dataRow.setHeight((short) 600);
+							dataRow.createCell(0).setCellValue(j);
+							memberDto.fillRows(dataRow, locale, areaInfoService, lang);
+							j++;
+						} catch (Exception e) {
+							log.error(e.getMessage(), e);
+							log.error(memberDto.toString());
+						}
 					}
 				}
 			}
@@ -295,11 +300,16 @@ public class MemberController extends BaseController {
 				if (excelMemberList != null && !excelMemberList.isEmpty()) {
 					int j = 1;
 					for (ExcelMember excelMember : excelMemberList) {
-						Row dataRow = sheet.createRow(j);
-						dataRow.setHeight((short) 600);
-						dataRow.createCell(0).setCellValue(j);
-						excelMember.fillRows(dataRow, locale);
-						j++;
+						try {
+							Row dataRow = sheet.createRow(j);
+							dataRow.setHeight((short) 600);
+							dataRow.createCell(0).setCellValue(j);
+							excelMember.fillRows(dataRow, locale);
+							j++;
+						} catch (Exception e) {
+							log.error(e.getMessage(), e);
+							log.error(excelMember.toString());
+						}
 					}
 				}
 			}
