@@ -19,6 +19,7 @@ import com.d1m.wechat.model.MemberTag;
 import com.d1m.wechat.model.enums.MemberTagCsvStatus;
 import com.d1m.wechat.model.enums.MemberTagDataStatus;
 import com.d1m.wechat.schedule.SchedulerRestService;
+import com.d1m.wechat.service.AsyncService;
 import com.d1m.wechat.service.MemberTagCsvService;
 import com.d1m.wechat.service.MemberTagDataService;
 import com.d1m.wechat.service.MemberTagService;
@@ -71,6 +72,9 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
     @Autowired
     private SchedulerRestService schedulerRestService;
 
+    @Autowired
+    private AsyncService asyncService;
+
     private CsvMapper csvMapper = new CsvMapper();
 
     @Override
@@ -110,7 +114,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
     private void entitiesProcess(Collection<BatchEntity> entities, Integer fileId) {
         long currentTime = System.currentTimeMillis();
-        long m = 1L * 60L * 1000L;
+        long m = 60L * 1000L;
         long runAt = currentTime + m;
         Date runTask = new Date(runAt);
         String dateTask = DateUtil.formatYYYYMMDDHHMMSS(runTask);
@@ -149,8 +153,8 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
         log.info("Batch insert finish!");
 
-        //发起任务调度
-        schedulerTask(taskName, runTask, memberTagCsv);
+        //异步发起任务调度
+        asyncService.asyncInvoke(() -> schedulerTask(taskName, runTask, memberTagCsv));
         log.info("Batch schedulerTask finish!");
     }
 
@@ -163,7 +167,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      */
     public void schedulerTask(String taskName, Date runTask, MemberTagCsv record) {
         try {
-            Map<String, Object> jobMap = new HashMap<String, Object>();
+            Map<String, Object> jobMap = new HashMap<>();
             jobMap.put("jobGroup", 1);
             jobMap.put("jobDesc", taskName);
             jobMap.put("jobCron", DateUtil.cron.format(runTask));
