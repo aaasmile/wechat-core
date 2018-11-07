@@ -369,19 +369,21 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      * @return
      */
     public void checkTagsIsExist(String tagStr, Integer wechatId, Integer dataId) throws Exception {
-        String[] tags = tagStr.split("\\|");
-        for (String tag : tags) {
-            MemberTag memberTag = new MemberTag();
-            memberTag.setName(tag);
-            memberTag.setWechatId(wechatId);
-            memberTag.setStatus((byte) 1);
-            memberTag = memberTagMapper.selectOne(memberTag);
-            if (memberTag == null) {
-                String errorMsg = tag + ",不存在此标签";
-                //Integer dataId, String errorMsg, String tag, String errorTag
-                updateErrorTagAndErrorMsg(dataId, errorMsg, null, tag);
-            } else {
-                updateErrorTagAndErrorMsg(dataId, null, tag, null);
+        if (StringUtils.isNotBlank(tagStr)) {
+            String[] tags = tagStr.split("\\|");
+            for (String tag : tags) {
+                MemberTag memberTag = new MemberTag();
+                memberTag.setName(tag);
+                memberTag.setWechatId(wechatId);
+                memberTag.setStatus((byte) 1);
+                memberTag = memberTagMapper.selectOne(memberTag);
+                if (memberTag == null) {
+                    String errorMsg = tag + ",不存在此标签";
+                    //Integer dataId, String errorMsg, String tag, String errorTag
+                    updateErrorTagAndErrorMsg(dataId, errorMsg, null, tag);
+                } else {
+                    updateErrorTagAndErrorMsg(dataId, null, tag, null);
+                }
             }
         }
     }
