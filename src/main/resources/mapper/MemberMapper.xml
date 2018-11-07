@@ -827,7 +827,7 @@
         m.created_at,
         m.created_at as created,
         m.bind_at as bindat,
-        DATE_FORMAT( m.unsubscribe_at, '%Y-%m-%d %T' ) as unsubscribeAt
+        DATE_FORMAT( m.unsubscribe_at, '%Y-%m-%d %T' ) as unsubscribe_at
         FROM
         member m
         LEFT JOIN area_info ai on m.province=ai.id
