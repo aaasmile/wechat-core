@@ -14,6 +14,7 @@ import com.d1m.wechat.model.enums.MemberTagDataStatus;
 import com.d1m.wechat.pamametermodel.AddMemberTagTaskModel;
 import com.d1m.wechat.service.MemberTagCsvService;
 import com.d1m.wechat.service.MemberTagDataService;
+import com.d1m.wechat.util.FileUploadConfigUtil;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 import io.swagger.annotations.*;
@@ -69,10 +70,11 @@ public class MemberTagCsvController extends BaseController {
 
             return BaseResponse.builder().msg("不支持的文件格式").build();
         }
-
-
-        String fileFullName = fileDir + LocalDate.now().toString() + "/" + UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-
+        FileUploadConfigUtil instance = FileUploadConfigUtil.getInstance();
+        String uploadPath = instance.getValue(getWechatId(), "upload_path");
+        log.info("upload_path : " + uploadPath);
+        String fileFullName = uploadPath + LocalDate.now().toString() + "/" + UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+        log.info("fileFullName : " + fileFullName);
         final File targetFile = new File(fileFullName);
 
         FileUtils.copyInputStreamToFile(file.getInputStream(),
