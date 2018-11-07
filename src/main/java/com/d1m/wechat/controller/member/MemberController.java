@@ -262,6 +262,7 @@ public class MemberController extends BaseController {
 			@Override
 			public void process(Map<String, Object> map, Workbook workbook, HttpServletRequest httpServletRequest,
 					HttpServletResponse httpServletResponse) {
+				log.info("memberView...workbook...." + workbook);
 				Sheet sheet = workbook.createSheet();
 				Row titleRow = sheet.createRow(0);
 				// 填充表头
@@ -293,6 +294,7 @@ public class MemberController extends BaseController {
 			@Override
 			public void process(Map<String, Object> map, Workbook workbook, HttpServletRequest httpServletRequest,
 					HttpServletResponse httpServletResponse) {
+				log.info("excelMemberView...workbook...." + workbook);
 				Sheet sheet = workbook.createSheet();
 				Row titleRow = sheet.createRow(0);
 				// 填充表头
