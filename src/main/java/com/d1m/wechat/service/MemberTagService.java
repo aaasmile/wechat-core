@@ -52,5 +52,8 @@ public interface MemberTagService extends IService<MemberTag> {
 	List<MemberTag> exportList(Integer wechatId, MemberTagModel model);
 
 	void saveMemberTagTypeInfo(MemberTagTypeInput memberTagTypeInput);
+
+	public Integer selectCount(String openId);
+
 	
 }

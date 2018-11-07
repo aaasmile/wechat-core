@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.MemberTagDataMapper">
+    <resultMap id="BaseResultMap" type="com.d1m.wechat.domain.entity.MemberTagData">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="data_id" jdbcType="INTEGER" property="dataId"/>
+        <result column="file_id" jdbcType="INTEGER" property="fileId"/>
+        <result column="open_id" jdbcType="VARCHAR" property="openId"/>
+        <result column="wechat_id" jdbcType="INTEGER" property="wechatId"/>
+        <result column="tag" jdbcType="VARCHAR" property="tag"/>
+        <result column="error_tag" jdbcType="VARCHAR" property="errorTag"/>
+        <result column="original_tag" jdbcType="VARCHAR" property="originalTag"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="check_status" jdbcType="BIT" property="checkStatus"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="error_msg" jdbcType="VARCHAR" property="errorMsg"/>
+        <result column="version" jdbcType="INTEGER" property="version"/>
+        <result column="created_at" jdbcType="TIMESTAMP" property="createdAt"/>
+        <result column="finish_time" jdbcType="TIMESTAMP" property="finishTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        data_id, file_id, open_id, wechat_id, tag, error_tag, original_tag, status, check_status,
+        remark, error_msg, version, created_at, finish_time
+    </sql>
+
+    <select id="getMembertagCsvData" resultType="com.d1m.wechat.domain.entity.MemberTagData">
+    SELECT mtd.* FROM member_tag_data mtd
+    INNER JOIN member_tag_csv mtc ON mtd.file_id = mtc.file_id
+    WHERE mtc.file_id =#{fileId}
+
+    </select>
+    
+    <select id="getCount" resultType="com.d1m.wechat.dto.MemberStatsCounts">
+    select file_id,
+    (select count(1) from member_tag_data mtd where mtd.error_msg is not null and check_status =false ) fail_count,
+    (select count(1) from member_tag_data mtd where mtd.error_msg is  null and check_status =true ) success_count
+     from member_tag_data  where file_id=#{fileId}
+    </select>
+</mapper>

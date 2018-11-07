@@ -57,7 +57,10 @@
 
     <javaClientGenerator targetPackage="${targetMapperPackage}" targetProject="${targetJavaProject}" type="XMLMAPPER" />
 
-    <table tableName="wx_giftcard_%" >
+    <table tableName="member_tag_csv" >
+      <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+    </table>
+    <table tableName="member_tag_data" >
       <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
     </table>
   </context>

@@ -1,21 +1,21 @@
 package com.d1m.wechat.controller;
 
-import java.util.Locale;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import com.alibaba.fastjson.JSONObject;
+import com.d1m.wechat.model.User;
+import com.d1m.wechat.model.enums.UserStatus;
+import com.d1m.wechat.service.WechatService;
+import com.d1m.wechat.util.Message;
+import com.d1m.wechat.util.MessageUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
-import com.d1m.wechat.model.User;
-import com.d1m.wechat.service.WechatService;
-import com.d1m.wechat.util.Message;
-import com.d1m.wechat.util.MessageUtil;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.Locale;
 
 public class BaseController {
 
@@ -44,12 +44,25 @@ public class BaseController {
     }
 
     protected User getUser() {
+        if ("dev".equals(System.getProperty("env"))) {
+            return testEnvUser();
+        }
         Subject subject = SecurityUtils.getSubject();
         User user = (User) subject.getPrincipal();
-        Integer wechatId = (Integer)subject.getSession().getAttribute("CURRENT_WECHAT");
-        if(wechatId!=null){
+        Integer wechatId = (Integer) subject.getSession().getAttribute("CURRENT_WECHAT");
+        if (wechatId != null) {
             user.setWechatId(wechatId);
         }
+        return user;
+    }
+
+    private User testEnvUser() {
+        final User user = new User();
+        user.setId(1);
+        user.setWechatId(3);
+        user.setCreatorId(1);
+        user.setUsername("root");
+        user.setStatus(UserStatus.INUSED.getValue());
         return user;
     }
 

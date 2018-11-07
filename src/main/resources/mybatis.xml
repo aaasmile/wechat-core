@@ -30,5 +30,9 @@
     <typeHandlers>
         <typeHandler handler="com.d1m.wechat.util.mybatis.JsonTypeHandler"/>
         <typeHandler handler="com.d1m.wechat.util.mybatis.JsonArrayHandler"/>
+        <typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
+                     javaType="com.d1m.wechat.model.enums.MemberTagCsvStatus"/>
+        <typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
+                     javaType="com.d1m.wechat.model.enums.MemberTagDataStatus"/>
     </typeHandlers>
 </configuration>
