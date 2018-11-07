@@ -9,8 +9,8 @@ import com.d1m.wechat.util.I18nUtil;
 
 public class ExcelMember {
 
-	private String nickname, gender, mobile, province, city, subscribe, subscribe_at, bind, message_sent, tags, openid,
-			unbund_at, created_at, created, bindat, subscribe_scene, qr_scene, qr_scene_str, unsubscribe_at;
+	private String nickname, gender, mobile, province, city, subscribe, subscribeat, bind, message_sent, tags, openid,
+			unbund_at, created_at, created, bindat, subscribe_scene, qr_scene, qr_scene_str, unsubscribeat, unionid;
 
 	public String getNickname() {
 		return nickname;
@@ -60,12 +60,20 @@ public class ExcelMember {
 		this.subscribe = subscribe;
 	}
 
-	public String getSubscribe_at() {
-		return subscribe_at;
+	public String getSubscribeat() {
+		return subscribeat;
 	}
 
-	public void setSubscribe_at(String subscribe_at) {
-		this.subscribe_at = subscribe_at;
+	public void setSubscribeat(String subscribeat) {
+		this.subscribeat = subscribeat;
+	}
+
+	public String getUnsubscribeat() {
+		return unsubscribeat;
+	}
+
+	public void setUnsubscribeat(String unsubscribeat) {
+		this.unsubscribeat = unsubscribeat;
 	}
 
 	public String getBind() {
@@ -156,27 +164,20 @@ public class ExcelMember {
 		this.qr_scene_str = qr_scene_str;
 	}
 
-	public String getUnsubscribe_at() {
-		return unsubscribe_at;
-	}
-
-	public void setUnsubscribe_at(String unsubscribe_at) {
-		this.unsubscribe_at = unsubscribe_at;
-	}
-
 	@Override
 	public String toString() {
 		return "ExcelMember [nickname=" + nickname + ", gender=" + gender + ", mobile=" + mobile + ", province="
-				+ province + ", city=" + city + ", subscribe=" + subscribe + ", subscribe_at=" + subscribe_at
-				+ ", bind=" + bind + ", message_sent=" + message_sent + ", tags=" + tags + ", openid=" + openid
-				+ ", unbund_at=" + unbund_at + ", created_at=" + created_at + ", created=" + created + ", bindat="
-				+ bindat + ", subscribe_scene=" + subscribe_scene + ", qr_scene=" + qr_scene + ", qr_scene_str="
-				+ qr_scene_str + ", unsubscribe_at=" + unsubscribe_at + "]";
+				+ province + ", city=" + city + ", subscribe=" + subscribe + ", subscribeat=" + subscribeat + ", bind="
+				+ bind + ", message_sent=" + message_sent + ", tags=" + tags + ", openid=" + openid + ", unbund_at="
+				+ unbund_at + ", created_at=" + created_at + ", created=" + created + ", bindat=" + bindat
+				+ ", subscribe_scene=" + subscribe_scene + ", qr_scene=" + qr_scene + ", qr_scene_str=" + qr_scene_str
+				+ ", unsubscribeat=" + unsubscribeat + ", unionid=" + unionid + "]";
 	}
-	
+
+
 	public static final String[] keys = { "no", "nickname", "gender", "mobile", "province", "city", "subscribe.status",
 			"bind.status", "subscribe.at", "group.message.sent", "tag", "customer.service.open.id", "bind.at",
-			"unsubscribe.at" };
+			"unsubscribe.at", "unionid" };
 	
 	public static void fillTitles(Row titleRow, Locale locale) {
 		String[] titleVal = I18nUtil.getMessage(keys, locale);
@@ -205,7 +206,7 @@ public class ExcelMember {
 		dataRow.createCell(5).setCellValue(city);
 
 		if (isSubscribe != null && !isSubscribe) {
-			if (unsubscribe_at != null) {
+			if (unsubscribeat != null) {
 				attentionStatus = "cancel.subscribe";
 			} else {
 				attentionStatus = "unsubscribe";
@@ -219,16 +220,12 @@ public class ExcelMember {
 			dataRow.createCell(7).setCellValue(I18nUtil.getMessage("unbind", locale));
 		}
 
-		if (subscribe_at != null) {
-			dataRow.createCell(8).setCellValue(subscribe_at);
-		}
-
+		dataRow.createCell(8).setCellValue(subscribeat);
 		dataRow.createCell(9).setCellValue(batchsendMonth);
 		dataRow.createCell(10).setCellValue(tags);
 		dataRow.createCell(11).setCellValue(openid);
 		dataRow.createCell(12).setCellValue(bindat);
-		if (unsubscribe_at != null) {
-			dataRow.createCell(13).setCellValue(unsubscribe_at);
-		}
+		dataRow.createCell(13).setCellValue(unsubscribeat);
+		dataRow.createCell(14).setCellValue(unionid);
 	}
 }

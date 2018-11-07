@@ -1,5 +1,6 @@
 package com.d1m.wechat.dto;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +16,7 @@ import com.d1m.wechat.util.I18nUtil;
 
 public class MemberDto {
 
+	private static final SimpleDateFormat DF = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	private Integer id;
 
 	private String unionId;
@@ -390,7 +392,7 @@ public class MemberDto {
 		}
 
 		if (subscribeAt != null) {
-			dataRow.createCell(8).setCellValue(subscribeAt);
+			dataRow.createCell(8).setCellValue(DF.format(subscribeAt));
 		}
 
 		dataRow.createCell(9).setCellValue(batchsendMonth == null ? 0 : batchsendMonth);
@@ -402,9 +404,12 @@ public class MemberDto {
 		}
 		dataRow.createCell(10).setCellValue(tags.toString());
 		dataRow.createCell(11).setCellValue(openId);
-		dataRow.createCell(12).setCellValue(bindAt);
-		if (getUnsubscribeAt() != null) {
-			dataRow.createCell(13).setCellValue(unsubscribeAt);
+		if(bindAt != null) {
+			dataRow.createCell(12).setCellValue(DF.format(bindAt));
 		}
+		if (getUnsubscribeAt() != null) {
+			dataRow.createCell(13).setCellValue(DF.format(unsubscribeAt));
+		}
+		dataRow.createCell(14).setCellValue(unionId);
 	}
 }

@@ -1,6 +1,5 @@
 package com.d1m.wechat.controller.member;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -222,7 +221,6 @@ public class MemberController extends BaseController {
 	@ResponseBody
 	@RequiresPermissions("member:list")
 	public ModelAndView exportExcel(HttpSession session, HttpServletRequest request, HttpServletResponse response) {
-		SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		ReportXlsxStreamView view = null;
 		AddMemberTagModel addMemberTagModel = null;
 		String data = request.getParameter("data");
@@ -248,16 +246,16 @@ public class MemberController extends BaseController {
 				excelMemberList = memberService.totalMember(getWechatId(session), addMemberTagModel, false);
 			}
 			if (excelMemberList != null) {
-				view = excelMemberView(df, locale, name, excelMemberList);
+				view = excelMemberView(locale, name, excelMemberList);
 				return new ModelAndView(view);
 			}
 		}
-		view = memberView(df, locale, name, memberDtos, areaInfoService, lang);
+		view = memberView(locale, name, memberDtos, areaInfoService, lang);
 		return new ModelAndView(view);
 
 	}
 
-	public ReportXlsxStreamView memberView(SimpleDateFormat df, Locale locale, String name,
+	public ReportXlsxStreamView memberView(Locale locale, String name,
 			List<MemberDto> memberDtoList, AreaInfoService areaInfoService, String lang) {
 		ReportXlsxStreamView view;
 		view = new ReportXlsxStreamView(name, new ReportXlsxStreamView.CellProcessor() {
@@ -283,7 +281,7 @@ public class MemberController extends BaseController {
 		return view;
 	}
 
-	public ReportXlsxStreamView excelMemberView(SimpleDateFormat df, Locale locale, String name,
+	public ReportXlsxStreamView excelMemberView(Locale locale, String name,
 			List<ExcelMember> excelMemberList) {
 		ReportXlsxStreamView view;
 		view = new ReportXlsxStreamView(name, new ReportXlsxStreamView.CellProcessor() {
