@@ -1,9 +1,13 @@
 package com.d1m.wechat.controller.membertag;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.annotation.Excel;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
+import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.domain.entity.MemberTagCsv;
+import com.d1m.wechat.domain.entity.MemberTagData;
 import com.d1m.wechat.domain.web.BaseResponse;
-import com.d1m.wechat.exception.BatchAddTagException;
 import com.d1m.wechat.model.enums.MemberTagCsvStatus;
 import com.d1m.wechat.model.enums.MemberTagDataStatus;
 import com.d1m.wechat.pamametermodel.AddMemberTagTaskModel;
@@ -13,12 +17,11 @@ import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.BeanUtils;
@@ -29,15 +32,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -186,18 +185,18 @@ public class MemberTagCsvController extends BaseController {
 
 
     @ApiOperation(value = "会员标签CSV批量导入", tags = "会员标签接口")
-   @ApiResponse(code = 200, message = "1-会员标签CSV批量导入成功")
+    @ApiResponse(code = 200, message = "1-会员标签CSV批量导入成功")
     @RequestMapping(value = "tag-task.json", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject addMemberTagTaskList(
-     @ApiParam(name = "AddMemberTagTaskModel", required = false)
-     @RequestBody(required = false) AddMemberTagTaskModel tagTask) {
+            @ApiParam(name = "AddMemberTagTaskModel", required = false)
+            @RequestBody(required = false) AddMemberTagTaskModel tagTask) {
         if (tagTask == null) {
-           tagTask = new AddMemberTagTaskModel();
+            tagTask = new AddMemberTagTaskModel();
         }
         Page<MemberTagCsv> memberTagCsvs = memberTagCsvService.searchTask(
-         getWechatId(), tagTask);
-       return representation(Message.MEMBER_TAG_TASK_LIST_SUCCESS, memberTagCsvs.getResult(),
-         tagTask.getPageNum(), tagTask.getPageSize(), memberTagCsvs.getTotal());
+                getWechatId(), tagTask);
+        return representation(Message.MEMBER_TAG_TASK_LIST_SUCCESS, memberTagCsvs.getResult(),
+                tagTask.getPageNum(), tagTask.getPageSize(), memberTagCsvs.getTotal());
     }
 }
