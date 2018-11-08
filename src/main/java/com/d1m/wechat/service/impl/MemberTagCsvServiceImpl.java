@@ -90,7 +90,7 @@ public class MemberTagCsvServiceImpl implements MemberTagCsvService {
         csv.setSuccessCount(0);
         csv.setFailCount(0);
         csv.setStatus(MemberTagCsvStatus.PROCESS_SUCCEED);
-        memberTagCsvMapper.updateByPrimaryKey(csv);
+        memberTagCsvMapper.updateByPrimaryKeySelective(csv);
     }
 
     /**
