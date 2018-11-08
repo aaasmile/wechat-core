@@ -22,6 +22,6 @@ public interface MemberTagDataService extends BaseService<MemberTagData> {
      *
      * @param list
      */
-     void checkDataIsOK(List<MemberTagData> list) throws Exception;
+     void checkDataIsOK(List<MemberTagData> list,String tenent) throws Exception;
 
 }

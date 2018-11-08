@@ -23,6 +23,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,7 +87,7 @@ public class MemberTagCsvController extends BaseController {
         Date runTask = new Date(runAt);
         String dateTask = DateUtil.formatYYYYMMDDHHMMSS(runTask);
         String taskName = "MemberAddTagCSV_" + dateTask;
-        log.info("任务名称:{}",taskName);
+        log.info("任务名称:{}", taskName);
         log.info("runTask:{}", runTask);
         final MemberTagCsv.MemberTagCsvBuilder memberTagCsvBuilder = MemberTagCsv
          .builder()
@@ -108,9 +109,9 @@ public class MemberTagCsvController extends BaseController {
         try {
             memberTagCsvService.insert(memberTagCsv);
             if (originalFilename.endsWith(".csv")) {
-                memberTagDataService.batchInsertFromCsv(memberTagCsv.getFileId(), targetFile,runTask);
+                memberTagDataService.batchInsertFromCsv(memberTagCsv.getFileId(), targetFile, runTask);
             } else {
-                memberTagDataService.batchInsertFromExcel(memberTagCsv.getFileId(), targetFile,runTask);
+                memberTagDataService.batchInsertFromExcel(memberTagCsv.getFileId(), targetFile, runTask);
             }
         } catch (RuntimeException e) {
             memberTagCsvService.updateByPrimaryKeySelective(MemberTagCsv.builder()
@@ -161,12 +162,13 @@ public class MemberTagCsvController extends BaseController {
         try (final Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), FailDataExport.class, failDataExports)) {
 
             try (final ServletOutputStream outputStream = response.getOutputStream()) {
-
+                String format = StringUtils.isNotBlank(memberTagCsv.getFormat())?memberTagCsv.getFormat():"xlsx";
+                String importFileName = "失败数据."+format;
                 response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
                 response.setHeader("Pragma", "no-cache");
                 response.setHeader("Expires", "0");
                 response.setHeader("charset", "utf-8");
-                response.setHeader("Content-Disposition", "attachment;filename=\"" + URLEncoder.encode(LocalDate.now() + "失败数据.xls", "UTF-8") + "\"");
+                response.setHeader("Content-Disposition", "attachment;filename=\"" + URLEncoder.encode(LocalDate.now() + importFileName, "UTF-8") + "\"");
 
                 workbook.write(outputStream);
             }
@@ -205,15 +207,15 @@ public class MemberTagCsvController extends BaseController {
          .collect(Collectors.toList());
 
         try (final Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), FailDataExport.class, succDataExports)) {
-
+           String format = StringUtils.isNotBlank(memberTagCsv.getFormat())?memberTagCsv.getFormat():"xlsx";
+           String importFileName = "成功数据."+format;
             try (final ServletOutputStream outputStream = response.getOutputStream()) {
-
                 response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
                 response.setHeader("Pragma", "no-cache");
                 response.setHeader("Expires", "0");
                 response.setHeader("charset", "utf-8");
-                response.setHeader("Content-Disposition", "attachment;filename=\"" + URLEncoder.encode(LocalDate.now()
-                 + "成功数据.xls", "UTF-8") + "\"");
+                response.setHeader("Content-Disposition", "attachment;filename=\""
+                 + URLEncoder.encode(LocalDate.now() + importFileName, "UTF-8") + "\"");
                 workbook.write(outputStream);
             }
         } catch (IOException e) {
@@ -239,7 +241,7 @@ public class MemberTagCsvController extends BaseController {
     }
 
 
-    @ApiOperation(value = "会员标签CSV批量导入", tags = "会员标签接口")
+    @ApiOperation(value = "导入加签任务列表", tags = "会员标签接口")
     @ApiResponse(code = 200, message = "1-会员标签CSV批量导入成功")
     @RequestMapping(value = "tag-task.json", method = RequestMethod.POST)
     @ResponseBody
