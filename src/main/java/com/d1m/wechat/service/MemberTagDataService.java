@@ -32,7 +32,7 @@ public interface MemberTagDataService extends BaseService<MemberTagData> {
      * @param fileId
      * @param status
      */
-     void updateDataStatus(Integer fileId, MemberTagDataStatus status);
+     void updateDataStatus(Integer fileId, Integer status);
 
     /**
      * 获取待处理的数据

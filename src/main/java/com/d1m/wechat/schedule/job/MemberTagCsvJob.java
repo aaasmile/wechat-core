@@ -37,9 +37,9 @@ public class MemberTagCsvJob extends BaseJobHandler {
                 XxlJobLogger.log("获取导入文件id : " + fileId);
                 log.info("获取导入文件id : " + fileId);
                 //设置上传文件为导入中状态
-                memberTagCsvService.updateFileStatus(fileId, MemberTagCsvStatus.IN_IMPORT);
+                memberTagCsvService.updateFileStatus(fileId, MemberTagCsvStatus.IN_PROCESS);
                 //设置上传数据状态为处理中
-                memberTagDataService.updateDataStatus(fileId, MemberTagDataStatus.IN_PROCESS);
+                memberTagDataService.updateDataStatus(fileId, 1);//1 代表处理中
                 //数据标签检查
                 List<MemberTagData> list = memberTagDataService.getMembertagCsvData(fileId);
                 if (CollectionUtils.isNotEmpty(list)) {
