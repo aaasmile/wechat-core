@@ -12,4 +12,6 @@ public interface MemberTagDataMapper extends MyMapper<MemberTagData> {
     List<MemberTagData> getMembertagCsvData(Integer fileId);
 
     MemberStatsCounts getCount (Integer fileId);
+
+    int updateDataStatus(Integer fileId,Integer status);
 }

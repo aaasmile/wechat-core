@@ -267,7 +267,8 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             memberTagData.setDataId(dataId);
             memberTagData.setErrorMsg(errorMsg);
             memberTagData.setCheckStatus(false);
-            memberTagDataMapper.updateByPrimaryKeySelective(memberTagData);
+           int t= memberTagDataMapper.updateByPrimaryKeySelective(memberTagData);
+           log.info("更新数据错误原因:{}",t);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -291,7 +292,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                 memberTagData.setCheckStatus(false);
                 int t = memberTagDataMapper.updateByPrimaryKeySelective(memberTagData);
                 if (t == 1) {
-                    log.info("原始标签" + originalTag + "，都不存在！");
+                    log.info("原始标签" + originalTag + "，不存在！");
                 }
             }
         } catch (Exception e) {
@@ -316,7 +317,8 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                 memberTagData.setTag(setTags(tagData.getTag(), tag));
                 memberTagData.setDataId(tagData.getDataId());
                 memberTagData.setErrorMsg(setErrorMsg(tagData.getErrorMsg(), errorMsg));
-                memberTagDataMapper.updateByPrimaryKeySelective(memberTagData);
+               int t= memberTagDataMapper.updateByPrimaryKeySelective(memberTagData);
+               log.info("更新错误标签和原因:{}",t);
             }
 
         } catch (Exception e) {
@@ -408,11 +410,9 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      * @param fileId
      * @param status
      */
-    public void updateDataStatus(Integer fileId, MemberTagDataStatus status) {
-        MemberTagData data = new MemberTagData();
-        data.setStatus(status);
-        data.setFileId(fileId);
-        memberTagDataMapper.updateByPrimaryKeySelective(data);
+    public void updateDataStatus(Integer fileId, Integer status) {
+       int t= memberTagDataMapper.updateDataStatus(fileId,status);
+       log.info("更新上传数据状态：{}",t);
     }
 
 

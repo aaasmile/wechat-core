@@ -41,4 +41,8 @@
     (select count(1) from member_tag_data mtd where mtd.error_msg is  null and check_status =true ) success_count
      from member_tag_data  where file_id=#{fileId}
     </select>
+
+    <update id="updateDataStatus">
+        update member_tag_data set status=#{status} where file_id=#{fileId}
+    </update>
 </mapper>
