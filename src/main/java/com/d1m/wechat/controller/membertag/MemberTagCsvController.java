@@ -80,7 +80,14 @@ public class MemberTagCsvController extends BaseController {
 
         FileUtils.copyInputStreamToFile(file.getInputStream(),
          targetFile);
-
+        long currentTime = System.currentTimeMillis();
+        long m = 60L * 1000L;
+        long runAt = currentTime + m;
+        Date runTask = new Date(runAt);
+        String dateTask = DateUtil.formatYYYYMMDDHHMMSS(runTask);
+        String taskName = "MemberAddTagCSV_" + dateTask;
+        log.info("任务名称:{}",taskName);
+        log.info("runTask:{}", runTask);
         final MemberTagCsv.MemberTagCsvBuilder memberTagCsvBuilder = MemberTagCsv
          .builder()
          .oriFile(file.getOriginalFilename())
@@ -88,6 +95,7 @@ public class MemberTagCsvController extends BaseController {
          .fileSize(String.valueOf(file.getSize()))
          .wechatId(getWechatId())
          .creatorId(getUser().getId())
+         .task(taskName)
          .status(MemberTagCsvStatus.IN_PROCESS)
          .format(originalFilename.substring(originalFilename.lastIndexOf(".") + 1));
 
@@ -100,9 +108,9 @@ public class MemberTagCsvController extends BaseController {
         try {
             memberTagCsvService.insert(memberTagCsv);
             if (originalFilename.endsWith(".csv")) {
-                memberTagDataService.batchInsertFromCsv(memberTagCsv.getFileId(), targetFile);
+                memberTagDataService.batchInsertFromCsv(memberTagCsv.getFileId(), targetFile,runTask);
             } else {
-                memberTagDataService.batchInsertFromExcel(memberTagCsv.getFileId(), targetFile);
+                memberTagDataService.batchInsertFromExcel(memberTagCsv.getFileId(), targetFile,runTask);
             }
         } catch (RuntimeException e) {
             memberTagCsvService.updateByPrimaryKeySelective(MemberTagCsv.builder()

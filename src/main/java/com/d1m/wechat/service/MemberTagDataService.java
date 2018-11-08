@@ -4,6 +4,7 @@ import com.d1m.wechat.domain.entity.MemberTagCsv;
 import com.d1m.wechat.domain.entity.MemberTagData;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -12,9 +13,9 @@ import java.util.List;
  */
 public interface MemberTagDataService extends BaseService<MemberTagData> {
 
-    void batchInsertFromExcel(Integer fileId, File file);
+    void batchInsertFromExcel(Integer fileId, File file,Date runTask);
 
-    void batchInsertFromCsv(Integer fileId, File file);
+    void batchInsertFromCsv(Integer fileId, File file,Date runTask);
 
     /**
      * 导入数据检查

@@ -83,7 +83,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void batchInsertFromExcel(Integer fileId, File file) {
+    public void batchInsertFromExcel(Integer fileId, File file,Date runTask) {
         log.info("Batch insert form file [{}], for fileId [{}]", file.getPath(), fileId);
         if (Objects.isNull(fileId)) {
             log.error("File id is null!");
@@ -93,31 +93,25 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         params.setHeadRows(1);
         final List<BatchEntity> entities = ExcelImportUtil.importExcel(file, BatchEntity.
          class, params);
-        this.entitiesProcess(entities, fileId);
+        this.entitiesProcess(entities, fileId,runTask);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void batchInsertFromCsv(Integer fileId, File file) {
+    public void batchInsertFromCsv(Integer fileId, File file,Date runTask) {
         log.info("Batch insert form file [{}], for fileId [{}]", file.getPath(), fileId);
         try {
             final CsvSchema schema = csvMapper.schemaFor(BatchEntity.class).withHeader();
             MappingIterator<BatchEntity> mapping = csvMapper.readerFor(BatchEntity.class).with(schema).readValues(file);
             final List<BatchEntity> entities = mapping.readAll();
-            this.entitiesProcess(entities, fileId);
+            this.entitiesProcess(entities, fileId,runTask);
 
         } catch (IOException e) {
             log.error("Csv to pojo error", e);
         }
     }
 
-    private void entitiesProcess(Collection<BatchEntity> entities, Integer fileId) {
-        long currentTime = System.currentTimeMillis();
-        long m = 60L * 1000L;
-        long runAt = currentTime + m;
-        Date runTask = new Date(runAt);
-        String dateTask = DateUtil.formatYYYYMMDDHHMMSS(runTask);
-        String taskName = "MemberAddTagCSV_" + dateTask;
+    private void entitiesProcess(Collection<BatchEntity> entities, Integer fileId,Date runTask) {
 
         final MemberTagCsv memberTagCsv = memberTagCsvService
          .selectByKey(MemberTagCsv.builder().fileId(fileId).build());
@@ -127,7 +121,6 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         memberTagCsv.setStatus(MemberTagCsvStatus.ALREADY_IMPORTED);
         memberTagCsv.setRows(entities.size());
         memberTagCsv.setLastUpdateTime(Timestamp.valueOf(LocalDateTime.now()));
-        memberTagCsv.setTask(dateTask);
         memberTagCsv.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
         memberTagCsvService.updateByPrimaryKeySelective(memberTagCsv);
 
@@ -151,11 +144,11 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         memberTagDataMapper.insertList(memberTagDataList);
 
         log.info("Batch insert finish!");
-        log.info("taskName:"+taskName);
-        log.info("runTask:"+runTask);
-        log.info("memberTagCsv:"+JSON.toJSON(memberTagCsv));
+        log.info("taskName:{}",memberTagCsv.getTask());
+        log.info("runTask:{}",runTask);
+        log.info("memberTagCsv:{}",JSON.toJSON(memberTagCsv));
         //异步发起任务调度
-        asyncService.asyncInvoke(() -> schedulerTask(taskName, runTask, memberTagCsv));
+        asyncService.asyncInvoke(() -> schedulerTask(memberTagCsv.getTask(), runTask, memberTagCsv));
         log.info("Batch schedulerTask finish!");
     }
 
