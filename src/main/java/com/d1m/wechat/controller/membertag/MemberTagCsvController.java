@@ -59,8 +59,9 @@ public class MemberTagCsvController extends BaseController {
     @Autowired
     private MemberTagDataService memberTagDataService;
 
-    @PostMapping("/csv_excel")
     @ApiOperation(value = "上传excel或者csv批量为用户打标签")
+    @ApiResponse(code = 200, message = "导入文件上传成功")
+    @RequestMapping(value = "csv_excel.json", method = RequestMethod.POST)
     public BaseResponse batchAddTagsOnCsv(@RequestParam MultipartFile file) throws Exception {
         final String originalFilename = file.getOriginalFilename();
         if (!originalFilename.endsWith(".csv")
@@ -120,7 +121,8 @@ public class MemberTagCsvController extends BaseController {
          .msg(Message.FILE_UPLOAD_SUCCESS.getName()).build();
     }
 
-    @GetMapping(path = "/{id}/fail_export")
+
+    @RequestMapping(value = "{id}/fail_export.json", method = RequestMethod.GET)
     @ApiResponses(value = {@ApiResponse(code = 200, response = Void.class,
      message = "curl -H \"Cookie: Idea-673fdd47=c963a16f-dd3b-4412-89e5-84ec8b648975; SESSION=88ad87ee-37ab-4e01-97ea-f0de7e2810f4\" -O http://host:port/member-tag/batch/64/fail_export")})
     @ApiOperation(value = "失败数据下载")
@@ -166,7 +168,7 @@ public class MemberTagCsvController extends BaseController {
         return null;
     }
 
-    @GetMapping(path = "/{id}/success_export")
+    @RequestMapping(value = "{id}/success_export.json", method = RequestMethod.GET)
     @ApiResponses(value = {@ApiResponse(code = 200, response = Void.class,
      message = "curl -H \"Cookie: Idea-673fdd47=c963a16f-dd3b-4412-89e5-84ec8b648975; SESSION=88ad87ee-37ab-4e01-97ea-f0de7e2810f4\" -O http://host:port/member-tag/batch/64/fail_export")})
     @ApiOperation(value = "成功数据下载")
