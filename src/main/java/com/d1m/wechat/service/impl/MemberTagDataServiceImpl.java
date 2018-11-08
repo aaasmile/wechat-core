@@ -168,6 +168,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             jobMap.put("executorHandler", "memberTagCsvJob");
             jobMap.put("executorParam", "-d" + TenantContext.getCurrentTenant() + "," + record.getFileId());
 
+
             ReturnT<String> returnT = schedulerRestService.addJob(jobMap);
             log.info("jobMap:" + JSON.toJSON(jobMap));
             log.info("returnT执行结果:" + JSON.toJSON(returnT));
