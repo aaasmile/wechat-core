@@ -152,7 +152,9 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         memberTagDataMapper.insertList(memberTagDataList);
 
         log.info("Batch insert finish!");
-
+        log.info("taskName:"+taskName);
+        log.info("runTask:"+runTask);
+        log.info("memberTagCsv:"+JSON.toJSON(memberTagCsv));
         //异步发起任务调度
         asyncService.asyncInvoke(() -> schedulerTask(taskName, runTask, memberTagCsv));
         log.info("Batch schedulerTask finish!");
