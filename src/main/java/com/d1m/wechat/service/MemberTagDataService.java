@@ -2,8 +2,6 @@ package com.d1m.wechat.service;
 
 import com.d1m.wechat.domain.entity.MemberTagCsv;
 import com.d1m.wechat.domain.entity.MemberTagData;
-import com.d1m.wechat.pamametermodel.AddMemberTagTaskModel;
-import com.github.pagehelper.Page;
 
 import java.io.File;
 import java.util.List;

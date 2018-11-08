@@ -14,6 +14,7 @@ import com.d1m.wechat.model.enums.MemberTagDataStatus;
 import com.d1m.wechat.pamametermodel.AddMemberTagTaskModel;
 import com.d1m.wechat.service.MemberTagCsvService;
 import com.d1m.wechat.service.MemberTagDataService;
+import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.FileUploadConfigUtil;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
@@ -36,6 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -57,35 +59,37 @@ public class MemberTagCsvController extends BaseController {
     @Autowired
     private MemberTagDataService memberTagDataService;
 
-    @PostMapping("/csv_excel")
     @ApiOperation(value = "上传excel或者csv批量为用户打标签")
+    @ApiResponse(code = 200, message = "导入文件上传成功")
+    @RequestMapping(value = "csv_excel.json", method = RequestMethod.POST)
     public BaseResponse batchAddTagsOnCsv(@RequestParam MultipartFile file) throws Exception {
         final String originalFilename = file.getOriginalFilename();
         if (!originalFilename.endsWith(".csv")
-                && !originalFilename.endsWith(".xls")
-                && !originalFilename.endsWith(".xlsx")) {
+         && !originalFilename.endsWith(".xls")
+         && !originalFilename.endsWith(".xlsx")) {
 
             return BaseResponse.builder().msg("不支持的文件格式").build();
         }
         FileUploadConfigUtil instance = FileUploadConfigUtil.getInstance();
         String uploadPath = instance.getValue(getWechatId(), "upload_path");
         log.info("upload_path : " + uploadPath);
-        String fileFullName = uploadPath + LocalDate.now().toString() + "/" + UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+        String fileFullName = uploadPath + DateUtil.formatYYYYMMDD(new Date()) + "/" + UUID.randomUUID().toString()
+         + "_" + file.getOriginalFilename();
         log.info("fileFullName : " + fileFullName);
         final File targetFile = new File(fileFullName);
 
         FileUtils.copyInputStreamToFile(file.getInputStream(),
-                targetFile);
+         targetFile);
 
         final MemberTagCsv.MemberTagCsvBuilder memberTagCsvBuilder = MemberTagCsv
-                .builder()
-                .oriFile(file.getOriginalFilename())
-                .sourceFilePath(fileFullName)
-                .fileSize(String.valueOf(file.getSize()))
-                .wechatId(getWechatId())
-                .creatorId(getUser().getId())
-                .status(MemberTagCsvStatus.IN_PROCESS)
-                .format(originalFilename.substring(originalFilename.lastIndexOf(".") + 1));
+         .builder()
+         .oriFile(file.getOriginalFilename())
+         .sourceFilePath(fileFullName)
+         .fileSize(String.valueOf(file.getSize()))
+         .wechatId(getWechatId())
+         .creatorId(getUser().getId())
+         .status(MemberTagCsvStatus.IN_PROCESS)
+         .format(originalFilename.substring(originalFilename.lastIndexOf(".") + 1));
 
         if (originalFilename.endsWith(".csv")) {
             //工具类计算出编码错误
@@ -102,48 +106,49 @@ public class MemberTagCsvController extends BaseController {
             }
         } catch (RuntimeException e) {
             memberTagCsvService.updateByPrimaryKeySelective(MemberTagCsv.builder()
-                    .fileId(memberTagCsv.getFileId())
-                    .status(MemberTagCsvStatus.PROCESS_FAILURE)
-                    .errorMsg(e.getMessage())
-                    .build());
+             .fileId(memberTagCsv.getFileId())
+             .status(MemberTagCsvStatus.PROCESS_FAILURE)
+             .errorMsg(e.getMessage())
+             .build());
 
             return BaseResponse.builder()
-                    .resultCode(Message.CSV_OR_EXCEL_PARSER_FAIL.getCode())
-                    .msg(Message.CSV_OR_EXCEL_PARSER_FAIL.getName())
-                    .build();
+             .resultCode(Message.CSV_OR_EXCEL_PARSER_FAIL.getCode())
+             .msg(Message.CSV_OR_EXCEL_PARSER_FAIL.getName())
+             .build();
         }
         return BaseResponse.builder()
-                .resultCode(Message.FILE_UPLOAD_SUCCESS.getCode())
-                .msg(Message.FILE_UPLOAD_SUCCESS.getName()).build();
+         .resultCode(Message.FILE_UPLOAD_SUCCESS.getCode())
+         .msg(Message.FILE_UPLOAD_SUCCESS.getName()).build();
     }
 
-    @GetMapping(path = "/{id}/fail_export")
+
+    @RequestMapping(value = "{id}/fail_export.json", method = RequestMethod.GET)
     @ApiResponses(value = {@ApiResponse(code = 200, response = Void.class,
-            message = "curl -H \"Cookie: Idea-673fdd47=c963a16f-dd3b-4412-89e5-84ec8b648975; SESSION=88ad87ee-37ab-4e01-97ea-f0de7e2810f4\" -O http://host:port/member-tag/batch/64/fail_export")})
+     message = "curl -H \"Cookie: Idea-673fdd47=c963a16f-dd3b-4412-89e5-84ec8b648975; SESSION=88ad87ee-37ab-4e01-97ea-f0de7e2810f4\" -O http://host:port/member-tag/batch/64/fail_export")})
     @ApiOperation(value = "失败数据下载")
     public BaseResponse failDataExport(@PathVariable Integer id, HttpServletResponse response) {
         final MemberTagCsv memberTagCsv = memberTagCsvService.selectByKey(id);
         if (Objects.isNull(memberTagCsv)) {
             return BaseResponse.builder()
-                    .resultCode(0)
-                    .msg("找不到上传文件")
-                    .build();
+             .resultCode(0)
+             .msg("找不到上传文件")
+             .build();
         }
         final Example example = new Example(MemberTagData.class);
         example.createCriteria()
-                .andEqualTo("status", MemberTagDataStatus.PROCESS_FAILURE);
+         .andEqualTo("status", MemberTagDataStatus.PROCESS_FAILURE);
         example.or().andEqualTo("checkStatus", false);
         final List<MemberTagData> memberTagDatas = memberTagDataService.selectByExample(example);
         if (CollectionUtils.isEmpty(memberTagDatas)) {
             return BaseResponse.builder()
-                    .resultCode(0)
-                    .msg("没有错误数据")
-                    .build();
+             .resultCode(0)
+             .msg("没有错误数据")
+             .build();
         }
         final List<FailDataExport> failDataExports = memberTagDatas
-                .stream()
-                .map(FailDataExport::convert)
-                .collect(Collectors.toList());
+         .stream()
+         .map(FailDataExport::convert)
+         .collect(Collectors.toList());
 
         try (final Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), FailDataExport.class, failDataExports)) {
 
@@ -155,6 +160,52 @@ public class MemberTagCsvController extends BaseController {
                 response.setHeader("charset", "utf-8");
                 response.setHeader("Content-Disposition", "attachment;filename=\"" + URLEncoder.encode(LocalDate.now() + "失败数据.xls", "UTF-8") + "\"");
 
+                workbook.write(outputStream);
+            }
+        } catch (IOException e) {
+            log.error("Export fail file error", e);
+        }
+        return null;
+    }
+
+    @RequestMapping(value = "{id}/success_export.json", method = RequestMethod.GET)
+    @ApiResponses(value = {@ApiResponse(code = 200, response = Void.class,
+     message = "curl -H \"Cookie: Idea-673fdd47=c963a16f-dd3b-4412-89e5-84ec8b648975; SESSION=88ad87ee-37ab-4e01-97ea-f0de7e2810f4\" -O http://host:port/member-tag/batch/64/fail_export")})
+    @ApiOperation(value = "成功数据下载")
+    public BaseResponse successDataExport(@PathVariable Integer id, HttpServletResponse response) {
+        final MemberTagCsv memberTagCsv = memberTagCsvService.selectByKey(id);
+        if (Objects.isNull(memberTagCsv)) {
+            return BaseResponse.builder()
+             .resultCode(0)
+             .msg("找不到上传文件")
+             .build();
+        }
+        final Example example = new Example(MemberTagData.class);
+        example.createCriteria()
+         .andEqualTo("status", MemberTagDataStatus.PROCESS_SUCCEED);
+        example.or().andEqualTo("checkStatus", true);
+        final List<MemberTagData> memberTagDatas = memberTagDataService.selectByExample(example);
+        if (CollectionUtils.isEmpty(memberTagDatas)) {
+            return BaseResponse.builder()
+             .resultCode(0)
+             .msg("没有数据")
+             .build();
+        }
+        final List<FailDataExport> succDataExports = memberTagDatas
+         .stream()
+         .map(FailDataExport::convert)
+         .collect(Collectors.toList());
+
+        try (final Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), FailDataExport.class, succDataExports)) {
+
+            try (final ServletOutputStream outputStream = response.getOutputStream()) {
+
+                response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+                response.setHeader("Pragma", "no-cache");
+                response.setHeader("Expires", "0");
+                response.setHeader("charset", "utf-8");
+                response.setHeader("Content-Disposition", "attachment;filename=\"" + URLEncoder.encode(LocalDate.now()
+                 + "成功数据.xls", "UTF-8") + "\"");
                 workbook.write(outputStream);
             }
         } catch (IOException e) {
@@ -185,14 +236,14 @@ public class MemberTagCsvController extends BaseController {
     @RequestMapping(value = "tag-task.json", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject addMemberTagTaskList(
-            @ApiParam(name = "AddMemberTagTaskModel", required = false)
-            @RequestBody(required = false) AddMemberTagTaskModel tagTask) {
+     @ApiParam(name = "AddMemberTagTaskModel", required = false)
+     @RequestBody(required = false) AddMemberTagTaskModel tagTask) {
         if (tagTask == null) {
             tagTask = new AddMemberTagTaskModel();
         }
         Page<ImportCsvDto> memberTagCsvs = memberTagCsvService.searchTask(
-                getWechatId(), tagTask);
+         getWechatId(), tagTask);
         return representation(Message.MEMBER_TAG_TASK_LIST_SUCCESS, memberTagCsvs.getResult(),
-                tagTask.getPageNum(), tagTask.getPageSize(), memberTagCsvs.getTotal());
+         tagTask.getPageNum(), tagTask.getPageSize(), memberTagCsvs.getTotal());
     }
 }
