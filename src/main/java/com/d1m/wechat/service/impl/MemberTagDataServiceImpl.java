@@ -199,7 +199,8 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      *
      * @param list
      */
-    public void checkDataIsOK(List<MemberTagData> list) throws Exception {
+    public void checkDataIsOK(List<MemberTagData> list,String tenant) throws Exception {
+        TenantContext.setCurrentTenant(tenant);
         if (CollectionUtils.isNotEmpty(list)) {
             for (MemberTagData memberTagData : list) {
                 log.info("======正在进行数据检查》》》》》============");

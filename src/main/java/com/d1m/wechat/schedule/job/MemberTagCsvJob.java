@@ -1,6 +1,7 @@
 package com.d1m.wechat.schedule.job;
 
 import com.alibaba.fastjson.JSON;
+import com.d1m.common.ds.TenantContext;
 import com.d1m.wechat.domain.entity.MemberTagCsv;
 import com.d1m.wechat.domain.entity.MemberTagData;
 import com.d1m.wechat.dto.MemberStatsCounts;
@@ -59,34 +60,34 @@ public class MemberTagCsvJob extends BaseJobHandler {
                 XxlJobLogger.log("获取导入文件id : " + fileId);
                 log.info("获取导入文件id : " + fileId);
                 //设置上传文件为导入中状态
-                updateFileStatus(fileId, MemberTagCsvStatus.IN_IMPORT);
+                updateFileStatus(fileId, MemberTagCsvStatus.IN_IMPORT,TenantContext.getCurrentTenant());
                 //设置上传数据状态为处理中
-                updateDataStatus(fileId, MemberTagDataStatus.IN_PROCESS);
+                updateDataStatus(fileId, MemberTagDataStatus.IN_PROCESS,TenantContext.getCurrentTenant());
                 //数据标签检查
-                List<MemberTagData> list = getMembertagCsvData(fileId);
+                List<MemberTagData> list = getMembertagCsvData(fileId,TenantContext.getCurrentTenant());
                 if (CollectionUtils.isNotEmpty(list)) {
                     log.info("======准备数据标签检查》》》》》============");
-                    memberTagDataService.checkDataIsOK(list);
+                    memberTagDataService.checkDataIsOK(list,TenantContext.getCurrentTenant());
                 } else {
                     errorMsg = "没有找到数据！";
-                    updateCsv(fileId, errorMsg);
+                    updateCsv(fileId, errorMsg,TenantContext.getCurrentTenant());
                     log.info("fileId:" + fileId + "," + errorMsg);
                 }
 
                 //获取待加签的正确数据
-                List<MemberTagData> addTagsDataList = getCsvData(fileId);
+                List<MemberTagData> addTagsDataList = getCsvData(fileId,TenantContext.getCurrentTenant());
                 if (CollectionUtils.isNotEmpty(list)) {
                     log.info("======准备加签》》》》》============");
-                    addTags(addTagsDataList);
+                    addTags(addTagsDataList,TenantContext.getCurrentTenant());
                 } else {
                     errorMsg = "没有找到正确数据！";
-                    updateCsv(fileId, errorMsg);
+                    updateCsv(fileId, errorMsg,TenantContext.getCurrentTenant());
                     log.info("fileId:" + fileId + "," + errorMsg);
                 }
 
                 //统计结果
                 log.info("======统计结果》》》》》============");
-                updateCountCsv(fileId);
+                updateCountCsv(fileId,TenantContext.getCurrentTenant());
             }
             return ReturnT.SUCCESS;
         } catch (Exception e) {
@@ -102,7 +103,8 @@ public class MemberTagCsvJob extends BaseJobHandler {
      *
      * @param fileId
      */
-    private void updateCsv(Integer fileId, String errorMsg) {
+    private void updateCsv(Integer fileId, String errorMsg,String tenant) {
+        TenantContext.setCurrentTenant(tenant);
         MemberTagCsv csv = new MemberTagCsv();
         csv.setFileId(fileId);
         csv.setErrorMsg(errorMsg);
@@ -117,7 +119,8 @@ public class MemberTagCsvJob extends BaseJobHandler {
      *
      * @param fileId
      */
-    public List<MemberTagData> getMembertagCsvData(Integer fileId) {
+    public List<MemberTagData> getMembertagCsvData(Integer fileId,String tenant) {
+        TenantContext.setCurrentTenant(tenant);
         return memberTagDataMapper.getMembertagCsvData(fileId);
     }
 
@@ -126,7 +129,8 @@ public class MemberTagCsvJob extends BaseJobHandler {
      *
      * @param fileId
      */
-    public List<MemberTagData> getCsvData(Integer fileId) {
+    public List<MemberTagData> getCsvData(Integer fileId,String tenant) {
+        TenantContext.setCurrentTenant(tenant);
         MemberTagData memberTagData = new MemberTagData();
         memberTagData.setFileId(fileId);
         memberTagData.setCheckStatus(true);
@@ -140,7 +144,8 @@ public class MemberTagCsvJob extends BaseJobHandler {
      * @param list
      * @throws Exception
      */
-    public Boolean addTags(List<MemberTagData> list) throws Exception {
+    public Boolean addTags(List<MemberTagData> list,String tenant) throws Exception {
+        TenantContext.setCurrentTenant(tenant);
         List<MemberMemberTag> tagsList = new ArrayList<>();
         MemberTagDataStatus status = null;
         String errorMsg = null;
@@ -208,7 +213,8 @@ public class MemberTagCsvJob extends BaseJobHandler {
      *
      * @param fileId
      */
-    public void updateCountCsv(Integer fileId) {
+    public void updateCountCsv(Integer fileId,String tenant) {
+        TenantContext.setCurrentTenant(tenant);
         MemberStatsCounts memberStatsCounts = memberTagDataMapper.getCount(fileId);
         if (memberStatsCounts != null) {
             MemberTagCsv csv = new MemberTagCsv();
@@ -227,7 +233,8 @@ public class MemberTagCsvJob extends BaseJobHandler {
      * @param
      * @param status
      */
-    public void updateFileStatus(Integer fileId, MemberTagCsvStatus status) {
+    public void updateFileStatus(Integer fileId, MemberTagCsvStatus status,String tenant) {
+        TenantContext.setCurrentTenant(tenant);
         MemberTagCsv csv = new MemberTagCsv();
         csv.setStatus(status);
         csv.setFileId(fileId);
@@ -243,7 +250,8 @@ public class MemberTagCsvJob extends BaseJobHandler {
      * @param fileId
      * @param status
      */
-    public void updateDataStatus(Integer fileId, MemberTagDataStatus status) {
+    public void updateDataStatus(Integer fileId, MemberTagDataStatus status,String tenant) {
+        TenantContext.setCurrentTenant(tenant);
         MemberTagData data = new MemberTagData();
         data.setStatus(status);
         data.setFileId(fileId);
