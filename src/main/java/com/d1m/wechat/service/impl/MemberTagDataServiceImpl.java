@@ -6,6 +6,7 @@ import cn.afterturn.easypoi.excel.entity.ImportParams;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.common.ds.TenantContext;
+import com.d1m.common.ds.TenantHelper;
 import com.d1m.wechat.domain.entity.MemberTagCsv;
 import com.d1m.wechat.domain.entity.MemberTagData;
 import com.d1m.wechat.exception.BatchAddTagException;
@@ -40,6 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -78,6 +80,9 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
     @Autowired
     private AsyncService asyncService;
+
+    @Resource
+    private TenantHelper tenantHelper;
 
     private CsvMapper csvMapper = new CsvMapper();
 
@@ -166,6 +171,14 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      */
     public void schedulerTask(String taskName, Date runTask, MemberTagCsv record) {
         try {
+            // 多数据源支持
+            String domain = tenantHelper.getTenantByWechatId(record.getWechatId());
+            if (StringUtils.isNotBlank(domain)){
+                TenantContext.setCurrentTenant(domain);
+                log.info("This domain: "+domain);
+            }
+            TenantContext.setCurrentTenant(domain);
+            log.info("获取当前租户: "+TenantContext.getCurrentTenant());
             Map<String, Object> jobMap = new HashMap<>();
             jobMap.put("jobGroup", 1);
             jobMap.put("jobDesc", taskName);
