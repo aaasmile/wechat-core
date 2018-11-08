@@ -267,7 +267,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             memberTagData.setDataId(dataId);
             memberTagData.setErrorMsg(errorMsg);
             memberTagData.setCheckStatus(false);
-            memberTagDataMapper.updateByPrimaryKey(memberTagData);
+            memberTagDataMapper.updateByPrimaryKeySelective(memberTagData);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -289,7 +289,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             if (tagData.getOriginalTag().equals(originalTag)) {
                 memberTagData.setDataId(dataId);
                 memberTagData.setCheckStatus(false);
-                int t = memberTagDataMapper.updateByPrimaryKey(memberTagData);
+                int t = memberTagDataMapper.updateByPrimaryKeySelective(memberTagData);
                 if (t == 1) {
                     log.info("原始标签" + originalTag + "，都不存在！");
                 }
@@ -316,7 +316,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                 memberTagData.setTag(setTags(tagData.getTag(), tag));
                 memberTagData.setDataId(tagData.getDataId());
                 memberTagData.setErrorMsg(setErrorMsg(tagData.getErrorMsg(), errorMsg));
-                memberTagDataMapper.updateByPrimaryKey(memberTagData);
+                memberTagDataMapper.updateByPrimaryKeySelective(memberTagData);
             }
 
         } catch (Exception e) {
