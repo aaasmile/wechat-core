@@ -11,9 +11,11 @@ import com.d1m.wechat.domain.entity.MemberTagData;
 import com.d1m.wechat.exception.BatchAddTagException;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.MemberMapper;
+import com.d1m.wechat.mapper.MemberMemberTagMapper;
 import com.d1m.wechat.mapper.MemberTagDataMapper;
 import com.d1m.wechat.mapper.MemberTagMapper;
 import com.d1m.wechat.model.Member;
+import com.d1m.wechat.model.MemberMemberTag;
 import com.d1m.wechat.model.MemberTag;
 import com.d1m.wechat.model.enums.MemberTagCsvStatus;
 import com.d1m.wechat.model.enums.MemberTagDataStatus;
@@ -70,6 +72,9 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
     @Autowired
     private SchedulerRestService schedulerRestService;
+
+    @Autowired
+    private MemberMemberTagMapper memberMemberTagMapper;
 
     @Autowired
     private AsyncService asyncService;
@@ -200,8 +205,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      *
      * @param list
      */
-    public void checkDataIsOK(List<MemberTagData> list,String tenant) throws Exception {
-        TenantContext.setCurrentTenant(tenant);
+    public void checkDataIsOK(List<MemberTagData> list) throws Exception {
         if (CollectionUtils.isNotEmpty(list)) {
             for (MemberTagData memberTagData : list) {
                 log.info("======正在进行数据检查》》》》》============");
@@ -384,5 +388,109 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         }
     }
 
+
+    /**
+     * 更新上传数据状态
+     *
+     * @param fileId
+     * @param status
+     */
+    public void updateDataStatus(Integer fileId, MemberTagDataStatus status) {
+        MemberTagData data = new MemberTagData();
+        data.setStatus(status);
+        data.setFileId(fileId);
+        memberTagDataMapper.updateByPrimaryKeySelective(data);
+    }
+
+
+    /**
+     * 获取待处理的数据
+     *
+     * @param fileId
+     */
+    public List<MemberTagData> getMembertagCsvData(Integer fileId) {
+
+        return memberTagDataMapper.getMembertagCsvData(fileId);
+    }
+
+    /**
+     * 获取待加签的正确数据
+     *
+     * @param fileId
+     */
+    public List<MemberTagData> getCsvData(Integer fileId) {
+        MemberTagData memberTagData = new MemberTagData();
+        memberTagData.setFileId(fileId);
+        memberTagData.setCheckStatus(true);
+        return memberTagDataMapper.select(memberTagData);
+    }
+
+    /**
+     * 批量导入加标签处理
+     *
+     * @param list
+     * @throws Exception
+     */
+    public Boolean addTags(List<MemberTagData> list) throws Exception {
+        List<MemberMemberTag> tagsList = new ArrayList<>();
+        MemberTagDataStatus status = null;
+        String errorMsg = null;
+        Boolean result = false;
+        int suceessCount = 0;
+        try {
+            for (MemberTagData memberTagData : list) {
+                String[] tags = memberTagData.getTag().split("\\|");
+                for (String tag : tags) {
+                    List<MemberMemberTag> mmtList = memberMemberTagMapper.selecteIsExist(memberTagData.getOpenId()
+                     , tag, memberTagData.getWechatId());
+                    if (CollectionUtils.isNotEmpty(mmtList)) {
+                        log.info("已加标签数据：" + JSON.toJSON(memberTagData));
+                        list.remove(memberTagData);
+                    } else {
+                        MemberMemberTag mmTag = new MemberMemberTag();
+                        mmTag.setWechatId(memberTagData.getWechatId());
+                        mmTag.setOpenId(memberTagData.getOpenId());
+                        MemberTag memberTag = new MemberTag();
+                        memberTag.setName(tag);
+                        memberTag.setWechatId(memberTagData.getWechatId());
+                        MemberTag mTag = memberTagMapper.selectOne(memberTag);
+                        mmTag.setMemberTagId(mTag.getId());
+                        Member member = new Member();
+                        member.setWechatId(memberTagData.getWechatId());
+                        member.setOpenId(memberTagData.getOpenId());
+                        Member m = memberMapper.selectOne(member);
+                        mmTag.setMemberId(m.getId());
+                        if (!tagsList.contains(mmTag)) {
+                            log.info("设置标签数据集合：" + JSON.toJSON(mmTag));
+                            tagsList.add(mmTag);
+                        }
+                    }
+                }
+            }
+            log.info("待加标签数据：" + JSON.toJSON(tagsList));
+            if (CollectionUtils.isNotEmpty(tagsList)) {
+                suceessCount = memberMemberTagMapper.insertList(tagsList);
+                log.info("======加签中，已完成：》》》》》=" + suceessCount + "===========");
+                suceessCount++;
+            }
+            status = MemberTagDataStatus.PROCESS_SUCCEED;
+            result = true;
+        } catch (Exception e) {
+            status = MemberTagDataStatus.PROCESS_FAILURE;
+            errorMsg = "数据执行加签异常！";
+            e.printStackTrace();
+            log.info(errorMsg + e.getMessage());
+        } finally {
+            for (MemberTagData memberTagData : list) {
+                MemberTagData tagData = new MemberTagData();
+                tagData.setStatus(status);
+                tagData.setDataId(memberTagData.getDataId());
+                tagData.setErrorTag(errorMsg);
+                int t = memberTagDataMapper.updateByPrimaryKeySelective(tagData);
+                log.info("批量导入加标签处理方法:" + t);
+            }
+        }
+        return result;
+    }
 
 }
