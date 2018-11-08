@@ -73,7 +73,7 @@ public class MemberDto {
 
 	private Integer bindStatus;
 	// 绑定时间 对应member表bind_at字段
-	private String bindAt;
+	private Date bindAt;
 	// 渠道来源
 	private String subscribeScene;
 	// 二维码扫码场景
@@ -320,11 +320,11 @@ public class MemberDto {
 		this.bindStatus = bindStatus;
 	}
 
-	public String getBindAt() {
+	public Date getBindAt() {
 		return bindAt;
 	}
 
-	public void setBindAt(String bindAt) {
+	public void setBindAt(Date bindAt) {
 		this.bindAt = bindAt;
 	}
 
@@ -413,5 +413,8 @@ public class MemberDto {
 		if(unionId != null) {
 			dataRow.createCell(14).setCellValue(unionId);
 		}
+	}
+	public static void main(String[] args) {
+		System.out.println(DF.format("2018-11-07 16:38:06"));
 	}
 }
