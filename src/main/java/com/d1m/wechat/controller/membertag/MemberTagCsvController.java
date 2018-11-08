@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
  * Description:
  */
 @RestController
-@RequestMapping("/member-tag/batch")
+@RequestMapping("/member/tag")
 @Slf4j
 @Api(value = "会员打标签Api2")
 public class MemberTagCsvController extends BaseController {
