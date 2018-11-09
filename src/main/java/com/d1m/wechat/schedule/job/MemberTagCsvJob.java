@@ -47,24 +47,29 @@ public class MemberTagCsvJob extends BaseJobHandler {
                     memberTagDataService.checkDataIsOK(list);
                 } else {
                     errorMsg = "没有找到数据！";
-                    memberTagCsvService.updateCsv(fileId, errorMsg);
+                    /*memberTagCsvService.updateCsv(fileId, errorMsg);*/
                     log.info("fileId:" + fileId + "," + errorMsg);
                 }
 
                 //获取待加签的正确数据
                 List<MemberTagData> addTagsDataList = memberTagDataService.getCsvData(fileId);
-                if (CollectionUtils.isNotEmpty(list)) {
+                if (CollectionUtils.isNotEmpty(addTagsDataList)) {
                     log.info("======准备加签》》》》》============");
                     memberTagDataService.addTags(addTagsDataList);
                 } else {
                     errorMsg = "没有找到正确数据！";
-                    memberTagCsvService.updateCsv(fileId, errorMsg);
+                    /*memberTagCsvService.updateCsv(fileId, errorMsg);*/
                     log.info("fileId:" + fileId + "," + errorMsg);
                 }
 
                 //统计结果
                 log.info("======统计结果》》》》》============");
                 memberTagCsvService.updateCountCsv(fileId);
+
+                //结果更新
+                memberTagCsvService.updateFileStatus(fileId, MemberTagCsvStatus.PROCESS_SUCCEED);
+                //memberTagDataService.updateDataStatus(fileId,2);
+                log.info("======会员导入加签完成》》》》》============");
             }
             return ReturnT.SUCCESS;
         } catch (Exception e) {

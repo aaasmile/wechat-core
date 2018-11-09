@@ -39,7 +39,7 @@
     select file_id,
     (select count(1) from member_tag_data mtd where mtd.error_msg is not null and check_status =false ) fail_count,
     (select count(1) from member_tag_data mtd where mtd.error_msg is  null and check_status =true ) success_count
-     from member_tag_data  where file_id=#{fileId}
+     from member_tag_csv  where file_id=#{fileId}
     </select>
 
     <update id="updateDataStatus">

@@ -104,6 +104,7 @@ public class MemberTagCsvServiceImpl implements MemberTagCsvService {
             MemberTagCsv csv = new MemberTagCsv();
             csv.setFailCount(memberStatsCounts.getFailCount());
             csv.setSuccessCount(memberStatsCounts.getSuccessCount());
+            csv.setFileId(fileId);
             int t = memberTagCsvMapper.updateByPrimaryKeySelective(csv);
             log.info("更新上传信息表统计数据结果：" + t);
         }
