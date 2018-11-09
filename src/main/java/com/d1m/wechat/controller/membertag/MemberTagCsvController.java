@@ -4,6 +4,7 @@ import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.domain.entity.MemberTagCsv;
@@ -15,9 +16,15 @@ import com.d1m.wechat.model.enums.MemberTagDataStatus;
 import com.d1m.wechat.pamametermodel.AddMemberTagTaskModel;
 import com.d1m.wechat.service.MemberTagCsvService;
 import com.d1m.wechat.service.MemberTagDataService;
+import com.d1m.wechat.service.impl.MemberTagDataServiceImpl;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.FileUploadConfigUtil;
 import com.d1m.wechat.util.Message;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.MappingIterator;
+import com.fasterxml.jackson.databind.SequenceWriter;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.github.pagehelper.Page;
 import io.swagger.annotations.*;
 import lombok.Data;
@@ -61,14 +68,16 @@ public class MemberTagCsvController extends BaseController {
     @Autowired
     private MemberTagDataService memberTagDataService;
 
+    private CsvMapper csvMapper = new CsvMapper();
+
     @ApiOperation(value = "上传excel或者csv批量为用户打标签")
     @ApiResponse(code = 200, message = "导入文件上传成功")
     @RequestMapping(value = "csv-excel.json", method = RequestMethod.POST)
     public BaseResponse batchAddTagsOnCsv(@RequestParam MultipartFile file) throws Exception {
         final String originalFilename = file.getOriginalFilename();
         if (!originalFilename.endsWith(".csv")
-                && !originalFilename.endsWith(".xls")
-                && !originalFilename.endsWith(".xlsx")) {
+         && !originalFilename.endsWith(".xls")
+         && !originalFilename.endsWith(".xlsx")) {
 
             return BaseResponse.builder().msg("不支持的文件格式").build();
         }
@@ -76,12 +85,12 @@ public class MemberTagCsvController extends BaseController {
         String uploadPath = instance.getValue(getWechatId(), "upload_path");
         log.info("upload_path : " + uploadPath);
         String fileFullName = uploadPath + DateUtil.formatYYYYMMDD(new Date()) + "/" + UUID.randomUUID().toString()
-                + "_" + file.getOriginalFilename();
+         + "_" + file.getOriginalFilename();
         log.info("fileFullName : " + fileFullName);
         final File targetFile = new File(fileFullName);
 
         FileUtils.copyInputStreamToFile(file.getInputStream(),
-                targetFile);
+         targetFile);
         long currentTime = System.currentTimeMillis();
         long m = 60L * 1000L;
         long runAt = currentTime + m;
@@ -91,15 +100,15 @@ public class MemberTagCsvController extends BaseController {
         log.info("任务名称:{}", taskName);
         log.info("runTask:{}", runTask);
         final MemberTagCsv.MemberTagCsvBuilder memberTagCsvBuilder = MemberTagCsv
-                .builder()
-                .oriFile(file.getOriginalFilename())
-                .sourceFilePath(fileFullName)
-                .fileSize(String.valueOf(file.getSize()))
-                .wechatId(getWechatId())
-                .creatorId(getUser().getId())
-                .task(taskName)
-                .status(MemberTagCsvStatus.IN_PROCESS)
-                .format(originalFilename.substring(originalFilename.lastIndexOf(".") + 1));
+         .builder()
+         .oriFile(file.getOriginalFilename())
+         .sourceFilePath(fileFullName)
+         .fileSize(String.valueOf(file.getSize()))
+         .wechatId(getWechatId())
+         .creatorId(getUser().getId())
+         .task(taskName)
+         .status(MemberTagCsvStatus.IN_PROCESS)
+         .format(originalFilename.substring(originalFilename.lastIndexOf(".") + 1));
 
         if (originalFilename.endsWith(".csv")) {
             //工具类计算出编码错误
@@ -116,69 +125,80 @@ public class MemberTagCsvController extends BaseController {
             }
         } catch (RuntimeException e) {
             memberTagCsvService.updateByPrimaryKeySelective(MemberTagCsv.builder()
-                    .fileId(memberTagCsv.getFileId())
-                    .status(MemberTagCsvStatus.PROCESS_FAILURE)
-                    .errorMsg(e.getMessage())
-                    .build());
+             .fileId(memberTagCsv.getFileId())
+             .status(MemberTagCsvStatus.PROCESS_FAILURE)
+             .errorMsg(e.getMessage())
+             .build());
 
             return BaseResponse.builder()
-                    .resultCode(Message.CSV_OR_EXCEL_PARSER_FAIL.getCode())
-                    .msg(Message.CSV_OR_EXCEL_PARSER_FAIL.getName())
-                    .build();
+             .resultCode(Message.CSV_OR_EXCEL_PARSER_FAIL.getCode())
+             .msg(Message.CSV_OR_EXCEL_PARSER_FAIL.getName())
+             .build();
         }
         return BaseResponse.builder()
-                .resultCode(Message.FILE_UPLOAD_SUCCESS.getCode())
-                .msg(Message.FILE_UPLOAD_SUCCESS.getName()).build();
+         .resultCode(Message.FILE_UPLOAD_SUCCESS.getCode())
+         .msg(Message.FILE_UPLOAD_SUCCESS.getName()).build();
     }
 
 
     @RequestMapping(value = "{id}/fail-export.json", method = RequestMethod.GET)
-    @ApiResponses(value = {@ApiResponse(code = 200, response = Void.class,
-            message = "curl -H \"Cookie: Idea-673fdd47=c963a16f-dd3b-4412-89e5-84ec8b648975; SESSION=88ad87ee-37ab-4e01-97ea-f0de7e2810f4\" -O http://host:port/member-tag/batch/64/fail_export")})
     @ApiOperation(value = "失败数据下载")
     public BaseResponse failDataExport(@PathVariable Integer id, HttpServletResponse response) {
+        Workbook workbook = null;
+        SequenceWriter writer = null;
         final MemberTagCsv memberTagCsv = memberTagCsvService.selectByKey(id);
         if (Objects.isNull(memberTagCsv)) {
             return BaseResponse.builder()
-                    .resultCode(0)
-                    .msg("找不到上传文件")
-                    .build();
+             .resultCode(0)
+             .msg("找不到上传文件")
+             .build();
         }
         final Example example = new Example(MemberTagData.class);
         example.createCriteria()
-                .andEqualTo("status", MemberTagDataStatus.PROCESS_FAILURE);
-        example.or().andEqualTo("checkStatus", false);
+         .andEqualTo("fileId", id)
+         .andEqualTo("status", MemberTagDataStatus.PROCESS_FAILURE);
         final List<MemberTagData> memberTagDatas = memberTagDataService.selectByExample(example);
         if (CollectionUtils.isEmpty(memberTagDatas)) {
             return BaseResponse.builder()
-                    .resultCode(0)
-                    .msg("没有错误数据")
-                    .build();
+             .resultCode(0)
+             .msg("没有错误数据")
+             .build();
         }
         final List<FailDataExport> failDataExports = memberTagDatas
-                .stream()
-                .map(FailDataExport::convert)
-                .collect(Collectors.toList());
+         .stream()
+         .map(FailDataExport::convert)
+         .collect(Collectors.toList());
 
         final ExportParams exportParams = new ExportParams();
         String format = StringUtils.isNotBlank(memberTagCsv.getFormat()) ? memberTagCsv.getFormat() : "xlsx";
         if ("xlsx".equals(format)) {
             exportParams.setType(ExcelType.XSSF);
+            workbook = ExcelExportUtil.exportExcel(exportParams, SuccDataExports.class, failDataExports);
         } else if ("xls".equals(format)) {
             exportParams.setType(ExcelType.HSSF);
+            workbook = ExcelExportUtil.exportExcel(exportParams, SuccDataExports.class, failDataExports);
         }
-
-        try (final Workbook workbook = ExcelExportUtil.exportExcel(exportParams, FailDataExport.class, failDataExports)) {
-
-            try (final ServletOutputStream outputStream = response.getOutputStream()) {
-                String importFileName = "失败数据." + format;
+        log.info("下载格式：{}", format);
+        String importFileName = "失败数据." + format;
+        log.info("succDataExports:{}", JSON.toJSON(failDataExports));
+        try {
+            try (
+             ServletOutputStream outputStream = response.getOutputStream()) {
                 response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
                 response.setHeader("Pragma", "no-cache");
                 response.setHeader("Expires", "0");
                 response.setHeader("charset", "utf-8");
-                response.setHeader("Content-Disposition", "attachment;filename=\"" + URLEncoder.encode(LocalDate.now() + importFileName, "UTF-8") + "\"");
-
-                workbook.write(outputStream);
+                response.setHeader("Content-Disposition", "attachment;filename=\""
+                 + URLEncoder.encode(LocalDate.now() + importFileName, "UTF-8") + "\"");
+                if ("csv".equals(format)) {
+                    CsvSchema schema = csvMapper.schemaFor(SuccDataExports.class)
+                     .withHeader().withLineSeparator("\r\n").withoutQuoteChar();
+                    writer = csvMapper.writerFor(SuccDataExports.class).with(schema).writeValues(outputStream);
+                    writer.writeAll(failDataExports);
+                    writer.close();
+                } else {
+                    workbook.write(outputStream);
+                }
             }
         } catch (IOException e) {
             log.error("Export fail file error", e);
@@ -187,52 +207,63 @@ public class MemberTagCsvController extends BaseController {
     }
 
     @RequestMapping(value = "{id}/success-export.json", method = RequestMethod.GET)
-    @ApiResponses(value = {@ApiResponse(code = 200, response = Void.class,
-            message = "curl -H \"Cookie: Idea-673fdd47=c963a16f-dd3b-4412-89e5-84ec8b648975; SESSION=88ad87ee-37ab-4e01-97ea-f0de7e2810f4\" -O http://host:port/member-tag/batch/64/fail_export")})
     @ApiOperation(value = "成功数据下载")
     public BaseResponse successDataExport(@PathVariable Integer id, HttpServletResponse response) {
+        Workbook workbook = null;
+        SequenceWriter writer = null;
         final MemberTagCsv memberTagCsv = memberTagCsvService.selectByKey(id);
         if (Objects.isNull(memberTagCsv)) {
             return BaseResponse.builder()
-                    .resultCode(0)
-                    .msg("找不到上传文件")
-                    .build();
+             .resultCode(0)
+             .msg("找不到上传文件")
+             .build();
         }
         final Example example = new Example(MemberTagData.class);
         example.createCriteria()
-                .andEqualTo("status", MemberTagDataStatus.PROCESS_SUCCEED);
-        example.or().andEqualTo("checkStatus", true);
+         .andEqualTo("fileId", id)
+         .andEqualTo("status", MemberTagDataStatus.PROCESS_SUCCEED);
         final List<MemberTagData> memberTagDatas = memberTagDataService.selectByExample(example);
         if (CollectionUtils.isEmpty(memberTagDatas)) {
             return BaseResponse.builder()
-                    .resultCode(0)
-                    .msg("没有数据")
-                    .build();
+             .resultCode(0)
+             .msg("没有数据")
+             .build();
         }
-        final List<FailDataExport> succDataExports = memberTagDatas
-                .stream()
-                .map(FailDataExport::convert)
-                .collect(Collectors.toList());
+        final List<SuccDataExports> succDataExports = memberTagDatas
+         .stream()
+         .map(SuccDataExports::convert)
+         .collect(Collectors.toList());
 
         final ExportParams exportParams = new ExportParams();
         String format = StringUtils.isNotBlank(memberTagCsv.getFormat()) ? memberTagCsv.getFormat() : "xlsx";
         if ("xlsx".equals(format)) {
             exportParams.setType(ExcelType.XSSF);
+            workbook = ExcelExportUtil.exportExcel(exportParams, SuccDataExports.class, succDataExports);
         } else if ("xls".equals(format)) {
             exportParams.setType(ExcelType.HSSF);
+            workbook = ExcelExportUtil.exportExcel(exportParams, SuccDataExports.class, succDataExports);
         }
-
-        try (final Workbook workbook = ExcelExportUtil.exportExcel(exportParams, FailDataExport.class, succDataExports)) {
-            new XSSFWorkbook();
-            String importFileName = "成功数据." + format;
-            try (final ServletOutputStream outputStream = response.getOutputStream()) {
+        log.info("下载格式：{}", format);
+        String importFileName = "成功数据." + format;
+        log.info("succDataExports:{}", JSON.toJSON(succDataExports));
+        try {
+            try (
+             ServletOutputStream outputStream = response.getOutputStream()) {
                 response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
                 response.setHeader("Pragma", "no-cache");
                 response.setHeader("Expires", "0");
                 response.setHeader("charset", "utf-8");
                 response.setHeader("Content-Disposition", "attachment;filename=\""
-                        + URLEncoder.encode(LocalDate.now() + importFileName, "UTF-8") + "\"");
-                workbook.write(outputStream);
+                 + URLEncoder.encode(LocalDate.now() + importFileName, "UTF-8") + "\"");
+                if ("csv".equals(format)) {
+                    CsvSchema schema = csvMapper.schemaFor(SuccDataExports.class)
+                     .withHeader().withLineSeparator("\r\n").withoutQuoteChar();
+                    writer = csvMapper.writerFor(SuccDataExports.class).with(schema).writeValues(outputStream);
+                    writer.writeAll(succDataExports);
+                    writer.close();
+                } else {
+                    workbook.write(outputStream);
+                }
             }
         } catch (IOException e) {
             log.error("Export fail file error", e);
@@ -240,6 +271,7 @@ public class MemberTagCsvController extends BaseController {
         return null;
     }
 
+    @SuppressWarnings("WeakerAccess")
     @Data
     public static class FailDataExport {
         @Excel(name = "OPEN_ID")
@@ -256,20 +288,37 @@ public class MemberTagCsvController extends BaseController {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
+    @Data
+    public static class SuccDataExports {
+        @Excel(name = "OPEN_ID")
+        @JsonProperty(value = "OPEN_ID")
+        private String openId;
+        @Excel(name = "TAG")
+        @JsonProperty(value = "TAG")
+        private String tag;
+
+        public static SuccDataExports convert(Object o) {
+            final SuccDataExports succDataExport = new SuccDataExports();
+            BeanUtils.copyProperties(o, succDataExport);
+            return succDataExport;
+        }
+    }
+
 
     @ApiOperation(value = "导入加签任务列表", tags = "会员标签接口")
     @ApiResponse(code = 200, message = "1-会员标签CSV批量导入成功")
     @RequestMapping(value = "tag-task.json", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject addMemberTagTaskList(
-            @ApiParam(name = "AddMemberTagTaskModel", required = false)
-            @RequestBody(required = false) AddMemberTagTaskModel tagTask) {
+     @ApiParam(name = "AddMemberTagTaskModel", required = false)
+     @RequestBody(required = false) AddMemberTagTaskModel tagTask) {
         if (tagTask == null) {
             tagTask = new AddMemberTagTaskModel();
         }
         Page<ImportCsvDto> memberTagCsvs = memberTagCsvService.searchTask(
-                getWechatId(), tagTask);
+         getWechatId(), tagTask);
         return representation(Message.MEMBER_TAG_TASK_LIST_SUCCESS, memberTagCsvs.getResult(),
-                tagTask.getPageNum(), tagTask.getPageSize(), memberTagCsvs.getTotal());
+         tagTask.getPageNum(), tagTask.getPageSize(), memberTagCsvs.getTotal());
     }
 }
