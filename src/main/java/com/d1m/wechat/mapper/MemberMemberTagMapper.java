@@ -5,6 +5,7 @@ import java.util.List;
 import com.d1m.wechat.model.MemberMemberTag;
 import com.d1m.wechat.model.Tag;
 import com.d1m.wechat.util.MyMapper;
+import org.apache.ibatis.annotations.Param;
 
 public interface MemberMemberTagMapper extends MyMapper<MemberMemberTag> {
 	public List<MemberMemberTag> getMemberMemberTagList(MemberMemberTag memberMemberTag);
@@ -17,5 +18,5 @@ public interface MemberMemberTagMapper extends MyMapper<MemberMemberTag> {
 	 * @param wechatId
 	 * @return
 	 */
-	List<MemberMemberTag> selecteIsExist(String openId,String name,Integer wechatId);
+	List<MemberMemberTag> selecteIsExist(@Param("openId") String openId, @Param("name") String name, @Param("wechatId") Integer wechatId);
 }
