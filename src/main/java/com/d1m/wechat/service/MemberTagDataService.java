@@ -57,4 +57,12 @@ public interface MemberTagDataService extends BaseService<MemberTagData> {
      */
      Boolean addTags(List<MemberTagData> list) throws Exception;
 
+    /**
+     * 因必填信息引起的错误，需要更新状态为完成
+     * @param dataId
+     * @param errorMsg
+     * @throws Exception
+     */
+    public void updateErrorStatus(Integer dataId, String errorMsg) throws Exception;
+
 }

@@ -156,7 +156,7 @@ public class MemberTagCsvController extends BaseController {
         final Example example = new Example(MemberTagData.class);
         example.createCriteria()
          .andEqualTo("fileId", id)
-         .andEqualTo("status", MemberTagDataStatus.PROCESS_FAILURE);
+         .andIsNotNull("errorMsg");
         final List<MemberTagData> memberTagDatas = memberTagDataService.selectByExample(example);
         if (CollectionUtils.isEmpty(memberTagDatas)) {
             return BaseResponse.builder()
@@ -173,10 +173,10 @@ public class MemberTagCsvController extends BaseController {
         String format = StringUtils.isNotBlank(memberTagCsv.getFormat()) ? memberTagCsv.getFormat() : "xlsx";
         if ("xlsx".equals(format)) {
             exportParams.setType(ExcelType.XSSF);
-            workbook = ExcelExportUtil.exportExcel(exportParams, SuccDataExports.class, failDataExports);
+            workbook = ExcelExportUtil.exportExcel(exportParams, FailDataExport.class, failDataExports);
         } else if ("xls".equals(format)) {
             exportParams.setType(ExcelType.HSSF);
-            workbook = ExcelExportUtil.exportExcel(exportParams, SuccDataExports.class, failDataExports);
+            workbook = ExcelExportUtil.exportExcel(exportParams, FailDataExport.class, failDataExports);
         }
         log.info("下载格式：{}", format);
         String importFileName = "失败数据." + format;
@@ -221,7 +221,7 @@ public class MemberTagCsvController extends BaseController {
         final Example example = new Example(MemberTagData.class);
         example.createCriteria()
          .andEqualTo("fileId", id)
-         .andEqualTo("status", MemberTagDataStatus.PROCESS_SUCCEED);
+         .andEqualTo("checkStatus", true);
         final List<MemberTagData> memberTagDatas = memberTagDataService.selectByExample(example);
         if (CollectionUtils.isEmpty(memberTagDatas)) {
             return BaseResponse.builder()

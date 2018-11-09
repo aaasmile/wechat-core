@@ -25,6 +25,7 @@ import com.d1m.wechat.service.AsyncService;
 import com.d1m.wechat.service.MemberTagCsvService;
 import com.d1m.wechat.service.MemberTagDataService;
 import com.d1m.wechat.service.MemberTagService;
+import com.d1m.wechat.util.CommonUtils;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
 import com.d1m.wechat.util.MyMapper;
@@ -47,6 +48,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -226,21 +228,21 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
                 //校验OpenID
                 if (StringUtils.isEmpty(memberTagData.getOpenId())) {
-                    updateErrorMsg(memberTagData.getDataId(), "会员OpenID不能为空");
+                    updateErrorStatus(memberTagData.getDataId(), "会员OpenID不能为空");
                     log.info("dataId:" + memberTagData.getDataId() + "，会员OpenID不能为空！");
                     list.remove(memberTagData);
                 }
 
                 //校验标签
                 if (StringUtils.isEmpty(memberTagData.getOriginalTag())) {
-                    updateErrorMsg(memberTagData.getDataId(), "标签不能为空");
+                    updateErrorStatus(memberTagData.getDataId(), "标签不能为空");
                     log.info("dataId:" + memberTagData.getDataId() + "，标签不能为空！");
                     list.remove(memberTagData);
                 }
 
                 //检查openID是否存在
                 if (selectCount(memberTagData.getOpenId()) <= 0) {
-                    updateErrorMsg(memberTagData.getDataId(), "不存在此会员OpenID");
+                    updateErrorStatus(memberTagData.getDataId(), "不存在此会员OpenID");
                     log.info("dataId:" + memberTagData.getDataId() + "，不存在此会员OpenID！");
                     list.remove(memberTagData);
                 }
@@ -254,6 +256,27 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         }
     }
 
+    /**
+     * 因必填信息引起的错误，需要更新状态为完成
+     *
+     * @param dataId
+     * @param errorMsg
+     * @throws Exception
+     */
+    public void updateErrorStatus(Integer dataId, String errorMsg) throws Exception {
+        try {
+            MemberTagData memberTagData = new MemberTagData();
+            memberTagData.setDataId(dataId);
+            memberTagData.setErrorMsg(errorMsg);
+            memberTagData.setCheckStatus(false);
+            memberTagData.setStatus(MemberTagDataStatus.PROCESS_SUCCEED);
+            int t = memberTagDataMapper.updateByPrimaryKeySelective(memberTagData);
+            log.info("因必填信息引起的错误，需要更新状态为完成:{}", t);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 更新数据错误原因
@@ -289,10 +312,11 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             memberTagData.setDataId(dataId);
             MemberTagData tagData = memberTagDataMapper.selectOne(memberTagData);
             memberTagData.setDataId(dataId);
-            log.info("tagData.getErrorTag():" + tagData.getErrorTag());
-            if (StringUtils.isNotBlank(tagData.getErrorTag()) && tagData.getErrorTag().equals(originalTag)) {
+            log.info("错误标签:{}", tagData.getErrorTag());
+            if (StringUtils.isNotBlank(tagData.getErrorTag())) {
                 memberTagData.setCheckStatus(false);
                 memberTagData.setStatus(MemberTagDataStatus.PROCESS_SUCCEED);
+                log.info("如果有一个错误标签，则该条数据不用做加签处理:{}", tagData.getErrorTag());
             } else {
                 memberTagData.setCheckStatus(true);
             }
@@ -477,12 +501,14 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                         member.setWechatId(memberTagData.getWechatId());
                         member.setOpenId(memberTagData.getOpenId());
                         Member m = memberMapper.selectOne(member);
-                        mmTag.setMemberId(m.getId());
                         mmTag.setCreatedAt(new Date());
-                        if (!tagsList.contains(mmTag)) {
-                            log.info("设置标签数据集合：" + JSON.toJSON(mmTag));
-                            tagsList.add(mmTag);
-                        }
+                        mmTag.setMemberId(m.getId());
+                        tagsList.add(mmTag);
+                        tagsList = tagsList.stream().filter(CommonUtils.distinctByKey(t -> t.getMemberId() + t.getWechatId()
+                         + t.getOpenId() + t.getMemberTagId())).collect(Collectors.toList());
+                        log.info("设置标签数据集合：" + JSON.toJSON(mmTag));
+
+
                     }
                 }
             }
@@ -510,6 +536,18 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             }
         }
         return result;
+    }
+
+    private boolean contains(List<MemberMemberTag> list, MemberTag memberTag) {
+        if (list == null || list.isEmpty()) {
+            return false;
+        }
+        for (MemberMemberTag tag : list) {
+            if (tag.getId().equals(memberTag.getId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
