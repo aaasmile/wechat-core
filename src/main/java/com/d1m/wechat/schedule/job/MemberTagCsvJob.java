@@ -47,7 +47,6 @@ public class MemberTagCsvJob extends BaseJobHandler {
                     memberTagDataService.checkDataIsOK(list);
                 } else {
                     errorMsg = "没有找到数据！";
-                    /*memberTagCsvService.updateCsv(fileId, errorMsg);*/
                     log.info("fileId:" + fileId + "," + errorMsg);
                 }
 
@@ -58,7 +57,6 @@ public class MemberTagCsvJob extends BaseJobHandler {
                     memberTagDataService.addTags(addTagsDataList);
                 } else {
                     errorMsg = "没有找到正确数据！";
-                    /*memberTagCsvService.updateCsv(fileId, errorMsg);*/
                     log.info("fileId:" + fileId + "," + errorMsg);
                 }
 
@@ -68,7 +66,6 @@ public class MemberTagCsvJob extends BaseJobHandler {
 
                 //结果更新
                 memberTagCsvService.updateFileStatus(fileId, MemberTagCsvStatus.PROCESS_SUCCEED);
-                //memberTagDataService.updateDataStatus(fileId,2);
                 log.info("======会员导入加签完成》》》》》============");
             }
             return ReturnT.SUCCESS;
