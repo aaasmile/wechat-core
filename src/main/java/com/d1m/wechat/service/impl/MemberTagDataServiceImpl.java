@@ -311,7 +311,6 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             MemberTagData memberTagData = new MemberTagData();
             memberTagData.setDataId(dataId);
             MemberTagData tagData = memberTagDataMapper.selectOne(memberTagData);
-            memberTagData.setDataId(dataId);
             log.info("错误标签:{}", tagData.getErrorTag());
             if (StringUtils.isNotBlank(tagData.getErrorTag())) {
                 memberTagData.setCheckStatus(false);
@@ -364,10 +363,12 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      */
     public String setTags(String source, String tag) {
         String resultValue = null;
-        if (StringUtils.isNotBlank(source)) {
-            resultValue = source + "|" + tag;
-        } else {
-            resultValue = tag;
+        if (StringUtils.isNotBlank(tag)) {
+            if (StringUtils.isNotBlank(source)) {
+                resultValue = source + "|" + tag;
+            } else {
+                resultValue = tag;
+            }
         }
         return resultValue;
     }
@@ -516,7 +517,6 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             if (CollectionUtils.isNotEmpty(tagsList)) {
                 suceessCount = memberMemberTagMapper.insertList(tagsList);
                 log.info("======加签中，已完成：》》》》》=" + suceessCount + "===========");
-                suceessCount++;
             }
             status = MemberTagDataStatus.PROCESS_SUCCEED;
             result = true;
