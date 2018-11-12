@@ -15,6 +15,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @JobHander(value = "memberTagCsvJob")
 @Component
@@ -41,7 +42,7 @@ public class MemberTagCsvJob extends BaseJobHandler {
                 //设置上传数据状态为处理中
                 memberTagDataService.updateDataStatus(fileId, 1);//1 代表处理中
                 //数据标签检查
-                List<MemberTagData> list = memberTagDataService.getMembertagCsvData(fileId);
+                CopyOnWriteArrayList<MemberTagData> list = memberTagDataService.getMembertagCsvData(fileId);
                 if (CollectionUtils.isNotEmpty(list)) {
                     log.info("======准备数据标签检查》》》》》============");
                     memberTagDataService.checkDataIsOK(list);

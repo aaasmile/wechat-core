@@ -8,6 +8,7 @@ import com.d1m.wechat.model.enums.MemberTagDataStatus;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by jone.wang on 2018/11/6.
@@ -24,7 +25,7 @@ public interface MemberTagDataService extends BaseService<MemberTagData> {
      *
      * @param list
      */
-     void checkDataIsOK(List<MemberTagData> list) throws Exception;
+     void checkDataIsOK(CopyOnWriteArrayList<MemberTagData> list) throws Exception;
 
     /**
      * 更新上传数据状态
@@ -39,7 +40,7 @@ public interface MemberTagDataService extends BaseService<MemberTagData> {
      *
      * @param fileId
      */
-     List<MemberTagData> getMembertagCsvData(Integer fileId);
+    CopyOnWriteArrayList<MemberTagData> getMembertagCsvData(Integer fileId);
 
 
     /**
