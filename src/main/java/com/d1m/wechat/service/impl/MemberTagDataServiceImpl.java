@@ -473,6 +473,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         MemberTagData memberTagData = new MemberTagData();
         memberTagData.setFileId(fileId);
         memberTagData.setCheckStatus(true);
+        memberTagData.setStatus(MemberTagDataStatus.IN_PROCESS);
         return memberTagDataMapper.select(memberTagData);
     }
 
@@ -521,8 +522,9 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                         }
                     }
                 }
-                log.info("待加标签数据：" + JSON.toJSON(tagsList));
+
                 if (CollectionUtils.isNotEmpty(tagsList)) {
+                    log.info("待加标签数据：", JSON.toJSON(tagsList));
                     suceessCount = memberMemberTagMapper.insertList(tagsList);
                     log.info("======加签中，已完成：》》》》》=" + suceessCount + "===========");
                 }
