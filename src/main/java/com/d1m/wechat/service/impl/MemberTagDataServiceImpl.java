@@ -383,10 +383,12 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      */
     public String setErrorMsg(String source, String errorMsg) {
         String resultValue = null;
-        if (StringUtils.isNotBlank(source)) {
-            resultValue = source + "；" + errorMsg;
-        } else {
-            resultValue = errorMsg;
+        if (StringUtils.isNotBlank(errorMsg)) {
+            if (StringUtils.isNotBlank(source)) {
+                resultValue = source + "；" + errorMsg;
+            } else {
+                resultValue = errorMsg;
+            }
         }
         return resultValue;
     }
@@ -475,64 +477,69 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      * @throws Exception
      */
     public Boolean addTags(List<MemberTagData> list) throws Exception {
+
         List<MemberMemberTag> tagsList = new ArrayList<>();
         MemberTagDataStatus status = null;
         String errorMsg = null;
         Boolean result = false;
         int suceessCount = 0;
         try {
-            for (MemberTagData memberTagData : list) {
-                String[] tags = memberTagData.getTag().split("\\|");
-                for (String tag : tags) {
-                    List<MemberMemberTag> mmtList = memberMemberTagMapper.selecteIsExist(memberTagData.getOpenId()
-                     , tag, memberTagData.getWechatId());
-                    if (CollectionUtils.isNotEmpty(mmtList)) {
-                        log.info("已加标签数据：" + JSON.toJSON(memberTagData));
-                        list.remove(memberTagData);
-                    } else {
-                        MemberMemberTag mmTag = new MemberMemberTag();
-                        mmTag.setWechatId(memberTagData.getWechatId());
-                        mmTag.setOpenId(memberTagData.getOpenId());
-                        MemberTag memberTag = new MemberTag();
-                        memberTag.setName(tag);
-                        memberTag.setWechatId(memberTagData.getWechatId());
-                        MemberTag mTag = memberTagMapper.selectOne(memberTag);
-                        mmTag.setMemberTagId(mTag.getId());
-                        Member member = new Member();
-                        member.setWechatId(memberTagData.getWechatId());
-                        member.setOpenId(memberTagData.getOpenId());
-                        Member m = memberMapper.selectOne(member);
-                        mmTag.setCreatedAt(new Date());
-                        mmTag.setMemberId(m.getId());
-                        tagsList.add(mmTag);
-                        tagsList = tagsList.stream().filter(CommonUtils.distinctByKey(t -> t.getMemberId() + t.getWechatId()
-                         + t.getOpenId() + t.getMemberTagId())).collect(Collectors.toList());
-                        log.info("设置标签数据集合：" + JSON.toJSON(mmTag));
+            if (CollectionUtils.isNotEmpty(list)) {
+                for (MemberTagData memberTagData : list) {
+                    String[] tags = memberTagData.getTag().split("\\|");
+                    for (String tag : tags) {
+                        List<MemberMemberTag> mmtList = memberMemberTagMapper.selecteIsExist(memberTagData.getOpenId()
+                         , tag, memberTagData.getWechatId());
+                        if (CollectionUtils.isNotEmpty(mmtList)) {
+                            log.info("已加标签数据：" + JSON.toJSON(memberTagData));
+                            //list.remove(memberTagData);
+                        } else {
+                            MemberMemberTag mmTag = new MemberMemberTag();
+                            mmTag.setWechatId(memberTagData.getWechatId());
+                            mmTag.setOpenId(memberTagData.getOpenId());
+                            MemberTag memberTag = new MemberTag();
+                            memberTag.setName(tag);
+                            memberTag.setWechatId(memberTagData.getWechatId());
+                            MemberTag mTag = memberTagMapper.selectOne(memberTag);
+                            mmTag.setMemberTagId(mTag.getId());
+                            Member member = new Member();
+                            member.setWechatId(memberTagData.getWechatId());
+                            member.setOpenId(memberTagData.getOpenId());
+                            Member m = memberMapper.selectOne(member);
+                            mmTag.setCreatedAt(new Date());
+                            mmTag.setMemberId(m.getId());
+                            tagsList.add(mmTag);
+                            tagsList = tagsList.stream().filter(CommonUtils.distinctByKey(t -> t.getMemberId() + t.getWechatId()
+                             + t.getOpenId() + t.getMemberTagId())).collect(Collectors.toList());
+                            log.info("设置标签数据集合：" + JSON.toJSON(mmTag));
 
 
+                        }
                     }
                 }
+                log.info("待加标签数据：" + JSON.toJSON(tagsList));
+                if (CollectionUtils.isNotEmpty(tagsList)) {
+                    suceessCount = memberMemberTagMapper.insertList(tagsList);
+                    log.info("======加签中，已完成：》》》》》=" + suceessCount + "===========");
+                }
+                status = MemberTagDataStatus.PROCESS_SUCCEED;
+                result = true;
             }
-            log.info("待加标签数据：" + JSON.toJSON(tagsList));
-            if (CollectionUtils.isNotEmpty(tagsList)) {
-                suceessCount = memberMemberTagMapper.insertList(tagsList);
-                log.info("======加签中，已完成：》》》》》=" + suceessCount + "===========");
-            }
-            status = MemberTagDataStatus.PROCESS_SUCCEED;
-            result = true;
         } catch (Exception e) {
             status = MemberTagDataStatus.PROCESS_FAILURE;
             errorMsg = "数据执行加签异常！";
             e.printStackTrace();
             log.info(errorMsg + e.getMessage());
         } finally {
-            for (MemberTagData memberTagData : list) {
-                MemberTagData tagData = new MemberTagData();
-                tagData.setStatus(status);
-                tagData.setDataId(memberTagData.getDataId());
-                tagData.setErrorTag(errorMsg);
-                int t = memberTagDataMapper.updateByPrimaryKeySelective(tagData);
-                log.info("批量导入加标签处理方法:" + t);
+            if (CollectionUtils.isNotEmpty(list)) {
+                for (MemberTagData memberTagData : list) {
+                    MemberTagData tagData = new MemberTagData();
+                    tagData.setStatus(status);
+                    tagData.setDataId(memberTagData.getDataId());
+                    tagData.setErrorTag(errorMsg);
+                    int t = memberTagDataMapper.updateByPrimaryKeySelective(tagData);
+                    log.info("批量导入加标签处理方法:" + t);
+                }
             }
         }
         return result;
