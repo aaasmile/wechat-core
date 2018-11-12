@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -220,7 +221,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      *
      * @param list
      */
-    public void checkDataIsOK(List<MemberTagData> list) throws Exception {
+    public void checkDataIsOK(CopyOnWriteArrayList<MemberTagData> list) throws Exception {
         if (CollectionUtils.isNotEmpty(list)) {
             for (MemberTagData memberTagData : list) {
                 log.info("======正在进行数据检查》》》》》============");
@@ -453,7 +454,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      *
      * @param fileId
      */
-    public List<MemberTagData> getMembertagCsvData(Integer fileId) {
+    public CopyOnWriteArrayList<MemberTagData> getMembertagCsvData(Integer fileId) {
 
         return memberTagDataMapper.getMembertagCsvData(fileId);
     }
@@ -478,7 +479,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      */
     public Boolean addTags(List<MemberTagData> list) throws Exception {
 
-        List<MemberMemberTag> tagsList = new ArrayList<>();
+        List<MemberMemberTag> tagsList = new CopyOnWriteArrayList<>();
         MemberTagDataStatus status = null;
         String errorMsg = null;
         Boolean result = false;
