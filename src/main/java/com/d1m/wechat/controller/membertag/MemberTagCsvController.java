@@ -199,9 +199,9 @@ public class MemberTagCsvController extends BaseController {
                 response.setHeader("Content-Disposition", "attachment;filename=\""
                  + URLEncoder.encode(LocalDate.now() + importFileName, "UTF-8") + "\"");
                 if ("csv".equals(format)) {
-                    CsvSchema schema = csvMapper.schemaFor(SuccDataExports.class)
+                    CsvSchema schema = csvMapper.schemaFor(FailDataExport.class)
                      .withHeader().withLineSeparator("\r\n").withoutQuoteChar();
-                    writer = csvMapper.writerFor(SuccDataExports.class).with(schema).writeValues(outputStream);
+                    writer = csvMapper.writerFor(FailDataExport.class).with(schema).writeValues(outputStream);
                     writer.writeAll(failDataExports);
                     writer.close();
                 } else {
