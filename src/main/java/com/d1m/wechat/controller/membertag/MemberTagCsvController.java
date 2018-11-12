@@ -79,7 +79,7 @@ public class MemberTagCsvController extends BaseController {
          && !originalFilename.endsWith(".xls")
          && !originalFilename.endsWith(".xlsx")) {
 
-            return BaseResponse.builder().msg("不支持的文件格式").build();
+            return BaseResponse.builder().msg("上传失败，格式有误，请上传.xlsx或.csv（utf-8格式）文件").build();
         }
         FileUploadConfigUtil instance = FileUploadConfigUtil.getInstance();
         String uploadPath = instance.getValue(getWechatId(), "upload_path");
@@ -164,6 +164,13 @@ public class MemberTagCsvController extends BaseController {
              .msg("没有错误数据")
              .build();
         }
+        //memberTagDatas = memberTagDatas.stream.filter((Type t) -> {if(StringUtils.isEmpty(t.getOpenId())){
+        // t.setErrorTag(t.getOriginalTag())}});
+        for (MemberTagData memberTagData:memberTagDatas){
+            if (StringUtils.isEmpty(memberTagData.getOpenId())){
+                memberTagData.setErrorTag(memberTagData.getOriginalTag());
+            }
+        }
         final List<FailDataExport> failDataExports = memberTagDatas
          .stream()
          .map(FailDataExport::convert)
@@ -221,7 +228,7 @@ public class MemberTagCsvController extends BaseController {
         final Example example = new Example(MemberTagData.class);
         example.createCriteria()
          .andEqualTo("fileId", id)
-         .andEqualTo("checkStatus", true);
+         .andIsNull("errorMsg");
         final List<MemberTagData> memberTagDatas = memberTagDataService.selectByExample(example);
         if (CollectionUtils.isEmpty(memberTagDatas)) {
             return BaseResponse.builder()

@@ -37,8 +37,8 @@
     
     <select id="getCount" resultType="com.d1m.wechat.dto.MemberStatsCounts">
     select file_id,
-    (select count(1) from member_tag_data mtd where mtd.error_msg is not null and check_status =0 and mtd.file_id=file_id and file_id=#{fileId} ) fail_count,
-    (select count(1) from member_tag_data mtd where mtd.error_msg is  null and check_status =1 and mtd.file_id=file_id and file_id=#{fileId}) success_count
+    (select count(1) from member_tag_data mtd where mtd.error_msg is not null and mtd.file_id=file_id and file_id=#{fileId} ) fail_count,
+    (select count(1) from member_tag_data mtd where mtd.error_msg is  null and mtd.file_id=file_id and file_id=#{fileId}) success_count
      from member_tag_csv  where file_id=#{fileId}
     </select>
 
