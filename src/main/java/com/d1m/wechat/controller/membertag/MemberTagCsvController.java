@@ -44,6 +44,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.util.Date;
@@ -164,13 +165,13 @@ public class MemberTagCsvController extends BaseController {
              .msg("没有错误数据")
              .build();
         }
-        //memberTagDatas = memberTagDatas.stream.filter((Type t) -> {if(StringUtils.isEmpty(t.getOpenId())){
-        // t.setErrorTag(t.getOriginalTag())}});
-        for (MemberTagData memberTagData:memberTagDatas){
+        /*memberTagDatas = memberTagDatas.stream().filter((Type t) -> {if(StringUtils.isEmpty(((MemberTagData) t).getOpenId()))
+         ((MemberTagData) t).setErrorTag(((MemberTagData) t).getOriginalTag())});*/
+        /*for (MemberTagData memberTagData:memberTagDatas){
             if (StringUtils.isEmpty(memberTagData.getOpenId())){
                 memberTagData.setErrorTag(memberTagData.getOriginalTag());
             }
-        }
+        }*/
         final List<FailDataExport> failDataExports = memberTagDatas
          .stream()
          .map(FailDataExport::convert)
@@ -284,7 +285,7 @@ public class MemberTagCsvController extends BaseController {
         @Excel(name = "OPEN_ID")
         private String openId;
         @Excel(name = "TAG")
-        private String errorTag;
+        private String originalTag;
         @Excel(name = "FAIL_REASON")
         private String errorMsg;
 
@@ -303,7 +304,7 @@ public class MemberTagCsvController extends BaseController {
         private String openId;
         @Excel(name = "TAG")
         @JsonProperty(value = "TAG")
-        private String tag;
+        private String originalTag;
 
         public static SuccDataExports convert(Object o) {
             final SuccDataExports succDataExport = new SuccDataExports();
