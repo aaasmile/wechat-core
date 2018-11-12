@@ -223,6 +223,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      */
     public void checkDataIsOK(CopyOnWriteArrayList<MemberTagData> list) throws Exception {
         if (CollectionUtils.isNotEmpty(list)) {
+            Boolean b = true;
             for (MemberTagData memberTagData : list) {
                 log.info("======正在进行数据检查》》》》》============");
                 log.info("memberTagData>>" + JSONObject.toJSON(memberTagData));
@@ -231,27 +232,31 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                 if (StringUtils.isEmpty(memberTagData.getOpenId())) {
                     updateErrorStatus(memberTagData.getDataId(), "会员OpenID不能为空");
                     log.info("dataId:" + memberTagData.getDataId() + "，会员OpenID不能为空！");
-                    list.remove(memberTagData);
+                    //list.remove(memberTagData);
+                    b = false;
                 }
 
                 //校验标签
                 if (StringUtils.isEmpty(memberTagData.getOriginalTag())) {
                     updateErrorStatus(memberTagData.getDataId(), "标签不能为空");
                     log.info("dataId:" + memberTagData.getDataId() + "，标签不能为空！");
-                    list.remove(memberTagData);
+                    //list.remove(memberTagData);
+                    b = false;
                 }
 
-                //检查openID是否存在
-                if (selectCount(memberTagData.getOpenId()) <= 0) {
-                    updateErrorStatus(memberTagData.getDataId(), "不存在此会员OpenID");
-                    log.info("dataId:" + memberTagData.getDataId() + "，不存在此会员OpenID！");
-                    list.remove(memberTagData);
+                if (b) {
+                    //检查openID是否存在
+                    if (selectCount(memberTagData.getOpenId()) <= 0) {
+                        updateErrorStatus(memberTagData.getDataId(), "不存在此会员OpenID");
+                        log.info("dataId:" + memberTagData.getDataId() + "，不存在此会员OpenID！");
+                        //list.remove(memberTagData);
+                        //b=false;
+                    }
+                    //检查标签是否存在
+                    checkTagsIsExist(memberTagData.getOriginalTag(), memberTagData.getWechatId(), memberTagData.getDataId());
+                    //若errortag=originaltag,则表示标签都不存在
+                    updateCheckStats(memberTagData.getDataId(), memberTagData.getOriginalTag());
                 }
-
-                //检查标签是否存在
-                checkTagsIsExist(memberTagData.getOriginalTag(), memberTagData.getWechatId(), memberTagData.getDataId());
-                //若errortag=originaltag,则表示标签都不存在
-                updateCheckStats(memberTagData.getDataId(), memberTagData.getOriginalTag());
             }
 
         }
@@ -513,8 +518,6 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                             tagsList = tagsList.stream().filter(CommonUtils.distinctByKey(t -> t.getMemberId() + t.getWechatId()
                              + t.getOpenId() + t.getMemberTagId())).collect(Collectors.toList());
                             log.info("设置标签数据集合：" + JSON.toJSON(mmTag));
-
-
                         }
                     }
                 }
@@ -528,7 +531,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             }
         } catch (Exception e) {
             status = MemberTagDataStatus.PROCESS_FAILURE;
-            errorMsg = "数据执行加签异常！";
+            errorMsg = "导入失败";
             e.printStackTrace();
             log.info(errorMsg + e.getMessage());
         } finally {
@@ -537,7 +540,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                     MemberTagData tagData = new MemberTagData();
                     tagData.setStatus(status);
                     tagData.setDataId(memberTagData.getDataId());
-                    tagData.setErrorTag(errorMsg);
+                    tagData.setErrorMsg(errorMsg);
                     int t = memberTagDataMapper.updateByPrimaryKeySelective(tagData);
                     log.info("批量导入加标签处理方法:" + t);
                 }
