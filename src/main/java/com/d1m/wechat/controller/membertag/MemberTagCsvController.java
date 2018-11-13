@@ -135,7 +135,7 @@ public class MemberTagCsvController extends BaseController {
 
             return BaseResponse.builder()
              .resultCode(Message.CSV_OR_EXCEL_PARSER_FAIL.getCode())
-             .msg("不是合法的Excel模板")
+             .msg(e.getMessage())
              .build();
         }
         return BaseResponse.builder()
