@@ -129,7 +129,7 @@ public class MemberTagCsvController extends BaseController {
         } catch (RuntimeException e) {
             memberTagCsvService.updateByPrimaryKeySelective(MemberTagCsv.builder()
              .fileId(memberTagCsv.getFileId())
-             .status(MemberTagCsvStatus.PROCESS_FAILURE)
+             .status(MemberTagCsvStatus.IMPORT_FAILURE)
              .errorMsg(e.getMessage())
              .build());
 
