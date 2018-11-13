@@ -103,6 +103,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             return;
         }
         ImportParams params = new ImportParams();
+        //params.setVerifyHandler(new VerifyHandler(BatchEntity.class));
         params.setHeadRows(1);
         final List<BatchEntity> entities = ExcelImportUtil.importExcel(file, BatchEntity.
          class, params);

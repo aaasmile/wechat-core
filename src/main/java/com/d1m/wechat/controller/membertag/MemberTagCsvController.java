@@ -101,6 +101,7 @@ public class MemberTagCsvController extends BaseController {
         String taskName = "MemberAddTagCSV_" + dateTask;
         log.info("任务名称:{}", taskName);
         log.info("runTask:{}", runTask);
+
         final MemberTagCsv.MemberTagCsvBuilder memberTagCsvBuilder = MemberTagCsv
          .builder()
          .oriFile(file.getOriginalFilename())
@@ -134,7 +135,7 @@ public class MemberTagCsvController extends BaseController {
 
             return BaseResponse.builder()
              .resultCode(Message.CSV_OR_EXCEL_PARSER_FAIL.getCode())
-             .msg(Message.CSV_OR_EXCEL_PARSER_FAIL.getName())
+             .msg("不是合法的Excel模板")
              .build();
         }
         return BaseResponse.builder()
