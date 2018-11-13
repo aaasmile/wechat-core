@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.common.ds.TenantContext;
 import com.d1m.common.ds.TenantHelper;
+import com.d1m.wechat.Handler.VerifyHandler;
 import com.d1m.wechat.domain.entity.MemberTagCsv;
 import com.d1m.wechat.domain.entity.MemberTagData;
 import com.d1m.wechat.exception.BatchAddTagException;
@@ -103,7 +104,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             return;
         }
         ImportParams params = new ImportParams();
-        //params.setVerifyHandler(new VerifyHandler(BatchEntity.class));
+        //params.setVerifyHandler(new VerifyHandler());
         params.setHeadRows(1);
         final List<BatchEntity> entities = ExcelImportUtil.importExcel(file, BatchEntity.
          class, params);
