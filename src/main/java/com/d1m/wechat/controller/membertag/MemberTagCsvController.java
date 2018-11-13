@@ -129,13 +129,13 @@ public class MemberTagCsvController extends BaseController {
         } catch (RuntimeException e) {
             memberTagCsvService.updateByPrimaryKeySelective(MemberTagCsv.builder()
              .fileId(memberTagCsv.getFileId())
-             .status(MemberTagCsvStatus.PROCESS_FAILURE)
+             .status(MemberTagCsvStatus.IMPORT_FAILURE)
              .errorMsg(e.getMessage())
              .build());
 
             return BaseResponse.builder()
              .resultCode(Message.CSV_OR_EXCEL_PARSER_FAIL.getCode())
-             .msg("不是合法的Excel模板")
+             .msg(e.getMessage())
              .build();
         }
         return BaseResponse.builder()

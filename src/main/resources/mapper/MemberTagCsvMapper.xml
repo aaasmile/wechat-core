@@ -54,14 +54,14 @@
         remark,
         CASE `status`
         WHEN 1 THEN 0
-        WHEN 2 THEN 0
         WHEN 3 THEN 1
         WHEN 4 THEN 2
         WHEN 5 THEN 2 ELSE 0
         END AS `status`
         FROM member_tag_csv
         <where>
-            wechat_id = #{wechatId}
+            <![CDATA[ status <>2 ]]> and wechat_id = #{wechatId}
+
             <if test="status != null">
                 and status = #{status}
             </if>
@@ -86,29 +86,29 @@
     </select>
 
     <update id="update" parameterType="com.d1m.wechat.domain.entity.MemberTagCsv">
-    update member_tag_csv
-    <set>
-        <if test="oriFile!=null">ori_file = #{oriFile},</if>
-        <if test="task!=null">task = #{task},</if>
-        <if test="wechatId!=null">wechat_id = #{wechatId},</if>
-        <if test="creatorId!=null">creator_id = #{creatorId},</if>
-        <if test="createdAt!=null">created_at = #{createdAt},</if>
-        <if test="sourceFilePath!=null">source_file_path = #{sourceFilePath},</if>
-        <if test="exceptionFilePath!=null">exception_file_path = #{exceptionFilePath},</if>
-        <if test="fileSize!=null">file_size = #{fileSize},</if>
-        <if test="rows!=null">rows = #{rows},</if>
-        <if test="format!=null">format = #{format},</if>
-        <if test="encoding!=null">encoding = #{encoding},</if>
-        <if test="successCount!=null">success_count = #{successCount},</if>
-        <if test="successCount!=null">success_count = #{successCount},</if>
-        <if test="successCount!=null">success_count = #{successCount},</if>
-        <if test="failCount!=null">fail_count = #{failCount},</if>
-        <if test="errorMsg!=null">error_msg = #{errorMsg},</if>
-        <if test="status!=null">status = #{status},</if>
-        <if test="lastUpdateTime!=null">last_update_time = #{lastUpdateTime},</if>
-        <if test="errorMsg!=null">error_msg = #{errorMsg},</if>
-        <if test="remark!=null">remark = #{remark}</if>
-    </set>
-    where file_id=#{fileId}
+        update member_tag_csv
+        <set>
+            <if test="oriFile!=null">ori_file = #{oriFile},</if>
+            <if test="task!=null">task = #{task},</if>
+            <if test="wechatId!=null">wechat_id = #{wechatId},</if>
+            <if test="creatorId!=null">creator_id = #{creatorId},</if>
+            <if test="createdAt!=null">created_at = #{createdAt},</if>
+            <if test="sourceFilePath!=null">source_file_path = #{sourceFilePath},</if>
+            <if test="exceptionFilePath!=null">exception_file_path = #{exceptionFilePath},</if>
+            <if test="fileSize!=null">file_size = #{fileSize},</if>
+            <if test="rows!=null">rows = #{rows},</if>
+            <if test="format!=null">format = #{format},</if>
+            <if test="encoding!=null">encoding = #{encoding},</if>
+            <if test="successCount!=null">success_count = #{successCount},</if>
+            <if test="successCount!=null">success_count = #{successCount},</if>
+            <if test="successCount!=null">success_count = #{successCount},</if>
+            <if test="failCount!=null">fail_count = #{failCount},</if>
+            <if test="errorMsg!=null">error_msg = #{errorMsg},</if>
+            <if test="status!=null">status = #{status},</if>
+            <if test="lastUpdateTime!=null">last_update_time = #{lastUpdateTime},</if>
+            <if test="errorMsg!=null">error_msg = #{errorMsg},</if>
+            <if test="remark!=null">remark = #{remark}</if>
+        </set>
+        where file_id=#{fileId}
     </update>
 </mapper>
