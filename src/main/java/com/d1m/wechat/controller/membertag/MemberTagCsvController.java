@@ -21,6 +21,7 @@ import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.FileUploadConfigUtil;
 import com.d1m.wechat.util.Message;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.SequenceWriter;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
@@ -281,12 +282,16 @@ public class MemberTagCsvController extends BaseController {
 
     @SuppressWarnings("WeakerAccess")
     @Data
+    @JsonPropertyOrder({"OPEN_ID","TAG","FAIL_REASON"})
     public static class FailDataExport {
         @Excel(name = "OPEN_ID")
+        @JsonProperty(value = "OPEN_ID")
         private String openId;
         @Excel(name = "TAG")
+        @JsonProperty(value = "TAG")
         private String originalTag;
         @Excel(name = "FAIL_REASON")
+        @JsonProperty(value = "FAIL_REASON")
         private String errorMsg;
 
         public static FailDataExport convert(Object o) {

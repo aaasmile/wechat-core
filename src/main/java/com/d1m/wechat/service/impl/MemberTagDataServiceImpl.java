@@ -431,7 +431,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                 memberTag.setStatus((byte) 1);
                 memberTag = memberTagMapper.selectOne(memberTag);
                 if (memberTag == null) {
-                    String errorMsg = tag + ",不存在此标签";
+                    String errorMsg = tag + "：不存在此标签";
                     //Integer dataId, String errorMsg, String tag, String errorTag
                     updateErrorTagAndErrorMsg(dataId, errorMsg, null, tag);
                 } else {
@@ -551,16 +551,5 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         return result;
     }
 
-    private boolean contains(List<MemberMemberTag> list, MemberTag memberTag) {
-        if (list == null || list.isEmpty()) {
-            return false;
-        }
-        for (MemberMemberTag tag : list) {
-            if (tag.getId().equals(memberTag.getId())) {
-                return true;
-            }
-        }
-        return false;
-    }
 
 }
