@@ -2,6 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+
     <parent>
         <artifactId>wechat-parent</artifactId>
         <groupId>com.d1m.wetap</groupId>
@@ -11,7 +12,7 @@
     <artifactId>wechat-core</artifactId>
     <packaging>jar</packaging>
     <description>第一秒wechat管理系统</description>
-    <version>latest</version>
+    <version>4.4.2-RELEASE</version>
     <url>http://maven.apache.org</url>
 
     <properties>
