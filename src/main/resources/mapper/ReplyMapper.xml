@@ -111,7 +111,7 @@
 	<where>
 		r.wechat_id = #{wechatId} and r.status = 1 and r.reply_type = 2 and r.match_mode = 1
 		<if test="content != null">
-			and locate(#{content}, rw.reply_word) > 0
+			and locate(rw.reply_word, #{content}) > 0
 		</if>
 		order by r.weight desc
 	</where>
