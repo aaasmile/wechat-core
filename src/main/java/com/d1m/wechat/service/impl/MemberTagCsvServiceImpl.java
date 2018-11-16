@@ -3,6 +3,7 @@ package com.d1m.wechat.service.impl;
 import com.d1m.wechat.domain.entity.MemberTagCsv;
 import com.d1m.wechat.dto.ImportCsvDto;
 import com.d1m.wechat.dto.MemberStatsCounts;
+import com.d1m.wechat.dto.MemberTagCsvDto;
 import com.d1m.wechat.mapper.MemberTagCsvMapper;
 import com.d1m.wechat.mapper.MemberTagDataMapper;
 import com.d1m.wechat.model.enums.MemberTagCsvStatus;
@@ -41,7 +42,7 @@ public class MemberTagCsvServiceImpl implements MemberTagCsvService {
      * @return
      */
     @Override
-    public Page<ImportCsvDto> searchTask(Integer wechatId, AddMemberTagTaskModel tagTask) {
+    public Page<MemberTagCsvDto> searchTask(Integer wechatId, AddMemberTagTaskModel tagTask) {
         if (tagTask.pagable()) {
             PageHelper.startPage(tagTask.getPageNum(),
                     tagTask.getPageSize(), true);
@@ -54,6 +55,7 @@ public class MemberTagCsvServiceImpl implements MemberTagCsvService {
         map.put("end",tagTask.getEnd());
         map.put("sortName",tagTask.getSortName());
         map.put("sortDir",tagTask.getSortDir());
+        map.put("noStatus",2);
         return memberTagCsvMapper.searchTask(map);
     }
 

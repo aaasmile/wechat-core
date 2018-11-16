@@ -11,6 +11,7 @@ import com.d1m.wechat.domain.entity.MemberTagCsv;
 import com.d1m.wechat.domain.entity.MemberTagData;
 import com.d1m.wechat.domain.web.BaseResponse;
 import com.d1m.wechat.dto.ImportCsvDto;
+import com.d1m.wechat.dto.MemberTagCsvDto;
 import com.d1m.wechat.model.enums.MemberTagCsvStatus;
 import com.d1m.wechat.model.enums.MemberTagDataStatus;
 import com.d1m.wechat.pamametermodel.AddMemberTagTaskModel;
@@ -330,7 +331,7 @@ public class MemberTagCsvController extends BaseController {
         if (tagTask == null) {
             tagTask = new AddMemberTagTaskModel();
         }
-        Page<ImportCsvDto> memberTagCsvs = memberTagCsvService.searchTask(
+        Page<MemberTagCsvDto> memberTagCsvs = memberTagCsvService.searchTask(
          getWechatId(), tagTask);
         return representation(Message.MEMBER_TAG_TASK_LIST_SUCCESS, memberTagCsvs.getResult(),
          tagTask.getPageNum(), tagTask.getPageSize(), memberTagCsvs.getTotal());
