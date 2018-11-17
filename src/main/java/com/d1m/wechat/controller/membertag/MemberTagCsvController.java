@@ -10,20 +10,16 @@ import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.domain.entity.MemberTagCsv;
 import com.d1m.wechat.domain.entity.MemberTagData;
 import com.d1m.wechat.domain.web.BaseResponse;
-import com.d1m.wechat.dto.ImportCsvDto;
 import com.d1m.wechat.dto.MemberTagCsvDto;
 import com.d1m.wechat.model.enums.MemberTagCsvStatus;
-import com.d1m.wechat.model.enums.MemberTagDataStatus;
 import com.d1m.wechat.pamametermodel.AddMemberTagTaskModel;
 import com.d1m.wechat.service.MemberTagCsvService;
 import com.d1m.wechat.service.MemberTagDataService;
-import com.d1m.wechat.service.impl.MemberTagDataServiceImpl;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.FileUploadConfigUtil;
 import com.d1m.wechat.util.Message;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.SequenceWriter;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
@@ -44,9 +40,9 @@ import tk.mybatis.mapper.entity.Example;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.util.Date;
@@ -116,7 +112,6 @@ public class MemberTagCsvController extends BaseController {
 
         if (originalFilename.endsWith(".csv")) {
             //工具类计算出编码错误
-            final String encode = com.d1m.wechat.util.FileUtils.codeString(fileFullName);
             memberTagCsvBuilder.encoding("UTF-8");
         }
         final MemberTagCsv memberTagCsv = memberTagCsvBuilder.build();

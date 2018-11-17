@@ -87,4 +87,12 @@ public interface MemberService extends IService<Member> {
 	 * @return
 	 */
 	public MemberMemberTagDTO getAddBatchMemberTagList (List<MemberDto> members, List<MemberTag> memberTagsIn, Integer wechatId);
+
+	/**
+	 * 获取批量参数
+	 *
+	 * @param wechatId
+	 * @return
+	 */
+	public Integer getBatchSize(Integer wechatId);
 }

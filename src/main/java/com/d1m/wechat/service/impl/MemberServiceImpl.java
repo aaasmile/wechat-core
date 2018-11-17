@@ -350,7 +350,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
         batchDto.setTenant(TenantContext.getCurrentTenant());
         try {
             Future<Integer> future = execute(batchDto);
-            if (future.get() == amount) {
+            if (future.get().equals(amount)) {
                 log.info("===================执行成功，总数量：" + amount + "===============");
             }
         } catch (Exception e) {
@@ -402,7 +402,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
      * @param wechatId
      * @return
      */
-    private Integer getBatchSize(Integer wechatId) {
+    public Integer getBatchSize(Integer wechatId) {
         Integer value = null;
         ConfigDto configDto = configService.getConfigDto(wechatId, "INIT", "TAG_BATCH_SIZE");
         if (configDto != null) {

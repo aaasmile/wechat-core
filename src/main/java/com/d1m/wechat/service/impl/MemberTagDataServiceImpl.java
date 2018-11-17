@@ -11,6 +11,8 @@ import com.d1m.common.ds.TenantHelper;
 import com.d1m.wechat.Handler.VerifyHandler;
 import com.d1m.wechat.domain.entity.MemberTagCsv;
 import com.d1m.wechat.domain.entity.MemberTagData;
+import com.d1m.wechat.dto.TagDataBatchDto;
+import com.d1m.wechat.dto.TagsBatchDto;
 import com.d1m.wechat.exception.BatchAddTagException;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.MemberMapper;
@@ -23,14 +25,8 @@ import com.d1m.wechat.model.MemberTag;
 import com.d1m.wechat.model.enums.MemberTagCsvStatus;
 import com.d1m.wechat.model.enums.MemberTagDataStatus;
 import com.d1m.wechat.schedule.SchedulerRestService;
-import com.d1m.wechat.service.AsyncService;
-import com.d1m.wechat.service.MemberTagCsvService;
-import com.d1m.wechat.service.MemberTagDataService;
-import com.d1m.wechat.service.MemberTagService;
-import com.d1m.wechat.util.CommonUtils;
-import com.d1m.wechat.util.DateUtil;
-import com.d1m.wechat.util.Message;
-import com.d1m.wechat.util.MyMapper;
+import com.d1m.wechat.service.*;
+import com.d1m.wechat.util.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
@@ -41,6 +37,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,6 +49,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -61,6 +60,8 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class MemberTagDataServiceImpl implements MemberTagDataService {
+    //默认每批次处理数量
+    private static final Integer BATCHSIZE = 1000;
 
     @Autowired
     private MemberTagDataMapper memberTagDataMapper;
@@ -84,6 +85,9 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
     private MemberMemberTagMapper memberMemberTagMapper;
 
     @Autowired
+    private MemberService memberService;
+
+    @Autowired
     private AsyncService asyncService;
 
     @Resource
@@ -95,6 +99,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
     public MyMapper<MemberTagData> getMapper() {
         return this.memberTagDataMapper;
     }
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -157,14 +162,12 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
           .build()
         ).collect(Collectors.toList());
 
-        memberTagDataMapper.insertList(memberTagDataList);
 
-        log.info("Batch insert finish!");
         log.info("taskName:{}", memberTagCsv.getTask());
         log.info("runTask:{}", runTask);
         log.info("memberTagCsv:{}", JSON.toJSON(memberTagCsv));
         //异步发起任务调度
-        asyncService.asyncInvoke(() -> schedulerTask(memberTagCsv.getTask(), runTask, memberTagCsv));
+        asyncService.asyncInvoke(() -> schedulerTask(memberTagCsv.getTask(), runTask, memberTagCsv, memberTagDataList));
         log.info("Batch schedulerTask finish!");
     }
 
@@ -175,9 +178,9 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      * @param runTask
      * @param record
      */
-    public void schedulerTask(String taskName, Date runTask, MemberTagCsv record) {
+    public void schedulerTask(String taskName, Date runTask, MemberTagCsv record, List<MemberTagData> memberTagDataList) {
         try {
-            // 多数据源支持
+            // 1、获取数据源
             String domain = tenantHelper.getTenantByWechatId(record.getWechatId());
             if (StringUtils.isNotBlank(domain)) {
                 TenantContext.setCurrentTenant(domain);
@@ -185,26 +188,160 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             }
             TenantContext.setCurrentTenant(domain);
             log.info("获取当前租户: " + TenantContext.getCurrentTenant());
-            Map<String, Object> jobMap = new HashMap<>();
-            jobMap.put("jobGroup", 1);
-            jobMap.put("jobDesc", taskName);
-            jobMap.put("jobCron", DateUtil.cron.format(runTask));
-            jobMap.put("executorHandler", "memberTagCsvJob");
-            jobMap.put("executorParam", "-d" + TenantContext.getCurrentTenant() + "," + record.getFileId());
 
+            //2、准备批量插入解析数据
+            Integer amount = memberTagDataList.size();
+            Integer batchSize = memberService.getBatchSize(record.getWechatId()) != null ? memberService.getBatchSize(record.getWechatId()) : BATCHSIZE;
+            Map<String, Integer> map = BatchUtils.getTimes(batchSize, amount);
+            Integer times = map.get("times");
+            Integer remainAmount = map.get("remainAmount");
+            TagDataBatchDto batchDto = new TagDataBatchDto();
+            batchDto.setTimes(times);
+            batchDto.setRemainAmount(remainAmount);
+            batchDto.setTagsList(memberTagDataList);
+            batchDto.setAmount(amount);
+            batchDto.setBatchSize(batchSize);
+            batchDto.setTaskName(taskName);
+            batchDto.setRunTask(runTask);
+            //3、获取租户标识
+            batchDto.setTenant(TenantContext.getCurrentTenant());
+            log.info("封装批次数据：", JSON.toJSON(batchDto));
+            //4、调用批量插入解析数据
+            Future<Integer> future = this.execute(batchDto);
+            if (future.get().equals(amount)) {
+                log.info("===================执行批量插入解析数据成功，总数量：" + amount + "===============");
 
-            ReturnT<String> returnT = schedulerRestService.addJob(jobMap);
-            log.info("jobMap:" + JSON.toJSON(jobMap));
-            log.info("returnT执行结果:" + JSON.toJSON(returnT));
-            if (ReturnT.FAIL_CODE == returnT.getCode()) {
-                throw new WechatException(
-                 Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
+                //5、准备发起异步任务调度
+                Map<String, Object> jobMap = new HashMap<>();
+                jobMap.put("jobGroup", 1);
+                jobMap.put("jobDesc", taskName);
+                jobMap.put("jobCron", DateUtil.cron.format(runTask));
+                jobMap.put("executorHandler", "memberTagCsvJob");
+                jobMap.put("executorParam", "-d" + TenantContext.getCurrentTenant() + "," + record.getFileId());
+
+                ReturnT<String> returnT = schedulerRestService.addJob(jobMap);
+                log.info("jobMap:" + JSON.toJSON(jobMap));
+                log.info("returnT执行结果:" + JSON.toJSON(returnT));
+                if (ReturnT.FAIL_CODE == returnT.getCode()) {
+                    throw new WechatException(
+                     Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
+                }
             }
         } catch (Exception e) {
             log.error(e.getLocalizedMessage(), e);
             throw new WechatException(
              Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
         }
+    }
+
+
+    /**
+     * 批量插入
+     *
+     * @param
+     */
+    private void asyncCsvJobBatch(List<MemberTagData> list) throws WechatException {
+        Integer amount = list.size();
+        Integer batchSize = memberService.getBatchSize(list.get(0).getWechatId()) != null ? memberService.getBatchSize(list.get(0).getWechatId()) : BATCHSIZE;
+        //1、判断将要插入的数量
+        Map<String, Integer> map = BatchUtils.getTimes(batchSize, amount);
+        Integer times = map.get("times");
+        Integer remainAmount = map.get("remainAmount");
+        //2、调用线程处理
+        TagDataBatchDto batchDto = new TagDataBatchDto();
+        batchDto.setTimes(times);
+        batchDto.setRemainAmount(remainAmount);
+        batchDto.setTagsList(list);
+        batchDto.setAmount(amount);
+        batchDto.setBatchSize(batchSize);
+        //获取租户标识
+        batchDto.setTenant(TenantContext.getCurrentTenant());
+        try {
+            Future<Integer> future = csvJobExecute(batchDto);
+            if (future.get().equals(amount)) {
+                log.info("===================执行成功，总数量：" + amount + "===============");
+            }
+        } catch (Exception e) {
+            throw new WechatException(Message.MEMBER_TAG_BATCH_FAIL);
+        }
+
+    }
+
+
+    /**
+     * csvJobExecute执行批量插入数据文件表
+     *
+     * @param batchDto
+     * @return
+     */
+    @Async("callerRunsExecutor")
+    public Future<Integer> csvJobExecute(TagDataBatchDto batchDto) {
+        log.info("csvJobExecute执行开始时间：" + DateUtil.formatYYYYMMDDHHMMSSS(new Date()));
+        TenantContext.setCurrentTenant(batchDto.getTenant());
+        Integer operatedCount = 0;//已执行数量
+        Integer remainCompletedCount = 0;//剩余数据已执行数量
+        //批量数据处理
+        for (int i = 0; i < batchDto.getTimes(); i++) {
+            List<MemberTagData> memberTagList = batchDto.getTagsList().subList((batchDto.getBatchSize() * i)
+             , (batchDto.getBatchSize() * i + batchDto.getBatchSize()));
+            Integer exeCount = memberTagDataMapper.insertList(memberTagList);
+            operatedCount = exeCount * (i + 1);
+            log.info("csvJobExecute线程：" + Thread.currentThread().getName() + ",已完成数量：" + exeCount * (i + 1));
+        }
+
+        //剩余数据处理
+        if (batchDto.getRemainAmount() > 0) {
+            List<MemberTagData> memberTagList = batchDto.getTagsList().subList((batchDto.getBatchSize() * batchDto.getTimes())
+             , batchDto.getAmount());
+            remainCompletedCount = memberTagDataMapper.insertList(memberTagList);
+            log.info("csvJobExecute线程：" + Thread.currentThread().getName() + ",剩余已完成数量：" + remainCompletedCount);
+        }
+
+        //已完成总数量
+        Integer completedCount = operatedCount + remainCompletedCount;
+        log.info("csvJobExecute已完成总数量：" + completedCount);
+        log.info("csvJobExecute执行结束时间：" + DateUtil.formatYYYYMMDDHHMMSSS(new Date()));
+        log.info("csvJobExecute Batch add tags finish!");
+        return new AsyncResult<>(completedCount);
+
+    }
+
+    /**
+     * 执行批量插入解析数据
+     *
+     * @param batchDto
+     * @return
+     */
+    @Async("callerRunsExecutor")
+    public Future<Integer> execute(TagDataBatchDto batchDto) {
+        log.info("执行批量插入解析数据开始时间：" + DateUtil.formatYYYYMMDDHHMMSSS(new Date()));
+        TenantContext.setCurrentTenant(batchDto.getTenant());
+        Integer operatedCount = 0;//已执行数量
+        Integer remainCompletedCount = 0;//剩余数据已执行数量
+        //批量数据处理
+        for (int i = 0; i < batchDto.getTimes(); i++) {
+            List<MemberTagData> memberTagList = batchDto.getTagsList().subList((batchDto.getBatchSize() * i)
+             , (batchDto.getBatchSize() * i + batchDto.getBatchSize()));
+            Integer exeCount = memberTagDataMapper.insertList(memberTagList);
+            operatedCount = exeCount * (i + 1);
+            log.info("批量插入解析数据线程：" + Thread.currentThread().getName() + ",已完成数量：" + exeCount * (i + 1));
+        }
+
+        //剩余数据处理
+        if (batchDto.getRemainAmount() > 0) {
+            List<MemberTagData> memberTagList = batchDto.getTagsList().subList((batchDto.getBatchSize() * batchDto.getTimes())
+             , batchDto.getAmount());
+            remainCompletedCount = memberTagDataMapper.insertList(memberTagList);
+            log.info("批量插入解析数据线程：" + Thread.currentThread().getName() + ",剩余已完成数量：" + remainCompletedCount);
+        }
+
+        //已完成总数量
+        Integer completedCount = operatedCount + remainCompletedCount;
+        log.info("批量插入解析数据已完成总数量：" + completedCount);
+        log.info("执行批量插入解析数据结束时间：" + DateUtil.formatYYYYMMDDHHMMSSS(new Date()));
+        log.info("Batch insert finish!");
+        return new AsyncResult<>(completedCount);
+
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -554,5 +691,42 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         return result;
     }
 
+
+    /**
+     * 分批处理
+     *
+     * @param fileId
+     */
+    public void batchExecute(Integer fileId, CopyOnWriteArrayList<MemberTagData> list) {
+        String errorMsg = null;
+        if (CollectionUtils.isNotEmpty(list)) {
+
+            //设置上传数据状态为处理中
+            updateDataStatus(fileId, 1);//1 代表处理中
+
+            log.info("======准备数据标签检查》》》》》============");
+            try {
+                checkDataIsOK(list);
+                //获取待加签的正确数据
+                List<MemberTagData> addTagsDataList = getCsvData(fileId);
+                if (CollectionUtils.isNotEmpty(addTagsDataList)) {
+                    log.info("======准备加签》》》》》============");
+                    addTags(addTagsDataList);
+                } else {
+                    errorMsg = "没有找到正确数据！";
+                    log.info("fileId:" + fileId + "," + errorMsg);
+                }
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            errorMsg = "没有找到数据！";
+            log.info("fileId:" + fileId + "," + errorMsg);
+        }
+
+
+    }
 
 }

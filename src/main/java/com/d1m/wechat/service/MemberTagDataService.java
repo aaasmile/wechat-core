@@ -66,4 +66,10 @@ public interface MemberTagDataService extends BaseService<MemberTagData> {
      */
     public void updateErrorStatus(Integer dataId, String errorMsg) throws Exception;
 
+    /**
+     * 分批处理
+     * @param fileId
+     */
+    public void batchExecute(Integer fileId, CopyOnWriteArrayList<MemberTagData> list);
+
 }
