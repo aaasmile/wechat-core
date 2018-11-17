@@ -10,6 +10,6 @@ import java.util.Collection;
  */
 public interface MemberTagDataDao {
 
-    void updateBatch(Collection<MemberTagData> records);
+    long updateBatch(Collection<MemberTagData> records);
 
 }

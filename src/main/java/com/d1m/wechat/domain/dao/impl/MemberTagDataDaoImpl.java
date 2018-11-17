@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.IntSummaryStatistics;
+import java.util.stream.Collectors;
 
 /**
  * Created by jone.wang on 2018/11/17.
@@ -26,16 +28,21 @@ public class MemberTagDataDaoImpl implements MemberTagDataDao {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateBatch(Collection<MemberTagData> records) {
+    public long updateBatch(Collection<MemberTagData> records) {
         if (CollectionUtils.isEmpty(records)) {
             log.warn("Collection is empty");
+            return 0;
         }
         //批量模式
         final SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH);
 
-        records.forEach(r -> sqlSession
-                .update("com.d1m.wechat.mapper.MemberTagDataMapper.updateByPrimaryKeySelective", r));
+        final IntSummaryStatistics collect = records
+                .stream()
+                .map(r -> sqlSession
+                        .update("com.d1m.wechat.mapper.MemberTagDataMapper.updateByPrimaryKeySelective", r))
+                .collect(Collectors.summarizingInt(value -> value));
         sqlSession.commit();
+        return collect.getSum();
 
     }
 }
