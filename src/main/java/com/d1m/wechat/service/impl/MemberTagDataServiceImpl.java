@@ -3,16 +3,15 @@ package com.d1m.wechat.service.impl;
 import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
-import cn.afterturn.easypoi.handler.inter.IExcelVerifyHandler;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.common.ds.TenantContext;
 import com.d1m.common.ds.TenantHelper;
 import com.d1m.wechat.Handler.VerifyHandler;
+import com.d1m.wechat.domain.dao.MemberTagDataDao;
 import com.d1m.wechat.domain.entity.MemberTagCsv;
 import com.d1m.wechat.domain.entity.MemberTagData;
 import com.d1m.wechat.dto.TagDataBatchDto;
-import com.d1m.wechat.dto.TagsBatchDto;
 import com.d1m.wechat.exception.BatchAddTagException;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.MemberMapper;
@@ -36,6 +35,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -50,7 +50,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -92,6 +91,9 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
     @Resource
     private TenantHelper tenantHelper;
+
+    @Autowired
+    private MemberTagDataDao memberTagDataDao;
 
     private CsvMapper csvMapper = new CsvMapper();
 
@@ -221,7 +223,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
                 ReturnT<String> returnT = schedulerRestService.addJob(jobMap);
                 log.info("jobMap:" + JSON.toJSON(jobMap));
-                log.info("returnT执行结果:" + JSON.toJSON(returnT));
+                log.info("returnT发起异步任务调度返回结果:" + JSON.toJSON(returnT));
                 if (ReturnT.FAIL_CODE == returnT.getCode()) {
                     throw new WechatException(
                      Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
@@ -240,8 +242,9 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      *
      * @param
      */
-    private void asyncCsvJobBatch(List<MemberTagData> list) throws WechatException {
+    public void asyncCsvJobBatch(List<MemberTagData> list, Integer fileId) throws WechatException {
         Integer amount = list.size();
+        //每批次的条数
         Integer batchSize = memberService.getBatchSize(list.get(0).getWechatId()) != null ? memberService.getBatchSize(list.get(0).getWechatId()) : BATCHSIZE;
         //1、判断将要插入的数量
         Map<String, Integer> map = BatchUtils.getTimes(batchSize, amount);
@@ -260,6 +263,12 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             Future<Integer> future = csvJobExecute(batchDto);
             if (future.get().equals(amount)) {
                 log.info("===================执行成功，总数量：" + amount + "===============");
+                //统计成功和失败条数
+                log.info("======统计结果》》》》》============");
+                memberTagCsvService.updateCountCsv(fileId);
+                //更新上传文件状态为已完成
+                memberTagCsvService.updateFileStatus(fileId, MemberTagCsvStatus.PROCESS_SUCCEED);
+                log.info("======会员导入加签完成》》》》》============");
             }
         } catch (Exception e) {
             throw new WechatException(Message.MEMBER_TAG_BATCH_FAIL);
@@ -284,7 +293,8 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         for (int i = 0; i < batchDto.getTimes(); i++) {
             List<MemberTagData> memberTagList = batchDto.getTagsList().subList((batchDto.getBatchSize() * i)
              , (batchDto.getBatchSize() * i + batchDto.getBatchSize()));
-            Integer exeCount = memberTagDataMapper.insertList(memberTagList);
+            CopyOnWriteArrayList<MemberTagData> copyOnWriteArrayList = new CopyOnWriteArrayList<MemberTagData>(memberTagList);
+            Integer exeCount = batchExecute(copyOnWriteArrayList);
             operatedCount = exeCount * (i + 1);
             log.info("csvJobExecute线程：" + Thread.currentThread().getName() + ",已完成数量：" + exeCount * (i + 1));
         }
@@ -361,18 +371,17 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      *
      * @param list
      */
-    public void checkDataIsOK(CopyOnWriteArrayList<MemberTagData> list) throws Exception {
+    public CopyOnWriteArrayList<MemberTagData> checkDataIsOK(CopyOnWriteArrayList<MemberTagData> list) throws Exception {
+        CopyOnWriteArrayList<MemberTagData> rightList = null;
         if (CollectionUtils.isNotEmpty(list)) {
             Boolean b = true;
             for (MemberTagData memberTagData : list) {
                 log.info("======正在进行数据检查》》》》》============");
                 log.info("memberTagData>>" + JSONObject.toJSON(memberTagData));
-
                 //校验OpenID
                 if (StringUtils.isEmpty(memberTagData.getOpenId())) {
                     updateErrorStatus(memberTagData.getDataId(), "会员OpenID不能为空");
                     log.info("dataId:" + memberTagData.getDataId() + "，会员OpenID不能为空！");
-                    //list.remove(memberTagData);
                     b = false;
                 }
 
@@ -380,7 +389,6 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                 if (StringUtils.isEmpty(memberTagData.getOriginalTag())) {
                     updateErrorStatus(memberTagData.getDataId(), "标签不能为空");
                     log.info("dataId:" + memberTagData.getDataId() + "，标签不能为空！");
-                    //list.remove(memberTagData);
                     b = false;
                 }
 
@@ -389,17 +397,44 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                     if (selectCount(memberTagData.getOpenId()) <= 0) {
                         updateErrorStatus(memberTagData.getDataId(), "不存在此会员OpenID");
                         log.info("dataId:" + memberTagData.getDataId() + "，不存在此会员OpenID！");
-                        //list.remove(memberTagData);
-                        //b=false;
                     }
                     //检查标签是否存在
                     checkTagsIsExist(memberTagData.getOriginalTag(), memberTagData.getWechatId(), memberTagData.getDataId());
-                    //若errortag=originaltag,则表示标签都不存在
-                    updateCheckStats(memberTagData.getDataId(), memberTagData.getOriginalTag());
+                    //更新数据检查状态
+                    MemberTagData updatetag = updateCheckStats(memberTagData.getDataId());
+                    //如果检查状态为true，则把该标签数据添加到list中
+                    if (updatetag.getCheckStatus()) {
+                        rightList.add(updatetag);
+                    }
                 }
             }
 
         }
+        log.info("返回待加签的list：", JSON.toJSON(rightList));
+        return rightList;
+    }
+
+    /**
+     * 导入数据检查2
+     *
+     * @param list
+     */
+    public CopyOnWriteArrayList<MemberTagData> checkDataIsOK2(CopyOnWriteArrayList<MemberTagData> list) throws Exception {
+        CopyOnWriteArrayList<MemberTagData> rightList = null;
+        if (CollectionUtils.isNotEmpty(list)) {
+            Boolean b = true;
+            for (MemberTagData memberTagData : list) {
+                if (StringUtils.isNotBlank(memberTagData.getOpenId())) {
+                    if (selectCount(memberTagData.getOpenId()) <= 0) {
+                        updateErrorStatus(memberTagData.getDataId(), "不存在此会员OpenID");
+                        log.info("dataId:" + memberTagData.getDataId() + "，不存在此会员OpenID！");
+                    }
+                }
+            }
+
+        }
+        log.info("返回待加签的list：", JSON.toJSON(rightList));
+        return rightList;
     }
 
     /**
@@ -449,14 +484,14 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      * 更新数据检查状态
      *
      * @param dataId
-     * @param originalTag
      * @throws Exception
      */
-    public void updateCheckStats(Integer dataId, String originalTag) throws Exception {
+    public MemberTagData updateCheckStats(Integer dataId) throws Exception {
+        MemberTagData tagData = new MemberTagData();
         try {
             MemberTagData memberTagData = new MemberTagData();
             memberTagData.setDataId(dataId);
-            MemberTagData tagData = memberTagDataMapper.selectOne(memberTagData);
+            tagData = memberTagDataMapper.selectOne(memberTagData);
             log.info("错误标签:{}", tagData.getErrorTag());
             if (StringUtils.isNotBlank(tagData.getErrorTag())) {
                 memberTagData.setCheckStatus(false);
@@ -472,7 +507,9 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return tagData;
     }
+
 
     /**
      * 更新标签和原因
@@ -585,12 +622,16 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
     /**
      * 更新上传数据状态
      *
-     * @param fileId
-     * @param status
+     * @param list
      */
-    public void updateDataStatus(Integer fileId, Integer status) {
-        int t = memberTagDataMapper.updateDataStatus(fileId, status);
-        log.info("更新上传数据状态：{}", t);
+    public int updateDataStatus(CopyOnWriteArrayList<MemberTagData> list) {
+        List<MemberTagData> collect = list.stream().map(m -> {
+            MemberTagData memberTagData = new MemberTagData();
+            BeanUtils.copyProperties(m, memberTagData);
+            memberTagData.setStatus(MemberTagDataStatus.IN_PROCESS); //处理中
+            return memberTagData;
+        }).collect(Collectors.toList());
+        return memberTagDataDao.updateBatch(collect);
     }
 
 
@@ -623,13 +664,12 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      * @param list
      * @throws Exception
      */
-    public Boolean addTags(List<MemberTagData> list) throws Exception {
+    public Integer addTags(List<MemberTagData> list) throws Exception {
 
         List<MemberMemberTag> tagsList = new CopyOnWriteArrayList<>();
         MemberTagDataStatus status = null;
         String errorMsg = null;
-        Boolean result = false;
-        int suceessCount = 0;
+        Integer suceessCount = 0;
         try {
             if (CollectionUtils.isNotEmpty(list)) {
                 for (MemberTagData memberTagData : list) {
@@ -669,7 +709,6 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                     log.info("======加签中，已完成：》》》》》=" + suceessCount + "===========");
                 }
                 status = MemberTagDataStatus.PROCESS_SUCCEED;
-                result = true;
             }
         } catch (Exception e) {
             status = MemberTagDataStatus.PROCESS_FAILURE;
@@ -688,45 +727,34 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                 }
             }
         }
-        return result;
+        return suceessCount;
     }
 
 
     /**
      * 分批处理
-     *
-     * @param fileId
      */
-    public void batchExecute(Integer fileId, CopyOnWriteArrayList<MemberTagData> list) {
+    public Integer batchExecute(CopyOnWriteArrayList<MemberTagData> list) {
         String errorMsg = null;
+        Integer suceessCount = 0;
         if (CollectionUtils.isNotEmpty(list)) {
-
             //设置上传数据状态为处理中
-            updateDataStatus(fileId, 1);//1 代表处理中
-
+            updateDataStatus(list);//1 代表处理中
             log.info("======准备数据标签检查》》》》》============");
             try {
-                checkDataIsOK(list);
-                //获取待加签的正确数据
-                List<MemberTagData> addTagsDataList = getCsvData(fileId);
+                //检查数据，并返回正确待加签的数据
+                List<MemberTagData> addTagsDataList = checkDataIsOK(list);
                 if (CollectionUtils.isNotEmpty(addTagsDataList)) {
                     log.info("======准备加签》》》》》============");
-                    addTags(addTagsDataList);
-                } else {
-                    errorMsg = "没有找到正确数据！";
-                    log.info("fileId:" + fileId + "," + errorMsg);
+                    suceessCount = addTags(addTagsDataList);
                 }
-
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else {
-            errorMsg = "没有找到数据！";
-            log.info("fileId:" + fileId + "," + errorMsg);
         }
 
-
+        return suceessCount;
     }
 
 }

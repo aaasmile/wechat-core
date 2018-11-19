@@ -44,4 +44,26 @@ public class MemberTagDataDaoImpl implements MemberTagDataDao {
         return sum;
 
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int updateBatch(Collection<MemberTagData> records,String method) {
+        if (CollectionUtils.isEmpty(records)) {
+            log.warn("Collection is empty");
+            return 0;
+        }
+        //批量模式
+        final SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH);
+
+        final int sum = records
+         .stream()
+         .map(r -> sqlSession
+          .update(method, r))
+         .mapToInt(Integer::valueOf)
+         .sum();
+        sqlSession.commit();
+        return sum;
+
+    }
+
 }

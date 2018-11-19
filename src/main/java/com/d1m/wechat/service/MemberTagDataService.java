@@ -1,9 +1,7 @@
 package com.d1m.wechat.service;
 
-import com.d1m.wechat.domain.entity.MemberTagCsv;
 import com.d1m.wechat.domain.entity.MemberTagData;
-import com.d1m.wechat.model.enums.MemberTagCsvStatus;
-import com.d1m.wechat.model.enums.MemberTagDataStatus;
+import com.d1m.wechat.exception.WechatException;
 
 import java.io.File;
 import java.util.Date;
@@ -25,15 +23,8 @@ public interface MemberTagDataService extends BaseService<MemberTagData> {
      *
      * @param list
      */
-     void checkDataIsOK(CopyOnWriteArrayList<MemberTagData> list) throws Exception;
+     CopyOnWriteArrayList<MemberTagData> checkDataIsOK(CopyOnWriteArrayList<MemberTagData> list) throws Exception;
 
-    /**
-     * 更新上传数据状态
-     *
-     * @param fileId
-     * @param status
-     */
-     void updateDataStatus(Integer fileId, Integer status);
 
     /**
      * 获取待处理的数据
@@ -56,7 +47,7 @@ public interface MemberTagDataService extends BaseService<MemberTagData> {
      * @param list
      * @throws Exception
      */
-     Boolean addTags(List<MemberTagData> list) throws Exception;
+     Integer addTags(List<MemberTagData> list) throws Exception;
 
     /**
      * 因必填信息引起的错误，需要更新状态为完成
@@ -68,8 +59,14 @@ public interface MemberTagDataService extends BaseService<MemberTagData> {
 
     /**
      * 分批处理
-     * @param fileId
      */
-    public void batchExecute(Integer fileId, CopyOnWriteArrayList<MemberTagData> list);
+    public Integer batchExecute(CopyOnWriteArrayList<MemberTagData> list);
+
+    /**
+     * 异步发起批量处理
+     *
+     * @param
+     */
+    public void asyncCsvJobBatch(List<MemberTagData> list, Integer fileId) throws WechatException;
 
 }

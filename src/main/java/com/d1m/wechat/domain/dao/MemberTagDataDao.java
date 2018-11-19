@@ -12,4 +12,6 @@ public interface MemberTagDataDao {
 
     int updateBatch(Collection<MemberTagData> records);
 
+    int updateBatch(Collection<MemberTagData> records,String method);
+
 }

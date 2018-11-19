@@ -83,7 +83,7 @@ public class MemberTagCsvController extends BaseController {
         FileUploadConfigUtil instance = FileUploadConfigUtil.getInstance();
         String uploadPath = instance.getValue(getWechatId(), "upload_path");
         log.info("upload_path : " + uploadPath);
-        String fileFullName = uploadPath + DateUtil.formatYYYYMMDD(new Date()) + "/" + UUID.randomUUID().toString()
+        String fileFullName = uploadPath + "/" + DateUtil.formatYYYYMMDD(new Date()) + "/" + UUID.randomUUID().toString()
          + "_" + file.getOriginalFilename();
         log.info("fileFullName : " + fileFullName);
         final File targetFile = new File(fileFullName);
@@ -163,13 +163,7 @@ public class MemberTagCsvController extends BaseController {
              .msg("没有错误数据")
              .build();
         }
-        /*memberTagDatas = memberTagDatas.stream().filter((Type t) -> {if(StringUtils.isEmpty(((MemberTagData) t).getOpenId()))
-         ((MemberTagData) t).setErrorTag(((MemberTagData) t).getOriginalTag())});*/
-        /*for (MemberTagData memberTagData:memberTagDatas){
-            if (StringUtils.isEmpty(memberTagData.getOpenId())){
-                memberTagData.setErrorTag(memberTagData.getOriginalTag());
-            }
-        }*/
+
         final List<FailDataExport> failDataExports = memberTagDatas
          .stream()
          .map(FailDataExport::convert)
@@ -279,7 +273,7 @@ public class MemberTagCsvController extends BaseController {
 
     @SuppressWarnings("WeakerAccess")
     @Data
-    @JsonPropertyOrder({"OPEN_ID","TAG","FAIL_REASON"})
+    @JsonPropertyOrder({"OPEN_ID", "TAG", "FAIL_REASON"})
     public static class FailDataExport {
         @Excel(name = "OPEN_ID")
         @JsonProperty(value = "OPEN_ID")

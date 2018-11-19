@@ -2,7 +2,6 @@ package com.d1m.wechat.schedule.job;
 
 import com.d1m.wechat.domain.entity.MemberTagData;
 import com.d1m.wechat.model.enums.MemberTagCsvStatus;
-import com.d1m.wechat.model.enums.MemberTagDataStatus;
 import com.d1m.wechat.schedule.BaseJobHandler;
 import com.d1m.wechat.service.*;
 
@@ -15,7 +14,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @JobHander(value = "memberTagCsvJob")
@@ -41,18 +39,13 @@ public class MemberTagCsvJob extends BaseJobHandler {
                 CopyOnWriteArrayList<MemberTagData> list = memberTagDataService.getMembertagCsvData(fileId);
 
                 if (CollectionUtils.isNotEmpty(list)) {
-                    //设置上传文件为导入中状态
+                    //设置上传文件为处理中状态
                     memberTagCsvService.updateFileStatus(fileId, MemberTagCsvStatus.IN_PROCESS);
-                    //分批处理
-                    memberTagDataService.batchExecute(fileId, list);
+                    //异步发起批量处理
+                    memberTagDataService.asyncCsvJobBatch(list,fileId);
                 }
-                //统计结果
-                log.info("======统计结果》》》》》============");
-                memberTagCsvService.updateCountCsv(fileId);
 
-                //结果更新
-                memberTagCsvService.updateFileStatus(fileId, MemberTagCsvStatus.PROCESS_SUCCEED);
-                log.info("======会员导入加签完成》》》》》============");
+
             }
             return ReturnT.SUCCESS;
         } catch (Exception e) {
