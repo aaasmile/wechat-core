@@ -229,7 +229,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         log.info("runTask:{}", runTask);
         log.info("memberTagCsv:{}", JSON.toJSON(memberTagCsv));
         //异步发起任务调度
-        //asyncService.asyncInvoke(() -> schedulerTask(memberTagCsv.getTask(), runTask, memberTagCsv, memberTagDataList));
+        asyncService.asyncInvoke(() -> schedulerTask(memberTagCsv.getTask(), runTask, memberTagCsv));
         log.info("Batch schedulerTask finish!");
     }
 
@@ -240,7 +240,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      * @param runTask
      * @param record
      */
-    public void schedulerTask(String taskName, Date runTask, MemberTagCsv record, List<MemberTagData> memberTagDataList) {
+    public void schedulerTask(String taskName, Date runTask, MemberTagCsv record) {
         try {
             // 1、获取数据源
             String domain = tenantHelper.getTenantByWechatId(record.getWechatId());
@@ -257,14 +257,14 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             jobMap.put("jobDesc", taskName);
             jobMap.put("jobCron", DateUtil.cron.format(runTask));
             jobMap.put("executorHandler", "memberTagCsvJob");
-            jobMap.put("executorParam", "-d" + TenantContext.getCurrentTenant() + "," + record.getFileId());
+            jobMap.put("executorParam", "-d" + TenantContext.getCurrentTenant() + "," + record.getFileId() + "," + record.getWechatId());
 
             ReturnT<String> returnT = schedulerRestService.addJob(jobMap);
             log.info("jobMap:" + JSON.toJSON(jobMap));
             log.info("returnT发起异步任务调度返回结果:" + JSON.toJSON(returnT));
             if (ReturnT.FAIL_CODE == returnT.getCode()) {
                 throw new WechatException(
-                        Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
+                 Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
             }
         } catch (Exception e) {
             log.error(e.getLocalizedMessage(), e);
