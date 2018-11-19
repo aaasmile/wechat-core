@@ -4,6 +4,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.annotation.Resource;
 
+import com.d1m.wechat.service.MemberService;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -23,13 +24,16 @@ import com.xxl.job.core.log.XxlJobLogger;
 @JobHander(value = "memberTagCsvJob")
 @Component
 public class MemberTagCsvJob extends BaseJobHandler {
-	
-	private static final Logger log = LoggerFactory.getLogger(MemberTagCsvJob.class);
 
+    private static final Logger log = LoggerFactory.getLogger(MemberTagCsvJob.class);
+    //默认每批次处理数量
+    private static final Integer BATCHSIZE = 1000;
     @Resource
     private MemberTagDataService memberTagDataService;
     @Resource
     private MemberTagCsvService memberTagCsvService;
+    @Resource
+    private MemberService memberService;
 
     @Override
     public ReturnT<String> run(String... strings) throws Exception {
@@ -39,17 +43,29 @@ public class MemberTagCsvJob extends BaseJobHandler {
                 Integer fileId = ParamUtil.getInt(strings[0], null);
                 XxlJobLogger.log("获取导入文件id : " + fileId);
                 log.info("获取导入文件id : " + fileId);
+                Integer wechatId = ParamUtil.getInt(strings[1], null);
+                //Integer batchSize = memberService.getBatchSize(wechatId != null ? memberService.getBatchSize(list.get(0).getWechatId()) : BATCHSIZE;
                 //数据标签检查
-                PageHelper.startPage(1,
-                 1000, true);
-                CopyOnWriteArrayList<MemberTagData> list = memberTagDataService.getMembertagCsvData(fileId);
-
-                if (CollectionUtils.isNotEmpty(list)) {
-                    //设置上传文件为处理中状态
-                    memberTagCsvService.updateFileStatus(fileId, MemberTagCsvStatus.IN_PROCESS);
-                    //异步发起批量处理
-                    memberTagDataService.asyncCsvJobBatch(list,fileId);
+                CopyOnWriteArrayList<MemberTagData> list = null;
+                int count = 0;
+                while (true) {
+                    PageHelper.startPage(count * BATCHSIZE, BATCHSIZE, true);
+                    list = memberTagDataService.getMembertagCsvData(fileId);
+                    if (CollectionUtils.isNotEmpty(list)) {
+                        //设置上传文件为处理中状态
+                        memberTagCsvService.updateFileStatus(fileId, MemberTagCsvStatus.IN_PROCESS);
+                        //异步发起批量处理
+                        memberTagDataService.batchExecute(list);
+                    }else {
+                        break;
+                    }
+                    count++;
                 }
+                //统计成功和失败条数
+                memberTagCsvService.updateCountCsv(fileId);
+                //更新上传文件状态为已完成
+                memberTagCsvService.updateFileStatus(fileId, MemberTagCsvStatus.PROCESS_SUCCEED);
+                log.info("======会员导入加签完成》》》》》============");
 
 
             }
