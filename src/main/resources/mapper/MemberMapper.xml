@@ -816,7 +816,7 @@
         cast(m.sex as char) as gender,
         m.mobile as mobile,
         CAST(cast(m.is_subscribe AS SIGNED INTEGER) AS char) as subscribe,
-        DATE_FORMAT( m.subscribe_at, '%Y-%m-%d %T' ) as subscribeat,
+        DATE_FORMAT( m.subscribe_at, '%Y-%m-%d %H:%i:%s' ) as subscribeat,
         cast(m.`status` as char) as bind,
         ifnull(m.batchsend_month, 0) as message_sent,
         m.open_id,
@@ -827,7 +827,7 @@
         m.created_at,
         m.created_at as created,
         m.bind_at as bindat,
-        DATE_FORMAT( m.unsubscribe_at, '%Y-%m-%d %T' ) as unsubscribeat,
+        DATE_FORMAT( m.unsubscribe_at, '%Y-%m-%d %H:%i:%s' ) as unsubscribeat,
         m.union_id as unionid
         FROM
         member m
