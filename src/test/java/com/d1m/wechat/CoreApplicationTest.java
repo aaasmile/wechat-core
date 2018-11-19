@@ -533,8 +533,8 @@ public class CoreApplicationTest {
 
     @Test
     public void batchUpdateTest() {
-        final MemberTagData data1 = MemberTagData.builder().dataId(1).originalTag("批量更新1").build();
-        final MemberTagData data2 = MemberTagData.builder().dataId(2).originalTag("批量更新2").build();
+        final MemberTagData data1 = new MemberTagData.Builder().dataId(1).originalTag("批量更新1").build();
+        final MemberTagData data2 = new MemberTagData.Builder().dataId(2).originalTag("批量更新2").build();
         memberTagDataDao.updateBatch(Lists.newArrayList(data1, data2));
     }
 

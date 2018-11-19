@@ -1,25 +1,29 @@
 package com.d1m.wechat.schedule.job;
 
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
 import com.d1m.wechat.domain.entity.MemberTagData;
 import com.d1m.wechat.model.enums.MemberTagCsvStatus;
 import com.d1m.wechat.schedule.BaseJobHandler;
-import com.d1m.wechat.service.*;
-
+import com.d1m.wechat.service.MemberTagCsvService;
+import com.d1m.wechat.service.MemberTagDataService;
 import com.d1m.wechat.util.ParamUtil;
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.annotation.JobHander;
 import com.xxl.job.core.log.XxlJobLogger;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @JobHander(value = "memberTagCsvJob")
 @Component
-@Slf4j
 public class MemberTagCsvJob extends BaseJobHandler {
+	
+	private static final Logger log = LoggerFactory.getLogger(MemberTagCsvJob.class);
 
     @Resource
     private MemberTagDataService memberTagDataService;
@@ -28,7 +32,6 @@ public class MemberTagCsvJob extends BaseJobHandler {
 
     @Override
     public ReturnT<String> run(String... strings) throws Exception {
-        String errorMsg = null;
         try {
             if (strings != null) {
                 //获取导入文件id

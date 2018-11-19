@@ -1,8 +1,32 @@
 package com.d1m.wechat.service.impl;
 
-import cn.afterturn.easypoi.excel.ExcelImportUtil;
-import cn.afterturn.easypoi.excel.annotation.Excel;
-import cn.afterturn.easypoi.excel.entity.ImportParams;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.common.ds.TenantContext;
@@ -24,41 +48,33 @@ import com.d1m.wechat.model.MemberTag;
 import com.d1m.wechat.model.enums.MemberTagCsvStatus;
 import com.d1m.wechat.model.enums.MemberTagDataStatus;
 import com.d1m.wechat.schedule.SchedulerRestService;
-import com.d1m.wechat.service.*;
-import com.d1m.wechat.util.*;
+import com.d1m.wechat.service.AsyncService;
+import com.d1m.wechat.service.MemberService;
+import com.d1m.wechat.service.MemberTagCsvService;
+import com.d1m.wechat.service.MemberTagDataService;
+import com.d1m.wechat.util.BatchUtils;
+import com.d1m.wechat.util.CommonUtils;
+import com.d1m.wechat.util.DateUtil;
+import com.d1m.wechat.util.Message;
+import com.d1m.wechat.util.MyMapper;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.xxl.job.core.biz.model.ReturnT;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import java.io.File;
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Future;
-import java.util.stream.Collectors;
+import cn.afterturn.easypoi.excel.ExcelImportUtil;
+import cn.afterturn.easypoi.excel.annotation.Excel;
+import cn.afterturn.easypoi.excel.entity.ImportParams;
 
 /**
  * Created by jone.wang on 2018/11/6.
  * Description:
  */
 @Service
-@Slf4j
 public class MemberTagDataServiceImpl implements MemberTagDataService {
+	
+	private static final Logger log = LoggerFactory.getLogger(MemberTagDataServiceImpl.class);
     //默认每批次处理数量
     private static final Integer BATCHSIZE = 1000;
 
@@ -67,9 +83,6 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
     @Autowired
     private MemberTagCsvService memberTagCsvService;
-
-    @Autowired
-    private MemberTagService memberTagService;
 
     @Autowired
     private MemberTagMapper memberTagMapper;
@@ -137,7 +150,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
     private void entitiesProcess(Collection<BatchEntity> entities, Integer fileId, Date runTask) {
 
         final MemberTagCsv memberTagCsv = memberTagCsvService
-         .selectByKey(MemberTagCsv.builder().fileId(fileId).build());
+         .selectByKey(new MemberTagCsv.Builder().fileId(fileId).build());
         if (Objects.isNull(memberTagCsv)) {
             throw new WechatException(Message.FILE_EXT_NOT_SUPPORT);
         }
@@ -153,8 +166,8 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         }
 
         final List<MemberTagData> memberTagDataList = entities.stream().map(e ->
-         MemberTagData
-          .builder()
+         new MemberTagData
+          .Builder()
           .fileId(fileId)
           .openId(e.getOpenid())
           .wechatId(memberTagCsv.getWechatId())
@@ -354,8 +367,6 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
     }
 
-    @SuppressWarnings("WeakerAccess")
-    @Data
     public static class BatchEntity {
         @Excel(name = "OPEN_ID", isImportField = "true")
         @JsonProperty(value = "OPEN_ID", required = true)
@@ -363,6 +374,22 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         @Excel(name = "TAG", isImportField = "true")
         @JsonProperty(value = "TAG", required = true)
         private String tag;
+		public String getOpenid() {
+			return openid;
+		}
+		public void setOpenid(String openid) {
+			this.openid = openid;
+		}
+		public String getTag() {
+			return tag;
+		}
+		public void setTag(String tag) {
+			this.tag = tag;
+		}
+		@Override
+		public String toString() {
+			return "BatchEntity [openid=" + openid + ", tag=" + tag + "]";
+		}
     }
 
 
@@ -403,7 +430,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                     //更新数据检查状态
                     MemberTagData updatetag = updateCheckStats(memberTagData.getDataId());
                     //如果检查状态为true，则把该标签数据添加到list中
-                    if (updatetag.getCheckStatus()) {
+                    if (updatetag.getCheckStatus() && rightList != null) {
                         rightList.add(updatetag);
                     }
                 }
@@ -422,7 +449,6 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
     public CopyOnWriteArrayList<MemberTagData> checkDataIsOK2(CopyOnWriteArrayList<MemberTagData> list) throws Exception {
         CopyOnWriteArrayList<MemberTagData> rightList = null;
         if (CollectionUtils.isNotEmpty(list)) {
-            Boolean b = true;
             for (MemberTagData memberTagData : list) {
                 if (StringUtils.isNotBlank(memberTagData.getOpenId())) {
                     if (selectCount(memberTagData.getOpenId()) <= 0) {
@@ -735,7 +761,6 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      * 分批处理
      */
     public Integer batchExecute(CopyOnWriteArrayList<MemberTagData> list) {
-        String errorMsg = null;
         Integer suceessCount = 0;
         if (CollectionUtils.isNotEmpty(list)) {
             //设置上传数据状态为处理中
