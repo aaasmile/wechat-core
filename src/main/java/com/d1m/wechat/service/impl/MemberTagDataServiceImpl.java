@@ -32,6 +32,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.xxl.job.core.biz.model.ReturnT;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,21 +161,24 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
     @Transactional(rollbackFor = Exception.class)
     public void batchInsertFromCsv(Integer fileId, File file, Date runTask) {
         log.info("Batch insert form file [{}], for fileId [{}]", file.getPath(), fileId);
+        FileInputStream fis = null;
+        InputStreamReader isr = null;
+        BufferedReader br = null;
         try {
-            CsvSchema schema = null;
+            CsvSchema schema;
             //1、判断将要插入的数量
             schema = csvMapper.schemaFor(BatchEntity.class).withHeader();
             int count = 0;
-            FileInputStream fis = new FileInputStream(file);
-            InputStreamReader isr = new InputStreamReader(fis);
-            BufferedReader br = new BufferedReader(isr);
+            fis = new FileInputStream(file);
+            isr = new InputStreamReader(fis);
+            br = new BufferedReader(isr);
             String line = br.readLine();
             String firstLine = null;
             StringBuilder builder = new StringBuilder();
             if (StringUtils.isNotBlank(line)) {
                 firstLine = line;
             }
-            MappingIterator<BatchEntity> mapping = null;
+            MappingIterator<BatchEntity> mapping;
             while (StringUtils.isNotBlank(line)) {
                 builder.append(line);
                 builder.append("\n");
@@ -192,14 +196,19 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
             }
 
-            mapping = csvMapper.readerFor(BatchEntity.class)
-                    .with(schema).readValues(builder.toString());
-            final List<BatchEntity> entities = mapping.readAll();
-            this.entitiesProcess(entities, fileId, runTask);
-
-
+            final String csrStr = builder.toString();
+            if (StringUtils.isNotBlank(csrStr)) {
+                mapping = csvMapper.readerFor(BatchEntity.class)
+                        .with(schema).readValues(csrStr);
+                final List<BatchEntity> entities = mapping.readAll();
+                this.entitiesProcess(entities, fileId, runTask);
+            }
         } catch (IOException e) {
             log.error("Csv to pojo error", e);
+        } finally {
+            IOUtils.closeQuietly(isr);
+            IOUtils.closeQuietly(fis);
+            IOUtils.closeQuietly(br);
         }
     }
 
