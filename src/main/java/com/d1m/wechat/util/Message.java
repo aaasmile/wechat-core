@@ -590,6 +590,9 @@ public enum Message {
     CSV_UPLOAD_SUCCESS(1, "csv导入文件上传成功"),
 
     CSV_OR_EXCEL_PARSER_FAIL(26004, "CSV或者Excel解析失败！"),
+    
+    CSV_TEST_FAIL(26005, "CSV测试失败！"),
+    CSV_TEST_SUCCESS(26005, "CSV测试成功！"),
 
     /**
      * Function
