@@ -21,7 +21,7 @@
 		<result column="count" jdbcType="INTEGER" property="count" />
 	</resultMap>
 
-	<select id="selectNamesByStatus" resultType="">
+	<select id="selectNamesByStatus" resultType="java.lang.String">
 		select name from member_tag where status = 1
 	</select>
 	<select id="getDuplicateName" resultMap="BaseResultMap">
