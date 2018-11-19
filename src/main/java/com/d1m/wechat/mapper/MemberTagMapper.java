@@ -35,4 +35,5 @@ public interface MemberTagMapper extends MyMapper<MemberTag> {
 
 	void saveMemberTagInfo(MemberTagModel memberTagModel);
 
+	List<String> selectNamesByStatus();
 }

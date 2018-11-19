@@ -31,7 +31,7 @@ public interface MemberTagDataService extends BaseService<MemberTagData> {
      *
      * @param fileId
      */
-    CopyOnWriteArrayList<MemberTagData> getMembertagCsvData(Integer fileId);
+    CopyOnWriteArrayList<MemberTagData> getMembertagCsvData(Integer fileId, int pageNum, int batchSize);
 
 
     /**
@@ -55,7 +55,7 @@ public interface MemberTagDataService extends BaseService<MemberTagData> {
      * @param errorMsg
      * @throws Exception
      */
-    public void updateErrorStatus(Integer dataId, String errorMsg) throws Exception;
+    public void updateErrorStatus(String errorMsg, MemberTagData memberTagData) throws Exception;
 
     /**
      * 分批处理

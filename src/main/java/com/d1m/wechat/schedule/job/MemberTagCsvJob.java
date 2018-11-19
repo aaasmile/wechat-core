@@ -51,14 +51,11 @@ public class MemberTagCsvJob extends BaseJobHandler {
                 memberTagCsvService.updateFileStatus(fileId, MemberTagCsvStatus.IN_PROCESS);
                 int count = 0;
                 while (true) {
-                    PageHelper.startPage(count, batchSize, true);
-                    list = memberTagDataService.getMembertagCsvData(fileId);
+                    list = memberTagDataService.getMembertagCsvData(fileId, count, batchSize);
                     if (CollectionUtils.isNotEmpty(list)) {
-
                         //异步发起批量处理
                         memberTagDataService.batchExecute(list);
                     }else {
-
                         break;
                     }
                     count++;
