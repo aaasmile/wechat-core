@@ -165,12 +165,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         try {
             CsvSchema schema = null;
             //1、判断将要插入的数量
-            Map<String, Integer> map = BatchUtils.getTimes(BATCHSIZE, FileUtils.readFileLineCounts(file));
-            Integer times = map.get("times");
-            Integer remainAmount = map.get("remainAmount");
             schema = csvMapper.schemaFor(BatchEntity.class).withHeader();
-//            MappingIterator<BatchEntity> mapping = csvMapper.readerFor(BatchEntity.class)
-//             .with(schema).readValues(String.valueOf(FileUtils.readFileLineCounts(file)));
             int count = 0;
             FileInputStream fis = new FileInputStream(file);
             InputStreamReader isr = new InputStreamReader(fis);
