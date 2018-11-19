@@ -11,6 +11,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public interface MemberTagDataMapper extends MyMapper<MemberTagData> {
 
+//    @Override
+//    int updateByPrimaryKeySelective(MemberTagData memberTagData);
+
     CopyOnWriteArrayList<MemberTagData> getMembertagCsvData(Integer fileId);
 
     MemberStatsCounts getCount (Integer fileId);

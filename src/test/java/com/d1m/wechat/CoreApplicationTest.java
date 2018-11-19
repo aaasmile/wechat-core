@@ -1,24 +1,14 @@
 package com.d1m.wechat;
 
 import com.alibaba.fastjson.JSONObject;
+import com.d1m.wechat.domain.dao.MemberTagDataDao;
+import com.d1m.wechat.domain.entity.MemberTagData;
 import com.d1m.wechat.dto.GiftCardOrderDto;
-import com.d1m.wechat.mapper.*;
-import com.d1m.wechat.model.EstoreOrder;
-import com.d1m.wechat.model.EstoreOrderPay;
-import com.d1m.wechat.model.EstoreOrderProduct;
-import com.d1m.wechat.model.EstoreProduct;
-import com.d1m.wechat.model.popup.*;
-import com.d1m.wechat.model.popup.dao.PopupOrderDeliveryAddr;
-import com.d1m.wechat.model.enums.GoodsEnum;
-import com.d1m.wechat.model.enums.OrderEnum;
-import com.d1m.wechat.model.enums.PayTypeEnum;
-import com.d1m.wechat.model.popup.dao.*;
 import com.d1m.wechat.pamametermodel.*;
-import com.d1m.wechat.service.*;
-import com.d1m.wechat.util.DateUtil;
-import com.github.pagehelper.Page;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.impl.cookie.DateUtils;
+import com.d1m.wechat.service.IEstoreOrderService;
+import com.d1m.wechat.service.IEstoreProductService;
+import com.d1m.wechat.service.IGiftCardOrderService;
+import org.assertj.core.util.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -26,12 +16,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = CoreApplication.class)
@@ -41,7 +30,7 @@ public class CoreApplicationTest {
     public Long memberId = 316L;
     public Long goodsId = 70L;
 
-//    @Resource
+    //    @Resource
 //    private IPopupGoodsService service;
 //    @Resource
 //    private IPopupOrderService orderService;
@@ -70,7 +59,7 @@ public class CoreApplicationTest {
     @Autowired
     IGiftCardOrderService giftCardOrderService;
 
-//    @Transactional
+    //    @Transactional
     @Test
     public void contextLoads() {
         //createOrder();
@@ -78,7 +67,7 @@ public class CoreApplicationTest {
         listGiftCardOrder();
     }
 
-    public void listOrder(){
+    public void listOrder() {
         EstoreOrderSearch estoreOrderSearch = new EstoreOrderSearch();
         estoreOrderSearch.setPageSize(1);
         estoreOrderSearch.setPageNum(1);
@@ -88,22 +77,22 @@ public class CoreApplicationTest {
         log.info(JSONObject.toJSONString(listEstoreOrderEntity));
     }
 
-    public void listGiftCardOrder(){
+    public void listGiftCardOrder() {
         GiftCardOrderSearch giftCardOrderSearch = new GiftCardOrderSearch();
         giftCardOrderSearch.setPageSize(1);
         giftCardOrderSearch.setPageNum(1);
 //        estoreOrderSearch.setName("test name");
 //        estoreOrderSearch.setOrderId(3L);
-        List<GiftCardOrderDto> list = giftCardOrderService.selectOrderList(wechatId, giftCardOrderSearch,true);
+        List<GiftCardOrderDto> list = giftCardOrderService.selectOrderList(wechatId, giftCardOrderSearch, true);
         log.info(JSONObject.toJSONString(list));
     }
 
-    public void getOrder(){
+    public void getOrder() {
         EstoreOrderEntity estoreOrderEntity = estoreOrderServiceImpl.getEstoreOrder(3L, wechatId);
         log.info(JSONObject.toJSONString(estoreOrderEntity));
     }
 
-    public void createOrder(){
+    public void createOrder() {
         Date now = new Date();
         EstoreOrderEntity estoreOrderEntity = new EstoreOrderEntity();
         estoreOrderEntity.setMemberId(memberId);
@@ -112,10 +101,10 @@ public class CoreApplicationTest {
         estoreOrderEntity.setProductAmount(1L);
         estoreOrderEntity.setDeliveryFee(1L);
         estoreOrderEntity.setDiscount(0L);
-        estoreOrderEntity.setPayStatus((byte)0);
-        estoreOrderEntity.setStatus((byte)0);
+        estoreOrderEntity.setPayStatus((byte) 0);
+        estoreOrderEntity.setStatus((byte) 0);
         estoreOrderEntity.setRemark("");
-        estoreOrderEntity.setDeliveryType((byte)1);
+        estoreOrderEntity.setDeliveryType((byte) 1);
         estoreOrderEntity.setDeliveryExt("");
         estoreOrderEntity.setDeliveryName("小王");
         estoreOrderEntity.setDeliveryPhone("13312341234");
@@ -125,19 +114,19 @@ public class CoreApplicationTest {
         estoreOrderEntity.setDeliveryDistrict("");
         estoreOrderEntity.setDeliveryAddress("联创国际第一秒电商");
         estoreOrderEntity.setExpressNo("");
-        estoreOrderEntity.setNeedInvoice((byte)1);
-        estoreOrderEntity.setInvoiceType((byte)1);
+        estoreOrderEntity.setNeedInvoice((byte) 1);
+        estoreOrderEntity.setInvoiceType((byte) 1);
         estoreOrderEntity.setInvoiceTitle("联创国际第一秒电商");
         estoreOrderEntity.setInvoiceTaxNo("AJSJS11112");
         estoreOrderEntity.setInvoiceContent("");
-        estoreOrderEntity.setInvoiceDeliveryType((byte)1);
+        estoreOrderEntity.setInvoiceDeliveryType((byte) 1);
         estoreOrderEntity.setInvoiceName("小王");
         estoreOrderEntity.setInvoicePhone("13312341234");
         estoreOrderEntity.setInvoiceProvince("上海");
         estoreOrderEntity.setInvoiceCity("上海");
         estoreOrderEntity.setInvoiceDistrict("");
         estoreOrderEntity.setInvoiceAddress("联创国际第一秒电商");
-        estoreOrderEntity.setNeedGift((byte)1);
+        estoreOrderEntity.setNeedGift((byte) 1);
         estoreOrderEntity.setGiftContent("this is gift");
         estoreOrderEntity.setCreateAt("2017-11-16 18:23:35");
         estoreOrderEntity.setUpdateAt("2017-11-16 18:23:35");
@@ -145,10 +134,10 @@ public class CoreApplicationTest {
         estoreOrderEntity.setPayType("WECHAT_PAY");
         List<EstoreOrderProductEntity> listEstoreOrderProductEntity = new ArrayList<>();
         EstoreOrderProductEntity estoreOrderProductEntity;
-        for (int i=2; i < 5; i++) {
+        for (int i = 2; i < 5; i++) {
             estoreOrderProductEntity = new EstoreOrderProductEntity();
-            estoreOrderProductEntity.setProductId(i+0L);
-            estoreOrderProductEntity.setProductSpecId(i+0L);
+            estoreOrderProductEntity.setProductId(i + 0L);
+            estoreOrderProductEntity.setProductSpecId(i + 0L);
             estoreOrderProductEntity.setPrice(BigDecimal.ONE);
             estoreOrderProductEntity.setQuantity(1);
             listEstoreOrderProductEntity.add(estoreOrderProductEntity);
@@ -160,17 +149,17 @@ public class CoreApplicationTest {
     public void createProduct() {
         EstoreProductEntity estoreProductEntity = new EstoreProductEntity();
         estoreProductEntity.setCategory("1,2");
-        estoreProductEntity.setDeliveryFree((byte)1);
+        estoreProductEntity.setDeliveryFree((byte) 1);
         estoreProductEntity.setDeliveryTplId(null);
         estoreProductEntity.setDescription("test desc");
         estoreProductEntity.setExtAttr(null);
         estoreProductEntity.setName("test name");
-        estoreProductEntity.setOnSale((byte)1);
-        estoreProductEntity.setSpecType((byte)1);
+        estoreProductEntity.setOnSale((byte) 1);
+        estoreProductEntity.setSpecType((byte) 1);
         estoreProductEntity.setSpecMeta(
                 JSONObject.parseObject("{\"颜色\":\"红色,蓝色,黄色\",\"尺码\":\"39,40,41\"}"));
         estoreProductEntity.setTag("1,2");
-        estoreProductEntity.setStatus((byte)1);
+        estoreProductEntity.setStatus((byte) 1);
         estoreProductEntity.setWechatId(wechatId.longValue());
         List<EstoreProductImageEntity> listImg = new ArrayList<>(3);
         EstoreProductImageEntity estoreProductImageEntity;
@@ -178,13 +167,13 @@ public class CoreApplicationTest {
             estoreProductImageEntity = new EstoreProductImageEntity();
             estoreProductImageEntity.setMaterialId(i + 0L);
             estoreProductImageEntity.setSeq(0);
-            estoreProductImageEntity.setType((byte)0);
+            estoreProductImageEntity.setType((byte) 0);
             listImg.add(estoreProductImageEntity);
         }
         estoreProductEntity.setListImg(listImg);
 
-        String[] arrColor = {"红色","蓝色","黄色"};
-        String[] arrSize = {"39","40","41"};
+        String[] arrColor = {"红色", "蓝色", "黄色"};
+        String[] arrSize = {"39", "40", "41"};
         List<EstoreProductSpecEntity> listSpec = new ArrayList<>(3);
         EstoreProductSpecEntity estoreProductSpecEntity;
         for (int i = 1; i <= 3; i++) {
@@ -192,22 +181,22 @@ public class CoreApplicationTest {
             estoreProductSpecEntity.setMarketPrice(BigDecimal.ONE);
             estoreProductSpecEntity.setPrice(BigDecimal.ONE);
             estoreProductSpecEntity.setPoint(0);
-            estoreProductSpecEntity.setSpecType((byte)1);
+            estoreProductSpecEntity.setSpecType((byte) 1);
 
             estoreProductSpecEntity.setSpecValue(
-                    JSONObject.parseObject("{\"颜色\":\""+arrColor[i-1]+"\",\"尺码\":\""+arrSize[i-1]+"\"}"));
+                    JSONObject.parseObject("{\"颜色\":\"" + arrColor[i - 1] + "\",\"尺码\":\"" + arrSize[i - 1] + "\"}"));
             estoreProductSpecEntity.setStock(10);
-            estoreProductSpecEntity.setStatus((byte)1);
+            estoreProductSpecEntity.setStatus((byte) 1);
             estoreProductSpecEntity.setVolume(null);
             estoreProductSpecEntity.setWeight(null);
-            estoreProductSpecEntity.setSku("000"+i);
+            estoreProductSpecEntity.setSku("000" + i);
             List<EstoreProductImageEntity> listSpecImg = new ArrayList<>(3);
             EstoreProductImageEntity estoreProductSpecImageEntity;
             for (int j = 1; j <= 3; j++) {
                 estoreProductSpecImageEntity = new EstoreProductImageEntity();
                 estoreProductSpecImageEntity.setMaterialId(j + 0L);
                 estoreProductSpecImageEntity.setSeq(0);
-                estoreProductSpecImageEntity.setType((byte)1);
+                estoreProductSpecImageEntity.setType((byte) 1);
                 listSpecImg.add(estoreProductSpecImageEntity);
             }
             estoreProductSpecEntity.setListImg(listSpecImg);
@@ -226,17 +215,17 @@ public class CoreApplicationTest {
         estoreProductEntity.setId(productId);
         estoreProductEntity.setSaleId(3L);
         estoreProductEntity.setCategory("1,2");
-        estoreProductEntity.setDeliveryFree((byte)1);
+        estoreProductEntity.setDeliveryFree((byte) 1);
         estoreProductEntity.setDeliveryTplId(null);
         estoreProductEntity.setDescription("test desc");
         estoreProductEntity.setExtAttr(null);
         estoreProductEntity.setName("test name");
-        estoreProductEntity.setOnSale((byte)1);
-        estoreProductEntity.setSpecType((byte)1);
+        estoreProductEntity.setOnSale((byte) 1);
+        estoreProductEntity.setSpecType((byte) 1);
         estoreProductEntity.setSpecMeta(
                 JSONObject.parseObject("{\"颜色\":\"红色,蓝色,黄色\",\"尺码\":\"39,40,41\"}"));
         estoreProductEntity.setTag("1,2");
-        estoreProductEntity.setStatus((byte)1);
+        estoreProductEntity.setStatus((byte) 1);
         estoreProductEntity.setWechatId(wechatId.longValue());
         List<EstoreProductImageEntity> listImg = new ArrayList<>(3);
         EstoreProductImageEntity estoreProductImageEntity;
@@ -245,13 +234,13 @@ public class CoreApplicationTest {
             estoreProductImageEntity.setId(i + 13L);
             estoreProductImageEntity.setMaterialId(i + 0L);
             estoreProductImageEntity.setSeq(0);
-            estoreProductImageEntity.setType((byte)0);
+            estoreProductImageEntity.setType((byte) 0);
             listImg.add(estoreProductImageEntity);
         }
         estoreProductEntity.setListImg(listImg);
 
-        String[] arrColor = {"红色","蓝色","黄色"};
-        String[] arrSize = {"39","40","41"};
+        String[] arrColor = {"红色", "蓝色", "黄色"};
+        String[] arrSize = {"39", "40", "41"};
         List<EstoreProductSpecEntity> listSpec = new ArrayList<>(3);
         EstoreProductSpecEntity estoreProductSpecEntity;
         for (int i = 1; i <= 3; i++) {
@@ -260,24 +249,24 @@ public class CoreApplicationTest {
             estoreProductSpecEntity.setMarketPrice(BigDecimal.ONE);
             estoreProductSpecEntity.setPrice(BigDecimal.ONE);
             estoreProductSpecEntity.setPoint(0);
-            estoreProductSpecEntity.setSpecType((byte)1);
+            estoreProductSpecEntity.setSpecType((byte) 1);
 
             estoreProductSpecEntity.setSpecValue(
-                    JSONObject.parseObject("{\"颜色\":\""+arrColor[i-1]+"\",\"尺码\":\""+arrSize[i-1]+"\"}"));
+                    JSONObject.parseObject("{\"颜色\":\"" + arrColor[i - 1] + "\",\"尺码\":\"" + arrSize[i - 1] + "\"}"));
             estoreProductSpecEntity.setStock(10);
-            estoreProductSpecEntity.setStatus((byte)1);
+            estoreProductSpecEntity.setStatus((byte) 1);
             estoreProductSpecEntity.setVolume(null);
             estoreProductSpecEntity.setWeight(null);
-            estoreProductSpecEntity.setSku("000"+i);
+            estoreProductSpecEntity.setSku("000" + i);
             List<EstoreProductImageEntity> listSpecImg = new ArrayList<>(3);
             EstoreProductImageEntity estoreProductSpecImageEntity;
             for (int j = 1; j <= 3; j++) {
                 estoreProductSpecImageEntity = new EstoreProductImageEntity();
-                estoreProductSpecImageEntity.setId(j + 16L + (i-1)*3);
+                estoreProductSpecImageEntity.setId(j + 16L + (i - 1) * 3);
                 estoreProductSpecImageEntity.setMaterialId(j + 0L);
                 estoreProductSpecImageEntity.setSeq(0);
-                estoreProductSpecImageEntity.setType((byte)1);
-                estoreProductSpecImageEntity.setIsDel((byte)1);
+                estoreProductSpecImageEntity.setType((byte) 1);
+                estoreProductSpecImageEntity.setIsDel((byte) 1);
                 listSpecImg.add(estoreProductSpecImageEntity);
             }
             estoreProductSpecEntity.setListImg(listSpecImg);
@@ -295,7 +284,7 @@ public class CoreApplicationTest {
         log.info(JSONObject.toJSONString(estoreProductEntity));
     }
 
-    public void listProduct(){
+    public void listProduct() {
         EstoreProductSearch estoreProductSearch = new EstoreProductSearch();
 //        estoreProductSearch.setPageSize(2);
 //        estoreProductSearch.setPageNum(1);
@@ -538,5 +527,15 @@ public class CoreApplicationTest {
 //            log.info(t.getSku());
 //        }
 //    }
+
+    @Autowired
+    private MemberTagDataDao memberTagDataDao;
+
+    @Test
+    public void batchUpdateTest() {
+        final MemberTagData data1 = MemberTagData.builder().dataId(1).originalTag("批量更新1").build();
+        final MemberTagData data2 = MemberTagData.builder().dataId(2).originalTag("批量更新2").build();
+        memberTagDataDao.updateBatch(Lists.newArrayList(data1, data2));
+    }
 
 }

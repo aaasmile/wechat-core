@@ -28,6 +28,7 @@
         remark, error_msg, version, created_at, finish_time
     </sql>
 
+
     <select id="getMembertagCsvData" resultType="com.d1m.wechat.domain.entity.MemberTagData">
     SELECT mtd.* FROM member_tag_data mtd
     INNER JOIN member_tag_csv mtc ON mtd.file_id = mtc.file_id
@@ -45,4 +46,7 @@
     <update id="updateDataStatus">
         update member_tag_data set status=#{status} where file_id=#{fileId}
     </update>
+    <!--<update id="updateByPrimaryKeySelective">-->
+        <!--update member_tag_data -->
+    <!--</update>-->
 </mapper>

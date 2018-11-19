@@ -2,6 +2,7 @@ package com.d1m.wechat.service;
 
 import com.d1m.wechat.domain.entity.MemberTagCsv;
 import com.d1m.wechat.dto.ImportCsvDto;
+import com.d1m.wechat.dto.MemberTagCsvDto;
 import com.d1m.wechat.model.enums.MemberTagCsvStatus;
 import com.d1m.wechat.pamametermodel.AddMemberTagTaskModel;
 import com.github.pagehelper.Page;
@@ -16,7 +17,7 @@ public interface MemberTagCsvService extends BaseService<MemberTagCsv> {
      * @param tagTask
      * @return
      */
-    Page<ImportCsvDto> searchTask(Integer wechatId, AddMemberTagTaskModel tagTask);
+    Page<MemberTagCsvDto> searchTask(Integer wechatId, AddMemberTagTaskModel tagTask);
 
     /**
      * 更新上传文件

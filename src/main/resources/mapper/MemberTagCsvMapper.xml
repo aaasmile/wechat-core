@@ -60,7 +60,11 @@
         END AS `status`
         FROM member_tag_csv
         <where>
-            <![CDATA[ status <>2 ]]> and wechat_id = #{wechatId}
+            wechat_id = #{wechatId}
+
+            <if test="noStatus!=null">
+                and <![CDATA[ status <>#{noStatus} ]]>
+            </if>
 
             <if test="status != null">
                 and status = #{status}
