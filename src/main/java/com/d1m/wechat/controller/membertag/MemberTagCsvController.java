@@ -224,7 +224,7 @@ public class MemberTagCsvController extends BaseController {
 
     @RequestMapping(value = "{id}/success-export.json", method = RequestMethod.GET)
     @ApiOperation(value = "成功数据下载")
-    public BaseResponse successDataExport(@PathVariable Integer id, HttpServletResponse response) {
+    public BaseResponse successDataExport(@PathVariable Integer id, HttpServletResponse response) throws IOException {
         Workbook workbook = null;
         SequenceWriter writer = null;
         final MemberTagCsv memberTagCsv = memberTagCsvService.selectByKey(id);
@@ -263,15 +263,18 @@ public class MemberTagCsvController extends BaseController {
                 if ("csv".equals(format)) {
                     CsvSchema schema = csvMapper.schemaFor(SuccDataExports.class).withHeader().withLineSeparator("\r\n")
                      .withoutQuoteChar();
-                    writer = csvMapper.writerFor(SuccDataExports.class).with(schema).writeValues(outputStream);
+                    writer =
+                     csvMapper.writerFor(SuccDataExports.class).with(schema).writeValues(outputStream);
                     writer.writeAll(succDataExports);
-                    writer.close();
+
                 } else {
                     workbook.write(outputStream);
                 }
             }
         } catch (IOException e) {
             log.error("Export fail file error", e);
+        }finally {
+            writer.close();
         }
         return null;
     }

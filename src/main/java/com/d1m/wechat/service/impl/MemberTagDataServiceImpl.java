@@ -111,14 +111,19 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             return;
         }
 
+//        final File csvFile = FileUtils.ExcelToCsv(file, file.getAbsolutePath()
+//         .replace(".xlsx", ".csv")
+//         .replace(".xls", ".csv"));
         final ToCSV toCSV = new ToCSV();
 
         try {
-            final String csvFilePath = file.getAbsolutePath()
-                    .replace(".xlsx", ".csv")
-                    .replace(".xls", ".csv");
+            String sourcePath = file.getAbsolutePath();
+            final String csvFilePath = sourcePath.replace(file.getName(),"");
             toCSV.convertExcelToCSV(file.getAbsolutePath(), csvFilePath, ",");
-            this.batchInsertFromCsv(fileId, new File(csvFilePath), runTask);
+            final String csvFile = file.getAbsolutePath()
+             .replace(".xlsx", ".csv")
+             .replace(".xls", ".csv");
+            this.batchInsertFromCsv(fileId, new File(csvFile), runTask);
         } catch (IOException e) {
             log.error("Excel to Csv error", e);
         }
@@ -179,6 +184,11 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                 firstLine = line;
             }
             MappingIterator<BatchEntity> mapping;
+            final MemberTagCsv memberTagCsv = memberTagCsvService
+             .selectByKey(new MemberTagCsv.Builder().fileId(fileId).build());
+            if (Objects.isNull(memberTagCsv)) {
+                throw new WechatException(Message.FILE_EXT_NOT_SUPPORT);
+            }
             while (StringUtils.isNotBlank(line)) {
                 builder.append(line);
                 builder.append("\n");
@@ -186,9 +196,9 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                 count++;
                 if (count % 1000 == 0) {
                     mapping = csvMapper.readerFor(BatchEntity.class)
-                            .with(schema).readValues(builder.toString());
+                     .with(schema).readValues(builder.toString());
                     final List<BatchEntity> entities = mapping.readAll();
-                    this.entitiesProcess(entities, fileId, runTask);
+                    this.entitiesProcess(entities, fileId,memberTagCsv.getWechatId());
                     builder = new StringBuilder();
                     builder.append(firstLine);
                     builder.append("\n");
@@ -196,13 +206,30 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
             }
 
+
+
             final String csrStr = builder.toString();
             if (StringUtils.isNotBlank(csrStr)) {
                 mapping = csvMapper.readerFor(BatchEntity.class)
                         .with(schema).readValues(csrStr);
                 final List<BatchEntity> entities = mapping.readAll();
-                this.entitiesProcess(entities, fileId, runTask);
+                if(CollectionUtils.isNotEmpty(entities)) {
+                    this.entitiesProcess(entities, fileId,memberTagCsv.getWechatId());
+                }
             }
+
+            memberTagCsv.setStatus(MemberTagCsvStatus.ALREADY_IMPORTED);
+            memberTagCsv.setRows(count);
+            memberTagCsv.setLastUpdateTime(Timestamp.valueOf(LocalDateTime.now()));
+            memberTagCsv.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
+            memberTagCsvService.updateByPrimaryKeySelective(memberTagCsv);
+
+            log.info("taskName:{}", memberTagCsv.getTask());
+            log.info("runTask:{}", runTask);
+            log.info("memberTagCsv:{}", JSON.toJSON(memberTagCsv));
+            //异步发起任务调度
+            //asyncService.asyncInvoke(() -> schedulerTask(memberTagCsv.getTask(), runTask, memberTagCsv));
+            log.info("Batch schedulerTask finish!");
         } catch (IOException e) {
             log.error("Csv to pojo error", e);
         } finally {
@@ -212,18 +239,9 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         }
     }
 
-    private void entitiesProcess(Collection<BatchEntity> entities, Integer fileId, Date runTask) {
+    private void entitiesProcess(Collection<BatchEntity> entities, Integer fileId,Integer wechatId) {
 
-        final MemberTagCsv memberTagCsv = memberTagCsvService
-                .selectByKey(new MemberTagCsv.Builder().fileId(fileId).build());
-        if (Objects.isNull(memberTagCsv)) {
-            throw new WechatException(Message.FILE_EXT_NOT_SUPPORT);
-        }
-        memberTagCsv.setStatus(MemberTagCsvStatus.ALREADY_IMPORTED);
-        memberTagCsv.setRows(entities.size());
-        memberTagCsv.setLastUpdateTime(Timestamp.valueOf(LocalDateTime.now()));
-        memberTagCsv.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
-        memberTagCsvService.updateByPrimaryKeySelective(memberTagCsv);
+
 
         if (CollectionUtils.isEmpty(entities)) {
             log.warn("fileId有误，或者成功解析0行数据！");
@@ -231,24 +249,19 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         }
 
         final List<MemberTagData> memberTagDataList = entities.stream().map(e ->
-                new MemberTagData
-                        .Builder()
-                        .fileId(fileId)
-                        .openId(e.getOpenid())
-                        .wechatId(memberTagCsv.getWechatId())
-                        .originalTag(e.getTag())
-                        .status(MemberTagDataStatus.UNTREATED)
-                        .createdAt(Timestamp.valueOf(LocalDateTime.now()))
-                        .build()
+         new MemberTagData
+          .Builder()
+          .fileId(fileId)
+          .openId(e.getOpenid())
+          .wechatId(wechatId)
+          .originalTag(e.getTag())
+          .status(MemberTagDataStatus.UNTREATED)
+          .createdAt(Timestamp.valueOf(LocalDateTime.now()))
+          .build()
         ).collect(Collectors.toList());
         memberTagDataMapper.insertList(memberTagDataList);
 
-        log.info("taskName:{}", memberTagCsv.getTask());
-        log.info("runTask:{}", runTask);
-        log.info("memberTagCsv:{}", JSON.toJSON(memberTagCsv));
-        //异步发起任务调度
-        asyncService.asyncInvoke(() -> schedulerTask(memberTagCsv.getTask(), runTask, memberTagCsv));
-        log.info("Batch schedulerTask finish!");
+
     }
 
     /**
@@ -287,7 +300,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         } catch (Exception e) {
             log.error(e.getLocalizedMessage(), e);
             throw new WechatException(
-                    Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
+             Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
         }
     }
 
@@ -347,7 +360,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         //批量数据处理
         for (int i = 0; i < batchDto.getTimes(); i++) {
             List<MemberTagData> memberTagList = batchDto.getTagsList().subList((batchDto.getBatchSize() * i)
-                    , (batchDto.getBatchSize() * i + batchDto.getBatchSize()));
+             , (batchDto.getBatchSize() * i + batchDto.getBatchSize()));
             CopyOnWriteArrayList<MemberTagData> copyOnWriteArrayList = new CopyOnWriteArrayList<MemberTagData>(memberTagList);
             Integer exeCount = batchExecute(copyOnWriteArrayList);
             operatedCount = exeCount * (i + 1);
@@ -357,7 +370,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         //剩余数据处理
         if (batchDto.getRemainAmount() > 0) {
             List<MemberTagData> memberTagList = batchDto.getTagsList().subList((batchDto.getBatchSize() * batchDto.getTimes())
-                    , batchDto.getAmount());
+             , batchDto.getAmount());
             remainCompletedCount = memberTagDataMapper.insertList(memberTagList);
             log.info("csvJobExecute线程：" + Thread.currentThread().getName() + ",剩余已完成数量：" + remainCompletedCount);
         }
@@ -386,7 +399,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         //批量数据处理
         for (int i = 0; i < batchDto.getTimes(); i++) {
             List<MemberTagData> memberTagList = batchDto.getTagsList().subList((batchDto.getBatchSize() * i)
-                    , (batchDto.getBatchSize() * i + batchDto.getBatchSize()));
+             , (batchDto.getBatchSize() * i + batchDto.getBatchSize()));
             Integer exeCount = memberTagDataMapper.insertList(memberTagList);
             operatedCount = exeCount * (i + 1);
             log.info("批量插入解析数据线程：" + Thread.currentThread().getName() + ",已完成数量：" + exeCount * (i + 1));
@@ -395,7 +408,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         //剩余数据处理
         if (batchDto.getRemainAmount() > 0) {
             List<MemberTagData> memberTagList = batchDto.getTagsList().subList((batchDto.getBatchSize() * batchDto.getTimes())
-                    , batchDto.getAmount());
+             , batchDto.getAmount());
             remainCompletedCount = memberTagDataMapper.insertList(memberTagList);
             log.info("批量插入解析数据线程：" + Thread.currentThread().getName() + ",剩余已完成数量：" + remainCompletedCount);
         }
@@ -752,7 +765,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                     String[] tags = memberTagData.getTag().split("\\|");
                     for (String tag : tags) {
                         List<MemberMemberTag> mmtList = memberMemberTagMapper.selecteIsExist(memberTagData.getOpenId()
-                                , tag, memberTagData.getWechatId());
+                         , tag, memberTagData.getWechatId());
                         if (CollectionUtils.isNotEmpty(mmtList)) {
                             log.info("已加标签数据：" + JSON.toJSON(memberTagData));
                             //list.remove(memberTagData);
@@ -773,7 +786,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                             mmTag.setMemberId(m.getId());
                             tagsList.add(mmTag);
                             tagsList = tagsList.stream().filter(CommonUtils.distinctByKey(t -> t.getMemberId() + t.getWechatId()
-                                    + t.getOpenId() + t.getMemberTagId())).collect(Collectors.toList());
+                             + t.getOpenId() + t.getMemberTagId())).collect(Collectors.toList());
                             log.info("设置标签数据集合：" + JSON.toJSON(mmTag));
                         }
                     }
@@ -825,7 +838,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                 }
 
             } catch (Exception e) {
-                e.printStackTrace();
+                log.info("分批处理:", e.getMessage());
             }
         }
 
