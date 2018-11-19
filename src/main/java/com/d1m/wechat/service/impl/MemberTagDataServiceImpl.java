@@ -1,13 +1,10 @@
 package com.d1m.wechat.service.impl;
 
-import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.annotation.Excel;
-import cn.afterturn.easypoi.excel.entity.ImportParams;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.common.ds.TenantContext;
 import com.d1m.common.ds.TenantHelper;
-import com.d1m.wechat.Handler.VerifyHandler;
 import com.d1m.wechat.domain.dao.MemberTagDataDao;
 import com.d1m.wechat.domain.entity.MemberTagCsv;
 import com.d1m.wechat.domain.entity.MemberTagData;
@@ -113,11 +110,23 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             return;
         }
 
-        final File csvFile = FileUtils.ExcelToCsv(file, file.getAbsolutePath()
-                .replace(".xlsx", ".csv")
-                .replace(".xls", ".csv"));
+        final ToCSV toCSV = new ToCSV();
 
-        this.batchInsertFromCsv(fileId, csvFile, runTask);
+        try {
+            final String csvFilePath = file.getAbsolutePath()
+                    .replace(".xlsx", ".csv")
+                    .replace(".xls", ".csv");
+            toCSV.convertExcelToCSV(file.getAbsolutePath(), csvFilePath, ",");
+            this.batchInsertFromCsv(fileId, new File(csvFilePath), runTask);
+        } catch (IOException e) {
+            log.error("Excel to Csv error", e);
+        }
+
+//        final File csvFile = FileUtils.ExcelToCsv(file, file.getAbsolutePath()
+//                .replace(".xlsx", ".csv")
+//                .replace(".xls", ".csv"));
+//
+//        this.batchInsertFromCsv(fileId, csvFile, runTask);
 
 //        ImportParams params = new ImportParams();
 //        params.setVerifyHandler(new VerifyHandler());
@@ -264,7 +273,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             log.info("returnT发起异步任务调度返回结果:" + JSON.toJSON(returnT));
             if (ReturnT.FAIL_CODE == returnT.getCode()) {
                 throw new WechatException(
-                 Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
+                        Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
             }
         } catch (Exception e) {
             log.error(e.getLocalizedMessage(), e);
