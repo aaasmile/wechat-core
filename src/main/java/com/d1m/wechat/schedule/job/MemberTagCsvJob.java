@@ -4,6 +4,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.annotation.Resource;
 
+import com.github.pagehelper.PageHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,8 @@ public class MemberTagCsvJob extends BaseJobHandler {
                 XxlJobLogger.log("获取导入文件id : " + fileId);
                 log.info("获取导入文件id : " + fileId);
                 //数据标签检查
+                PageHelper.startPage(1,
+                 1000, true);
                 CopyOnWriteArrayList<MemberTagData> list = memberTagDataService.getMembertagCsvData(fileId);
 
                 if (CollectionUtils.isNotEmpty(list)) {

@@ -1,12 +1,6 @@
 package com.d1m.wechat.util;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
@@ -286,5 +280,46 @@ public class FileUtils {
 			return format + ".gif";
 		}
 		return format;
+	}
+
+	/**
+	 * 获得指定文件的byte数组
+	 */
+	public static byte[] getBytes(File file){
+		byte[] buffer = null;
+		try {
+			FileInputStream fis = new FileInputStream(file);
+			ByteArrayOutputStream bos = new ByteArrayOutputStream(1000);
+			byte[] b = new byte[1000];
+			int n;
+			while ((n = fis.read(b)) != -1) {
+				bos.write(b, 0, n);
+			}
+			fis.close();
+			bos.close();
+			buffer = bos.toByteArray();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return buffer;
+	}
+
+	/**
+	 * 读取文件行数
+	 * @param file
+	 * @return
+	 * @throws IOException
+	 */
+	public static int readFileLineCounts(File file) throws IOException{
+		int count = 0;
+		FileInputStream fis = new FileInputStream(file);
+		InputStreamReader isr = new InputStreamReader(fis);
+		BufferedReader br = new BufferedReader(isr);
+		while((br.readLine())!=null){
+			count++;
+		}
+		return count;
 	}
 }

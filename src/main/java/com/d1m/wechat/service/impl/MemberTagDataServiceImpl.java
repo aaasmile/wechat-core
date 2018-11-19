@@ -1,7 +1,6 @@
 package com.d1m.wechat.service.impl;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -16,6 +15,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import com.d1m.wechat.util.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -52,16 +52,21 @@ import com.d1m.wechat.service.AsyncService;
 import com.d1m.wechat.service.MemberService;
 import com.d1m.wechat.service.MemberTagCsvService;
 import com.d1m.wechat.service.MemberTagDataService;
-import com.d1m.wechat.util.BatchUtils;
-import com.d1m.wechat.util.CommonUtils;
-import com.d1m.wechat.util.DateUtil;
-import com.d1m.wechat.util.Message;
-import com.d1m.wechat.util.MyMapper;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.xxl.job.core.biz.model.ReturnT;
+
+import javax.annotation.Resource;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.annotation.Excel;
@@ -73,8 +78,8 @@ import cn.afterturn.easypoi.excel.entity.ImportParams;
  */
 @Service
 public class MemberTagDataServiceImpl implements MemberTagDataService {
-	
-	private static final Logger log = LoggerFactory.getLogger(MemberTagDataServiceImpl.class);
+
+    private static final Logger log = LoggerFactory.getLogger(MemberTagDataServiceImpl.class);
     //默认每批次处理数量
     private static final Integer BATCHSIZE = 1000;
 
@@ -110,6 +115,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
     private CsvMapper csvMapper = new CsvMapper();
 
+
     @Override
     public MyMapper<MemberTagData> getMapper() {
         return this.memberTagDataMapper;
@@ -127,9 +133,29 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         ImportParams params = new ImportParams();
         params.setVerifyHandler(new VerifyHandler());
         params.setHeadRows(1);
-        final List<BatchEntity> entities = ExcelImportUtil.importExcel(file, BatchEntity.
-         class, params);
-        this.entitiesProcess(entities, fileId, runTask);
+        params.setStartRows(0);
+        params.setReadRows(BATCHSIZE);
+        int count = 0;
+
+        while (true) {
+            if (count > 0) {
+                params.setHeadRows(0);
+                params.setStartRows(count * BATCHSIZE);
+                params.setReadRows(BATCHSIZE);
+            }
+            final List<BatchEntity> entities = ExcelImportUtil.importExcel(file, BatchEntity.
+             class, params);
+            if (CollectionUtils.isEmpty(entities)) {
+                break;
+            }
+            this.entitiesProcess(entities, fileId, runTask);
+            count++;
+        }
+
+
+//        final List<BatchEntity> entities = ExcelImportUtil.importExcel(file, BatchEntity.
+//         class, params);
+//        this.entitiesProcess(entities, fileId, runTask);
     }
 
     @Override
@@ -137,10 +163,47 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
     public void batchInsertFromCsv(Integer fileId, File file, Date runTask) {
         log.info("Batch insert form file [{}], for fileId [{}]", file.getPath(), fileId);
         try {
-            final CsvSchema schema = csvMapper.schemaFor(BatchEntity.class).withHeader();
-            MappingIterator<BatchEntity> mapping = csvMapper.readerFor(BatchEntity.class).with(schema).readValues(file);
+            CsvSchema schema = null;
+            //1、判断将要插入的数量
+            Map<String, Integer> map = BatchUtils.getTimes(BATCHSIZE, FileUtils.readFileLineCounts(file));
+            Integer times = map.get("times");
+            Integer remainAmount = map.get("remainAmount");
+            schema = csvMapper.schemaFor(BatchEntity.class).withHeader();
+//            MappingIterator<BatchEntity> mapping = csvMapper.readerFor(BatchEntity.class)
+//             .with(schema).readValues(String.valueOf(FileUtils.readFileLineCounts(file)));
+            int count = 0;
+            FileInputStream fis = new FileInputStream(file);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            String line = br.readLine();
+            String firstLine = null;
+            StringBuilder builder = new StringBuilder();
+            if (StringUtils.isNotBlank(line)) {
+                firstLine = line;
+            }
+            MappingIterator<BatchEntity> mapping = null;
+            while (StringUtils.isNotBlank(line)) {
+                builder.append(line);
+                builder.append("\n");
+                line = br.readLine();
+                count++;
+                if (count % 1000 == 0) {
+                    mapping = csvMapper.readerFor(BatchEntity.class)
+                     .with(schema).readValues(builder.toString());
+                    final List<BatchEntity> entities = mapping.readAll();
+                    this.entitiesProcess(entities, fileId, runTask);
+                    builder = new StringBuilder();
+                    builder.append(firstLine);
+                    builder.append("\n");
+                }
+
+            }
+
+            mapping = csvMapper.readerFor(BatchEntity.class)
+             .with(schema).readValues(builder.toString());
             final List<BatchEntity> entities = mapping.readAll();
             this.entitiesProcess(entities, fileId, runTask);
+
 
         } catch (IOException e) {
             log.error("Csv to pojo error", e);
@@ -176,13 +239,13 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
           .createdAt(Timestamp.valueOf(LocalDateTime.now()))
           .build()
         ).collect(Collectors.toList());
-
+        memberTagDataMapper.insertList(memberTagDataList);
 
         log.info("taskName:{}", memberTagCsv.getTask());
         log.info("runTask:{}", runTask);
         log.info("memberTagCsv:{}", JSON.toJSON(memberTagCsv));
         //异步发起任务调度
-        asyncService.asyncInvoke(() -> schedulerTask(memberTagCsv.getTask(), runTask, memberTagCsv, memberTagDataList));
+        //asyncService.asyncInvoke(() -> schedulerTask(memberTagCsv.getTask(), runTask, memberTagCsv, memberTagDataList));
         log.info("Batch schedulerTask finish!");
     }
 
@@ -204,28 +267,6 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             TenantContext.setCurrentTenant(domain);
             log.info("获取当前租户: " + TenantContext.getCurrentTenant());
 
-            //2、准备批量插入解析数据
-            Integer amount = memberTagDataList.size();
-            Integer batchSize = memberService.getBatchSize(record.getWechatId()) != null ? memberService.getBatchSize(record.getWechatId()) : BATCHSIZE;
-            Map<String, Integer> map = BatchUtils.getTimes(batchSize, amount);
-            Integer times = map.get("times");
-            Integer remainAmount = map.get("remainAmount");
-            TagDataBatchDto batchDto = new TagDataBatchDto();
-            batchDto.setTimes(times);
-            batchDto.setRemainAmount(remainAmount);
-            batchDto.setTagsList(memberTagDataList);
-            batchDto.setAmount(amount);
-            batchDto.setBatchSize(batchSize);
-            batchDto.setTaskName(taskName);
-            batchDto.setRunTask(runTask);
-            //3、获取租户标识
-            batchDto.setTenant(TenantContext.getCurrentTenant());
-            log.info("封装批次数据：", JSON.toJSON(batchDto));
-            //4、调用批量插入解析数据
-            Future<Integer> future = this.execute(batchDto);
-            if (future.get().equals(amount)) {
-                log.info("===================执行批量插入解析数据成功，总数量：" + amount + "===============");
-
                 //5、准备发起异步任务调度
                 Map<String, Object> jobMap = new HashMap<>();
                 jobMap.put("jobGroup", 1);
@@ -241,7 +282,6 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                     throw new WechatException(
                      Message.MEMBER_ADD_TAG_BY_CSV_ERROR);
                 }
-            }
         } catch (Exception e) {
             log.error(e.getLocalizedMessage(), e);
             throw new WechatException(
@@ -335,7 +375,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      * @param batchDto
      * @return
      */
-    @Async("callerRunsExecutor")
+    //@Async("callerRunsExecutor")
     public Future<Integer> execute(TagDataBatchDto batchDto) {
         log.info("执行批量插入解析数据开始时间：" + DateUtil.formatYYYYMMDDHHMMSSS(new Date()));
         TenantContext.setCurrentTenant(batchDto.getTenant());
@@ -374,22 +414,27 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         @Excel(name = "TAG", isImportField = "true")
         @JsonProperty(value = "TAG", required = true)
         private String tag;
-		public String getOpenid() {
-			return openid;
-		}
-		public void setOpenid(String openid) {
-			this.openid = openid;
-		}
-		public String getTag() {
-			return tag;
-		}
-		public void setTag(String tag) {
-			this.tag = tag;
-		}
-		@Override
-		public String toString() {
-			return "BatchEntity [openid=" + openid + ", tag=" + tag + "]";
-		}
+
+        public String getOpenid() {
+            return openid;
+        }
+
+        public void setOpenid(String openid) {
+            this.openid = openid;
+        }
+
+        public String getTag() {
+            return tag;
+        }
+
+        public void setTag(String tag) {
+            this.tag = tag;
+        }
+
+        @Override
+        public String toString() {
+            return "BatchEntity [openid=" + openid + ", tag=" + tag + "]";
+        }
     }
 
 
@@ -448,6 +493,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      */
     public CopyOnWriteArrayList<MemberTagData> checkDataIsOK2(CopyOnWriteArrayList<MemberTagData> list) throws Exception {
         CopyOnWriteArrayList<MemberTagData> rightList = null;
+        CopyOnWriteArrayList<MemberTagData> errorList = null;
         if (CollectionUtils.isNotEmpty(list)) {
             for (MemberTagData memberTagData : list) {
                 if (StringUtils.isNotBlank(memberTagData.getOpenId())) {
@@ -455,6 +501,8 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                         updateErrorStatus(memberTagData.getDataId(), "不存在此会员OpenID");
                         log.info("dataId:" + memberTagData.getDataId() + "，不存在此会员OpenID！");
                     }
+                } else {
+
                 }
             }
 
