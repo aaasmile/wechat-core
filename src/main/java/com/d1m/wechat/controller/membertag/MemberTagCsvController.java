@@ -127,6 +127,7 @@ public class MemberTagCsvController extends BaseController {
         String tenant = TenantContext.getCurrentTenant();
         asyncService.asyncInvoke(() -> {
             TenantContext.setCurrentTenant(tenant);
+            log.info("tenant:{}",tenant);
             try {
 
                 if (originalFilename.endsWith(".csv")) {
