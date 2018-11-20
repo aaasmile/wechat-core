@@ -26,6 +26,7 @@ import com.d1m.wechat.util.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -102,6 +103,9 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
     @Autowired
     private MemberTagDataDao memberTagDataDao;
+    
+    @Autowired
+	private SqlSessionFactory sqlSessionFactory;
 
     private CsvMapper csvMapper = new CsvMapper();
 
@@ -234,9 +238,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
           .createdAt(Timestamp.valueOf(LocalDateTime.now()))
           .build()
         ).collect(Collectors.toList());
-        memberTagDataMapper.insertList(memberTagDataList);
-
-
+        memberTagDataDao.batchInsert(memberTagDataList);
     }
 
     /**
