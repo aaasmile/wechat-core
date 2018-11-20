@@ -436,7 +436,6 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
     public CopyOnWriteArrayList<MemberTagData> checkDataIsOK(CopyOnWriteArrayList<MemberTagData> list) throws Exception {
         CopyOnWriteArrayList<MemberTagData> rightList = new CopyOnWriteArrayList<>();
         List<MemberTagData> statusList = new ArrayList<>();
-        List<String> tagNames = memberTagMapper.selectNamesByStatus();
         if (CollectionUtils.isNotEmpty(list)) {
             Boolean b = true;
             for (MemberTagData memberTagData : list) {
@@ -460,7 +459,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                         updateErrorStatus("不存在此会员OpenID", memberTagData);
                     }
                     //检查标签是否存在
-                    checkTagsIsExist(memberTagData.getOriginalTag(), tagNames, memberTagData);
+                    checkTagsIsExist(memberTagData.getOriginalTag(), memberTagData);
                     //更新数据检查状态
                     MemberTagData updatetag = updateCheckStats(memberTagData);
                     statusList.add(memberTagData);
@@ -620,7 +619,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      * @param
      * @return
      */
-    public void checkTagsIsExist(String tagStr, List<String> tagNames, MemberTagData currentMemberTagData) throws Exception {
+    public void checkTagsIsExist(String tagStr, MemberTagData currentMemberTagData) throws Exception {
         if (StringUtils.isNotBlank(tagStr)) {
             String[] tags = tagStr.split("\\|");
             for (String tag : tags) {
