@@ -5,7 +5,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.annotation.Resource;
 
 import com.d1m.wechat.service.MemberService;
-import com.github.pagehelper.PageHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +63,6 @@ public class MemberTagCsvJob extends BaseJobHandler {
                 //更新上传文件状态为已完成
                 memberTagCsvService.updateFileStatus(fileId, MemberTagCsvStatus.PROCESS_SUCCEED);
                 log.info("======会员导入加签完成》》》》》============");
-
 
             }
             return ReturnT.SUCCESS;
