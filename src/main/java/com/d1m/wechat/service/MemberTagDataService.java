@@ -34,12 +34,6 @@ public interface MemberTagDataService extends BaseService<MemberTagData> {
     CopyOnWriteArrayList<MemberTagData> getMembertagCsvData(Integer fileId, int pageNum, int batchSize);
 
 
-    /**
-     * 获取待加签的正确数据
-     *
-     * @param fileId
-     */
-     List<MemberTagData> getCsvData(Integer fileId);
 
     /**
      * 批量导入加标签处理
@@ -51,7 +45,6 @@ public interface MemberTagDataService extends BaseService<MemberTagData> {
 
     /**
      * 因必填信息引起的错误，需要更新状态为完成
-     * @param dataId
      * @param errorMsg
      * @throws Exception
      */
@@ -62,11 +55,6 @@ public interface MemberTagDataService extends BaseService<MemberTagData> {
      */
     public Integer batchExecute(CopyOnWriteArrayList<MemberTagData> list);
 
-    /**
-     * 异步发起批量处理
-     *
-     * @param
-     */
-    public void asyncCsvJobBatch(List<MemberTagData> list, Integer fileId) throws WechatException;
+
 
 }

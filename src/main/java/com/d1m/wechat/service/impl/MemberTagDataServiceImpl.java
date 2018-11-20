@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
-import com.d1m.wechat.model.MemberMemberTag;
 import com.d1m.wechat.model.MemberTag;
 import com.d1m.wechat.util.*;
 import org.apache.commons.collections.CollectionUtils;
@@ -31,8 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +40,6 @@ import com.d1m.common.ds.TenantHelper;
 import com.d1m.wechat.domain.dao.MemberTagDataDao;
 import com.d1m.wechat.domain.entity.MemberTagCsv;
 import com.d1m.wechat.domain.entity.MemberTagData;
-import com.d1m.wechat.dto.TagDataBatchDto;
 import com.d1m.wechat.exception.BatchAddTagException;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.MemberMapper;
@@ -103,9 +99,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
     @Autowired
     private MemberTagDataDao memberTagDataDao;
-    
-    @Autowired
-	private SqlSessionFactory sqlSessionFactory;
+
 
     private CsvMapper csvMapper = new CsvMapper();
 
@@ -208,7 +202,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             log.info("runTask:{}", runTask);
             log.info("memberTagCsv:{}", JSON.toJSON(memberTagCsv));
             //发起任务调度
-            //schedulerTask(memberTagCsv.getTask(), runTask, memberTagCsv);
+            schedulerTask(memberTagCsv.getTask(), runTask, memberTagCsv);
             log.info("Batch schedulerTask finish!");
         } catch (IOException e) {
             log.error("Csv to pojo error", e);
@@ -282,122 +276,6 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
     }
 
 
-    /**
-     * 批量插入
-     *
-     * @param
-     */
-    public void asyncCsvJobBatch(List<MemberTagData> list, Integer fileId) throws WechatException {
-        Integer amount = list.size();
-        //每批次的条数
-        Integer batchSize = memberService.getBatchSize(list.get(0).getWechatId()) != null ? memberService.getBatchSize(list.get(0).getWechatId()) : BATCHSIZE;
-        //1、判断将要插入的数量
-        Map<String, Integer> map = BatchUtils.getTimes(batchSize, amount);
-        Integer times = map.get("times");
-        Integer remainAmount = map.get("remainAmount");
-        //2、调用线程处理
-        TagDataBatchDto batchDto = new TagDataBatchDto();
-        batchDto.setTimes(times);
-        batchDto.setRemainAmount(remainAmount);
-        batchDto.setTagsList(list);
-        batchDto.setAmount(amount);
-        batchDto.setBatchSize(batchSize);
-        //获取租户标识
-        batchDto.setTenant(TenantContext.getCurrentTenant());
-        try {
-            Future<Integer> future = csvJobExecute(batchDto);
-            if (future.get().equals(amount)) {
-                log.info("===================执行成功，总数量：" + amount + "===============");
-                //统计成功和失败条数
-                log.info("======统计结果》》》》》============");
-                memberTagCsvService.updateCountCsv(fileId);
-                //更新上传文件状态为已完成
-                memberTagCsvService.updateFileStatus(fileId, MemberTagCsvStatus.PROCESS_SUCCEED);
-                log.info("======会员导入加签完成》》》》》============");
-            }
-        } catch (Exception e) {
-            throw new WechatException(Message.MEMBER_TAG_BATCH_FAIL);
-        }
-
-    }
-
-
-    /**
-     * csvJobExecute执行批量插入数据文件表
-     *
-     * @param batchDto
-     * @return
-     */
-    @Async("callerRunsExecutor")
-    public Future<Integer> csvJobExecute(TagDataBatchDto batchDto) {
-        log.info("csvJobExecute执行开始时间：" + DateUtil.formatYYYYMMDDHHMMSSS(new Date()));
-        TenantContext.setCurrentTenant(batchDto.getTenant());
-        Integer operatedCount = 0;//已执行数量
-        Integer remainCompletedCount = 0;//剩余数据已执行数量
-        //批量数据处理
-        for (int i = 0; i < batchDto.getTimes(); i++) {
-            List<MemberTagData> memberTagList = batchDto.getTagsList().subList((batchDto.getBatchSize() * i)
-             , (batchDto.getBatchSize() * i + batchDto.getBatchSize()));
-            CopyOnWriteArrayList<MemberTagData> copyOnWriteArrayList = new CopyOnWriteArrayList<MemberTagData>(memberTagList);
-            Integer exeCount = batchExecute(copyOnWriteArrayList);
-            operatedCount = exeCount * (i + 1);
-            log.info("csvJobExecute线程：" + Thread.currentThread().getName() + ",已完成数量：" + exeCount * (i + 1));
-        }
-
-        //剩余数据处理
-        if (batchDto.getRemainAmount() > 0) {
-            List<MemberTagData> memberTagList = batchDto.getTagsList().subList((batchDto.getBatchSize() * batchDto.getTimes())
-             , batchDto.getAmount());
-            remainCompletedCount = memberTagDataMapper.insertList(memberTagList);
-            log.info("csvJobExecute线程：" + Thread.currentThread().getName() + ",剩余已完成数量：" + remainCompletedCount);
-        }
-
-        //已完成总数量
-        Integer completedCount = operatedCount + remainCompletedCount;
-        log.info("csvJobExecute已完成总数量：" + completedCount);
-        log.info("csvJobExecute执行结束时间：" + DateUtil.formatYYYYMMDDHHMMSSS(new Date()));
-        log.info("csvJobExecute Batch add tags finish!");
-        return new AsyncResult<>(completedCount);
-
-    }
-
-    /**
-     * 执行批量插入解析数据
-     *
-     * @param batchDto
-     * @return
-     */
-    //@Async("callerRunsExecutor")
-    public Future<Integer> execute(TagDataBatchDto batchDto) {
-        log.info("执行批量插入解析数据开始时间：" + DateUtil.formatYYYYMMDDHHMMSSS(new Date()));
-        TenantContext.setCurrentTenant(batchDto.getTenant());
-        Integer operatedCount = 0;//已执行数量
-        Integer remainCompletedCount = 0;//剩余数据已执行数量
-        //批量数据处理
-        for (int i = 0; i < batchDto.getTimes(); i++) {
-            List<MemberTagData> memberTagList = batchDto.getTagsList().subList((batchDto.getBatchSize() * i)
-             , (batchDto.getBatchSize() * i + batchDto.getBatchSize()));
-            Integer exeCount = memberTagDataMapper.insertList(memberTagList);
-            operatedCount = exeCount * (i + 1);
-            log.info("批量插入解析数据线程：" + Thread.currentThread().getName() + ",已完成数量：" + exeCount * (i + 1));
-        }
-
-        //剩余数据处理
-        if (batchDto.getRemainAmount() > 0) {
-            List<MemberTagData> memberTagList = batchDto.getTagsList().subList((batchDto.getBatchSize() * batchDto.getTimes())
-             , batchDto.getAmount());
-            remainCompletedCount = memberTagDataMapper.insertList(memberTagList);
-            log.info("批量插入解析数据线程：" + Thread.currentThread().getName() + ",剩余已完成数量：" + remainCompletedCount);
-        }
-
-        //已完成总数量
-        Integer completedCount = operatedCount + remainCompletedCount;
-        log.info("批量插入解析数据已完成总数量：" + completedCount);
-        log.info("执行批量插入解析数据结束时间：" + DateUtil.formatYYYYMMDDHHMMSSS(new Date()));
-        log.info("Batch insert finish!");
-        return new AsyncResult<>(completedCount);
-
-    }
 
     public static class BatchEntity {
         @Excel(name = "OPEN_ID", isImportField = "true")
@@ -491,32 +369,11 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             memberTagData.setErrorMsg(setErrorMsg(memberTagData.getErrorMsg(), errorMsg));
             memberTagData.setCheckStatus(false);
             memberTagData.setStatus(MemberTagDataStatus.PROCESS_SUCCEED);
-            log.info("因必填信息引起的错误，需要更新状态为完成:{}");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
     }
 
-    /**
-     * 更新数据错误原因
-     *
-     * @param dataId
-     * @param errorMsg
-     * @throws Exception
-     */
-    public void updateErrorMsg(Integer dataId, String errorMsg) throws Exception {
-        try {
-            MemberTagData memberTagData = new MemberTagData();
-            memberTagData.setDataId(dataId);
-            memberTagData.setErrorMsg(errorMsg);
-            memberTagData.setCheckStatus(false);
-            int t = memberTagDataMapper.updateByPrimaryKeySelective(memberTagData);
-            log.info("更新数据错误原因:{}", t);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     /**
      * 更新数据检查状态
@@ -533,7 +390,6 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             } else {
                 memberTagData.setCheckStatus(true);
             }
-            log.info("更新数据检查状态");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -554,7 +410,6 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 //            memberTagData.setTag(setTags(memberTagData.getTag(), tag));
             memberTagData.setDataId(memberTagData.getDataId());
             memberTagData.setErrorMsg(setErrorMsg(memberTagData.getErrorMsg(), errorMsg));
-            log.info("更新标签和原因:{}");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -668,18 +523,6 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         return memberTagDataMapper.getMembertagCsvData(fileId, pageNum, batchSize);
     }
 
-    /**
-     * 获取待加签的正确数据
-     *
-     * @param fileId
-     */
-    public List<MemberTagData> getCsvData(Integer fileId) {
-        MemberTagData memberTagData = new MemberTagData();
-        memberTagData.setFileId(fileId);
-        memberTagData.setCheckStatus(true);
-        memberTagData.setStatus(MemberTagDataStatus.IN_PROCESS);
-        return memberTagDataMapper.select(memberTagData);
-    }
 
     /**
      * 批量导入加标签处理
@@ -729,7 +572,6 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                     tagData.setDataId(memberTagData.getDataId());
                     tagData.setErrorMsg(errorMsg);
                     int t = memberTagDataMapper.updateByPrimaryKeySelective(tagData);
-                    log.info("批量导入加标签处理方法:" + t);
                 }
             }
         }
