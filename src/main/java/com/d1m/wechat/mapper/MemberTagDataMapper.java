@@ -1,20 +1,20 @@
 package com.d1m.wechat.mapper;
 
 
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.d1m.wechat.domain.entity.MemberTagData;
 import com.d1m.wechat.dto.MemberStatsCounts;
 import com.d1m.wechat.util.MyMapper;
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public interface MemberTagDataMapper extends MyMapper<MemberTagData> {
 
 //    @Override
 //    int updateByPrimaryKeySelective(MemberTagData memberTagData);
 
-    CopyOnWriteArrayList<MemberTagData> getMembertagCsvData(Integer fileId);
+    CopyOnWriteArrayList<MemberTagData> getMembertagCsvData(@Param("fileId") Integer fileId, @Param("pageNum") int pageNum, @Param("batchSize") int batchSize);
 
     MemberStatsCounts getCount (Integer fileId);
 

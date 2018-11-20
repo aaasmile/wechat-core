@@ -32,7 +32,7 @@
     <select id="getMembertagCsvData" resultType="com.d1m.wechat.domain.entity.MemberTagData">
     SELECT mtd.* FROM member_tag_data mtd
     INNER JOIN member_tag_csv mtc ON mtd.file_id = mtc.file_id
-    WHERE mtc.file_id =#{fileId}
+    WHERE mtc.file_id =#{fileId} LIMIT #{pageNum},#{batchSize}
 
     </select>
     

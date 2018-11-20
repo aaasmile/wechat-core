@@ -1,5 +1,13 @@
 package com.d1m.wechat.service.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.d1m.wechat.domain.entity.MemberTagCsv;
 import com.d1m.wechat.dto.MemberStatsCounts;
 import com.d1m.wechat.dto.MemberTagCsvDto;
@@ -11,16 +19,11 @@ import com.d1m.wechat.service.MemberTagCsvService;
 import com.d1m.wechat.util.MyMapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-
-@Slf4j
 @Service
 public class MemberTagCsvServiceImpl implements MemberTagCsvService {
+	
+	private static final Logger log = LoggerFactory.getLogger(MemberTagCsvServiceImpl.class);
 
     @Autowired
     private MemberTagCsvMapper memberTagCsvMapper;
@@ -30,7 +33,7 @@ public class MemberTagCsvServiceImpl implements MemberTagCsvService {
 
     @Override
     public MemberTagCsv selectByTaskName(String taskName) {
-        return memberTagCsvMapper.selectOne(MemberTagCsv.builder().task(taskName).build());
+        return memberTagCsvMapper.selectOne(new MemberTagCsv.Builder().task(taskName).build());
     }
 
 
