@@ -135,6 +135,7 @@ public class MemberTagCsvController extends BaseController {
                     memberTagDataService.batchInsertFromExcel(memberTagCsv.getFileId(), targetFile, runTask);
                 }
             } catch (RuntimeException e) {
+                log.info("异常，获取到的租户:{}",TenantContext.getCurrentTenant());
                 memberTagCsvService.updateByPrimaryKeySelective(new MemberTagCsv.Builder().fileId(memberTagCsv.getFileId())
                  .status(MemberTagCsvStatus.IMPORT_FAILURE).errorMsg(e.getMessage()).build());
 
