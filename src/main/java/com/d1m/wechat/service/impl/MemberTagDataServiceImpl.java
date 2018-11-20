@@ -204,7 +204,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             log.info("runTask:{}", runTask);
             log.info("memberTagCsv:{}", JSON.toJSON(memberTagCsv));
             //发起任务调度
-            schedulerTask(memberTagCsv.getTask(), runTask, memberTagCsv);
+            //schedulerTask(memberTagCsv.getTask(), runTask, memberTagCsv);
             log.info("Batch schedulerTask finish!");
         } catch (IOException e) {
             log.error("Csv to pojo error", e);
@@ -525,7 +525,6 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      */
     public MemberTagData updateCheckStats(MemberTagData memberTagData) throws Exception {
         try {
-            log.info("错误标签:{}", memberTagData.getErrorTag());
             if (StringUtils.isNotBlank(memberTagData.getErrorTag())) {
                 memberTagData.setCheckStatus(false);
                 memberTagData.setStatus(MemberTagDataStatus.PROCESS_SUCCEED);
@@ -703,8 +702,8 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                         mmTag.setMemberTagName(tag);
                         mmTag.setCreatedAt(new Date());
                         tagsList.add(mmTag);
-                        tagsList = tagsList.stream().filter(CommonUtils.distinctByKey(t -> t.getMemberId() + t.getWechatId()
-                         + t.getOpenId() + t.getMemberTagId())).collect(Collectors.toList());
+                        tagsList = tagsList.stream().filter(CommonUtils.distinctByKey(t -> t.getWechatId()
+                         + t.getOpenId()+t.getMemberTagName())).collect(Collectors.toList());
                     }
                 }
                 if (CollectionUtils.isNotEmpty(tagsList)) {
