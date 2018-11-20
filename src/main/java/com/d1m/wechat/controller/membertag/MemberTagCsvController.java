@@ -125,7 +125,7 @@ public class MemberTagCsvController extends BaseController {
         final MemberTagCsv memberTagCsv = memberTagCsvBuilder.build();
         memberTagCsvService.insert(memberTagCsv);
         String tenant = TenantContext.getCurrentTenant();
-        asyncService.asyncInvoke(() -> {
+        //asyncService.asyncInvoke(() -> {
             TenantContext.setCurrentTenant(tenant);
             log.info("tenant:{}",tenant);
             try {
@@ -141,7 +141,7 @@ public class MemberTagCsvController extends BaseController {
                  .status(MemberTagCsvStatus.IMPORT_FAILURE).errorMsg(e.getMessage()).build());
 
             }
-        });
+        //});
         return new BaseResponse.Builder().resultCode(Message.FILE_UPLOAD_SUCCESS.getCode())
          .msg(Message.FILE_UPLOAD_SUCCESS.getName()).build();
     }
