@@ -550,7 +550,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
     public void updateErrorTagAndErrorMsg(String errorMsg, String tag, String errorTag, MemberTagData memberTagData) throws Exception {
         try {
             memberTagData.setErrorTag(setTags(memberTagData.getErrorTag(), errorTag));
-            memberTagData.setTag(setTags(memberTagData.getTag(), tag));
+//            memberTagData.setTag(setTags(memberTagData.getTag(), tag));
             memberTagData.setDataId(memberTagData.getDataId());
             memberTagData.setErrorMsg(setErrorMsg(memberTagData.getErrorMsg(), errorMsg));
             log.info("更新标签和原因:{}");
@@ -636,7 +636,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                     updateErrorTagAndErrorMsg(null, tag, null, currentMemberTagData);
                 }
             }
-
+            currentMemberTagData.setTag(tagStr);
         }
     }
 
