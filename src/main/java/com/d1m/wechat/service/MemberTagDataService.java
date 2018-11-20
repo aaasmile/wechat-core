@@ -14,9 +14,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public interface MemberTagDataService extends BaseService<MemberTagData> {
 
-    void batchInsertFromExcel(Integer fileId, File file,Date runTask);
+    void batchInsertFromExcel(Integer fileId, File file,Date runTask,String tenant);
 
-    void batchInsertFromCsv(Integer fileId, File file,Date runTask);
+    void batchInsertFromCsv(Integer fileId, File file,Date runTask,String tenant);
 
     /**
      * 导入数据检查

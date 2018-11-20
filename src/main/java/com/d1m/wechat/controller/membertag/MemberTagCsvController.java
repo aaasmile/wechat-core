@@ -130,9 +130,9 @@ public class MemberTagCsvController extends BaseController {
             try {
 
                 if (originalFilename.endsWith(".csv")) {
-                    memberTagDataService.batchInsertFromCsv(memberTagCsv.getFileId(), targetFile, runTask);
+                    memberTagDataService.batchInsertFromCsv(memberTagCsv.getFileId(), targetFile, runTask,TenantContext.getCurrentTenant());
                 } else {
-                    memberTagDataService.batchInsertFromExcel(memberTagCsv.getFileId(), targetFile, runTask);
+                    memberTagDataService.batchInsertFromExcel(memberTagCsv.getFileId(), targetFile, runTask,TenantContext.getCurrentTenant());
                 }
             } catch (RuntimeException e) {
                 log.info("异常，获取到的租户:{}",TenantContext.getCurrentTenant());

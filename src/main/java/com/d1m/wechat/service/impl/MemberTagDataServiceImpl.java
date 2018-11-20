@@ -112,7 +112,8 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void batchInsertFromExcel(Integer fileId, File file, Date runTask) {
+    public void batchInsertFromExcel(Integer fileId, File file, Date runTask,String tenant) {
+        TenantContext.setCurrentTenant(tenant);
         log.info("Batch insert form file [{}], for fileId [{}]", file.getPath(), fileId);
         if (Objects.isNull(fileId)) {
             log.error("File id is null!");
@@ -128,7 +129,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             final String csvFile = file.getAbsolutePath()
              .replace(".xlsx", ".csv")
              .replace(".xls", ".csv");
-            this.batchInsertFromCsv(fileId, new File(csvFile), runTask);
+            this.batchInsertFromCsv(fileId, new File(csvFile), runTask,tenant);
         } catch (IOException e) {
             log.error("Excel to Csv error", e);
         }
@@ -137,7 +138,8 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void batchInsertFromCsv(Integer fileId, File file, Date runTask) {
+    public void batchInsertFromCsv(Integer fileId, File file, Date runTask,String tenant) {
+        TenantContext.setCurrentTenant(tenant);
         log.info("Batch insert form file [{}], for fileId [{}]", file.getPath(), fileId);
         FileInputStream fis = null;
         InputStreamReader isr = null;
