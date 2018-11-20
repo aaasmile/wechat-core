@@ -83,30 +83,6 @@ public class MemberTagCsvController extends BaseController {
 
     private CsvMapper csvMapper = new CsvMapper();
 
-    //@ApiOperation(value = "测试用户打标签job")
-    @RequestMapping("csv-excel-test.json")
-    public BaseResponse csvExcelTest(Integer fileId) {
-        try {
-            log.info("MemberTagCsvController....csvExcelTest....fileId...." + fileId);
-            // 数据标签检查
-            CopyOnWriteArrayList<MemberTagData> list = memberTagDataService.getMembertagCsvData(fileId);
-            log.info("MemberTagCsvController....csvExcelTest....list...." + (list == null ? 0 : list.size()));
-            if (CollectionUtils.isNotEmpty(list)) {
-                log.info("MemberTagCsvController....csvExcelTest....updateFileStatus....");
-                // 设置上传文件为处理中状态
-                memberTagCsvService.updateFileStatus(fileId, MemberTagCsvStatus.IN_PROCESS);
-                log.info("MemberTagCsvController....csvExcelTest....asyncCsvJobBatch....");
-                // 异步发起批量处理
-                memberTagDataService.asyncCsvJobBatch(list, fileId);
-            }
-            return new BaseResponse.Builder().resultCode(Message.CSV_TEST_SUCCESS.getCode())
-             .msg(Message.CSV_TEST_SUCCESS.getName()).build();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return new BaseResponse.Builder().resultCode(Message.CSV_TEST_FAIL.getCode())
-             .msg(Message.CSV_TEST_FAIL.getName()).build();
-        }
-    }
 
     @ApiOperation(value = "上传excel或者csv批量为用户打标签")
     @ApiResponse(code = 200, message = "导入文件上传成功")
@@ -211,7 +187,7 @@ public class MemberTagCsvController extends BaseController {
                      .withoutQuoteChar();
                     writer = csvMapper.writerFor(FailDataExport.class).with(schema).writeValues(outputStream);
                     writer.writeAll(failDataExports);
-                    writer.close();
+
                 } else {
                     workbook.write(outputStream);
                 }

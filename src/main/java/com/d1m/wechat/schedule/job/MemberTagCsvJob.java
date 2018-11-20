@@ -45,17 +45,16 @@ public class MemberTagCsvJob extends BaseJobHandler {
                 log.info("获取导入文件id : " + fileId);
                 Integer wechatId = ParamUtil.getInt(strings[1], null);
                 Integer batchSize = memberService.getBatchSize(wechatId) != null ? memberService.getBatchSize(wechatId) : BATCHSIZE;
-                //数据标签检查
-                CopyOnWriteArrayList<MemberTagData> list = null;
                 //设置上传文件为处理中状态
                 memberTagCsvService.updateFileStatus(fileId, MemberTagCsvStatus.IN_PROCESS);
                 int count = 0;
                 while (true) {
-                    list = memberTagDataService.getMembertagCsvData(fileId, count, batchSize);
+                    CopyOnWriteArrayList<MemberTagData> list = memberTagDataService.getMembertagCsvData(fileId,
+                     (count * batchSize), batchSize);
                     if (CollectionUtils.isNotEmpty(list)) {
-                        //异步发起批量处理
+                        //发起批量处理
                         memberTagDataService.batchExecute(list);
-                    }else {
+                    } else {
                         break;
                     }
                     count++;

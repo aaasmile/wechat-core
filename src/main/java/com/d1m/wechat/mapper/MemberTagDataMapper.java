@@ -14,7 +14,7 @@ public interface MemberTagDataMapper extends MyMapper<MemberTagData> {
 //    @Override
 //    int updateByPrimaryKeySelective(MemberTagData memberTagData);
 
-    CopyOnWriteArrayList<MemberTagData> getMembertagCsvData(@Param("status") Integer fileId, @Param("pageNum") int pageNum, @Param("batchSize") int batchSize);
+    CopyOnWriteArrayList<MemberTagData> getMembertagCsvData(@Param("fileId") Integer fileId, @Param("pageNum") int pageNum, @Param("batchSize") int batchSize);
 
     MemberStatsCounts getCount (Integer fileId);
 
