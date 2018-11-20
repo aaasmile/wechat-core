@@ -701,8 +701,9 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                         mmTag.setMemberTagName(tag);
                         mmTag.setCreatedAt(new Date());
                         tagsList.add(mmTag);
-                        tagsList = tagsList.stream().filter(CommonUtils.distinctByKey(t -> t.getWechatId()
-                         + t.getOpenId()+t.getMemberTagName())).collect(Collectors.toList());
+                        //此处不需要去重，数据库已经做了唯一索引
+//                        tagsList = tagsList.stream().filter(CommonUtils.distinctByKey(t -> t.getWechatId()
+//                         + t.getOpenId()+t.getMemberTagName())).collect(Collectors.toList());
                     }
                 }
                 if (CollectionUtils.isNotEmpty(tagsList)) {
