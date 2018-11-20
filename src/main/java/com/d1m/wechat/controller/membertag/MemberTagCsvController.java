@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
+import com.d1m.common.ds.TenantContext;
 import com.d1m.wechat.service.AsyncService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -123,8 +124,9 @@ public class MemberTagCsvController extends BaseController {
         }
         final MemberTagCsv memberTagCsv = memberTagCsvBuilder.build();
         memberTagCsvService.insert(memberTagCsv);
+        String tenant = TenantContext.getCurrentTenant();
         asyncService.asyncInvoke(() -> {
-
+            TenantContext.setCurrentTenant(tenant);
             try {
 
                 if (originalFilename.endsWith(".csv")) {
