@@ -140,6 +140,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
     }
 
     @Override
+    @Async("callerRunsExecutor")
     @Transactional(rollbackFor = Exception.class)
     public void batchInsertFromCsv(Integer fileId, File file, Date runTask, String tenant) {
         TenantContext.setCurrentTenant(tenant);
@@ -612,8 +613,8 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      * 异步解析
      * @param resolveDto
      */
-    @Async("callerRunsExecutor")
     public void anyschResolve(AnyschResolveDto resolveDto) {
+        log.info("【异步解析】开始时间：" + DateUtil.formatYYYYMMDDHHMMSSS(new Date()));
         TenantContext.setCurrentTenant(resolveDto.getTenant());
         log.info("当前租户: " + TenantContext.getCurrentTenant());
         try {
@@ -627,6 +628,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             memberTagCsvService.updateByPrimaryKeySelective(new MemberTagCsv.Builder().fileId(resolveDto.getMemberTagCsv().getFileId())
              .status(MemberTagCsvStatus.IMPORT_FAILURE).errorMsg(e.getMessage()).build());
         }
+        log.info("【异步解析】结束时间：" + DateUtil.formatYYYYMMDDHHMMSSS(new Date()));
     }
 
 }
