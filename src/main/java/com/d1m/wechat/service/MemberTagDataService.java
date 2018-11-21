@@ -1,7 +1,9 @@
 package com.d1m.wechat.service;
 
 import com.d1m.wechat.domain.entity.MemberTagData;
+import com.d1m.wechat.dto.AnyschResolveDto;
 import com.d1m.wechat.exception.WechatException;
+import org.springframework.scheduling.annotation.Async;
 
 import java.io.File;
 import java.util.Date;
@@ -54,6 +56,12 @@ public interface MemberTagDataService extends BaseService<MemberTagData> {
      * 分批处理
      */
     public Integer batchExecute(CopyOnWriteArrayList<MemberTagData> list);
+
+    /**
+     * 异步解析
+     * @param resolveDto
+     */
+     void anyschResolve(AnyschResolveDto resolveDto);
 
 
 

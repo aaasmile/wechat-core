@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import com.d1m.wechat.dto.AnyschResolveDto;
 import com.d1m.wechat.model.MemberTag;
 import com.d1m.wechat.util.*;
 import org.apache.commons.collections.CollectionUtils;
@@ -30,6 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -602,6 +605,28 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         }
 
         return suceessCount;
+    }
+
+
+    /**
+     * 异步解析
+     * @param resolveDto
+     */
+    @Async("callerRunsExecutor")
+    public void anyschResolve(AnyschResolveDto resolveDto) {
+        TenantContext.setCurrentTenant(resolveDto.getTenant());
+        log.info("当前租户: " + TenantContext.getCurrentTenant());
+        try {
+            if (resolveDto.getOriginalFilename().endsWith(".csv")) {
+                batchInsertFromCsv(resolveDto.getMemberTagCsv().getFileId(), resolveDto.getTargetFile(), resolveDto.getRunTask(), TenantContext.getCurrentTenant());
+            } else {
+                batchInsertFromExcel(resolveDto.getMemberTagCsv().getFileId(), resolveDto.getTargetFile(), resolveDto.getRunTask(), TenantContext.getCurrentTenant());
+            }
+        } catch (RuntimeException e) {
+            log.info("updateByPrimaryKeySelective，获取到的租户:{}", TenantContext.getCurrentTenant());
+            memberTagCsvService.updateByPrimaryKeySelective(new MemberTagCsv.Builder().fileId(resolveDto.getMemberTagCsv().getFileId())
+             .status(MemberTagCsvStatus.IMPORT_FAILURE).errorMsg(e.getMessage()).build());
+        }
     }
 
 }
