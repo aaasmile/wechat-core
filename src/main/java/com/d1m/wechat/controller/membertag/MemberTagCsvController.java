@@ -10,10 +10,12 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import com.d1m.common.ds.TenantContext;
+import com.d1m.common.ds.TenantHelper;
 import com.d1m.wechat.service.AsyncService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -81,6 +83,9 @@ public class MemberTagCsvController extends BaseController {
     @Autowired
     private AsyncService asyncService;
 
+    @Resource
+    private TenantHelper tenantHelper;
+
     private CsvMapper csvMapper = new CsvMapper();
 
 
@@ -124,10 +129,16 @@ public class MemberTagCsvController extends BaseController {
         }
         final MemberTagCsv memberTagCsv = memberTagCsvBuilder.build();
         memberTagCsvService.insert(memberTagCsv);
-        String tenant = TenantContext.getCurrentTenant();
-        //asyncService.asyncInvoke(() -> {
-            TenantContext.setCurrentTenant(tenant);
-            log.info("tenant:{}",tenant);
+        //String tenant = TenantContext.getCurrentTenant();
+        asyncService.asyncInvoke(() -> {
+            //TenantContext.setCurrentTenant(tenant);
+            String domain = tenantHelper.getTenantByWechatId(getWechatId());
+            if (StringUtils.isNotBlank(domain)) {
+                TenantContext.setCurrentTenant(domain);
+                log.info("This domain is: " + domain);
+            }
+            TenantContext.setCurrentTenant(domain);
+            log.info("当前租户: " + TenantContext.getCurrentTenant());
             try {
 
                 if (originalFilename.endsWith(".csv")) {
@@ -136,12 +147,12 @@ public class MemberTagCsvController extends BaseController {
                     memberTagDataService.batchInsertFromExcel(memberTagCsv.getFileId(), targetFile, runTask,TenantContext.getCurrentTenant());
                 }
             } catch (RuntimeException e) {
-                log.info("异常，获取到的租户:{}",TenantContext.getCurrentTenant());
+                log.info("updateByPrimaryKeySelective，获取到的租户:{}",TenantContext.getCurrentTenant());
                 memberTagCsvService.updateByPrimaryKeySelective(new MemberTagCsv.Builder().fileId(memberTagCsv.getFileId())
                  .status(MemberTagCsvStatus.IMPORT_FAILURE).errorMsg(e.getMessage()).build());
 
             }
-        //});
+        });
         return new BaseResponse.Builder().resultCode(Message.FILE_UPLOAD_SUCCESS.getCode())
          .msg(Message.FILE_UPLOAD_SUCCESS.getName()).build();
     }
