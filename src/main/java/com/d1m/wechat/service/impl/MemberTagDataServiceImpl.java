@@ -424,7 +424,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         try {
             MemberTagData tmpData = new MemberTagData();
             tmpData.setErrorTag(setTags(memberTagData.getErrorTag(), errorTag));
-//            tmpData.setTag(setTags(memberTagData.getTag(), tag));
+            tmpData.setTag(setTags(memberTagData.getTag(), tag));
             tmpData.setDataId(memberTagData.getDataId());
             tmpData.setErrorMsg(setErrorMsg(memberTagData.getErrorMsg(), errorMsg));
             return tmpData;
