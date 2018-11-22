@@ -25,13 +25,11 @@ import com.d1m.wechat.util.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -334,30 +332,31 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                 log.debug("memberTagData>>" + JSONObject.toJSON(memberTagData));
                 //校验OpenID
                 if (StringUtils.isEmpty(memberTagData.getOpenId())) {
-                    updateErrorStatus("会员OpenID不能为空", memberTagData);
-                    statusList.add(memberTagData);
+                    MemberTagData tmpData = updateErrorStatus("会员OpenID不能为空", memberTagData);
+                    if(tmpData != null) statusList.add(tmpData);
                     b = false;
                 }
 
                 //校验标签
                 if (StringUtils.isEmpty(memberTagData.getOriginalTag())) {
-                    updateErrorStatus("标签不能为空", memberTagData);
-                    statusList.add(memberTagData);
+                    MemberTagData tmpData = updateErrorStatus("标签不能为空", memberTagData);
+                    if(tmpData != null) statusList.add(tmpData);
                     b = false;
                 }
 
                 if (b) {
                     //检查openID是否存在
                     if (selectCount(memberTagData.getOpenId()) <= 0) {
-                        updateErrorStatus("不存在此会员OpenID", memberTagData);
+                        MemberTagData tmpData = updateErrorStatus("不存在此会员OpenID", memberTagData);
+                        if(tmpData != null) statusList.add(tmpData);
                     }
                     //检查标签是否存在
-                    checkTagsIsExist(memberTagData.getOriginalTag(), memberTagData);
+                    checkTagsIsExist(memberTagData.getOriginalTag(), memberTagData, statusList);
                     //更新数据检查状态
                     MemberTagData updatetag = updateCheckStats(memberTagData);
-                    statusList.add(memberTagData);
+                    //statusList.add(memberTagData);
                     //如果检查状态为true，则把该标签数据添加到list中
-                    if (updatetag.getCheckStatus()) {
+                    if (updatetag != null && updatetag.getCheckStatus()) {
                         rightList.add(updatetag);
                     }
                 }
@@ -376,13 +375,16 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      * @param errorMsg
      * @throws Exception
      */
-    public void updateErrorStatus(String errorMsg, MemberTagData memberTagData) throws Exception {
+    public MemberTagData updateErrorStatus(String errorMsg, MemberTagData memberTagData) throws Exception {
         try {
-            memberTagData.setErrorMsg(setErrorMsg(memberTagData.getErrorMsg(), errorMsg));
-            memberTagData.setCheckStatus(false);
-            memberTagData.setStatus(MemberTagDataStatus.PROCESS_SUCCEED);
+            MemberTagData tmpData = new MemberTagData();
+            tmpData.setErrorMsg(setErrorMsg(memberTagData.getErrorMsg(), errorMsg));
+            tmpData.setCheckStatus(false);
+            tmpData.setStatus(MemberTagDataStatus.PROCESS_SUCCEED);
+            return tmpData;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+            return null;
         }
     }
 
@@ -395,17 +397,19 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      */
     public MemberTagData updateCheckStats(MemberTagData memberTagData) throws Exception {
         try {
+            MemberTagData tmpData = new MemberTagData();
             if (StringUtils.isNotBlank(memberTagData.getErrorTag())) {
-                memberTagData.setCheckStatus(false);
-                memberTagData.setStatus(MemberTagDataStatus.PROCESS_SUCCEED);
+                tmpData.setCheckStatus(false);
+                tmpData.setStatus(MemberTagDataStatus.PROCESS_SUCCEED);
                 log.debug("如果有一个错误标签，则该条数据不用做加签处理:{}", memberTagData.getErrorTag());
             } else {
-                memberTagData.setCheckStatus(true);
+                tmpData.setCheckStatus(true);
             }
+            return tmpData;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+            return null;
         }
-        return memberTagData;
     }
 
 
@@ -416,14 +420,17 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      * @param errorMsg
      * @throws Exception
      */
-    public void updateErrorTagAndErrorMsg(String errorMsg, String tag, String errorTag, MemberTagData memberTagData) throws Exception {
+    public MemberTagData updateErrorTagAndErrorMsg(String errorMsg, String tag, String errorTag, MemberTagData memberTagData) throws Exception {
         try {
-            memberTagData.setErrorTag(setTags(memberTagData.getErrorTag(), errorTag));
-//            memberTagData.setTag(setTags(memberTagData.getTag(), tag));
-            memberTagData.setDataId(memberTagData.getDataId());
-            memberTagData.setErrorMsg(setErrorMsg(memberTagData.getErrorMsg(), errorMsg));
+            MemberTagData tmpData = new MemberTagData();
+            tmpData.setErrorTag(setTags(memberTagData.getErrorTag(), errorTag));
+//            tmpData.setTag(setTags(memberTagData.getTag(), tag));
+            tmpData.setDataId(memberTagData.getDataId());
+            tmpData.setErrorMsg(setErrorMsg(memberTagData.getErrorMsg(), errorMsg));
+            return tmpData;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+            return null;
         }
     }
 
@@ -488,7 +495,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      * @param
      * @return
      */
-    public void checkTagsIsExist(String tagStr, MemberTagData currentMemberTagData) throws Exception {
+    public void checkTagsIsExist(String tagStr, MemberTagData currentMemberTagData, List<MemberTagData> statusList) throws Exception {
         if (StringUtils.isNotBlank(tagStr)) {
             String[] tags = tagStr.split("\\|");
             for (String tag : tags) {
@@ -499,9 +506,11 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                 memberTag = memberTagMapper.selectOne(memberTag);
                 if (memberTag == null) {
                     String errorMsg = tag + "：不存在此标签";
-                    updateErrorTagAndErrorMsg(errorMsg, null, tag, currentMemberTagData);
+                    MemberTagData tmpData = updateErrorTagAndErrorMsg(errorMsg, null, tag, currentMemberTagData);
+                    if(tmpData != null) statusList.add(tmpData);
                 } else {
-                    updateErrorTagAndErrorMsg(null, tag, null, currentMemberTagData);
+                    MemberTagData tmpData = updateErrorTagAndErrorMsg(null, tag, null, currentMemberTagData);
+                    if(tmpData != null) statusList.add(tmpData);
                 }
             }
             currentMemberTagData.setTag(tagStr);
