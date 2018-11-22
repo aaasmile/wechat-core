@@ -333,14 +333,14 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                 //校验OpenID
                 if (StringUtils.isEmpty(memberTagData.getOpenId())) {
                     MemberTagData tmpData = updateErrorStatus("会员OpenID不能为空", memberTagData);
-                    if(tmpData != null) statusList.add(tmpData);
+                    if (tmpData != null && tmpData.checkNull()) statusList.add(tmpData);
                     b = false;
                 }
 
                 //校验标签
                 if (StringUtils.isEmpty(memberTagData.getOriginalTag())) {
                     MemberTagData tmpData = updateErrorStatus("标签不能为空", memberTagData);
-                    if(tmpData != null) statusList.add(tmpData);
+                    if (tmpData != null && tmpData.checkNull()) statusList.add(tmpData);
                     b = false;
                 }
 
@@ -348,7 +348,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                     //检查openID是否存在
                     if (selectCount(memberTagData.getOpenId()) <= 0) {
                         MemberTagData tmpData = updateErrorStatus("不存在此会员OpenID", memberTagData);
-                        if(tmpData != null) statusList.add(tmpData);
+                        if (tmpData != null && tmpData.checkNull()) statusList.add(tmpData);
                     }
                     //检查标签是否存在
                     checkTagsIsExist(memberTagData.getOriginalTag(), memberTagData, statusList);
@@ -356,7 +356,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                     MemberTagData updatetag = updateCheckStats(memberTagData);
                     //statusList.add(memberTagData);
                     //如果检查状态为true，则把该标签数据添加到list中
-                    if (updatetag != null && updatetag.getCheckStatus()) {
+                    if (updatetag != null && updatetag.checkNull() && updatetag.getCheckStatus()) {
                         rightList.add(updatetag);
                     }
                 }
@@ -507,10 +507,10 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                 if (memberTag == null) {
                     String errorMsg = tag + "：不存在此标签";
                     MemberTagData tmpData = updateErrorTagAndErrorMsg(errorMsg, null, tag, currentMemberTagData);
-                    if(tmpData != null) statusList.add(tmpData);
+                    if (tmpData != null) statusList.add(tmpData);
                 } else {
                     MemberTagData tmpData = updateErrorTagAndErrorMsg(null, tag, null, currentMemberTagData);
-                    if(tmpData != null) statusList.add(tmpData);
+                    if (tmpData != null) statusList.add(tmpData);
                 }
             }
             currentMemberTagData.setTag(tagStr);
