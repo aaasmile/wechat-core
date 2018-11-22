@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -158,16 +157,13 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             br = new BufferedReader(isr);
             String line = br.readLine();
             String firstLine = null;
+            boolean hasFistLine = true;
             StringBuilder builder = new StringBuilder();
             if (StringUtils.isNotBlank(line)) {
-                if (!line.contains("OPEN_ID") || !line.contains("TAG")) {
-                    log.warn("fileId有误，或者成功解析0行数据！");
-                    throw new BatchAddTagException("上传失败，请下载模板按照格式添加数据！");
+                if (!line.contains("OPEN_ID") && !line.contains("TAG")) {
+                    hasFistLine = false;
                 }
                 firstLine = line;
-            } else {
-                log.warn("fileId有误，或者成功解析0行数据！");
-                throw new BatchAddTagException("上传失败，请下载模板按照格式添加数据！");
             }
             MappingIterator<BatchEntity> mapping;
             final MemberTagCsv memberTagCsv = memberTagCsvService
@@ -182,7 +178,6 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                     builder.append(line);
                     builder.append("\n");
                     line = br.readLine();
-
                     count++;
                     if (count % batchSize == 0) {
                         mapping = csvMapper.readerFor(BatchEntity.class)
@@ -190,7 +185,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                         final List<BatchEntity> entities = mapping.readAll();
                         this.entitiesProcess(entities, fileId, memberTagCsv.getWechatId());
                         builder = new StringBuilder();
-                        builder.append(firstLine);
+                        if (hasFistLine) builder.append(firstLine);
                         builder.append("\n");
                     }
                 } else {
@@ -624,10 +619,10 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      *
      * @param resolveDto
      */
-    public void anyschResolve(AnyschResolveDto resolveDto) {
+    public void anyscResolve(AnyschResolveDto resolveDto) {
         log.info("【异步解析】开始时间：" + DateUtil.formatYYYYMMDDHHMMSSS(new Date()));
         TenantContext.setCurrentTenant(resolveDto.getTenant());
-        log.info("当前租户: " + TenantContext.getCurrentTenant());
+        log.info("【异步解析】当前租户: " + TenantContext.getCurrentTenant());
         try {
             if (resolveDto.getOriginalFilename().endsWith(".csv")) {
                 batchInsertFromCsv(resolveDto.getMemberTagCsv().getFileId(), resolveDto.getTargetFile(), resolveDto.getRunTask(), TenantContext.getCurrentTenant());
@@ -641,5 +636,6 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         }
         log.info("【异步解析】结束时间：" + DateUtil.formatYYYYMMDDHHMMSSS(new Date()));
     }
+
 
 }

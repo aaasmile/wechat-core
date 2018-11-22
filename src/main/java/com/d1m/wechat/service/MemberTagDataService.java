@@ -61,7 +61,7 @@ public interface MemberTagDataService extends BaseService<MemberTagData> {
      * 异步解析
      * @param resolveDto
      */
-     void anyschResolve(AnyschResolveDto resolveDto);
+     void anyscResolve(AnyschResolveDto resolveDto);
 
 
 
