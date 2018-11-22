@@ -132,7 +132,7 @@ public class MemberTagCsvController extends BaseController {
         resolveDto.setRunTask(runTask);
         resolveDto.setTargetFile(targetFile);
         //调用异步解析
-        memberTagDataService.anyschResolve(resolveDto);
+        memberTagDataService.anyscResolve(resolveDto);
         /*asyncService.asyncInvoke(() -> {
             //TenantContext.setCurrentTenant(tenant);
             log.info("当前租户: " + TenantContext.getCurrentTenant());
