@@ -160,7 +160,14 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             String firstLine = null;
             StringBuilder builder = new StringBuilder();
             if (StringUtils.isNotBlank(line)) {
+                if (!line.contains("OPEN_ID") || !line.contains("TAG")) {
+                    log.warn("fileId有误，或者成功解析0行数据！");
+                    throw new BatchAddTagException("上传失败，请下载模板按照格式添加数据！");
+                }
                 firstLine = line;
+            } else {
+                log.warn("fileId有误，或者成功解析0行数据！");
+                throw new BatchAddTagException("上传失败，请下载模板按照格式添加数据！");
             }
             MappingIterator<BatchEntity> mapping;
             final MemberTagCsv memberTagCsv = memberTagCsvService
@@ -171,20 +178,24 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             Integer batchSize = memberService.getBatchSize(memberTagCsv.getWechatId()) != null ?
              memberService.getBatchSize(memberTagCsv.getWechatId()) : BATCHSIZE;
             while (StringUtils.isNotBlank(line)) {
-                builder.append(line);
-                builder.append("\n");
-                line = br.readLine();
-                count++;
-                if (count % batchSize == 0) {
-                    mapping = csvMapper.readerFor(BatchEntity.class)
-                     .with(schema).readValues(builder.toString());
-                    final List<BatchEntity> entities = mapping.readAll();
-                    this.entitiesProcess(entities, fileId, memberTagCsv.getWechatId());
-                    builder = new StringBuilder();
-                    builder.append(firstLine);
+                if (line.split(",").length != 0) {
+                    builder.append(line);
                     builder.append("\n");
-                }
+                    line = br.readLine();
 
+                    count++;
+                    if (count % batchSize == 0) {
+                        mapping = csvMapper.readerFor(BatchEntity.class)
+                         .with(schema).readValues(builder.toString());
+                        final List<BatchEntity> entities = mapping.readAll();
+                        this.entitiesProcess(entities, fileId, memberTagCsv.getWechatId());
+                        builder = new StringBuilder();
+                        builder.append(firstLine);
+                        builder.append("\n");
+                    }
+                } else {
+                    line = br.readLine();
+                }
             }
 
 
@@ -224,7 +235,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
         if (CollectionUtils.isEmpty(entities)) {
             log.warn("fileId有误，或者成功解析0行数据！");
-            throw new BatchAddTagException("解析失败，请下载excel模板按照格式添加数据！");
+            throw new BatchAddTagException("上传失败，请下载excel模板按照格式添加数据！");
         }
 
         final List<MemberTagData> memberTagDataList = entities.stream().map(e ->
@@ -329,12 +340,14 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                 //校验OpenID
                 if (StringUtils.isEmpty(memberTagData.getOpenId())) {
                     updateErrorStatus("会员OpenID不能为空", memberTagData);
+                    statusList.add(memberTagData);
                     b = false;
                 }
 
                 //校验标签
                 if (StringUtils.isEmpty(memberTagData.getOriginalTag())) {
                     updateErrorStatus("标签不能为空", memberTagData);
+                    statusList.add(memberTagData);
                     b = false;
                 }
 
@@ -550,9 +563,6 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                         mmTag.setMemberTagName(tag);
                         mmTag.setCreatedAt(new Date());
                         tagsList.add(mmTag);
-                        //此处不需要去重，数据库已经做了唯一索引
-//                        tagsList = tagsList.stream().filter(CommonUtils.distinctByKey(t -> t.getWechatId()
-//                         + t.getOpenId()+t.getMemberTagName())).collect(Collectors.toList());
                     }
                 }
                 if (CollectionUtils.isNotEmpty(tagsList)) {
@@ -611,6 +621,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
     /**
      * 异步解析
+     *
      * @param resolveDto
      */
     public void anyschResolve(AnyschResolveDto resolveDto) {
