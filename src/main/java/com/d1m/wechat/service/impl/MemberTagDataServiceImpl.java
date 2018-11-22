@@ -219,9 +219,9 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         } catch (IOException e) {
             log.error("Csv to pojo error", e);
         } finally {
+            IOUtils.closeQuietly(br);
             IOUtils.closeQuietly(isr);
             IOUtils.closeQuietly(fis);
-            IOUtils.closeQuietly(br);
         }
     }
 
@@ -329,9 +329,9 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         List<MemberTagData> statusList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(list)) {
             Boolean b = true;
+            log.info("======正在进行数据检查》》》》》============");
             for (MemberTagData memberTagData : list) {
-                log.info("======正在进行数据检查》》》》》============");
-                log.info("memberTagData>>" + JSONObject.toJSON(memberTagData));
+                log.debug("memberTagData>>" + JSONObject.toJSON(memberTagData));
                 //校验OpenID
                 if (StringUtils.isEmpty(memberTagData.getOpenId())) {
                     updateErrorStatus("会员OpenID不能为空", memberTagData);
@@ -398,7 +398,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             if (StringUtils.isNotBlank(memberTagData.getErrorTag())) {
                 memberTagData.setCheckStatus(false);
                 memberTagData.setStatus(MemberTagDataStatus.PROCESS_SUCCEED);
-                log.info("如果有一个错误标签，则该条数据不用做加签处理:{}", memberTagData.getErrorTag());
+                log.debug("如果有一个错误标签，则该条数据不用做加签处理:{}", memberTagData.getErrorTag());
             } else {
                 memberTagData.setCheckStatus(true);
             }
@@ -606,7 +606,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                 }
 
             } catch (Exception e) {
-                log.info("分批处理:", e.getMessage());
+                log.error("分批处理异常:", e.getMessage());
             }
         }
 

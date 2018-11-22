@@ -66,6 +66,7 @@ public class MemberTagCsvJob extends BaseJobHandler {
                 //更新上传文件状态为已完成
                 memberTagCsvService.updateFileStatus(fileId, MemberTagCsvStatus.PROCESS_SUCCEED);
                 log.info("======会员导入加签完成》》》》》============");
+                XxlJobLogger.log("======会员导入加签完成》》》》》============");
 
             }
             return ReturnT.SUCCESS;
