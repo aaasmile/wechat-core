@@ -23,7 +23,7 @@ public interface MemberTagDataService extends BaseService<MemberTagData> {
      *
      * @param list
      */
-     CopyOnWriteArrayList<MemberTagData> checkDataIsOK(CopyOnWriteArrayList<MemberTagData> list) throws Exception;
+     List<MemberTagData> checkDataIsOK(CopyOnWriteArrayList<MemberTagData> list) throws Exception;
 
 
     /**
