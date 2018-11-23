@@ -111,7 +111,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void batchInsertFromExcel(Integer fileId, File file, Date runTask, String tenant) {
+    public void batchInsertFromExcel(Integer fileId, File file, String tenant) {
         TenantContext.setCurrentTenant(tenant);
         log.info("Batch insert form file [{}], for fileId [{}],domain [{}]", file.getPath(), fileId, TenantContext.getCurrentTenant());
         if (Objects.isNull(fileId)) {
@@ -128,7 +128,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             final String csvFile = file.getAbsolutePath()
              .replace(".xlsx", ".csv")
              .replace(".xls", ".csv");
-            this.batchInsertFromCsv(fileId, new File(csvFile), runTask, tenant);
+            this.batchInsertFromCsv(fileId, new File(csvFile), tenant);
         } catch (IOException e) {
             log.error("Excel to Csv error", e);
         }
@@ -138,7 +138,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
     @Override
     @Async("callerRunsExecutor")
     @Transactional(rollbackFor = Exception.class)
-    public void batchInsertFromCsv(Integer fileId, File file, Date runTask, String tenant) {
+    public void batchInsertFromCsv(Integer fileId, File file, String tenant) {
         TenantContext.setCurrentTenant(tenant);
         log.info("Batch insert form file [{}], for fileId [{}]", file.getPath(), fileId);
         FileInputStream fis = null;
@@ -201,8 +201,17 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                 }
             }
 
+
+            long currentTime = System.currentTimeMillis();
+            long m = 60L * 1000L;
+            long runAt = currentTime + m;
+            Date runTask = new Date(runAt);
+            String dateTask = DateUtil.formatYYYYMMDDHHMMSS(runTask);
+            String taskName = "MemberAddTagCSV_" + dateTask;
+
             memberTagCsv.setStatus(MemberTagCsvStatus.ALREADY_IMPORTED);
             memberTagCsv.setRows(count);
+            memberTagCsv.setTask(taskName);
             memberTagCsv.setLastUpdateTime(Timestamp.valueOf(LocalDateTime.now()));
             memberTagCsv.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
             memberTagCsvService.updateByPrimaryKeySelective(memberTagCsv);
@@ -500,8 +509,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
     /**
      * 检查标签是否存在
-     *
-     * @param tagStr
+     * @param
      * @param
      * @return
      */
@@ -654,9 +662,9 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         log.info("【异步解析】当前租户: " + TenantContext.getCurrentTenant());
         try {
             if (resolveDto.getOriginalFilename().endsWith(".csv")) {
-                batchInsertFromCsv(resolveDto.getMemberTagCsv().getFileId(), resolveDto.getTargetFile(), resolveDto.getRunTask(), TenantContext.getCurrentTenant());
+                batchInsertFromCsv(resolveDto.getMemberTagCsv().getFileId(), resolveDto.getTargetFile(), TenantContext.getCurrentTenant());
             } else {
-                batchInsertFromExcel(resolveDto.getMemberTagCsv().getFileId(), resolveDto.getTargetFile(), resolveDto.getRunTask(), TenantContext.getCurrentTenant());
+                batchInsertFromExcel(resolveDto.getMemberTagCsv().getFileId(), resolveDto.getTargetFile(), TenantContext.getCurrentTenant());
             }
         } catch (RuntimeException e) {
             log.info("updateByPrimaryKeySelective，获取到的租户:{}", TenantContext.getCurrentTenant());
