@@ -598,7 +598,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                     }
                 }
                 if (CollectionUtils.isNotEmpty(tagsList)) {
-                    log.info("待加标签数据：", JSON.toJSON(tagsList));
+                    log.info("待加标签数据：", tagsList.size());
                     memberMemberTagMapper.insertOrUpdateList(tagsList);
                     suceessCount = tagsList.size();
                     log.info("======加签中，已完成：》》》》》=" + suceessCount + "===========");
