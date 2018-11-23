@@ -55,6 +55,13 @@ spring:
     multipart:
       maxFileSize: 10MB
       maxRequestSize: 100MB
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+server:
+  tomcat:
+    uri-encoding: UTF-8
 
 jdbc.driverClass: com.mysql.jdbc.Driver
 jdbc.url: jdbc:mysql://${MYSQL_HOST:${ENV_HOST}}:${MYSQL_PORT:3306}/${MYSQL_DB:d1m_wechat}?autoReconnect=true

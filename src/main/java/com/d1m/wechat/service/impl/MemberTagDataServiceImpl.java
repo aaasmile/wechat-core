@@ -164,7 +164,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             }
             MappingIterator<BatchEntity> mapping;
             final MemberTagCsv memberTagCsv = memberTagCsvService
-             .selectByKey(new MemberTagCsv.Builder().fileId(fileId).build());
+             .selectByKey(fileId);
             if (Objects.isNull(memberTagCsv)) {
                 throw new WechatException(Message.FILE_EXT_NOT_SUPPORT);
             }
