@@ -104,15 +104,8 @@ public class MemberTagCsvController extends BaseController {
         final File targetFile = new File(fileFullName);
 
         FileUtils.copyInputStreamToFile(file.getInputStream(), targetFile);
-        long currentTime = System.currentTimeMillis();
-        long m = 60L * 1000L;
-        long runAt = currentTime + m;
-        Date runTask = new Date(runAt);
-        String dateTask = DateUtil.formatYYYYMMDDHHMMSS(runTask);
-        String taskName = "MemberAddTagCSV_" + dateTask;
-        log.info("任务名称:{}", taskName);
-        log.info("runTask:{}", runTask);
 
+        String taskName = "MemberAddTagCSV_" + DateUtil.formatYYYYMMDDHHMMSS(new Date());
         final MemberTagCsv.Builder memberTagCsvBuilder = new MemberTagCsv.Builder()
          .oriFile(file.getOriginalFilename()).sourceFilePath(fileFullName)
          .fileSize(String.valueOf(file.getSize())).wechatId(getWechatId()).creatorId(getUser().getId())
@@ -129,7 +122,6 @@ public class MemberTagCsvController extends BaseController {
         resolveDto.setTenant(TenantContext.getCurrentTenant());
         resolveDto.setMemberTagCsv(memberTagCsv);
         resolveDto.setOriginalFilename(originalFilename);
-        resolveDto.setRunTask(runTask);
         resolveDto.setTargetFile(targetFile);
         //调用异步解析
         memberTagDataService.anyscResolve(resolveDto);

@@ -152,7 +152,7 @@ public class MemberTagController extends BaseController {
     }
 
 
-    @ApiOperation(value = "csv导入文件上传", tags = "会员标签接口")
+   /* @ApiOperation(value = "csv导入文件上传", tags = "会员标签接口")
     @ApiResponse(code = 200, message = "1-csv导入文件上传成功")
     @RequestMapping(value = "addtag-csv.json", method = RequestMethod.POST)
     public JSONObject addMemberTagByCSV2(@ApiParam(name = "上传文件", required = false)
@@ -185,7 +185,7 @@ public class MemberTagController extends BaseController {
             return wrapException(e);
         }
 
-    }
+    }*/
 
 //
 //    @ApiOperation(value = "会员标签CSV批量导入", tags = "会员标签接口")
