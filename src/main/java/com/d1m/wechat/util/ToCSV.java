@@ -116,7 +116,7 @@ public class ToCSV {
 
 	private static final Logger log = LoggerFactory.getLogger(ToCSV.class);
     private Workbook workbook;
-    private ArrayList<ArrayList<String>> csvData;
+//    private ArrayList<ArrayList<String>> csvData;
     private int maxRowWidth;
     private int formattingConvention;
     private DataFormatter formatter;
@@ -323,19 +323,19 @@ public class ToCSV {
                 // Open the workbook
                 this.openWorkbook(excelFile);
     
-                // Convert it's contents into a CSV file
-                this.convertToCSV();
-    
                 // Build the name of the csv folder from that of the Excel workbook.
                 // Simply replace the .xls or .xlsx file extension with .csv
                 destinationFilename = excelFile.getName();
                 destinationFilename = destinationFilename.substring(
-                        0, destinationFilename.lastIndexOf(".")) +
-                        ToCSV.CSV_FILE_EXTENSION;
+                		0, destinationFilename.lastIndexOf(".")) +
+                		ToCSV.CSV_FILE_EXTENSION;
+                File csvfile = new File(destination, destinationFilename);
+                // Convert it's contents into a CSV file
+                this.convertToCSV(csvfile);
     
                 // Save the CSV file away using the newly constricted file name
                 // and to the specified directory.
-                this.saveCSVFile(new File(destination, destinationFilename));
+//				this.saveCSVFile(csvfile);
             }
         }
     }
@@ -372,37 +372,47 @@ public class ToCSV {
      * Called to convert the contents of the currently opened workbook into
      * a CSV file.
      */
-    private void convertToCSV() {
+    private void convertToCSV(File file) {
         Sheet sheet;
         Row row;
         int lastRowNum;
-        this.csvData = new ArrayList<>();
-
-        System.out.println("Converting files contents to CSV format.");
-
-        // Discover how many sheets there are in the workbook....
-        int numSheets = this.workbook.getNumberOfSheets();
-
-        // and then iterate through them.
-        for(int i = 0; i < numSheets; i++) {
-
-            // Get a reference to a sheet and check to see if it contains
-            // any rows.
-            sheet = this.workbook.getSheetAt(i);
-            if(sheet.getPhysicalNumberOfRows() > 0) {
-
-                // Note down the index number of the bottom-most row and
-                // then iterate through all of the rows on the sheet starting
-                // from the very first row - number 1 - even if it is missing.
-                // Recover a reference to the row and then call another method
-                // which will strip the data from the cells and build lines
-                // for inclusion in the resylting CSV file.
-                lastRowNum = sheet.getLastRowNum();
-                for(int j = 0; j <= lastRowNum; j++) {
-                    row = sheet.getRow(j);
-                    this.rowToCSV(row);
-                }
-            }
+//        this.csvData = new ArrayList<>();
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+	        System.out.println("Converting files contents to CSV format.");
+	
+	        // Discover how many sheets there are in the workbook....
+	        int numSheets = this.workbook.getNumberOfSheets();
+	
+	        // and then iterate through them.
+	        for(int i = 0; i < numSheets; i++) {
+	
+	            // Get a reference to a sheet and check to see if it contains
+	            // any rows.
+	            sheet = this.workbook.getSheetAt(i);
+	            if(sheet.getPhysicalNumberOfRows() > 0) {
+	
+	                // Note down the index number of the bottom-most row and
+	                // then iterate through all of the rows on the sheet starting
+	                // from the very first row - number 1 - even if it is missing.
+	                // Recover a reference to the row and then call another method
+	                // which will strip the data from the cells and build lines
+	                // for inclusion in the resylting CSV file.
+	                lastRowNum = sheet.getLastRowNum();
+	                for(int j = 0; j <= lastRowNum; j++) {
+	                    row = sheet.getRow(j);
+	                    try {
+	                    	this.rowToCSV(row, bw);
+						} catch (Exception e) {
+							log.error(e.getMessage(), e);
+						}
+	                  if(j < (lastRowNum)) {
+	                    bw.newLine();
+	                  }
+	                }
+	            }
+	        }
+        } catch(Exception e) {
+        	log.error(e.getMessage(), e);
         }
     }
 
@@ -416,21 +426,21 @@ public class ToCSV {
      * @throws java.io.IOException Thrown to indicate and error occurred in the
      *                             underylying file system.
      */
-    private void saveCSVFile(File file)
+    private void saveCSVFile(ArrayList<String> line, BufferedWriter bw)
                                      throws FileNotFoundException, IOException {
-        ArrayList<String> line;
+//        ArrayList<String> line;
         StringBuffer buffer;
         String csvLineElement;
 
         // Open a writer onto the CSV file.
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+//        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
 
-            System.out.println("Saving the CSV file [" + file.getName() + "]");
+//            System.out.println("Saving the CSV file [" + file.getName() + "]");
 
             // Step through the elements of the ArrayList that was used to hold
             // all of the data recovered from the Excel workbooks' sheets, rows
             // and cells.
-            for(int i = 0; i < this.csvData.size(); i++) {
+//            for(int i = 0; i < this.csvData.size(); i++) {
                 buffer = new StringBuffer();
 
                 // Get an element from the ArrayList that contains the data for
@@ -445,7 +455,7 @@ public class ToCSV {
                 // the for loop to ensure that the ArrayList contains data to be
                 // processed. If it does, then an element will be recovered and
                 // appended to the StringBuffer.
-                line = this.csvData.get(i);
+//                line = this.csvData.get(i);
                 for(int j = 0; j < this.maxRowWidth; j++) {
                     if(line.size() > j) {
                         csvLineElement = line.get(j);
@@ -465,11 +475,11 @@ public class ToCSV {
                 // Condition the inclusion of new line characters so as to
                 // avoid an additional, superfluous, new line at the end of
                 // the file.
-                if(i < (this.csvData.size() - 1)) {
-                    bw.newLine();
-                }
-            }
-        }
+//                if(i < (this.csvData.size() - 1)) {
+//                    bw.newLine();
+//                }
+//            }
+//        }
     }
 
     /**
@@ -479,12 +489,13 @@ public class ToCSV {
      * @param row An instance of either the HSSFRow or XSSFRow classes that
      *            encapsulates information about a row of cells recovered from
      *            an Excel workbook.
+     * @throws IOException 
+     * @throws FileNotFoundException 
      */
-    private void rowToCSV(Row row) {
+    private void rowToCSV(Row row, BufferedWriter bw) throws FileNotFoundException, IOException {
         Cell cell;
         int lastCellNum;
         ArrayList<String> csvLine = new ArrayList<>();
-
         // Check to ensure that a row was recovered from the sheet as it is
         // possible that one or more rows between other populated rows could be
         // missing - blank. If the row does contain cells then...
@@ -516,7 +527,8 @@ public class ToCSV {
                 this.maxRowWidth = lastCellNum;
             }
         }
-        this.csvData.add(csvLine);
+//        this.csvData.add(csvLine);
+        this.saveCSVFile(csvLine, bw);
     }
 
     /**
