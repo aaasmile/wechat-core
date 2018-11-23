@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-
 import com.d1m.common.ds.TenantContext;
+import com.d1m.wechat.dto.AnyschResolveDto;
 import com.d1m.wechat.service.AsyncService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -81,6 +81,7 @@ public class MemberTagCsvController extends BaseController {
     @Autowired
     private AsyncService asyncService;
 
+
     private CsvMapper csvMapper = new CsvMapper();
 
 
@@ -103,15 +104,8 @@ public class MemberTagCsvController extends BaseController {
         final File targetFile = new File(fileFullName);
 
         FileUtils.copyInputStreamToFile(file.getInputStream(), targetFile);
-        long currentTime = System.currentTimeMillis();
-        long m = 60L * 1000L;
-        long runAt = currentTime + m;
-        Date runTask = new Date(runAt);
-        String dateTask = DateUtil.formatYYYYMMDDHHMMSS(runTask);
-        String taskName = "MemberAddTagCSV_" + dateTask;
-        log.info("任务名称:{}", taskName);
-        log.info("runTask:{}", runTask);
 
+        String taskName = "MemberAddTagCSV_" + DateUtil.formatYYYYMMDDHHMMSS(new Date());
         final MemberTagCsv.Builder memberTagCsvBuilder = new MemberTagCsv.Builder()
          .oriFile(file.getOriginalFilename()).sourceFilePath(fileFullName)
          .fileSize(String.valueOf(file.getSize())).wechatId(getWechatId()).creatorId(getUser().getId())
@@ -124,23 +118,30 @@ public class MemberTagCsvController extends BaseController {
         }
         final MemberTagCsv memberTagCsv = memberTagCsvBuilder.build();
         memberTagCsvService.insert(memberTagCsv);
-        String tenant = TenantContext.getCurrentTenant();
-        asyncService.asyncInvoke(() -> {
-            TenantContext.setCurrentTenant(tenant);
+        AnyschResolveDto resolveDto = new AnyschResolveDto();
+        resolveDto.setTenant(TenantContext.getCurrentTenant());
+        resolveDto.setMemberTagCsv(memberTagCsv);
+        resolveDto.setOriginalFilename(originalFilename);
+        resolveDto.setTargetFile(targetFile);
+        //调用异步解析
+        memberTagDataService.anyscResolve(resolveDto);
+        /*asyncService.asyncInvoke(() -> {
+            //TenantContext.setCurrentTenant(tenant);
+            log.info("当前租户: " + TenantContext.getCurrentTenant());
             try {
 
                 if (originalFilename.endsWith(".csv")) {
-                    memberTagDataService.batchInsertFromCsv(memberTagCsv.getFileId(), targetFile, runTask);
+                    memberTagDataService.batchInsertFromCsv(memberTagCsv.getFileId(), targetFile, runTask,TenantContext.getCurrentTenant());
                 } else {
-                    memberTagDataService.batchInsertFromExcel(memberTagCsv.getFileId(), targetFile, runTask);
+                    memberTagDataService.batchInsertFromExcel(memberTagCsv.getFileId(), targetFile, runTask,TenantContext.getCurrentTenant());
                 }
             } catch (RuntimeException e) {
-                log.info("异常，获取到的租户:{}",TenantContext.getCurrentTenant());
+                log.info("updateByPrimaryKeySelective，获取到的租户:{}",TenantContext.getCurrentTenant());
                 memberTagCsvService.updateByPrimaryKeySelective(new MemberTagCsv.Builder().fileId(memberTagCsv.getFileId())
                  .status(MemberTagCsvStatus.IMPORT_FAILURE).errorMsg(e.getMessage()).build());
 
             }
-        });
+        });*/
         return new BaseResponse.Builder().resultCode(Message.FILE_UPLOAD_SUCCESS.getCode())
          .msg(Message.FILE_UPLOAD_SUCCESS.getName()).build();
     }

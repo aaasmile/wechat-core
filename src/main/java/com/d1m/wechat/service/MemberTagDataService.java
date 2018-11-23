@@ -1,7 +1,7 @@
 package com.d1m.wechat.service;
 
 import com.d1m.wechat.domain.entity.MemberTagData;
-import com.d1m.wechat.exception.WechatException;
+import com.d1m.wechat.dto.AnyschResolveDto;
 
 import java.io.File;
 import java.util.Date;
@@ -14,16 +14,16 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public interface MemberTagDataService extends BaseService<MemberTagData> {
 
-    void batchInsertFromExcel(Integer fileId, File file,Date runTask);
+    void batchInsertFromExcel(Integer fileId, File file,String tenant);
 
-    void batchInsertFromCsv(Integer fileId, File file,Date runTask);
+    void batchInsertFromCsv(Integer fileId, File file,String tenant);
 
     /**
      * 导入数据检查
      *
      * @param list
      */
-     CopyOnWriteArrayList<MemberTagData> checkDataIsOK(CopyOnWriteArrayList<MemberTagData> list) throws Exception;
+     List<MemberTagData> checkDataIsOK(CopyOnWriteArrayList<MemberTagData> list) throws Exception;
 
 
     /**
@@ -48,12 +48,18 @@ public interface MemberTagDataService extends BaseService<MemberTagData> {
      * @param errorMsg
      * @throws Exception
      */
-    public void updateErrorStatus(String errorMsg, MemberTagData memberTagData) throws Exception;
+    public MemberTagData updateErrorStatus(String errorMsg, MemberTagData memberTagData) throws Exception;
 
     /**
      * 分批处理
      */
     public Integer batchExecute(CopyOnWriteArrayList<MemberTagData> list);
+
+    /**
+     * 异步解析
+     * @param resolveDto
+     */
+     void anyscResolve(AnyschResolveDto resolveDto);
 
 
 

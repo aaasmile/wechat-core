@@ -1,10 +1,12 @@
 package com.d1m.wechat.schedule.job;
 
+import java.util.Date;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.annotation.Resource;
 
 import com.d1m.wechat.service.MemberService;
+import com.d1m.wechat.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +38,7 @@ public class MemberTagCsvJob extends BaseJobHandler {
 
     @Override
     public ReturnT<String> run(String... strings) throws Exception {
+        log.info("【异步调度加签】开始时间：" + DateUtil.formatYYYYMMDDHHMMSSS(new Date()));
         try {
             if (strings != null) {
                 //获取导入文件id
@@ -63,6 +66,7 @@ public class MemberTagCsvJob extends BaseJobHandler {
                 //更新上传文件状态为已完成
                 memberTagCsvService.updateFileStatus(fileId, MemberTagCsvStatus.PROCESS_SUCCEED);
                 log.info("======会员导入加签完成》》》》》============");
+                XxlJobLogger.log("======会员导入加签完成》》》》》============");
 
             }
             return ReturnT.SUCCESS;
@@ -70,6 +74,8 @@ public class MemberTagCsvJob extends BaseJobHandler {
             log.error(e.getMessage(), e);
             XxlJobLogger.log("会员导入批量加标签失败：" + e.getMessage());
             return ReturnT.FAIL;
+        }finally {
+            log.info("【异步调度加签】结束时间：" + DateUtil.formatYYYYMMDDHHMMSSS(new Date()));
         }
     }
 
