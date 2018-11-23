@@ -370,7 +370,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
             memberTagDataDao.updateBatch(statusList);
         }
-        log.info("返回待加签的list：", JSON.toJSON(rightList));
+        log.info("返回待加签的list：", (rightList == null ? 0 : rightList.size()));
         return rightList;
     }
 
