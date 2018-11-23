@@ -105,11 +105,11 @@ public class MemberTagCsvController extends BaseController {
 
         FileUtils.copyInputStreamToFile(file.getInputStream(), targetFile);
 
-
+        String taskName = "MemberAddTagCSV_" + DateUtil.formatYYYYMMDDHHMMSS(new Date());
         final MemberTagCsv.Builder memberTagCsvBuilder = new MemberTagCsv.Builder()
          .oriFile(file.getOriginalFilename()).sourceFilePath(fileFullName)
          .fileSize(String.valueOf(file.getSize())).wechatId(getWechatId()).creatorId(getUser().getId())
-         .status(MemberTagCsvStatus.IN_PROCESS)
+         .task(taskName).status(MemberTagCsvStatus.IN_PROCESS)
          .format(originalFilename.substring(originalFilename.lastIndexOf(".") + 1));
 
         if (originalFilename.endsWith(".csv")) {
