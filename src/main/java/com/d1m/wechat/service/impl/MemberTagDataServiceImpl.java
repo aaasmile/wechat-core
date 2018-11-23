@@ -357,7 +357,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
                 if (b) {
                     //检查标签是否存在
-                    MemberTagData tagData = checkTagsIsExist(memberTagData.getOriginalTag(), memberTagData.getWechatId(), statusList, memberTagData.getDataId());
+                    MemberTagData tagData = checkTagsIsExist(memberTagData, statusList);
                     //更新数据检查状态
                     MemberTagData updatetag = updateCheckStats(tagData);
                     //statusList.add(memberTagData);
@@ -505,8 +505,11 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      * @param
      * @return
      */
-    public MemberTagData checkTagsIsExist(String tagStr, Integer wechatId, List<MemberTagData> statusList, Integer dataId) throws Exception {
+    public MemberTagData checkTagsIsExist(MemberTagData memberTagData, List<MemberTagData> statusList) throws Exception {
         MemberTagData preData = null;
+        String tagStr = memberTagData.getOriginalTag();
+        Integer wechatId = memberTagData.getWechatId();
+        Integer dataId = memberTagData.getDataId();
         if (StringUtils.isNotBlank(tagStr)) {
             String[] tags = tagStr.split("\\|");
             for (String tag : tags) {
@@ -526,6 +529,10 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                     if (tmpData != null) statusList.add(tmpData);
                 }
             }
+        }
+        if(preData != null) {
+        	preData.setOpenId(memberTagData.getOpenId());
+        	preData.setWechatId(wechatId);
         }
         return preData;
     }
