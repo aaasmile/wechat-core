@@ -357,7 +357,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
                 if (b) {
                     //检查标签是否存在
-                    checkTagsIsExist(memberTagData.getOriginalTag(), memberTagData, statusList);
+                    checkTagsIsExist(memberTagData.getOriginalTag(), memberTagData.getWechatId(), statusList, memberTagData.getDataId());
                     //更新数据检查状态
                     MemberTagData updatetag = updateCheckStats(memberTagData);
                     //statusList.add(memberTagData);
@@ -430,13 +430,13 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      * @param errorMsg
      * @throws Exception
      */
-    public MemberTagData updateErrorTagAndErrorMsg(String errorMsg, String tag, String errorTag, MemberTagData memberTagData) throws Exception {
+    public MemberTagData updateErrorTagAndErrorMsg(String errorMsg, String tag, String errorTag, MemberTagData memberTagData, Integer dataId) throws Exception {
         try {
             MemberTagData tmpData = new MemberTagData();
-            tmpData.setErrorTag(setTags(memberTagData.getErrorTag(), errorTag));
-            tmpData.setTag(setTags(memberTagData.getTag(), tag));
-            tmpData.setDataId(memberTagData.getDataId());
-            tmpData.setErrorMsg(setErrorMsg(memberTagData.getErrorMsg(), errorMsg));
+            tmpData.setErrorTag(setTags(memberTagData == null ? null : memberTagData.getErrorTag(), errorTag));
+            tmpData.setTag(setTags(memberTagData == null ? null : memberTagData.getTag(), tag));
+            tmpData.setDataId(dataId);
+            tmpData.setErrorMsg(setErrorMsg(memberTagData == null ? null : memberTagData.getErrorMsg(), errorMsg));
             return tmpData;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -505,25 +505,27 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      * @param
      * @return
      */
-    public void checkTagsIsExist(String tagStr, MemberTagData currentMemberTagData, List<MemberTagData> statusList) throws Exception {
+    public void checkTagsIsExist(String tagStr, Integer wechatId, List<MemberTagData> statusList, Integer dataId) throws Exception {
         if (StringUtils.isNotBlank(tagStr)) {
             String[] tags = tagStr.split("\\|");
+            MemberTagData preData = null;
             for (String tag : tags) {
                 MemberTag memberTag = new MemberTag();
                 memberTag.setName(tag);
-                memberTag.setWechatId(currentMemberTagData.getWechatId());
+                memberTag.setWechatId(wechatId);
                 memberTag.setStatus((byte) 1);
                 memberTag = memberTagMapper.selectOne(memberTag);
                 if (memberTag == null) {
                     String errorMsg = tag + "：不存在此标签";
-                    MemberTagData tmpData = updateErrorTagAndErrorMsg(errorMsg, null, tag, currentMemberTagData);
+                    MemberTagData tmpData = updateErrorTagAndErrorMsg(errorMsg, null, tag, preData, dataId);
+                    preData = tmpData;
                     if (tmpData != null) statusList.add(tmpData);
                 } else {
-                    MemberTagData tmpData = updateErrorTagAndErrorMsg(null, tag, null, currentMemberTagData);
+                    MemberTagData tmpData = updateErrorTagAndErrorMsg(null, tag, null, preData, dataId);
+                    preData = tmpData;
                     if (tmpData != null) statusList.add(tmpData);
                 }
             }
-            currentMemberTagData.setTag(tagStr);
         }
     }
 
