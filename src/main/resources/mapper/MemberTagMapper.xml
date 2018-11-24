@@ -21,8 +21,22 @@
 		<result column="count" jdbcType="INTEGER" property="count" />
 	</resultMap>
 
-	<select id="selectNamesByStatus" resultType="java.lang.String">
-		select name from member_tag where status = 1
+	<select id="selectOneByName" parameterType="com.d1m.wechat.model.MemberTag" resultType="com.d1m.wechat.model.MemberTag">
+		SELECT
+			mt.id,
+			mt.`name`,
+			mt.member_tag_type_id,
+			mt.wechat_id,
+			mt.`status`
+		FROM
+			member_tag mt
+		<where>
+			mt.wechat_id = #{wechatId} and mt.status = 1
+			<if test="name != null">
+				and mt.name = #{name}
+			</if>
+		</where>
+		LIMIT 1
 	</select>
 	<select id="getDuplicateName" resultMap="BaseResultMap">
 		select * from member_tag
