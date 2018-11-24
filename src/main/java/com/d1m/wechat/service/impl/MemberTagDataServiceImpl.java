@@ -503,10 +503,16 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      * @return
      */
     public Integer selectCount(String openId) {
-        Member member = new Member();
-        member.setOpenId(openId);
-        return memberMapper.selectCount(member);
-
+        try {
+        	Member member = new Member();
+            member.setOpenId(openId);
+            Integer count = memberMapper.selectCount(member);
+            log.debug(".." + count);
+            return count;
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			return -1;
+		}
     }
 
 
@@ -522,6 +528,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         	String tagStr = memberTagData.getOriginalTag();
             Integer wechatId = memberTagData.getWechatId();
             Integer dataId = memberTagData.getDataId();
+            log.debug("..." + StringUtils.isNotBlank(tagStr));
             if (StringUtils.isNotBlank(tagStr)) {
                 String[] tags = tagStr.split("\\|");
                 for (String tag : tags) {
@@ -615,8 +622,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         } catch (Exception e) {
             status = MemberTagDataStatus.PROCESS_FAILURE;
             errorMsg = "导入失败";
-            e.printStackTrace();
-            log.info(errorMsg + e.getMessage());
+            log.error(e.getMessage(), e);
         } finally {
             if (CollectionUtils.isNotEmpty(list)) {
                 for (MemberTagData memberTagData : list) {
