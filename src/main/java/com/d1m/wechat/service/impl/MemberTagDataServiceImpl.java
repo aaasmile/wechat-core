@@ -525,7 +525,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                 memberTag.setName(tag);
                 memberTag.setWechatId(wechatId);
                 memberTag.setStatus((byte) 1);
-                memberTag = memberTagMapper.selectOne(memberTag);
+                memberTag = memberTagMapper.selectOneByName(memberTag);
                 if (memberTag == null) {
                     String errorMsg = tag + "：不存在此标签";
                     MemberTagData tmpData = updateErrorTagAndErrorMsg(errorMsg, null, tag, preData, dataId);

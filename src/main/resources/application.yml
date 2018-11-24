@@ -53,8 +53,9 @@ spring:
 
   http:
     multipart:
-      maxFileSize: 10MB
+      maxFileSize: 100MB
       maxRequestSize: 100MB
+
     encoding:
       charset: UTF-8
       force: true
