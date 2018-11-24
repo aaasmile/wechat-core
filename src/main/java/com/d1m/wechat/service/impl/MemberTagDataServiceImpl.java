@@ -337,34 +337,37 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
             log.info("======正在进行数据检查》》》》》============");
             for (MemberTagData memberTagData : list) {
-                Boolean b = true;
+//                Boolean b = true;
                 log.debug("memberTagData>>" + JSONObject.toJSON(memberTagData));
                 //校验OpenID
                 if (StringUtils.isEmpty(memberTagData.getOpenId())) {
                     MemberTagData tmpData = updateErrorStatus("会员OpenID不能为空", memberTagData);
                     if (tmpData != null) statusList.add(tmpData);
-                    b = false;
+                    continue;
+//                    b = false;
                 }
 
                 //校验标签
-                if (b) {
+//                if (b) {
                     if (StringUtils.isEmpty(memberTagData.getOriginalTag())) {
                         MemberTagData tmpData = updateErrorStatus("标签不能为空", memberTagData);
                         if (tmpData != null) statusList.add(tmpData);
-                        b = false;
+                        continue;
+//                        b = false;
                     }
-                }
+//                }
 
-                if (b) {
+//                if (b) {
                     //检查openID是否存在
                     if (selectCount(memberTagData.getOpenId()) <= 0) {
                         MemberTagData tmpData = updateErrorStatus("不存在此会员OpenID", memberTagData);
                         if (tmpData != null) statusList.add(tmpData);
-                        b = false;
+                        continue;
+//                        b = false;
                     }
-                }
+//                }
 
-                if (b) {
+//                if (b) {
                     //检查标签是否存在
                     MemberTagData tagData = checkTagsIsExist(memberTagData, statusList);
                     //更新数据检查状态
@@ -374,7 +377,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                     if (updatetag != null && updatetag.getCheckStatus()) {
                         rightList.add(updatetag);
                     }
-                }
+//                }
             }
 
             memberTagDataDao.updateBatch(statusList);
