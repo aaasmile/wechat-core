@@ -503,16 +503,9 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      * @return
      */
     public Integer selectCount(String openId) {
-        try {
-        	Member member = new Member();
-            member.setOpenId(openId);
-            Integer count = memberMapper.selectCount(member);
-            log.debug(".." + count);
-            return count;
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-			return -1;
-		}
+    	Member member = new Member();
+        member.setOpenId(openId);
+        return memberMapper.selectCount(member);
     }
 
 
@@ -528,17 +521,14 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
         	String tagStr = memberTagData.getOriginalTag();
             Integer wechatId = memberTagData.getWechatId();
             Integer dataId = memberTagData.getDataId();
-            log.debug("..." + StringUtils.isNotBlank(tagStr));
             if (StringUtils.isNotBlank(tagStr)) {
                 String[] tags = tagStr.split("\\|");
                 for (String tag : tags) {
-                	log.debug("..." + tag);
                     MemberTag queryMemberTag = new MemberTag();
                     queryMemberTag.setName(tag);
                     queryMemberTag.setWechatId(wechatId);
                     queryMemberTag.setStatus((byte) 1);
                     MemberTag resultMemberTag = memberTagMapper.selectOneByName(queryMemberTag);
-                    log.debug("..." + resultMemberTag);
                     if (resultMemberTag == null) {
                         String errorMsg = tag + "：不存在此标签";
                         MemberTagData tmpData = updateErrorTagAndErrorMsg(errorMsg, null, tag, preData, dataId);
