@@ -79,7 +79,7 @@ public class MemberTag {
      * @param name 名称
      */
     public void setName(String name) {
-        this.name = name == null ? null : name.trim();
+        this.name = name;
     }
 
     /**
