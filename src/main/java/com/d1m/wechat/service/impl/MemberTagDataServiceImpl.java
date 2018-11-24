@@ -532,12 +532,14 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             if (StringUtils.isNotBlank(tagStr)) {
                 String[] tags = tagStr.split("\\|");
                 for (String tag : tags) {
-                    MemberTag memberTag = new MemberTag();
-                    memberTag.setName(tag);
-                    memberTag.setWechatId(wechatId);
-                    memberTag.setStatus((byte) 1);
-                    memberTag = memberTagMapper.selectOneByName(memberTag);
-                    if (memberTag == null) {
+                	log.debug("..." + tag);
+                    MemberTag queryMemberTag = new MemberTag();
+                    queryMemberTag.setName(tag);
+                    queryMemberTag.setWechatId(wechatId);
+                    queryMemberTag.setStatus((byte) 1);
+                    MemberTag resultMemberTag = memberTagMapper.selectOneByName(queryMemberTag);
+                    log.debug("..." + resultMemberTag);
+                    if (resultMemberTag == null) {
                         String errorMsg = tag + "：不存在此标签";
                         MemberTagData tmpData = updateErrorTagAndErrorMsg(errorMsg, null, tag, preData, dataId);
                         preData = tmpData;
