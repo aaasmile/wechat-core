@@ -338,7 +338,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             log.info("======正在进行数据检查》》》》》============");
             for (MemberTagData memberTagData : list) {
 //                Boolean b = true;
-                log.debug("memberTagData>>" + JSONObject.toJSON(memberTagData));
+                log.debug("memberTagData>>" + memberTagData.toString());
                 //校验OpenID
                 if (StringUtils.isEmpty(memberTagData.getOpenId())) {
                     MemberTagData tmpData = updateErrorStatus("会员OpenID不能为空", memberTagData);
@@ -416,7 +416,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      * @param
      * @throws Exception
      */
-    public MemberTagData updateCheckStats(MemberTagData memberTagData) throws Exception {
+    public MemberTagData updateCheckStats(MemberTagData memberTagData) {
         try {
             MemberTagData tmpData = new MemberTagData();
             BeanUtils.copyProperties(memberTagData, tmpData);
@@ -516,35 +516,39 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      * @param
      * @return
      */
-    public MemberTagData checkTagsIsExist(MemberTagData memberTagData, List<MemberTagData> statusList) throws Exception {
+    public MemberTagData checkTagsIsExist(MemberTagData memberTagData, List<MemberTagData> statusList) {
         MemberTagData preData = null;
-        String tagStr = memberTagData.getOriginalTag();
-        Integer wechatId = memberTagData.getWechatId();
-        Integer dataId = memberTagData.getDataId();
-        if (StringUtils.isNotBlank(tagStr)) {
-            String[] tags = tagStr.split("\\|");
-            for (String tag : tags) {
-                MemberTag memberTag = new MemberTag();
-                memberTag.setName(tag);
-                memberTag.setWechatId(wechatId);
-                memberTag.setStatus((byte) 1);
-                memberTag = memberTagMapper.selectOneByName(memberTag);
-                if (memberTag == null) {
-                    String errorMsg = tag + "：不存在此标签";
-                    MemberTagData tmpData = updateErrorTagAndErrorMsg(errorMsg, null, tag, preData, dataId);
-                    preData = tmpData;
-                    if (tmpData != null) statusList.add(tmpData);
-                } else {
-                    MemberTagData tmpData = updateErrorTagAndErrorMsg(null, tag, null, preData, dataId);
-                    preData = tmpData;
-                    if (tmpData != null) statusList.add(tmpData);
+        try {
+        	String tagStr = memberTagData.getOriginalTag();
+            Integer wechatId = memberTagData.getWechatId();
+            Integer dataId = memberTagData.getDataId();
+            if (StringUtils.isNotBlank(tagStr)) {
+                String[] tags = tagStr.split("\\|");
+                for (String tag : tags) {
+                    MemberTag memberTag = new MemberTag();
+                    memberTag.setName(tag);
+                    memberTag.setWechatId(wechatId);
+                    memberTag.setStatus((byte) 1);
+                    memberTag = memberTagMapper.selectOneByName(memberTag);
+                    if (memberTag == null) {
+                        String errorMsg = tag + "：不存在此标签";
+                        MemberTagData tmpData = updateErrorTagAndErrorMsg(errorMsg, null, tag, preData, dataId);
+                        preData = tmpData;
+                        if (tmpData != null) statusList.add(tmpData);
+                    } else {
+                        MemberTagData tmpData = updateErrorTagAndErrorMsg(null, tag, null, preData, dataId);
+                        preData = tmpData;
+                        if (tmpData != null) statusList.add(tmpData);
+                    }
                 }
             }
-        }
-        if(preData != null) {
-        	preData.setOpenId(memberTagData.getOpenId());
-        	preData.setWechatId(wechatId);
-        }
+            if(preData != null) {
+            	preData.setOpenId(memberTagData.getOpenId());
+            	preData.setWechatId(wechatId);
+            }
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
         return preData;
     }
 
