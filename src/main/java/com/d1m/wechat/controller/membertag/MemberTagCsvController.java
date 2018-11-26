@@ -93,7 +93,7 @@ public class MemberTagCsvController extends BaseController {
         if (!originalFilename.endsWith(".csv") && !originalFilename.endsWith(".xls")
          && !originalFilename.endsWith(".xlsx")) {
 
-            return new BaseResponse.Builder().msg("上传失败，格式有误，请上传.xlsx或.csv（utf-8格式）文件").build();
+            return new BaseResponse.Builder().resultCode(5001).msg("上传失败，格式有误，请上传.xlsx或.csv（utf-8格式）文件").build();
         }
         FileUploadConfigUtil instance = FileUploadConfigUtil.getInstance();
         String uploadPath = instance.getValue(getWechatId(), "upload_path");
@@ -153,13 +153,13 @@ public class MemberTagCsvController extends BaseController {
         SequenceWriter writer = null;
         final MemberTagCsv memberTagCsv = memberTagCsvService.selectByKey(id);
         if (Objects.isNull(memberTagCsv)) {
-            return new BaseResponse.Builder().resultCode(0).msg("找不到上传文件").build();
+            return new BaseResponse.Builder().resultCode(5002).msg("找不到上传文件").build();
         }
         final Example example = new Example(MemberTagData.class);
         example.createCriteria().andEqualTo("fileId", id).andIsNotNull("errorMsg");
         final List<MemberTagData> memberTagDatas = memberTagDataService.selectByExample(example);
         if (CollectionUtils.isEmpty(memberTagDatas)) {
-            return new BaseResponse.Builder().resultCode(0).msg("没有错误数据").build();
+            return new BaseResponse.Builder().resultCode(5003).msg("没有错误数据").build();
         }
 
         final List<FailDataExport> failDataExports = memberTagDatas.stream().map(FailDataExport::convert)
@@ -208,13 +208,13 @@ public class MemberTagCsvController extends BaseController {
         SequenceWriter writer = null;
         final MemberTagCsv memberTagCsv = memberTagCsvService.selectByKey(id);
         if (Objects.isNull(memberTagCsv)) {
-            return new BaseResponse.Builder().resultCode(0).msg("找不到上传文件").build();
+            return new BaseResponse.Builder().resultCode(5002).msg("找不到上传文件").build();
         }
         final Example example = new Example(MemberTagData.class);
         example.createCriteria().andEqualTo("fileId", id).andIsNull("errorMsg");
         final List<MemberTagData> memberTagDatas = memberTagDataService.selectByExample(example);
         if (CollectionUtils.isEmpty(memberTagDatas)) {
-            return new BaseResponse.Builder().resultCode(0).msg("没有数据").build();
+            return new BaseResponse.Builder().resultCode(5003).msg("没有数据").build();
         }
         final List<SuccDataExports> succDataExports = memberTagDatas.stream().map(SuccDataExports::convert)
          .collect(Collectors.toList());
