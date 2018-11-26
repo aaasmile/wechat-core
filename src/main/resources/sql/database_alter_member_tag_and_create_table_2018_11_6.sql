@@ -8,8 +8,7 @@ ALTER TABLE member_tag_csv ADD encoding varchar(50) NULL COMMENT '文件编码';
 ALTER TABLE member_tag_csv ADD last_update_time timestamp DEFAULT current_timestamp NULL;
 ALTER TABLE member_tag_csv ADD success_count int NULL COMMENT '成功条数';
 ALTER TABLE member_tag_csv ADD fail_count int NULL COMMENT '失败条数';
-ALTER TABLE member_tag_csv ADD error_msg VARCHAR(100) NULL COMMENT '失败原因
-';
+ALTER TABLE member_tag_csv ADD error_msg text NULL COMMENT '失败原因';
 
 ALTER TABLE member_tag_csv MODIFY status tinyint(2) NOT NULL COMMENT '//处理状态（0-未处理，1-进行中，2-处理完成）
 状态(0 导入中，1 已导入，2 导入失败，3 处理中，4 处理成功，5 处理失败)';
@@ -35,16 +34,21 @@ CREATE TABLE member_tag_data
   file_id int COMMENT '上传文件编号',
   open_id varchar(100),
   wechat_id int,
-  tag varchar(200),
+  tag varchar(200) COMMENT '正确标签',
   error_tag varchar(200) COMMENT '问题标签',
   original_tag varchar(200) COMMENT '原始标签',
   status tinyint DEFAULT 0 COMMENT '状态（0 未处理，4 处理中，5 处理成功，6 处理失败）',
   check_status bit DEFAULT 1 COMMENT '数据检查状态
 (1 正常，0 有问题)',
-  remark varchar(200),
-  error_msg varchar(200),
+  remark varchar(200) COMMENT '备注',
+  error_msg varchar(200) COMMENT '失败原因',
   version int COMMENT '乐观锁版本号',
   created_at timestamp DEFAULT current_timestamp,
   finish_time timestamp DEFAULT current_timestamp
 );
 ALTER TABLE member_tag_data COMMENT = '上传数据表';
+ALTER TABLE member_tag_data ADD INDEX fieId ( `file_id` );
+ALTER TABLE member_tag_data ADD INDEX data_id ( `data_id` );
+ALTER TABLE member_tag_data ADD INDEX wechat_id ( `wechat_id` );
+
+ALTER TABLE member_tag ADD INDEX name ( `name` );
