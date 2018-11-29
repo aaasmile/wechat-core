@@ -30,6 +30,9 @@ public class MaterialDto {
 	
 	private String wxPicUrl;
 
+	private String mediaId;
+
+
 //	private Integer comment;
 
 	public String getCreatedAt() {
@@ -122,7 +125,15 @@ public class MaterialDto {
 		this.wxPicUrl = wxPicUrl;
 	}
 
-//	public Integer getComment() {
+	public String getMediaId() {
+		return mediaId;
+	}
+
+	public void setMediaId(String mediaId) {
+		this.mediaId = mediaId;
+	}
+
+	//	public Integer getComment() {
 //		return comment;
 //	}
 //	public void setComment(Integer comment) {

@@ -295,6 +295,8 @@ public enum Message {
 
     MATERIAL_PREVIEW_SUCCESS(1, "微信预览素材成功"),
 
+    MATERIAL_UNABLE_DELETE(16020, "此图片正在被使用中，无法删除！"),
+
     /**
      * action_engine
      */
