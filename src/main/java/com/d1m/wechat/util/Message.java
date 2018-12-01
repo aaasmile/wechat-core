@@ -373,6 +373,8 @@ public enum Message {
     CONVERSATION_CONTENT_NOT_SUPPORT(20002, "会话内容类型不支持"),
 
     CONVERSATION_LIST_SUCCESS(1, "获取会话列表成功"),
+    
+    CONVERSATION_LIST_FAIL(0, "获取会话列表失败"),
 
     CONVERSATION_MASS_LIST_SUCCESS(1, "获取群发会话列表成功"),
 

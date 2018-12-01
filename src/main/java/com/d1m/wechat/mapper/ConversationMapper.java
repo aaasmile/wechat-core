@@ -9,7 +9,9 @@ import org.apache.ibatis.annotations.Param;
 import com.d1m.wechat.dto.ConversationDto;
 import com.d1m.wechat.dto.ReportMessageDto;
 import com.d1m.wechat.dto.ReportMessageItemDto;
+import com.d1m.wechat.model.Behavior;
 import com.d1m.wechat.model.Conversation;
+import com.d1m.wechat.pamametermodel.ConversationModel;
 import com.d1m.wechat.util.MyMapper;
 
 public interface ConversationMapper extends MyMapper<Conversation> {
@@ -58,4 +60,7 @@ public interface ConversationMapper extends MyMapper<Conversation> {
                                                             @Param("endDate") Date endDate);
 
     List<Integer> getLiveChatStatistic(@Param("wechatId") Integer wechatId);
+    
+    public Page<Behavior.UserBehavior> selectUserBehavior(Integer wechatId, @Param("memberId") Integer memberId);
+	public Page<Behavior.UserLocation> selectUserLocation(Integer wechatId, @Param("memberId") Integer memberId);
 }
