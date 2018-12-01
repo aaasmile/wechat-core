@@ -12,11 +12,10 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -25,6 +24,7 @@ import com.d1m.wechat.dto.ConversationDto;
 import com.d1m.wechat.dto.ImageTextDto;
 import com.d1m.wechat.dto.MaterialDto;
 import com.d1m.wechat.dto.MemberDto;
+import com.d1m.wechat.model.Behavior;
 import com.d1m.wechat.model.Conversation;
 import com.d1m.wechat.model.enums.MassConversationResultStatus;
 import com.d1m.wechat.model.enums.MsgType;
@@ -42,9 +42,9 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 
-@Controller
+@Api(value = "会话API", tags = "会话接口")
+@RestController
 @RequestMapping("/conversation")
-@Api(value="会话API", tags="会话接口")
 public class ConversationController extends BaseController {
 
 	private Logger log = LoggerFactory.getLogger(ConversationController.class);
@@ -57,60 +57,41 @@ public class ConversationController extends BaseController {
 
 	@Autowired
 	private MaterialService materialService;
-	
-	@ApiOperation(value="创建群发会话", tags="会话接口")
-	@ApiResponse(code=200, message="1-创建群发会话成功")
+
+	@ApiOperation(value = "创建群发会话", tags = "会话接口")
+	@ApiResponse(code = 200, message = "1-创建群发会话成功")
 	@RequestMapping(value = "mass/new.json", method = RequestMethod.POST)
-	@ResponseBody
 	@RequiresPermissions("member:list")
-	public JSONObject createMass(
-			@ApiParam(name="MassConversationModel", required=false)
-				@RequestBody(required = false) MassConversationModel massConversationModel,
-			HttpSession session, HttpServletRequest request,
-			HttpServletResponse response) {
+	public JSONObject createMass(@ApiParam(name = "MassConversationModel", required = false) @RequestBody(required = false) MassConversationModel massConversationModel, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		try {
-			conversationService.preMassConversation(getWechatId(session),
-					getUser(session), massConversationModel);
+			conversationService.preMassConversation(getWechatId(session), getUser(session), massConversationModel);
 			return representation(Message.CONVERSATION_MASS_CREATE_SUCCESS);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			return wrapException(e);
 		}
 	}
-	
-	@ApiOperation(value="群发审核", tags="会话接口")
-	@ApiResponse(code=200, message="1-群发审核成功")
+
+	@ApiOperation(value = "群发审核", tags = "会话接口")
+	@ApiResponse(code = 200, message = "1-群发审核成功")
 	@RequestMapping(value = "mass/audit.json", method = RequestMethod.POST)
-	@ResponseBody
-	public JSONObject auditMass(
-			@ApiParam(name="MassConversationModel", required=false)
-				@RequestBody(required = false) MassConversationModel massConversationModel,
-			HttpSession session, HttpServletRequest request,
-			HttpServletResponse response) {
+	public JSONObject auditMass(@ApiParam(name = "MassConversationModel", required = false) @RequestBody(required = false) MassConversationModel massConversationModel, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		try {
-			conversationService.auditMassConversation(getWechatId(session),
-					getUser(session), massConversationModel);
+			conversationService.auditMassConversation(getWechatId(session), getUser(session), massConversationModel);
 			return representation(Message.CONVERSATION_MASS_AUDIT_SUCCESS);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			return wrapException(e);
 		}
 	}
-	
-	@ApiOperation(value="群发发送", tags="会话接口")
-	@ApiResponse(code=200, message="1-群发发送成功")
+
+	@ApiOperation(value = "群发发送", tags = "会话接口")
+	@ApiResponse(code = 200, message = "1-群发发送成功")
 	@RequestMapping(value = "mass/send.json", method = RequestMethod.POST)
-	@ResponseBody
-	public JSONObject sendMass(
-			@ApiParam(name="MassConversationModel", required=false)
-				@RequestBody(required = false) MassConversationModel massConversationModel,
-			HttpSession session, HttpServletRequest request,
-			HttpServletResponse response) {
+	public JSONObject sendMass(@ApiParam(name = "MassConversationModel", required = false) @RequestBody(required = false) MassConversationModel massConversationModel, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		try {
-			massConversationModel
-					.setStatus(MassConversationResultStatus.AUDIT_PASS.name());
-			conversationService.sendMassConversation(getWechatId(session),
-					getUser(session), massConversationModel);
+			massConversationModel.setStatus(MassConversationResultStatus.AUDIT_PASS.name());
+			conversationService.sendMassConversation(getWechatId(session), getUser(session), massConversationModel);
 			return representation(Message.CONVERSATION_MASS_SEND_SUCCESS);
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -118,27 +99,18 @@ public class ConversationController extends BaseController {
 		}
 	}
 
-	@ApiOperation(value="创建会话", tags="会话接口")
-	@ApiResponse(code=200, message="1-创建会话成功")
+	@ApiOperation(value = "创建会话", tags = "会话接口")
+	@ApiResponse(code = 200, message = "1-创建会话成功")
 	@RequestMapping(value = "kfmember.json", method = RequestMethod.POST)
-	@ResponseBody
-	public JSONObject create(
-			@ApiParam(name="ConversationModel", required=false)
-				@RequestBody(required = false) ConversationModel conversationModel,
-			HttpSession session, HttpServletRequest request,
-			HttpServletResponse response) {
+	public JSONObject create(@ApiParam(name = "ConversationModel", required = false) @RequestBody(required = false) ConversationModel conversationModel, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		try {
-			Conversation conversation = conversationService.wechatToMember(
-					getWechatId(session), getUser(session), conversationModel);
-			MemberDto member = memberService.getMemberDto(getWechatId(session),
-					conversation.getMemberId());
+			Conversation conversation = conversationService.wechatToMember(getWechatId(session), getUser(session), conversationModel);
+			MemberDto member = memberService.getMemberDto(getWechatId(session), conversation.getMemberId());
 			ConversationDto dto = new ConversationDto();
 			dto.setId(conversation.getId());
-			dto.setCreatedAt(DateUtil.formatYYYYMMDDHHMMSS(conversation
-					.getCreatedAt()));
+			dto.setCreatedAt(DateUtil.formatYYYYMMDDHHMMSS(conversation.getCreatedAt()));
 			dto.setContent(conversation.getContent());
-			dto.setCurrent(DateUtil.formatYYYYMMDDHHMMSS(conversation
-					.getCreatedAt()));
+			dto.setCurrent(DateUtil.formatYYYYMMDDHHMMSS(conversation.getCreatedAt()));
 			dto.setDir(conversation.getDirection() ? 1 : 0);
 			dto.setIsMass(conversation.getIsMass() ? 1 : 0);
 			dto.setMemberId(conversation.getMemberId() + "");
@@ -155,76 +127,51 @@ public class ConversationController extends BaseController {
 		}
 	}
 
-	@ApiOperation(value="获取群发会话列表", tags="会话接口")
-	@ApiResponse(code=200, message="1-获取群发会话列表成功")
+	@ApiOperation(value = "获取群发会话列表", tags = "会话接口")
+	@ApiResponse(code = 200, message = "1-获取群发会话列表成功")
 	@RequestMapping(value = "mass/list.json", method = RequestMethod.POST)
-	@ResponseBody
 	@RequiresPermissions("message:batch-message-list")
-	public JSONObject massList(
-			@ApiParam(name="ConversationModel", required=false)
-				@RequestBody(required = false) ConversationModel conversationModel,
-			HttpSession session, HttpServletRequest request,
-			HttpServletResponse response) {
+	public JSONObject massList(@ApiParam(name = "ConversationModel", required = false) @RequestBody(required = false) ConversationModel conversationModel, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		if (conversationModel == null) {
 			conversationModel = new ConversationModel();
 		}
 		Integer wechatId = getWechatId(session);
-		Page<ConversationDto> page = conversationService.searchMass(wechatId,
-				conversationModel, true);
+		Page<ConversationDto> page = conversationService.searchMass(wechatId, conversationModel, true);
 		List<ConversationDto> result = convertMass(page, wechatId);
-		return representation(Message.CONVERSATION_MASS_LIST_SUCCESS, result,
-				conversationModel.getPageSize(),
-				conversationModel.getPageNum(), page.getTotal());
+		return representation(Message.CONVERSATION_MASS_LIST_SUCCESS, result, conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
 	}
 
-	@ApiOperation(value="获取群发会话列表", tags="会话接口")
-	@ApiResponse(code=200, message="1-获取群发会话列表成功")
+	@ApiOperation(value = "获取群发会话列表", tags = "会话接口")
+	@ApiResponse(code = 200, message = "1-获取群发会话列表成功")
 	@RequestMapping(value = "mass/auditlist.json", method = RequestMethod.POST)
-	@ResponseBody
 	@RequiresPermissions("message:batch-message-review")
-	public JSONObject massAuditList(
-			@ApiParam(name="ConversationModel", required=false)
-				@RequestBody(required = false) ConversationModel conversationModel,
-			HttpSession session, HttpServletRequest request,
-			HttpServletResponse response) {
+	public JSONObject massAuditList(@ApiParam(name = "ConversationModel", required = false) @RequestBody(required = false) ConversationModel conversationModel, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		if (conversationModel == null) {
 			conversationModel = new ConversationModel();
 		}
 		// conversationModel.setStatus(MassConversationResultStatus.WAIT_AUDIT
 		// .getValue());
 		Integer wechatId = getWechatId(session);
-		Page<ConversationDto> page = conversationService.searchMass(
-				getWechatId(session), conversationModel, true);
+		Page<ConversationDto> page = conversationService.searchMass(getWechatId(session), conversationModel, true);
 		List<ConversationDto> result = convertMass(page, wechatId);
-		return representation(Message.CONVERSATION_MASS_LIST_SUCCESS, result,
-				conversationModel.getPageSize(),
-				conversationModel.getPageNum(), page.getTotal());
+		return representation(Message.CONVERSATION_MASS_LIST_SUCCESS, result, conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
 	}
 
-	@ApiOperation(value="获取本月群发会话可用数量", tags="会话接口")
-	@ApiResponse(code=200, message="1-获取本月群发会话可用数量成功")
+	@ApiOperation(value = "获取本月群发会话可用数量", tags = "会话接口")
+	@ApiResponse(code = 200, message = "1-获取本月群发会话可用数量成功")
 	@RequestMapping(value = "massavailable.json", method = RequestMethod.POST)
-	@ResponseBody
-	public JSONObject massavailable(HttpSession session,
-			HttpServletRequest request, HttpServletResponse response) {
-		Integer available = conversationService
-				.countMassAvalible(getWechatId(session));
+	public JSONObject massavailable(HttpSession session, HttpServletRequest request, HttpServletResponse response) {
+		Integer available = conversationService.countMassAvalible(getWechatId(session));
 		JSONObject json = new JSONObject();
 		json.put("available", available);
-		return representation(Message.CONVERSATION_GET_MASS_AVAILABLE_SUCCESS,
-				json);
+		return representation(Message.CONVERSATION_GET_MASS_AVAILABLE_SUCCESS, json);
 	}
 
-	@ApiOperation(value="获取会话列表", tags="会话接口")
-	@ApiResponse(code=200, message="1-获取会话列表成功")
+	@ApiOperation(value = "获取会话列表", tags = "会话接口")
+	@ApiResponse(code = 200, message = "1-获取会话列表成功")
 	@RequestMapping(value = "unread/list.json", method = RequestMethod.POST)
-	@ResponseBody
 	@RequiresPermissions("message:message-list")
-	public JSONObject listUnread(
-			@ApiParam(name="ConversationModel", required=false)
-				@RequestBody(required = false) ConversationModel conversationModel,
-			HttpSession session, HttpServletRequest request,
-			HttpServletResponse response) {
+	public JSONObject listUnread(@ApiParam(name = "ConversationModel", required = false) @RequestBody(required = false) ConversationModel conversationModel, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		if (conversationModel == null) {
 			conversationModel = new ConversationModel();
 		}
@@ -233,43 +180,51 @@ public class ConversationController extends BaseController {
 		msgTypes.add(MsgType.TEXT.getValue());
 		msgTypes.add(MsgType.VOICE.getValue());
 		conversationModel.setMsgTypes(msgTypes);
-		Page<ConversationDto> page = conversationService.searchUnread(
-				getWechatId(session), conversationModel, true);
+		Page<ConversationDto> page = conversationService.searchUnread(getWechatId(session), conversationModel, true);
 		List<ConversationDto> result = convert(page);
-		return representation(Message.CONVERSATION_LIST_SUCCESS, result,
-				conversationModel.getPageSize(),
-				conversationModel.getPageNum(), page.getTotal());
+		return representation(Message.CONVERSATION_LIST_SUCCESS, result, conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
 	}
 
-	@ApiOperation(value="获取会话列表", tags="会话接口")
-	@ApiResponse(code=200, message="1-获取会话列表成功")
+	@ApiOperation(value = "获取会话列表", tags = "会话接口")
+	@ApiResponse(code = 200, message = "1-获取会话列表成功")
 	@RequestMapping(value = "list.json", method = RequestMethod.POST)
-	@ResponseBody
-	public JSONObject list(
-			@ApiParam(name="ConversationModel", required=false)
-				@RequestBody(required = false) ConversationModel conversationModel,
-			HttpSession session, HttpServletRequest request,
-			HttpServletResponse response) {
+	public JSONObject list(@ApiParam(name = "ConversationModel", required = false) @RequestBody(required = false) ConversationModel conversationModel, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			if (conversationModel == null) {
 				conversationModel = new ConversationModel();
 			}
 			conversationModel.setUpdateRead(true);
-			Page<ConversationDto> page = conversationService.search(
-					getWechatId(session), conversationModel, true);
+			Page<ConversationDto> page = conversationService.search(getWechatId(session), conversationModel, true);
 			List<ConversationDto> result = convert(page);
-			return representation(Message.CONVERSATION_LIST_SUCCESS, result,
-					conversationModel.getPageSize(),
-					conversationModel.getPageNum(), page.getTotal());
+			return representation(Message.CONVERSATION_LIST_SUCCESS, result, conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			return wrapException(e);
 		}
-
+	}
+	
+	@ApiOperation(value = "用户行为查询接口", tags = "用户行为查询接口")
+	@ApiResponse(code = 200, message = "用户行为查询接口查询成功")
+	@RequestMapping(value = "selectUserBehavior.json")
+	public JSONObject selectUserBehavior(@ApiParam(name = "ConversationModel", required = false) @RequestBody(required = false) ConversationModel conversationModel, HttpSession session) {
+		if(conversationModel.getMemberId() == null) {
+			return this.representation(Message.CONVERSATION_LIST_FAIL, null);
+		}
+		Page<Behavior.UserBehavior> userBehaviorPage = conversationService.selectUserBehavior(getWechatId(session), conversationModel);
+		return this.representation(Message.CONVERSATION_LIST_SUCCESS, userBehaviorPage.getResult());
+	}
+	@ApiOperation(value = "用户位置查询接口", tags = "用户位置查询接口")
+	@ApiResponse(code = 200, message = "用户位置查询接口查询成功")
+	@RequestMapping(value = "selectUserLocation.json")
+	public JSONObject selectUserLocation(@ApiParam(name = "ConversationModel", required = false) @RequestBody(required = false) ConversationModel conversationModel, HttpSession session) {
+		if(conversationModel.getMemberId() == null) {
+			return this.representation(Message.CONVERSATION_LIST_FAIL, null);
+		}
+		Page<Behavior.UserLocation> userLocationPage = conversationService.selectUserLocation(getWechatId(session), conversationModel);
+		return this.representation(Message.CONVERSATION_LIST_SUCCESS, userLocationPage.getResult());
 	}
 
-	private List<ConversationDto> convertMass(Page<ConversationDto> page,
-			Integer wechatId) {
+	private List<ConversationDto> convertMass(Page<ConversationDto> page, Integer wechatId) {
 		List<ConversationDto> result = page.getResult();
 		ImageTextDto item = null;
 		JSONObject itemJson = null;
@@ -280,24 +235,20 @@ public class ConversationController extends BaseController {
 			if (conversationDto.getMaterialId() == null) {
 				if (StringUtils.isNotBlank(conversationDto.getContent())) {
 					List<ImageTextDto> items = new ArrayList<ImageTextDto>();
-					itemJson = JSONArray.parseArray(
-							conversationDto.getContent()).getJSONObject(0);
+					itemJson = JSONArray.parseArray(conversationDto.getContent()).getJSONObject(0);
 					item = new ImageTextDto();
 					item.setTitle(itemJson.getString("title"));
 					item.setSummary(itemJson.getString("summary"));
-					item.setMaterialCoverUrl(itemJson
-							.getString("materialCoverUrl"));
+					item.setMaterialCoverUrl(itemJson.getString("materialCoverUrl"));
 					items.add(item);
 					if (conversationDto.getMaterialId() == null) {
-						conversationDto.setMaterialId(itemJson
-								.getInteger("materialId"));
+						conversationDto.setMaterialId(itemJson.getInteger("materialId"));
 					}
 					conversationDto.setItems(items);
 					conversationDto.setContent(null);
 				}
 			} else {
-				MaterialDto materialDto = materialService.getImageText(
-						wechatId, conversationDto.getMaterialId());
+				MaterialDto materialDto = materialService.getImageText(wechatId, conversationDto.getMaterialId());
 				if (materialDto != null) {
 					List<ImageTextDto> itemDtos = new ArrayList<ImageTextDto>();
 					List<ImageTextDto> items = materialDto.getItems();
@@ -305,8 +256,7 @@ public class ConversationController extends BaseController {
 						item = new ImageTextDto();
 						item.setTitle(items.get(0).getTitle());
 						item.setSummary(items.get(0).getSummary());
-						item.setMaterialCoverUrl(items.get(0)
-								.getMaterialCoverUrl());
+						item.setMaterialCoverUrl(items.get(0).getMaterialCoverUrl());
 						itemDtos.add(item);
 						conversationDto.setItems(itemDtos);
 						conversationDto.setContent(null);
@@ -329,16 +279,14 @@ public class ConversationController extends BaseController {
 				continue;
 			}
 			List<ImageTextDto> items = new ArrayList<ImageTextDto>();
-			itemJson = JSONArray.parseArray(conversationDto.getContent())
-					.getJSONObject(0);
+			itemJson = JSONArray.parseArray(conversationDto.getContent()).getJSONObject(0);
 			item = new ImageTextDto();
 			item.setTitle(itemJson.getString("title"));
 			item.setSummary(itemJson.getString("summary"));
 			item.setMaterialCoverUrl(itemJson.getString("materialCoverUrl"));
 			items.add(item);
 			if (conversationDto.getMaterialId() == null) {
-				conversationDto
-						.setMaterialId(itemJson.getInteger("materialId"));
+				conversationDto.setMaterialId(itemJson.getInteger("materialId"));
 			}
 			conversationDto.setItems(items);
 			conversationDto.setContent(null);

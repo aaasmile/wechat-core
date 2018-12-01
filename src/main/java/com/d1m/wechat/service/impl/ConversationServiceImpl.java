@@ -21,6 +21,7 @@ import com.d1m.wechat.dto.*;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.*;
 import com.d1m.wechat.model.*;
+import com.d1m.wechat.model.Conversation;
 import com.d1m.wechat.model.enums.*;
 import com.d1m.wechat.pamametermodel.ConversationModel;
 import com.d1m.wechat.pamametermodel.MassConversationModel;
@@ -1219,5 +1220,16 @@ public class ConversationServiceImpl extends BaseService<Conversation>
 	@Override
 	public List<ConversationDto> searchCustomerServiceConversation(Integer wechatId, Date startDate, Date endDate) {
 		return conversationMapper.searchCustomerServiceConversation(wechatId, startDate, endDate);
+	}
+
+	@Override
+	public Page<Behavior.UserBehavior> selectUserBehavior(Integer wechatId, ConversationModel conversationModel) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Page<Behavior.UserLocation> selectUserLocation(Integer wechatId, ConversationModel conversationModel) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
