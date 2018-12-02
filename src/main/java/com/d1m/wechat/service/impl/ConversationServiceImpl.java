@@ -1223,13 +1223,11 @@ public class ConversationServiceImpl extends BaseService<Conversation>
 	}
 
 	@Override
-	public Page<Behavior.UserBehavior> selectUserBehavior(Integer wechatId, ConversationModel conversationModel) {
-		// TODO Auto-generated method stub
-		return null;
+	public Page<UserBehavior> selectUserBehavior(Integer wechatId, ConversationModel conversationModel) {
+		return conversationMapper.selectUserBehavior(wechatId, conversationModel.getMemberId());
 	}
 	@Override
-	public Page<Behavior.UserLocation> selectUserLocation(Integer wechatId, ConversationModel conversationModel) {
-		// TODO Auto-generated method stub
-		return null;
+	public Page<UserLocation> selectUserLocation(Integer wechatId, ConversationModel conversationModel) {
+		return conversationMapper.selectUserLocation(wechatId, conversationModel.getMemberId());
 	}
 }
