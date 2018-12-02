@@ -32,6 +32,8 @@ public class MaterialDto {
 
 	private String mediaId;
 
+	private String name;
+
 
 //	private Integer comment;
 
@@ -131,6 +133,14 @@ public class MaterialDto {
 
 	public void setMediaId(String mediaId) {
 		this.mediaId = mediaId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	//	public Integer getComment() {

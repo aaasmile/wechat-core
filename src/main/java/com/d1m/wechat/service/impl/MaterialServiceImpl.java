@@ -7,12 +7,19 @@ import java.util.Date;
 import java.util.List;
 import javax.annotation.Resource;
 
+import cn.d1m.wechat.client.core.WxResponse;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.d1m.wechat.exception.BusinessException;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import groovy.util.logging.Log;
+import groovy.util.logging.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.common.Mapper;
@@ -45,10 +52,9 @@ import com.d1m.wechat.wechatclient.WechatClientDelegate;
 
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
-
 @Service
 public class MaterialServiceImpl extends BaseService<Material> implements MaterialService {
-
+    private static final Logger log = LoggerFactory.getLogger(MaterialServiceImpl.class);
     @Resource
     private MaterialMapper materialMapper;
 
@@ -244,35 +250,43 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
      * 删除图片
      *
      * @param wechatId
-     * @param user
-     * @param id
+     * @param materialId
      * @return
      * @throws WechatException
      */
     @Override
-    public JSONObject deleteImage(Integer wechatId, User user, Integer id)
-     throws WechatException {
-        MaterialDto materialDto = materialMapper.getUsedImageText(wechatId, id);
+    public JSONObject deleteImage(Integer wechatId, Integer materialId)
+     throws BusinessException {
+        MaterialDto materialDto = materialMapper.getUsedImageText(wechatId, materialId);
         notBlank(materialDto, Message.MATERIAL_NOT_EXIST);
         if (CollectionUtils.isNotEmpty(materialDto.getItems()))
             return response(Message.MATERIAL_UNABLE_DELETE, materialDto.getItems());
         Material material = new Material();
-        material.setId(id);
+        material.setId(materialId);
         material.setStatus((byte) 0);
         int res = materialMapper.update(material);
         // 删除微信上的永久素材
         if (res > 0) {
             if (StringUtils.isNotBlank(materialDto.getMediaId())) {
-                WechatClientDelegate.deleteMaterial(wechatId, material.getMediaId());
+                WxResponse wxResponse = WechatClientDelegate.deleteMaterial(wechatId, material.getMediaId());
+
+                log.info("删除微信上的永久素材返回结果：", JSON.toJSON(wxResponse));
+                if (wxResponse.fail()) {
+                    throw new BusinessException(Message.MATERIAL_WX_NOT_DELETE, materialDto.getName());
+                }
             }
         }
-        return response(Message.MATERIAL_IMAGE_DELETE_SUCCESS,null);
+        return response(Message.MATERIAL_IMAGE_DELETE_SUCCESS, null);
     }
 
     private JSONObject response(Message msg, Object data) {
+        return getJsonObject(msg, data);
+    }
+
+    public static JSONObject getJsonObject(Message msg, Object data) {
         JSONObject json = new JSONObject();
         json.put("resultCode", msg.getCode().toString());
-        json.put("msg", msg.getName());
+        json.put("msg", msg.name());
         json.put("data", data);
         return json;
     }

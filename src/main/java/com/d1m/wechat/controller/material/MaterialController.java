@@ -530,7 +530,7 @@ public class MaterialController extends BaseController {
 			HttpServletResponse response) {
 		try {
 			notBlank(materialId, Message.MATERIAL_ID_NOT_BLANK);
-			return materialService.deleteImage(getWechatId(session), getUser(session),materialId);
+			return materialService.deleteImage(getWechatId(session),materialId);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			return wrapException(e);

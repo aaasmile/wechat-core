@@ -178,7 +178,8 @@
         created_at,
         last_push_at,
         modify_at,
-        media_id
+        media_id,
+        name
         FROM
         material m
         <where>
@@ -194,6 +195,7 @@
         <result column="last_push_at" jdbcType="TIMESTAMP" property="lastPushAt"/>
         <result column="modify_at" jdbcType="TIMESTAMP" property="modifyAt"/>
         <result column="media_id" property="mediaId"/>
+        <result column="name" property="name"/>
         <collection column="{materialId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.ImageTextDto"
                     property="items" select="getUsedImageTextDetail"/>
     </resultMap>
