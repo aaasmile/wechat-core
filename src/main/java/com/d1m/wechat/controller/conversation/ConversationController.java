@@ -24,8 +24,9 @@ import com.d1m.wechat.dto.ConversationDto;
 import com.d1m.wechat.dto.ImageTextDto;
 import com.d1m.wechat.dto.MaterialDto;
 import com.d1m.wechat.dto.MemberDto;
-import com.d1m.wechat.model.Behavior;
 import com.d1m.wechat.model.Conversation;
+import com.d1m.wechat.model.UserBehavior;
+import com.d1m.wechat.model.UserLocation;
 import com.d1m.wechat.model.enums.MassConversationResultStatus;
 import com.d1m.wechat.model.enums.MsgType;
 import com.d1m.wechat.pamametermodel.ConversationModel;
@@ -210,7 +211,7 @@ public class ConversationController extends BaseController {
 		if(conversationModel.getMemberId() == null) {
 			return this.representation(Message.CONVERSATION_LIST_FAIL, null);
 		}
-		Page<Behavior.UserBehavior> userBehaviorPage = conversationService.selectUserBehavior(getWechatId(session), conversationModel);
+		Page<UserBehavior> userBehaviorPage = conversationService.selectUserBehavior(getWechatId(session), conversationModel);
 		return this.representation(Message.CONVERSATION_LIST_SUCCESS, userBehaviorPage.getResult());
 	}
 	@ApiOperation(value = "用户位置查询接口", tags = "用户位置查询接口")
@@ -220,7 +221,7 @@ public class ConversationController extends BaseController {
 		if(conversationModel.getMemberId() == null) {
 			return this.representation(Message.CONVERSATION_LIST_FAIL, null);
 		}
-		Page<Behavior.UserLocation> userLocationPage = conversationService.selectUserLocation(getWechatId(session), conversationModel);
+		Page<UserLocation> userLocationPage = conversationService.selectUserLocation(getWechatId(session), conversationModel);
 		return this.representation(Message.CONVERSATION_LIST_SUCCESS, userLocationPage.getResult());
 	}
 

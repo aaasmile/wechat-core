@@ -37,6 +37,6 @@ public interface ConversationService extends IService<Conversation> {
 
 	List<ConversationDto> searchCustomerServiceConversation(Integer wechatId, Date startDate, Date endDate);
 
-	public Page<Behavior.UserBehavior> selectUserBehavior(Integer wechatId, ConversationModel conversationModel);
-	public Page<Behavior.UserLocation> selectUserLocation(Integer wechatId, ConversationModel conversationModel);
+	public Page<UserBehavior> selectUserBehavior(Integer wechatId, ConversationModel conversationModel);
+	public Page<UserLocation> selectUserLocation(Integer wechatId, ConversationModel conversationModel);
 }
