@@ -218,11 +218,6 @@ public class ConversationController extends BaseController {
 			return this.representation(Message.CONVERSATION_LIST_FAIL, null);
 		}
 		Integer wechatId = getWechatId();
-		//default qa
-        if (wechatId == null) {
-        	TenantContext.setCurrentTenant("qa.wechat.d1m.cn");
-            log.info("current domain: qa.wechat.d1m.cn");
-        }
 		Page<UserBehavior> userBehaviorPage = conversationService.selectUserBehavior(wechatId, conversationModel);
 		return this.representation(Message.CONVERSATION_LIST_SUCCESS, userBehaviorPage.getResult());
 	}
@@ -234,11 +229,6 @@ public class ConversationController extends BaseController {
 			return this.representation(Message.CONVERSATION_LIST_FAIL, null);
 		}
 		Integer wechatId = getWechatId();
-		//default qa
-        if (wechatId == null) {
-            TenantContext.setCurrentTenant("qa.wechat.d1m.cn");
-            log.info("current domain: qa.wechat.d1m.cn");
-        }
 		Page<UserLocation> userLocationPage = conversationService.selectUserLocation(wechatId, conversationModel);
 		return this.representation(Message.CONVERSATION_LIST_SUCCESS, userLocationPage.getResult());
 	}

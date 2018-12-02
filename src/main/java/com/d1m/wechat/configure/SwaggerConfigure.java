@@ -1,5 +1,8 @@
 package com.d1m.wechat.configure;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -8,9 +11,12 @@ import org.springframework.util.StopWatch;
 
 import io.swagger.annotations.Api;
 import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.schema.ModelRef;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
+import springfox.documentation.service.Parameter;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -48,8 +54,8 @@ public class SwaggerConfigure /*extends WebMvcConfigurerAdapter implements Envir
 //                .apis(RequestHandlerSelectors.basePackage("com.d1m.wechat.controller.wx"))
 //                .paths(regex("/.*"))
 //                .paths(regex("/test/.*")) // and by paths
-                .build();
-//                .globalOperationParameters(setHeaderToken());
+                .build()
+                .globalOperationParameters(setHeaderHost());
 //                .security/Schemes(Collections.singletonList(oauth()));
         watch.stop();
         log.debug("Started Swagger in {} ms", watch.getTotalTimeMillis());
@@ -102,15 +108,15 @@ public class SwaggerConfigure /*extends WebMvcConfigurerAdapter implements Envir
 //    }	
     
     
-//    private List<Parameter> setHeaderToken() {
-//        ParameterBuilder tokenPar = new ParameterBuilder();
-//        List<Parameter> pars = new ArrayList<>();
-//        tokenPar.name("X-Auth-Token")
-//        	.description("token")
-//        	.modelRef(new ModelRef("string"))
-//        	.parameterType("header")
-//        	.required(false).build();
-//        pars.add(tokenPar.build());
-//        return pars;
-//    }
+    private List<Parameter> setHeaderHost() {
+        ParameterBuilder host = new ParameterBuilder();
+        List<Parameter> pars = new ArrayList<>();
+        host.name("x-forwarded-host")
+        	.description("domain")
+        	.modelRef(new ModelRef("string"))
+        	.parameterType("header")
+        	.required(false).build();
+        pars.add(host.build());
+        return pars;
+    }
 }
