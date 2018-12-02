@@ -3,6 +3,7 @@ package com.d1m.wechat.controller.conversation;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.d1m.common.ds.TenantContext;
+import com.d1m.common.ds.TenantHelper;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.dto.ConversationDto;
 import com.d1m.wechat.dto.ImageTextDto;
@@ -58,6 +61,9 @@ public class ConversationController extends BaseController {
 
 	@Autowired
 	private MaterialService materialService;
+	
+	@Resource
+    TenantHelper tenantHelper;
 
 	@ApiOperation(value = "创建群发会话", tags = "会话接口")
 	@ApiResponse(code = 200, message = "1-创建群发会话成功")
@@ -211,7 +217,14 @@ public class ConversationController extends BaseController {
 		if(conversationModel.getMemberId() == null) {
 			return this.representation(Message.CONVERSATION_LIST_FAIL, null);
 		}
-		Page<UserBehavior> userBehaviorPage = conversationService.selectUserBehavior(getWechatId(session), conversationModel);
+		Integer wechatId = getWechatId();
+		//default qa
+        if (wechatId == null) {
+        	String domain = tenantHelper.getTenantByWechatId(6);
+            TenantContext.setCurrentTenant(domain);
+            log.info("current domain: " + domain);
+        }
+		Page<UserBehavior> userBehaviorPage = conversationService.selectUserBehavior(wechatId, conversationModel);
 		return this.representation(Message.CONVERSATION_LIST_SUCCESS, userBehaviorPage.getResult());
 	}
 	@ApiOperation(value = "用户位置查询接口", tags = "用户位置查询接口")
@@ -221,7 +234,14 @@ public class ConversationController extends BaseController {
 		if(conversationModel.getMemberId() == null) {
 			return this.representation(Message.CONVERSATION_LIST_FAIL, null);
 		}
-		Page<UserLocation> userLocationPage = conversationService.selectUserLocation(getWechatId(session), conversationModel);
+		Integer wechatId = getWechatId();
+		//default qa
+        if (wechatId == null) {
+        	String domain = tenantHelper.getTenantByWechatId(6);
+            TenantContext.setCurrentTenant(domain);
+            log.info("current domain: " + domain);
+        }
+		Page<UserLocation> userLocationPage = conversationService.selectUserLocation(wechatId, conversationModel);
 		return this.representation(Message.CONVERSATION_LIST_SUCCESS, userLocationPage.getResult());
 	}
 
