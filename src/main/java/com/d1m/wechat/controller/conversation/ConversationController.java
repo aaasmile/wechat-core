@@ -220,9 +220,8 @@ public class ConversationController extends BaseController {
 		Integer wechatId = getWechatId();
 		//default qa
         if (wechatId == null) {
-        	String domain = tenantHelper.getTenantByWechatId(6);
-            TenantContext.setCurrentTenant(domain);
-            log.info("current domain: " + domain);
+        	TenantContext.setCurrentTenant("qa.wechat.d1m.cn");
+            log.info("current domain: qa.wechat.d1m.cn");
         }
 		Page<UserBehavior> userBehaviorPage = conversationService.selectUserBehavior(wechatId, conversationModel);
 		return this.representation(Message.CONVERSATION_LIST_SUCCESS, userBehaviorPage.getResult());
@@ -237,9 +236,8 @@ public class ConversationController extends BaseController {
 		Integer wechatId = getWechatId();
 		//default qa
         if (wechatId == null) {
-        	String domain = tenantHelper.getTenantByWechatId(6);
-            TenantContext.setCurrentTenant(domain);
-            log.info("current domain: " + domain);
+            TenantContext.setCurrentTenant("qa.wechat.d1m.cn");
+            log.info("current domain: qa.wechat.d1m.cn");
         }
 		Page<UserLocation> userLocationPage = conversationService.selectUserLocation(wechatId, conversationModel);
 		return this.representation(Message.CONVERSATION_LIST_SUCCESS, userLocationPage.getResult());
