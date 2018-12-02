@@ -39,7 +39,6 @@ import com.d1m.wechat.service.MaterialService;
 import com.d1m.wechat.service.MemberService;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
-import com.esotericsoftware.minlog.Log;
 import com.github.pagehelper.Page;
 
 import io.swagger.annotations.Api;
@@ -219,10 +218,11 @@ public class ConversationController extends BaseController {
 			return this.representation(Message.CONVERSATION_LIST_FAIL, null);
 		}
 		Integer wechatId = getWechatId();
-		String domain = tenantHelper.getTenantByWechatId(wechatId);
-        if (domain!=null){
+		//default qa
+        if (wechatId == null) {
+        	String domain = tenantHelper.getTenantByWechatId(6);
             TenantContext.setCurrentTenant(domain);
-            Log.info("mq domain: "+domain);
+            log.info("current domain: " + domain);
         }
 		Page<UserBehavior> userBehaviorPage = conversationService.selectUserBehavior(wechatId, conversationModel);
 		return this.representation(Message.CONVERSATION_LIST_SUCCESS, userBehaviorPage.getResult());
@@ -235,10 +235,11 @@ public class ConversationController extends BaseController {
 			return this.representation(Message.CONVERSATION_LIST_FAIL, null);
 		}
 		Integer wechatId = getWechatId();
-		String domain = tenantHelper.getTenantByWechatId(wechatId);
-        if (domain!=null){
+		//default qa
+        if (wechatId == null) {
+        	String domain = tenantHelper.getTenantByWechatId(6);
             TenantContext.setCurrentTenant(domain);
-            Log.info("mq domain: "+domain);
+            log.info("current domain: " + domain);
         }
 		Page<UserLocation> userLocationPage = conversationService.selectUserLocation(wechatId, conversationModel);
 		return this.representation(Message.CONVERSATION_LIST_SUCCESS, userLocationPage.getResult());
