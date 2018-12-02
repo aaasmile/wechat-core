@@ -61,6 +61,6 @@ public interface ConversationMapper extends MyMapper<Conversation> {
 
     List<Integer> getLiveChatStatistic(@Param("wechatId") Integer wechatId);
     
-    public Page<UserBehavior> selectUserBehavior(Integer wechatId, @Param("memberId") Integer memberId);
-	public Page<UserLocation> selectUserLocation(Integer wechatId, @Param("memberId") Integer memberId);
+    public Page<UserBehavior> selectUserBehavior(@Param("wechatId") Integer wechatId, @Param("memberId") Integer memberId);
+	public Page<UserLocation> selectUserLocation(@Param("wechatId") Integer wechatId, @Param("memberId") Integer memberId);
 }
