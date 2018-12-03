@@ -17,7 +17,7 @@ push-dev:
   only:
     - dev
   tags:
-    - shell-dev-build
+    - shell-build-dev
   script:
     - mvn docker:push
 
@@ -26,7 +26,7 @@ deploy-dev:
   only:
     - dev
   tags:
-    - shell-dev-deploy
+    - shell-deploy-dev
   script:
     - cd /root/docker-swarm/
     - docker stack deploy -c wechat1.yml wechat1
@@ -36,7 +36,7 @@ deploy-uat:
   only:
     - uat
   tags:
-    - shell-qa-deploy
+    - shell-deploy-qa
   script:
     - cd /root/docker-swarm/
     - docker stack deploy -c wechat1.yml wechat1
