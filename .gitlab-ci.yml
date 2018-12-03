@@ -8,7 +8,7 @@ build-dev:
   only:
     - dev
   tags:
-    - shell-60
+    - shell-dev-build
   script:
     - mvn -Dmaven.test.skip=true clean package
     
@@ -17,7 +17,7 @@ push-dev:
   only:
     - dev
   tags:
-    - shell-60
+    - shell-build-dev
   script:
     - mvn docker:push
 
@@ -26,9 +26,9 @@ deploy-dev:
   only:
     - dev
   tags:
-    - shell-53
+    - shell-deploy-dev
   script:
-    - cd /etc/docker-swarm/
+    - cd /root/docker-swarm/
     - docker stack deploy -c wechat1.yml wechat1
     
 deploy-uat:
@@ -36,7 +36,7 @@ deploy-uat:
   only:
     - uat
   tags:
-    - shell-122
+    - shell-deploy-qa
   script:
     - cd /root/docker-swarm/
     - docker stack deploy -c wechat1.yml wechat1
