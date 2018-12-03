@@ -61,10 +61,10 @@
 	</resultMap>
 
 	<select id="selectUserBehavior" parameterType="HashMap" resultMap="userBehaviorResultMap">
-		select title,event_name from conversation where member_id = #{memberId} order by created_at desc
+		select ifnull(title, '') as title,ifnull(event_name, '') as event_name from conversation where member_id = #{memberId} order by created_at desc
 	</select>
 	<select id="selectUserLocation" parameterType="HashMap" resultMap="userLocationResultMap">
-		select location_x,location_y,event_name from conversation where member_id = #{memberId} order by created_at desc
+		select ifnull(location_x, '0.0') as location_x, ifnull(location_y, '0.0') as location_y, ifnull(event_name, '0.0') as event_name from conversation where member_id = #{memberId} order by created_at desc
 	</select>
   <select id="search" parameterType="HashMap" resultMap="ConversationDtoResultMap">
 	(select c.id, c.material_id, c.is_mass, c.member_photo, c.kf_photo, DATE_FORMAT(now(),'%Y-%m-%d %T') as current, DATE_FORMAT(c.created_at,'%Y-%m-%d %T') as created_at, c.content, c.msg_type, c.event, c.direction,c.voice_url,m.id as member_id, m.nickname as member_nickname, m.open_id as member_open_id, c.status from conversation c left join member m on c.member_id = m.id
