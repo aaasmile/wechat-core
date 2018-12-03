@@ -8,7 +8,7 @@ build-dev:
   only:
     - dev
   tags:
-    - shell-dev-build
+    - shell-build-dev
   script:
     - mvn -Dmaven.test.skip=true clean package
     
