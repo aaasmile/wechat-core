@@ -86,6 +86,7 @@ issues-deploy:
 
 #清理    
 cleanup-job1:
+  only: dev
   tags:
     - cleanup-job1
   stage: stop
@@ -93,6 +94,7 @@ cleanup-job1:
     - docker service scale wechat1_core=0
   when: always
 cleanup-job2:
+  only: dev
   tags:
     - cleanup-job2
   stage: cleanup
