@@ -12,7 +12,7 @@ stop-dev:
   only: 
     - dev
   tags:
-    - shell-build-dev
+    - shell-deploy-dev
   stage: stop
   script:
     - docker service scale wechat1_core=0
