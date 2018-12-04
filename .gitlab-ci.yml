@@ -87,14 +87,14 @@ issues-deploy:
 #清理    
 cleanup-job1:
   tags:
-    - docker
+    - cleanup-job1
   stage: stop
   script:
     - docker service scale wechat1_core=0
   when: always
 cleanup-job2:
   tags:
-    - docker
+    - cleanup-job2
   stage: cleanup
   script:
     - docker rmi docker.d1m.cn/wechat-core:latest
