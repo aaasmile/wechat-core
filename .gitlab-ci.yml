@@ -89,6 +89,5 @@ cleanup-job:
     - docker
   stage: cleanup
   script:
-    - docker rm -v build_data_$CI_PROJECT_ID_$CI_BUILD_REF
-    - docker rmi ci-project-build-$CI_PROJECT_ID:$CI_BUILD_REF
+    - docker rmi docker.d1m.cn/wechat-core:latest
   when: always
