@@ -81,7 +81,7 @@ issues-deploy:
     - docker stack deploy -c wechat1.yml wechat1
 
 #清理    
-cleanup_job:
+cleanup-job:
   tags:
     - docker
   stage: cleanup
