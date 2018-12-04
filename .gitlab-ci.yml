@@ -1,12 +1,31 @@
 stages:
+  - stop
+  - cleanup
   - build
   - push
   - deploy
   - release
-  - stop
-  - cleanup
 
 #开发环境打包发布
+#清理    
+stop-dev:
+  only: 
+    - dev
+  tags:
+    - shell-build-dev
+  stage: stop
+  script:
+    - docker service scale wechat1_core=0
+  when: always
+rmi-dev:
+  only: 
+    - dev
+  tags:
+    - shell-build-dev
+  stage: cleanup
+  script:
+    - docker rmi docker.d1m.cn/wechat-core:latest
+  when: always
 build-dev:
   stage: build
   only:
@@ -83,23 +102,3 @@ issues-deploy:
   script:
     - cd /root/docker-swarm/
     - docker stack deploy -c wechat1.yml wechat1
-
-#清理    
-cleanup-job1:
-  only: 
-    - dev
-  tags:
-    - cleanup-job1
-  stage: stop
-  script:
-    - docker service scale wechat1_core=0
-  when: always
-cleanup-job2:
-  only: 
-    - dev
-  tags:
-    - cleanup-job2
-  stage: cleanup
-  script:
-    - docker rmi docker.d1m.cn/wechat-core:latest
-  when: always
