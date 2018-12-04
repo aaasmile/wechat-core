@@ -3,6 +3,7 @@ stages:
   - push
   - deploy
   - release
+  - stop
   - cleanup
 
 #开发环境打包发布
@@ -84,7 +85,14 @@ issues-deploy:
     - docker stack deploy -c wechat1.yml wechat1
 
 #清理    
-cleanup-job:
+cleanup-job1:
+  tags:
+    - docker
+  stage: stop
+  script:
+    - docker service scale wechat1_core=0
+  when: always
+cleanup-job2:
   tags:
     - docker
   stage: cleanup
