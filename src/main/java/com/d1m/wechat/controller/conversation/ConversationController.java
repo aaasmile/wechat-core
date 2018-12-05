@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.d1m.common.ds.TenantContext;
 import com.d1m.common.ds.TenantHelper;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.dto.ConversationDto;
