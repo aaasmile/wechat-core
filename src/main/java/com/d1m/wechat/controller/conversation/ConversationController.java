@@ -39,6 +39,7 @@ import com.d1m.wechat.service.MemberService;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -212,10 +213,11 @@ public class ConversationController extends BaseController {
 	@ApiOperation(value = "用户行为查询接口", tags = "用户行为查询接口")
 	@ApiResponse(code = 200, message = "用户行为查询接口查询成功")
 	@RequestMapping(value = "selectUserBehavior.json")
-	public JSONObject selectUserBehavior(@ApiParam(name = "ConversationModel", required = false) @RequestBody(required = false) ConversationModel conversationModel, HttpSession session) {
+	public JSONObject selectUserBehavior(@ApiParam(name = "ConversationModel", required = false) @RequestBody(required = false) ConversationModel conversationModel, HttpSession session, boolean queryCount) {
 		if(conversationModel.getMemberId() == null) {
 			return this.representation(Message.CONVERSATION_LIST_FAIL, null);
 		}
+		PageHelper.startPage(conversationModel.getPageNum(), conversationModel.getPageSize(), queryCount);
 		Integer wechatId = getWechatId();
 		Page<UserBehavior> userBehaviorPage = conversationService.selectUserBehavior(wechatId, conversationModel);
 		return this.representation(Message.CONVERSATION_LIST_SUCCESS, userBehaviorPage.getResult());
@@ -223,11 +225,12 @@ public class ConversationController extends BaseController {
 	@ApiOperation(value = "用户位置查询接口", tags = "用户位置查询接口")
 	@ApiResponse(code = 200, message = "用户位置查询接口查询成功")
 	@RequestMapping(value = "selectUserLocation.json")
-	public JSONObject selectUserLocation(@ApiParam(name = "ConversationModel", required = false) @RequestBody(required = false) ConversationModel conversationModel, HttpSession session) {
+	public JSONObject selectUserLocation(@ApiParam(name = "ConversationModel", required = false) @RequestBody(required = false) ConversationModel conversationModel, HttpSession session, boolean queryCount) {
 		if(conversationModel.getMemberId() == null) {
 			return this.representation(Message.CONVERSATION_LIST_FAIL, null);
 		}
 		Integer wechatId = getWechatId();
+		PageHelper.startPage(conversationModel.getPageNum(), conversationModel.getPageSize(), queryCount);
 		Page<UserLocation> userLocationPage = conversationService.selectUserLocation(wechatId, conversationModel);
 		return this.representation(Message.CONVERSATION_LIST_SUCCESS, userLocationPage.getResult());
 	}
