@@ -354,6 +354,9 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 		if (menuModel.getAppid() != null) menu.setAppId(menuModel.getAppid());
 		if (menuModel.getPagePath() != null) menu.setPagePath(menuModel.getPagePath());
 		if (menuModel.getAppUrl() != null) menu.setAppUrl(menuModel.getAppUrl());
+		if(StringUtils.isNotEmpty(menuModel.getInterfaceId())) {
+			menu.setInterfaceId(menuModel.getInterfaceId());
+		}
 		MaterialDto material = new MaterialDto();
 		material.setId(materialId);
 		material.setUrl(url);
