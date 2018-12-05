@@ -213,12 +213,12 @@ public class ConversationController extends BaseController {
 	@ApiOperation(value = "用户行为查询接口", tags = "用户行为查询接口")
 	@ApiResponse(code = 200, message = "用户行为查询接口查询成功")
 	@RequestMapping(value = "selectUserBehavior.json", method = RequestMethod.POST)
-	public JSONObject selectUserBehavior(@ApiParam(name = "ConversationModel", required = false) @RequestBody(required = false) ConversationModel conversationModel, HttpSession session, boolean queryCount) {
+	public JSONObject selectUserBehavior(@ApiParam(name = "ConversationModel", required = false) @RequestBody(required = false) ConversationModel conversationModel, HttpSession session) {
 		try {
 			if(conversationModel.getMemberId() == null) {
 				return this.representation(Message.CONVERSATION_LIST_FAIL, null);
 			}
-			PageHelper.startPage(conversationModel.getPageNum(), conversationModel.getPageSize(), queryCount);
+			PageHelper.startPage(conversationModel.getPageNum(), conversationModel.getPageSize(), true);
 			Integer wechatId = getWechatId();
 			Page<UserBehavior> userBehaviorPage = conversationService.selectUserBehavior(wechatId, conversationModel);
 			return representation(Message.CONVERSATION_LIST_SUCCESS, userBehaviorPage.getResult(), conversationModel.getPageNum(), conversationModel.getPageNum(), userBehaviorPage.getTotal());
@@ -230,13 +230,13 @@ public class ConversationController extends BaseController {
 	@ApiOperation(value = "用户位置查询接口", tags = "用户位置查询接口")
 	@ApiResponse(code = 200, message = "用户位置查询接口查询成功")
 	@RequestMapping(value = "selectUserLocation.json", method = RequestMethod.POST)
-	public JSONObject selectUserLocation(@ApiParam(name = "ConversationModel", required = false) @RequestBody(required = false) ConversationModel conversationModel, HttpSession session, boolean queryCount) {
+	public JSONObject selectUserLocation(@ApiParam(name = "ConversationModel", required = false) @RequestBody(required = false) ConversationModel conversationModel, HttpSession session) {
 		try {
 			if(conversationModel.getMemberId() == null) {
 				return this.representation(Message.CONVERSATION_LIST_FAIL, null);
 			}
 			Integer wechatId = getWechatId();
-			PageHelper.startPage(conversationModel.getPageNum(), conversationModel.getPageSize(), queryCount);
+			PageHelper.startPage(conversationModel.getPageNum(), conversationModel.getPageSize(), true);
 			Page<UserLocation> userLocationPage = conversationService.selectUserLocation(wechatId, conversationModel);
 			return this.representation(Message.CONVERSATION_LIST_SUCCESS, userLocationPage.getResult(), conversationModel.getPageNum(), conversationModel.getPageNum(), userLocationPage.getTotal());
 		} catch (Exception e) {
