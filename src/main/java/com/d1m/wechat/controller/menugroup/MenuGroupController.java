@@ -113,8 +113,7 @@ public class MenuGroupController extends BaseController {
 			HttpServletResponse response) {
 		try {
 			Integer wechatId = getWechatId(session);
-			menuGroupService.update(getUser(session), wechatId, id,
-					menuGroupModel);
+			menuGroupService.update(getUser(session), wechatId, id, menuGroupModel);
 			if (menuGroupModel.getPush() != null && menuGroupModel.getPush()) {
 				menuGroupService.pushMenuGroupToWx(wechatId, id);
 			}

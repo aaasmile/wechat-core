@@ -1,7 +1,5 @@
 package com.d1m.wechat.dto;
 
-import com.d1m.wechat.model.MenuExtraAttr;
-
 import java.util.List;
 
 public class MenuDto {
@@ -29,7 +27,9 @@ public class MenuDto {
 	private String pagePath;
 
 	private String appUrl;
-
+	
+	private String interfaceId;
+	
 	public List<MenuDto> getChildren() {
 		return children;
 	}
@@ -124,5 +124,13 @@ public class MenuDto {
 
 	public void setAppUrl(String appUrl) {
 		this.appUrl = appUrl;
+	}
+
+	public String getInterfaceId() {
+		return interfaceId;
+	}
+
+	public void setInterfaceId(String interfaceId) {
+		this.interfaceId = interfaceId;
 	}
 }
