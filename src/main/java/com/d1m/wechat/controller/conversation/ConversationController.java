@@ -212,7 +212,7 @@ public class ConversationController extends BaseController {
 	
 	@ApiOperation(value = "用户行为查询接口", tags = "用户行为查询接口")
 	@ApiResponse(code = 200, message = "用户行为查询接口查询成功")
-	@RequestMapping(value = "selectUserBehavior.json")
+	@RequestMapping(value = "selectUserBehavior.json", method = RequestMethod.POST)
 	public JSONObject selectUserBehavior(@ApiParam(name = "ConversationModel", required = false) @RequestBody(required = false) ConversationModel conversationModel, HttpSession session, boolean queryCount) {
 		if(conversationModel.getMemberId() == null) {
 			return this.representation(Message.CONVERSATION_LIST_FAIL, null);
@@ -224,7 +224,7 @@ public class ConversationController extends BaseController {
 	}
 	@ApiOperation(value = "用户位置查询接口", tags = "用户位置查询接口")
 	@ApiResponse(code = 200, message = "用户位置查询接口查询成功")
-	@RequestMapping(value = "selectUserLocation.json")
+	@RequestMapping(value = "selectUserLocation.json", method = RequestMethod.POST)
 	public JSONObject selectUserLocation(@ApiParam(name = "ConversationModel", required = false) @RequestBody(required = false) ConversationModel conversationModel, HttpSession session, boolean queryCount) {
 		if(conversationModel.getMemberId() == null) {
 			return this.representation(Message.CONVERSATION_LIST_FAIL, null);
