@@ -966,6 +966,12 @@ public enum Message {
      *
      */
     MEMBER_QRCODE_STATISTICS(1, "查询会员扫码统计结果成功"),
+    
+    /**
+     * InterfaceConfig
+     * */
+    INTERFACECONFIG_SELECT_SUCCESS(42001, "接口列表查询成功"),
+    INTERFACECONFIG_SELECT_FAIL(42002, "接口列表查询失败"),
     ;
 
     private Integer code;
