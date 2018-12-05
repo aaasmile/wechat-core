@@ -52,7 +52,7 @@ deploy-dev:
     - shell-deploy-dev
   script:
     - cd /root/docker-swarm/
-    - docker service scale wechat1_core=1
+    - docker stack deploy -c wechat1.yml wechat1
 
 #部署UAT    
 deploy-uat:

@@ -95,6 +95,9 @@ public class Menu {
      * 顺序
      */
     private Integer seq;
+    
+    @Column(name = "interface_id")
+    private String interfaceId;
 
     /**
      * 获取主键ID
@@ -383,4 +386,12 @@ public class Menu {
     public void setSeq(Integer seq) {
         this.seq = seq;
     }
+
+	public String getInterfaceId() {
+		return interfaceId;
+	}
+
+	public void setInterfaceId(String interfaceId) {
+		this.interfaceId = interfaceId;
+	}
 }

@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.common.Mapper;
 
 import cn.d1m.wechat.client.core.WxResponse;
@@ -153,6 +152,9 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 	private Menu create(User user, Integer wechatId, Date current,
 			MenuGroup menuGroup, Integer parentId, MenuDto menuDto) {
 		Menu menu = new Menu();
+		if(StringUtils.isNotEmpty(menuDto.getInterfaceId())) {
+			menu.setInterfaceId(menuDto.getInterfaceId());
+		}
 		menu.setCreatedAt(current);
 		menu.setCreatorId(user.getId());
 		MaterialDto materialDto = menuDto.getMaterial();
@@ -216,7 +218,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 				menuDto.setId(id);
 				menuDto.setName(menuModel.getName());
 				menuDto.setSeq(seq);
-				menuDto.setType((byte)0); //对于父菜单,重置type为null
+				menuDto.setType((byte) 0); //对于父菜单,重置type为null
 				if (menuModel.getUrl() != null)
 					menuDto.setUrl(menuModel.getUrl());
 				if (menuModel.getAppid() != null)
@@ -225,6 +227,9 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 					menuDto.setPagePath(menuModel.getPagePath());
 				if (menuModel.getAppUrl() != null)
 					menuDto.setAppUrl(menuModel.getAppUrl());
+				if(StringUtils.isNotEmpty(menuModel.getInterfaceId())) {
+					menuDto.setInterfaceId(menuModel.getInterfaceId());
+				}
 				menuList.add(menuDto);
 				childrenMenuDtos = new ArrayList<MenuDto>();
 				Integer subSeq = 1;
@@ -527,6 +532,11 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 			menu.setModifyAt(current);
 			menu.setParentId(parentId);
 			menu.setSeq(m.getSeq());
+			
+			if(StringUtils.isNotEmpty(m.getInterfaceId())) {
+				menu.setInterfaceId(m.getInterfaceId());
+			}
+			
 			menuMapper.updateByPrimaryKey(menu);
 			MenuExtraAttr menuExtraAttr = new MenuExtraAttr();
 			menuExtraAttr.setMenuId((long)menu.getId());
@@ -569,6 +579,11 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements
 			menu.setWechatId(wechatId);
 			menu.setParentId(parentId);
 			menu.setSeq(m.getSeq());
+			
+			if(StringUtils.isNotEmpty(m.getInterfaceId())) {
+				menu.setInterfaceId(m.getInterfaceId());
+			}
+			
 			menuMapper.insert(menu);
 			MenuExtraAttr menuExtraAttr = new MenuExtraAttr();
 			menuExtraAttr.setMenuId((long)menu.getId());
