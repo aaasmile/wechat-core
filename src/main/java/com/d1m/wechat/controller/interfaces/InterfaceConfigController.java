@@ -19,7 +19,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 
-@Api(value = "第三方接口API", tags = "第三方接口API")
+@Api(value = "第三方接口API InterfaceConfigController", tags = "第三方接口API InterfaceConfigController")
 @RestController
 @RequestMapping("interfaceConfig")
 public class InterfaceConfigController extends BaseController {
@@ -30,7 +30,7 @@ public class InterfaceConfigController extends BaseController {
 
 	@ApiOperation(value = "第三方接口列表", tags = "第三方接口列表")
 	@ApiResponse(code = 200, message = "获取第三方接口信息成功")
-	@RequestMapping(name = "selectItems.json", method = RequestMethod.POST)
+	@RequestMapping(value = "selectItems.json", method = RequestMethod.POST)
 	public JSONObject selectItems() {
 		try {
 			List<Map<String, String>> list = interfaceConfigService.selectItems();
