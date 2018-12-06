@@ -221,7 +221,7 @@ public class ConversationController extends BaseController {
 			PageHelper.startPage(conversationModel.getPageNum(), conversationModel.getPageSize(), true);
 			Integer wechatId = getWechatId();
 			Page<UserBehavior> userBehaviorPage = conversationService.selectUserBehavior(wechatId, conversationModel);
-			return representation(Message.CONVERSATION_LIST_SUCCESS, userBehaviorPage.getResult(), conversationModel.getPageNum(), conversationModel.getPageNum(), userBehaviorPage.getTotal());
+			return representation(Message.CONVERSATION_LIST_SUCCESS, userBehaviorPage.getResult(), userBehaviorPage.getPageSize(), userBehaviorPage.getPageNum(), userBehaviorPage.getTotal());
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			return representation(Message.CONVERSATION_LIST_FAIL);
@@ -238,7 +238,7 @@ public class ConversationController extends BaseController {
 			Integer wechatId = getWechatId();
 			PageHelper.startPage(conversationModel.getPageNum(), conversationModel.getPageSize(), true);
 			Page<UserLocation> userLocationPage = conversationService.selectUserLocation(wechatId, conversationModel);
-			return this.representation(Message.CONVERSATION_LIST_SUCCESS, userLocationPage.getResult(), conversationModel.getPageNum(), conversationModel.getPageNum(), userLocationPage.getTotal());
+			return this.representation(Message.CONVERSATION_LIST_SUCCESS, userLocationPage.getResult(), userLocationPage.getPageSize(), userLocationPage.getPageNum(), userLocationPage.getTotal());
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			return representation(Message.CONVERSATION_LIST_FAIL);
