@@ -188,8 +188,8 @@ public class ConversationController extends BaseController {
 		msgTypes.add(MsgType.VOICE.getValue());
 		conversationModel.setMsgTypes(msgTypes);
 		Page<ConversationDto> page = conversationService.searchUnread(getWechatId(session), conversationModel, true);
-		List<ConversationDto> result = convert(page);
-		return representation(Message.CONVERSATION_LIST_SUCCESS, result, conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
+//		List<ConversationDto> result = convert(page);
+		return representation(Message.CONVERSATION_LIST_SUCCESS, page.getResult(), conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
 	}
 
 	@ApiOperation(value = "获取会话列表", tags = "会话接口")
@@ -202,8 +202,8 @@ public class ConversationController extends BaseController {
 			}
 			conversationModel.setUpdateRead(true);
 			Page<ConversationDto> page = conversationService.search(getWechatId(session), conversationModel, true);
-			List<ConversationDto> result = convert(page);
-			return representation(Message.CONVERSATION_LIST_SUCCESS, result, conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
+//			List<ConversationDto> result = convert(page);
+			return representation(Message.CONVERSATION_LIST_SUCCESS, page.getResult(), conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			return wrapException(e);
