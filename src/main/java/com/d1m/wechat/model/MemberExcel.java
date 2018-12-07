@@ -23,7 +23,7 @@ public class MemberExcel {
     @Excel(name = "gender")
     private Sex gender;
 
-    @Excel(name = "mobile")
+    @Excel(name = "mobile", width = 12)
     private String mobile;
 
     @Excel(name = "province")
@@ -35,22 +35,22 @@ public class MemberExcel {
     @Excel(name = "subscribe.status")
     private Integer subscribeStatus;
 
-    @Excel(name = "subscribe.at", databaseFormat = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "subscribe.at", width = 22)
     private Date subscribeAt;
 
-    @Excel(name = "unsubscribe.at", databaseFormat = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "unsubscribe.at", width = 22)
     private Date unsubscribeAt;
 
-    @Excel(name = "subscribe.scene")
+    @Excel(name = "subscribe.scene", width = 14)
     private MemberSubscribeScene subscribeScene;
 
-    @Excel(name = "customer.service.open.id")
+    @Excel(name = "customer.service.open.id", width = 26)
     private String openId;
 
     @Excel(name = "unionid")
     private String unionId;
 
-    @Excel(name = "tag")
+    @Excel(name = "tag", width = 22)
     private String tag;
 
     @Excel(name = "lang")

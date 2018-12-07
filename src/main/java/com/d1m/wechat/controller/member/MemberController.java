@@ -43,6 +43,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -234,12 +235,13 @@ public class MemberController extends BaseController {
 
     }
 
+    @SuppressWarnings("unchecked")
     @ApiOperation(value = "导出会员列表", tags = "会员接口")
     @ApiResponse(code = 200, message = "导出会员列表")
     @RequestMapping(value = "/export.json", method = RequestMethod.POST)
     @ResponseBody
     @RequiresPermissions("member:list")
-    public void exportExcel(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void exportExcel(HttpServletRequest request, HttpServletResponse response) {
 
         AddMemberTagModel addMemberTagModel = null;
         String data = request.getParameter("data");
@@ -254,77 +256,90 @@ public class MemberController extends BaseController {
         //添加到上下文
         LocaleContextUtils.setLocale(locale);
 
+
         Workbook workbook = null;
-        /*
-        iExcelI18nHandler 表头国际化处理
-        memberExcelDateHandler 特殊字段处理，例如枚举
-         */
-        ExportParams exportParams = new ExportParams();
-        exportParams.setI18nHandler(iExcelI18nHandler);
-        exportParams.setDataHandler(memberExcelDateHandler);
+        try (final ServletOutputStream outputStream = response.getOutputStream()) {
 
-        String name = I18nUtil.getMessage("follwer.list", locale);
-        Integer[] memberIds = addMemberTagModel.getMemberIds();
-        Boolean sendToAll = addMemberTagModel.getSendToAll();
-        if (memberIds != null && memberIds.length != 0) {
-            final ImmutableMap<String, Object> params = ImmutableMap.of("ids", memberIds);
-            final List<MemberExcel> result = memberService.findMemberExcelByParams(params);
-            workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);
+            /*
+            iExcelI18nHandler 表头国际化处理
+            memberExcelDateHandler 特殊字段处理，例如枚举
+            */
+            ExportParams exportParams = new ExportParams();
+            exportParams.setI18nHandler(iExcelI18nHandler);
+            exportParams.setDataHandler(memberExcelDateHandler);
 
-        } else {
-            if (sendToAll != null && sendToAll) {
-
-                PageHelper.startPage(1, 1000);
-
-                List<MemberExcel> result = memberService.findMemberExcelByParams(Collections.EMPTY_MAP);
-                final PageInfo<MemberExcel> paged = new PageInfo<>(result);
-
+            String name = I18nUtil.getMessage("follwer.list", locale);
+            Integer[] memberIds = addMemberTagModel.getMemberIds();
+            Boolean sendToAll = addMemberTagModel.getSendToAll();
+            if (memberIds != null && memberIds.length != 0) {
+                final ImmutableMap<String, Object> params = ImmutableMap.of("ids", memberIds);
+                final List<MemberExcel> result = memberService.findMemberExcelByParams(params);
                 workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);
-                result.clear();
-
-                final int pages = paged.getPages();
-                if (pages > 1) {
-                    for (int i = 2; i <= pages; i++) {
-                        PageHelper.startPage(i, 1000);
-                        result = memberService.findMemberExcelByParams(Collections.EMPTY_MAP);
-                        workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);
-                        result.clear();
-                    }
-                }
-
 
             } else {
-                final MapType mapType = objectMapper.getTypeFactory().constructMapType(HashMap.class, String.class, Object.class);
-                final Map<String, Object> param = objectMapper.readValue(data, mapType);
-                param.put("wechatId", getWechatId());
-                PageHelper.startPage(1, 1000);
-                List<MemberExcel> result = memberService.findMemberExcelByParams(param);
-                final PageInfo<MemberExcel> paged = new PageInfo<>(result);
-                workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);
-                result.clear();
+                if (sendToAll != null && sendToAll) {
 
-                final int pages = paged.getPages();
-                if (pages > 1) {
-                    for (int i = 2; i <= pages; i++) {
-                        PageHelper.startPage(i, 1000);
-                        result = memberService.findMemberExcelByParams(param);
-                        workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);
-                        result.clear();
+                    PageHelper.startPage(1, 1000);
+
+                    List<MemberExcel> result = memberService.findMemberExcelByParams(Collections.EMPTY_MAP);
+                    final PageInfo<MemberExcel> paged = new PageInfo<>(result);
+
+                    workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);
+                    result.clear();
+
+                    final int pages = paged.getPages();
+                    if (pages > 1) {
+                        for (int i = 2; i <= pages; i++) {
+                            PageHelper.startPage(i, 1000);
+                            result = memberService.findMemberExcelByParams(Collections.EMPTY_MAP);
+                            workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);
+                            result.clear();
+                        }
+                    }
+
+                } else {
+                    final MapType mapType = objectMapper.getTypeFactory().constructMapType(HashMap.class, String.class, Object.class);
+                    final Map<String, Object> param = objectMapper.readValue(data, mapType);
+                    param.put("wechatId", getWechatId());
+                    PageHelper.startPage(1, 1000);
+                    List<MemberExcel> result = memberService.findMemberExcelByParams(param);
+                    final PageInfo<MemberExcel> paged = new PageInfo<>(result);
+                    workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);
+                    result.clear();
+
+                    final int pages = paged.getPages();
+                    if (pages > 1) {
+                        for (int i = 2; i <= pages; i++) {
+                            PageHelper.startPage(i, 1000);
+                            result = memberService.findMemberExcelByParams(param);
+                            workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);
+                            result.clear();
+                        }
                     }
                 }
+            }
 
+            ExcelExportUtil.closeExportBigExcel();
+            response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+            response.setHeader("Pragma", "no-cache");
+            response.setHeader("Expires", "0");
+            response.setHeader("charset", "utf-8");
+            response.setHeader("Content-Disposition",
+                    "attachment;filename=\"" + URLEncoder.encode(name + LocalDate.now() + ".xlsx", "UTF-8") + "\"");
+
+            workbook.write(outputStream);
+            workbook.close();
+        } catch (IOException e) {
+            log.error("Excel 导出错误！", e);
+        } finally {
+            if (!Objects.isNull(workbook)) {
+                try {
+                    workbook.close();
+                } catch (IOException e) {
+                    log.error("关闭资源错误！", e);
+                }
             }
         }
-
-        ExcelExportUtil.closeExportBigExcel();
-        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-        response.setHeader("Pragma", "no-cache");
-        response.setHeader("Expires", "0");
-        response.setHeader("charset", "utf-8");
-        response.setHeader("Content-Disposition",
-                "attachment;filename=\"" + URLEncoder.encode(name + LocalDate.now() + ".xlsx", "UTF-8") + "\"");
-
-        workbook.write(response.getOutputStream());
 
     }
 
