@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  */
 @FeignClient(
 		url = "${tokens.url}",
-//        name = "wechat-token-server",
+        name = "wechat-token-server",
         configuration = FeignClientConfiguration.class
 )
 public interface WechatTokenRestService {
