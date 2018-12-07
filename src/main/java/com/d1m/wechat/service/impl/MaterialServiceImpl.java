@@ -457,7 +457,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
 		return false;
 	}
 
-	private List<MaterialImageTextDetail> getMaterialImageTextDetails(
+	public List<MaterialImageTextDetail> getMaterialImageTextDetails(
 			Integer wechatId, Integer materialId,
 			List<ImageTextModel> imageTexts, Date current)
 			throws WechatException {

@@ -127,6 +127,17 @@ public class Material {
      */
     private Byte status;
 
+    @Column(name="is_scrm")
+    private int isScrm;
+
+    public int getIsScrm() {
+        return isScrm;
+    }
+
+    public void setIsScrm(int isScrm) {
+        this.isScrm = isScrm;
+    }
+
     /**
      * 评论(0:不能评论,1:所有人可以评论，2：仅有粉丝可以评论)
      */

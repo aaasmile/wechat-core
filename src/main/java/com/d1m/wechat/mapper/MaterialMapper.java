@@ -1,5 +1,7 @@
 package com.d1m.wechat.mapper;
 
+import com.d1m.wechat.dto.NofSendDto;
+import com.d1m.wechat.model.MaterialCategory;
 import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Param;
 
@@ -8,6 +10,9 @@ import com.d1m.wechat.dto.MiniProgramDto;
 import com.d1m.wechat.model.Material;
 import com.d1m.wechat.pamametermodel.MiniProgramModel;
 import com.d1m.wechat.util.MyMapper;
+
+import java.util.List;
+import java.util.Map;
 
 public interface MaterialMapper extends MyMapper<Material> {
 
@@ -25,5 +30,7 @@ public interface MaterialMapper extends MyMapper<Material> {
 	Page<MiniProgramDto> searchMiniProgram(MiniProgramModel miniProgramModel);
 
     MiniProgramDto getMiniProgramByMaterialId(@Param("wechatId") Integer wechatId, @Param("materialId") Integer materialId);
+
+	List<NofSendDto> queryList(Map<String, Object> map);
 
 }

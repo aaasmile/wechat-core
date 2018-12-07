@@ -14,6 +14,9 @@ import com.d1m.wechat.pamametermodel.ImageTextModel;
 import com.d1m.wechat.pamametermodel.MaterialModel;
 import com.d1m.wechat.pamametermodel.MiniProgramModel;
 
+import java.util.Date;
+import java.util.List;
+
 public interface MaterialService extends IService<Material> {
 
 	Material createMaterialImage(Integer wechatId, User user, Upload upload)
@@ -91,5 +94,10 @@ public interface MaterialService extends IService<Material> {
     Page<MiniProgramDto> searchMiniProgram(MiniProgramModel miniProgramModel, boolean queryCount);
 
     MiniProgramDto getMiniProgramByMaterialId(Integer wechatId, Integer materialId);
+
+    List<MaterialImageTextDetail> getMaterialImageTextDetails(
+	Integer wechatId, Integer materialId,
+	List<ImageTextModel> imageTexts, Date current)
+	throws WechatException;
 
 }
