@@ -35,19 +35,19 @@ public class MemberExcel {
     @Excel(name = "subscribe.status")
     private Integer subscribeStatus;
 
-    @Excel(name = "subscribe.at", width = 22)
+    @Excel(name = "subscribe.at", width = 20, exportFormat = "yyyy-MM-dd HH:mm:ss")
     private Date subscribeAt;
 
-    @Excel(name = "unsubscribe.at", width = 22)
+    @Excel(name = "unsubscribe.at", width = 20, exportFormat = "yyyy-MM-dd HH:mm:ss")
     private Date unsubscribeAt;
 
     @Excel(name = "subscribe.scene", width = 14)
     private MemberSubscribeScene subscribeScene;
 
-    @Excel(name = "customer.service.open.id", width = 26)
+    @Excel(name = "customer.service.open.id", width = 32)
     private String openId;
 
-    @Excel(name = "unionid")
+    @Excel(name = "unionid", width = 32)
     private String unionId;
 
     @Excel(name = "tag", width = 22)
@@ -62,7 +62,7 @@ public class MemberExcel {
     @Excel(name = "bind.status")
     private MemberProfileStatus bindStatus;
 
-    @Excel(name = "bind.at", databaseFormat = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "bind.at", width = 20, exportFormat = "yyyy-MM-dd HH:mm:ss")
     private Date bindAt;
 
     @Excel(name = "bind.province")
@@ -80,7 +80,7 @@ public class MemberExcel {
     @Excel(name = "bind.gender")
     private Sex bindGender;
 
-    @Excel(name = "bind.birthday", databaseFormat = "yyyy-MM-dd")
+    @Excel(name = "bind.birthday", width = 20, exportFormat = "yyyy-MM-dd")
     private Date bindBirthday;
 
     @Excel(name = "remarks")

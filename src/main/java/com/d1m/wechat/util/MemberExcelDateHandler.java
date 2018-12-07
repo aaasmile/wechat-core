@@ -4,7 +4,6 @@ import cn.afterturn.easypoi.handler.impl.ExcelDataHandlerDefaultImpl;
 import com.d1m.wechat.model.MemberExcel;
 import com.d1m.wechat.model.enums.Language;
 
-import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -16,8 +15,7 @@ public class MemberExcelDateHandler extends ExcelDataHandlerDefaultImpl<MemberEx
     private String[] needHandlerFields = new String[]{
             "Subscribe Status", "Subscribe Scene", "Language", "语言", "绑定性别", "Bind Gender",
             "Gender", "Binding Status", "绑定状态", "性别", "关注状态", "渠道来源", "绑定市", "Bind City",
-            "绑定省", "Bind Province", "绑定区", "Bind City", "绑定电话", "Bind Mobile", "绑定生日", "Bind Birthday",
-            "关注时间", "Subscribe Time", "取消关注时间", "Unsubscribe Time", "绑定时间", "Bind at"
+            "绑定省", "Bind Province", "绑定区", "Bind City", "绑定电话", "Bind Mobile"
     };
 
 
@@ -48,16 +46,6 @@ public class MemberExcelDateHandler extends ExcelDataHandlerDefaultImpl<MemberEx
                 case "Binding Status":
                 case "绑定状态":
                     return obj.getBindStatus().getName();
-                case "关注时间":
-                case "Subscribe Time":
-                case "取消关注时间":
-                case "Unsubscribe Time":
-                case "绑定时间":
-                case "Bind at":
-                    return DateUtil2.getDateTime((Date) value);
-                case "绑定生日":
-                case "Bind Birthday":
-                    return DateUtil2.getDate((Date) value);
                 default:
                     return value;
             }
