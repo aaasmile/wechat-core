@@ -95,7 +95,7 @@
         <result property="id" jdbcType="INTEGER" column="no"/>
         <result property="mobile" jdbcType="VARCHAR" column="mobile"/>
         <result property="city" jdbcType="VARCHAR" column="city"/>
-        <result property="bindAt" jdbcType="DATE" column="bind_date"/>
+        <result property="bindAt" jdbcType="TIMESTAMP" column="bind_date"/>
         <result property="bindBirthday" jdbcType="DATE" column="bind_birthday"/>
         <result property="bindCity" jdbcType="VARCHAR" column="bind_city"/>
         <result property="bindCounty" jdbcType="VARCHAR" column="bind_county"/>
@@ -110,12 +110,12 @@
         <result property="openId" jdbcType="VARCHAR" column="openId"/>
         <result property="province" jdbcType="VARCHAR" column="province"/>
         <result property="remarks" jdbcType="VARCHAR" column="remarks"/>
-        <result property="subscribeAt" jdbcType="DATE" column="subscribe_at"/>
+        <result property="subscribeAt" jdbcType="TIMESTAMP" column="subscribe_at"/>
         <result property="subscribeScene" jdbcType="TINYINT" column="subscribe_scene"/>
         <result property="subscribeStatus" jdbcType="TINYINT" column="status"/>
         <result property="tag" jdbcType="VARCHAR" column="tag"/>
         <result property="unionId" jdbcType="VARCHAR" column="union_id"/>
-        <result property="unsubscribeAt" jdbcType="DATE" column="unsubscribe_at"/>
+        <result property="unsubscribeAt" jdbcType="TIMESTAMP" column="unsubscribe_at"/>
     </resultMap>
 
 
