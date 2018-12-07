@@ -1,86 +1,254 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.d1m.wechat.mapper.MemberProfileMapper">
-  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.MemberProfile">
-    <!--
-      WARNING - @mbggenerated
-    -->
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="card_id" jdbcType="VARCHAR" property="cardId" />
-    <result column="card_type" jdbcType="TINYINT" property="cardType" />
-    <result column="issue_date" jdbcType="TIMESTAMP" property="issueDate" />
-    <result column="card_status" jdbcType="TINYINT" property="cardStatus" />
-    <result column="store_id" jdbcType="VARCHAR" property="storeId" />
-    <result column="credits" jdbcType="INTEGER" property="credits" />
-    <result column="level" jdbcType="VARCHAR" property="level" />
-    <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="address" jdbcType="VARCHAR" property="address" />
-    <result column="birth_date" jdbcType="DATE" property="birthDate" />
-    <result column="member_id" jdbcType="INTEGER" property="memberId" />
-    <result column="status" jdbcType="TINYINT" property="status" />
-    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
-    <result column="accept_promotion" jdbcType="BIT" property="acceptPromotion" />
-    <result column="email" jdbcType="VARCHAR" property="email" />
-    <result column="bind_at" jdbcType="TIMESTAMP" property="bindAt" />
-    <result column="unbund_at" jdbcType="TIMESTAMP" property="unbundAt" />
-  </resultMap>
-  
-  <select id="getByMemberId" parameterType="HashMap" resultMap="BaseResultMap">
-  	select * from member_profile
-  	<where>
-  		wechat_id = #{wechatId} and member_id = #{memberId}
-  	</where>
-  </select>
-  
-  <select id="getMemberProfile" parameterType="HashMap" resultMap="getMemberProfile">
-  	select mp.card_id, mp.level, mp.credits, mp.name, DATE_FORMAT(mp.birth_date,'%Y-%m-%d') as birth_date, mp.address, mp.email, mp.accept_promotion, m.mobile, m.sex, m.province, m.city from member_profile mp left join member m on mp.member_id = m.id 
-  	<where>
-  		mp.wechat_id = #{wechatId} and mp.member_id = #{memberId}
-  	</where>
-  </select>
-  <resultMap id="getMemberProfile" type="com.d1m.wechat.dto.MemberProfileDto">
-    <result column="level" jdbcType="VARCHAR" property="level" />
- 	<result column="credits" jdbcType="INTEGER" property="credits" />
-    <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="card_id" jdbcType="VARCHAR" property="cardId" />
-    <result column="birth_date" jdbcType="TIMESTAMP" property="birthDate" />
-    <result column="address" jdbcType="VARCHAR" property="address" />
-    <result column="email" jdbcType="VARCHAR" property="email" />
-    <result column="accept_promotion" jdbcType="BIT" property="acceptPromotion" />
-    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
-    <result column="sex" jdbcType="TINYINT" property="sex" />
-    <result column="province" jdbcType="INTEGER" property="province" />
-    <result column="city" jdbcType="INTEGER" property="city" />
-  </resultMap>
-  
-  <select id="getBindNumber" resultType="int">
-  	select count(status) from member
-  		<where>
-  			wechat_id = #{wechatId} and status = 1
-  			<if test="start!=null">
-  				<if test="end!=null">
-  					and bind_at between #{start} and #{end}
-  				</if>	
-  			</if>
-  		</where>
-  </select>
-  
-  <select id="getUnBindNumber" resultType="int">
-  	select count(status) from member
-  		<where>
-  			wechat_id = #{wechatId} and status = 0
-  			<if test="start!=null">
-  				<if test="end!=null">
-  					and unbund_at between #{start} and #{end}
-  				</if>	
-  			</if>
-  		</where>
-  </select>
-  
-  <select id="getMemberBindStatus" resultType="java.lang.Integer">
-  	select status from member_profile 
-  	<where>
-  		member_id = #{id} and wechat_id = #{wechatId}
-  	</where>
-  </select>
+    <resultMap id="BaseResultMap" type="com.d1m.wechat.model.MemberProfile">
+        <!--
+          WARNING - @mbggenerated
+        -->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="card_id" jdbcType="VARCHAR" property="cardId"/>
+        <result column="card_type" jdbcType="TINYINT" property="cardType"/>
+        <result column="issue_date" jdbcType="TIMESTAMP" property="issueDate"/>
+        <result column="card_status" jdbcType="TINYINT" property="cardStatus"/>
+        <result column="store_id" jdbcType="VARCHAR" property="storeId"/>
+        <result column="credits" jdbcType="INTEGER" property="credits"/>
+        <result column="level" jdbcType="VARCHAR" property="level"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="birth_date" jdbcType="DATE" property="birthDate"/>
+        <result column="member_id" jdbcType="INTEGER" property="memberId"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="wechat_id" jdbcType="INTEGER" property="wechatId"/>
+        <result column="accept_promotion" jdbcType="BIT" property="acceptPromotion"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="bind_at" jdbcType="TIMESTAMP" property="bindAt"/>
+        <result column="unbund_at" jdbcType="TIMESTAMP" property="unbundAt"/>
+        <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
+        <result column="sex" jdbcType="TINYINT" property="sex"/>
+        <result column="province" jdbcType="VARCHAR" property="province"/>
+        <result column="city" jdbcType="VARCHAR" property="city"/>
+        <result column="county" jdbcType="VARCHAR" property="county"/>
+    </resultMap>
+
+    <select id="getByMemberId" parameterType="HashMap" resultMap="BaseResultMap">
+        select * from member_profile
+        <where>
+            wechat_id = #{wechatId} and member_id = #{memberId}
+        </where>
+    </select>
+
+    <select id="getMemberProfile" parameterType="HashMap" resultMap="getMemberProfile">
+        select mp.card_id, mp.level, mp.credits, mp.name, DATE_FORMAT(mp.birth_date,'%Y-%m-%d') as birth_date,
+        mp.address, mp.email, mp.accept_promotion, m.mobile, m.sex, m.province, m.city from member_profile mp left join
+        member m on mp.member_id = m.id
+        <where>
+            mp.wechat_id = #{wechatId} and mp.member_id = #{memberId}
+        </where>
+    </select>
+    <resultMap id="getMemberProfile" type="com.d1m.wechat.dto.MemberProfileDto">
+        <result column="level" jdbcType="VARCHAR" property="level"/>
+        <result column="credits" jdbcType="INTEGER" property="credits"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="card_id" jdbcType="VARCHAR" property="cardId"/>
+        <result column="birth_date" jdbcType="TIMESTAMP" property="birthDate"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="accept_promotion" jdbcType="BIT" property="acceptPromotion"/>
+        <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
+        <result column="sex" jdbcType="TINYINT" property="sex"/>
+        <result column="province" jdbcType="INTEGER" property="province"/>
+        <result column="city" jdbcType="INTEGER" property="city"/>
+    </resultMap>
+
+    <select id="getBindNumber" resultType="int">
+        select count(status) from member
+        <where>
+            wechat_id = #{wechatId} and status = 1
+            <if test="start!=null">
+                <if test="end!=null">
+                    and bind_at between #{start} and #{end}
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <select id="getUnBindNumber" resultType="int">
+        select count(status) from member
+        <where>
+            wechat_id = #{wechatId} and status = 0
+            <if test="start!=null">
+                <if test="end!=null">
+                    and unbund_at between #{start} and #{end}
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <select id="getMemberBindStatus" resultType="java.lang.Integer">
+        select status from member_profile
+        <where>
+            member_id = #{id} and wechat_id = #{wechatId}
+        </where>
+    </select>
+
+    <resultMap id="MemberExcelResultMap" type="com.d1m.wechat.model.MemberExcel">
+        <result property="id" jdbcType="INTEGER" column="no"/>
+        <result property="mobile" jdbcType="VARCHAR" column="mobile"/>
+        <result property="city" jdbcType="VARCHAR" column="city"/>
+        <result property="bindAt" jdbcType="DATE" column="bind_date"/>
+        <result property="bindBirthday" jdbcType="DATE" column="bind_birthday"/>
+        <result property="bindCity" jdbcType="VARCHAR" column="bind_city"/>
+        <result property="bindCounty" jdbcType="VARCHAR" column="bind_county"/>
+        <result property="bindGender" jdbcType="TINYINT" column="bind_gender"/>
+        <result property="bindMobile" jdbcType="VARCHAR" column="bind_mobile"/>
+        <result property="bindProvince" jdbcType="VARCHAR" column="bind_province"/>
+        <result property="bindStatus" jdbcType="TINYINT" column="bind_status"/>
+        <result property="gender" jdbcType="TINYINT" column="gender"/>
+        <result property="groupMessageSent" jdbcType="INTEGER" column="message_sent"/>
+        <result property="lang" jdbcType="TINYINT" column="lang"/>
+        <result property="nickname" jdbcType="VARCHAR" column="nickname"/>
+        <result property="openId" jdbcType="VARCHAR" column="openId"/>
+        <result property="province" jdbcType="VARCHAR" column="province"/>
+        <result property="remarks" jdbcType="VARCHAR" column="remarks"/>
+        <result property="subscribeAt" jdbcType="DATE" column="subscribe_at"/>
+        <result property="subscribeScene" jdbcType="TINYINT" column="subscribe_scene"/>
+        <result property="subscribeStatus" jdbcType="TINYINT" column="status"/>
+        <result property="tag" jdbcType="VARCHAR" column="tag"/>
+        <result property="unionId" jdbcType="VARCHAR" column="union_id"/>
+        <result property="unsubscribeAt" jdbcType="DATE" column="unsubscribe_at"/>
+    </resultMap>
+
+
+    <select id="findMemberExcelByParams" resultMap="MemberExcelResultMap">
+        select
+        @rowno := @rowno + 1 as no,
+        m.nickname,
+        m.sex as gender,
+        m.mobile as mobile,
+        m.is_subscribe as status,
+        m.subscribe_at as subscribe_at,
+        m.`status` as bind_status,
+        ifnull(m.batchsend_month, 0) as message_sent,
+        m.open_id,
+        ai.c_name as province,
+        ai1.c_name as city,
+        mmt.tags as tag,
+        m.bind_at as bind_date,
+        m.unsubscribe_at as unsubscribe_at,
+        m.union_id as union_id,
+        mp.province as bind_province,
+        mp.mobile as bind_mobile,
+        mp.city as bind_city,
+        mp.county as bind_county,
+        mp.sex as bind_gender,
+        mp.birth_date as bind_birthday,
+        m.remark as remarks,
+        m.language as lang,
+        m.subscribe_scene as subscribe_scene
+        from member m
+        left join member_profile mp on mp.member_id = m.id
+        LEFT JOIN area_info ai on m.province = ai.id
+        LEFT JOIN area_info ai1 on m.city = ai1.id
+        left join
+        (SELECT
+        mmt.member_id,
+        group_concat(mt.name separator '|') tags
+        FROM
+        member_member_tag mmt
+        LEFT JOIN member_tag mt ON mmt.member_tag_id = mt.id
+        <if test="memberTagIds != null">
+            where member_tag_id in
+            <foreach close=")" collection="memberTagIds" index="index" item="item" open="(" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        group by mmt.member_id
+        ) mmt on mmt.member_id = m.id ,( select @rowno:=0) t
+        <where>
+            <if test="wechatId != null">
+                m.wechat_id = #{wechatId}
+            </if>
+            <if test="ids!=null">
+                and id in
+                <foreach collection="ids" open="(" separator="," close=")" index="index" item="item">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="openId != null">
+                and m.open_id = #{openId}
+            </if>
+            <if test="nickname != null">
+                and m.nickname like CONCAT('%',#{nickname},'%')
+            </if>
+            <if test="sex != null">
+                and m.sex = #{sex}
+            </if>
+            <if test="country != null">
+                and m.country = #{country}
+            </if>
+            <if test="province != null">
+                and m.province = #{province}
+            </if>
+            <if test="city != null">
+                and m.city = #{city}
+            </if>
+            <if test="subscribe != null">
+                <if test="subscribe == true">
+                    and m.is_subscribe = 1
+                </if>
+                <if test="subscribe == false">
+                    and m.is_subscribe = 0
+                </if>
+            </if>
+            <if test="activityStartAt != null">
+                and m.activity &gt;= #{activityStartAt}
+            </if>
+            <if test="activityEndAt != null">
+                and m.activity &lt;= #{activityEndAt}
+            </if>
+            <if test="batchSendOfMonthStartAt != null">
+                and m.batchsend_month &gt;= #{batchSendOfMonthStartAt}
+            </if>
+            <if test="batchSendOfMonthEndAt != null">
+                and m.batchsend_month &lt;= #{batchSendOfMonthEndAt}
+            </if>
+            <if test="attentionStartAt != null">
+                and m.subscribe_at &gt;= #{attentionStartAt}
+            </if>
+            <if test="attentionEndAt != null">
+                and m.subscribe_at &lt;= #{attentionEndAt}
+            </if>
+            <if test="cancelSubscribeStartAt != null">
+                and m.unsubscribe_at &gt;= #{cancelSubscribeStartAt}
+            </if>
+            <if test="cancelSubscribeEndAt != null">
+                and m.unsubscribe_at &lt;= #{cancelSubscribeEndAt}
+            </if>
+            <if test="mobile != null">
+                and m.mobile like CONCAT('%',#{mobile},'%')
+            </if>
+            <if test="isOnline != null">
+                <if test="isOnline == true">
+                    and (m.is_subscribe = 1 and now() <![CDATA[ <= ]]> DATE_ADD(m.last_conversation_at, INTERVAL 48
+                    DAY_HOUR))
+                </if>
+                <if test="isOnline == false">
+                    and (m.is_subscribe = 0 or m.last_conversation_at is null or (m.is_subscribe = 1 and now()
+                    <![CDATA[ > ]]> DATE_ADD(m.last_conversation_at, INTERVAL 48 DAY_HOUR)))
+                </if>
+            </if>
+            <if test="memberTags != null and memberTags.length &gt; 0">
+                and mmt.member_id is not null
+            </if>
+            <if test="bindStatus != null">
+                <if test="bindStatus != 2">
+                    and m.status = #{bindStatus}
+                </if>
+                <if test="bindStatus == 2">
+                    and m.status is null
+                </if>
+            </if>
+        </where>
+    </select>
+
 </mapper>
