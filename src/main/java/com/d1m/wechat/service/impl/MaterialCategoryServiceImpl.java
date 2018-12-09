@@ -1,14 +1,17 @@
 package com.d1m.wechat.service.impl;
 
+import com.d1m.wechat.dto.MaterialCategoryDto;
 import com.d1m.wechat.mapper.MaterialCategoryMapper;
 import com.d1m.wechat.model.MaterialCategory;
-import com.d1m.wechat.pamametermodel.MaterialCategoryEntity;
+
 import com.d1m.wechat.service.MaterialCategoryService;
+import com.d1m.wechat.util.MapUtils;
+import com.d1m.wechat.util.Query;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -26,22 +29,29 @@ public class MaterialCategoryServiceImpl implements MaterialCategoryService {
     private MaterialCategoryMapper materialCategoryMapper;
 
     @Override
-    public int save(MaterialCategoryEntity materialCategoryEntity) {
-        materialCategoryEntity.setCreatedAt(new Date());
-        return materialCategoryMapper.insert(materialCategoryEntity);
+    public int save(MaterialCategoryDto dto) {
+        MaterialCategory materialCategory = new MaterialCategory();
+        BeanUtils.copyProperties(dto,materialCategory);
+        materialCategory.setCreatedAt(new Date());
+        materialCategory.setDeleted("0");
+        return materialCategoryMapper.add(materialCategory);
     }
 
     @Override
-    public MaterialCategoryEntity queryObject(String id) {
-        MaterialCategoryEntity materialCategoryEntity = new MaterialCategoryEntity();
+    public MaterialCategoryDto queryObject(String id) {
+        MaterialCategoryDto MaterialCategoryDto = new MaterialCategoryDto();
         MaterialCategory mc = materialCategoryMapper.queryObject(id);
-        BeanUtils.copyProperties(mc, materialCategoryEntity);
-        return materialCategoryEntity;
+        BeanUtils.copyProperties(mc, MaterialCategoryDto);
+        return MaterialCategoryDto;
     }
 
 
-    public int update(MaterialCategoryEntity materialCategoryEntity) {
-        return materialCategoryMapper.update(materialCategoryEntity);
+    @Override
+    public int update(MaterialCategoryDto dto) {
+        MaterialCategory materialCategory = new MaterialCategory();
+        BeanUtils.copyProperties(dto,materialCategory);
+        materialCategory.setLasteUpdatedAt(new Date());
+        return materialCategoryMapper.update(materialCategory);
     }
 
     /**
@@ -55,6 +65,7 @@ public class MaterialCategoryServiceImpl implements MaterialCategoryService {
          return materialCategoryMapper.selectOne(materialCategory);
     }
 
+
     /**
      * 删除素材分类
      * @param id
@@ -65,13 +76,12 @@ public class MaterialCategoryServiceImpl implements MaterialCategoryService {
     }
 
     @Override
-    public List<MaterialCategory> queryList(Map<String, Object> map) {
-        return materialCategoryMapper.queryList(map);
-    }
-
-    @Override
-    public int queryTotal(Map<String, Object> map) {
-        return materialCategoryMapper.queryTotal(map);
+    public PageInfo<MaterialCategory> queryList(MaterialCategoryDto dto) {
+        PageHelper.startPage(dto.getCurrPage(), dto.getPageSize());
+        Query query = new Query(MapUtils.beanToMap(dto));
+        List<MaterialCategory> list = materialCategoryMapper.queryList(query);
+        PageInfo<MaterialCategory> pageInfo = new PageInfo<>(list);
+        return pageInfo;
     }
 
 }

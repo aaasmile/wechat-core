@@ -6,31 +6,31 @@
         <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.String">
             select UUID()
         </selectKey>
-
         insert into material_category(
         `id`,
         `name`,
-        `is_deleted`,
+        `deleted`,
         `wechat_id`,
         `created_at`,
         `created_by`,
         `laste_updated_at`,
-        `laste_updated_by`)
+        `laste_updated_by`        )
         values(
         #{id},
         #{name},
-        #{is_deleted},
-        #{wechat_id},
-        #{created_at},
-        #{created_by},
-        #{laste_updated_at},
-        #{laste_updated_by}
+        #{deleted},
+        #{wechatId},
+        #{createdAt},
+        #{createdBy},
+        #{lasteUpdatedAt},
+        #{lasteUpdatedBy}         )
     </insert>
+
     <select id="queryObject" resultType="com.d1m.wechat.model.MaterialCategory">
 		select
 			`id`,
 			`name`,
-			`is_deleted`,
+			`deleted`,
 			`wechat_id`,
 			`created_at`,
 			`created_by`,
@@ -44,7 +44,7 @@
         select
         `id`,
         `name`,
-        `is_deleted`,
+        `deleted`,
         `wechat_id`,
         `created_at`,
         `created_by`,
@@ -68,20 +68,12 @@
         </if>
     </select>
 
-    <select id="queryTotal" resultType="int">
-        select count(*) from material_category
-        WHERE 1=1
-        <if test="name != null">
-            AND name = #{name}
-        </if>
-    </select>
-
     <update id="update" parameterType="com.d1m.wechat.model.MaterialCategory">
         update material_category
         <set>
             <if test="id != null">`id` = #{id},</if>
             <if test="name != null">`name` = #{name},</if>
-            <if test="isDeleted != null">`is_deleted` = #{isDeleted},</if>
+            <if test="deleted != null">`deleted` = #{deleted},</if>
             <if test="wechatId != null">`wechat_id` = #{wechatId},</if>
             <if test="createdAt != null">`created_at` = #{createdAt},</if>
             <if test="createdBy != null">`created_by` = #{createdBy},</if>

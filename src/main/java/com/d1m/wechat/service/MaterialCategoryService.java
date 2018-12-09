@@ -1,7 +1,9 @@
 package com.d1m.wechat.service;
 
+import com.d1m.wechat.dto.MaterialCategoryDto;
 import com.d1m.wechat.model.MaterialCategory;
-import com.d1m.wechat.pamametermodel.MaterialCategoryEntity;
+import com.github.pagehelper.PageInfo;
+
 
 import java.util.List;
 import java.util.Map;
@@ -17,12 +19,12 @@ public interface MaterialCategoryService {
     /**
      * 保存实体
      *
-     * @param materialCategoryEntity 实体
+     * @param dto 实体
      * @return 保存条数
      *
      * */
 
-    int save(MaterialCategoryEntity materialCategoryEntity);
+    int save(MaterialCategoryDto dto);
 
     /**
     *
@@ -32,14 +34,14 @@ public interface MaterialCategoryService {
      * @return 实体
      * */
 
-    MaterialCategoryEntity queryObject(String id);
+    MaterialCategoryDto queryObject(String id);
 
     /**
      * 更新
-     * @param materialCategoryEntity
+     * @param MaterialCategoryDto
      * @return
      */
-    int update(MaterialCategoryEntity materialCategoryEntity);
+    int update(MaterialCategoryDto MaterialCategoryDto);
 
     /**
      * 查询素材名称是否存在
@@ -57,17 +59,10 @@ public interface MaterialCategoryService {
     /**
      * 分页查询
      *
-     * @param map 参数
+     * @param dto
      * @return list
      */
-    List<MaterialCategory> queryList(Map<String, Object> map);
+    PageInfo<MaterialCategory> queryList(MaterialCategoryDto dto);
 
-    /**
-     * 分页统计总数
-     *
-     * @param map 参数
-     * @return 总数
-     */
-    int queryTotal(Map<String, Object> map);
 
 }

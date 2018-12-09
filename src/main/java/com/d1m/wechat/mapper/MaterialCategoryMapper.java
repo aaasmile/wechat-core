@@ -1,7 +1,7 @@
 package com.d1m.wechat.mapper;
 
 import com.d1m.wechat.model.MaterialCategory;
-import com.d1m.wechat.pamametermodel.MaterialCategoryEntity;
+
 import com.d1m.wechat.util.BaseMapper;
 import com.d1m.wechat.util.MyMapper;
 
@@ -22,7 +22,6 @@ public interface MaterialCategoryMapper extends MyMapper<MaterialCategory> {
 
     List<MaterialCategory> queryList(Map<String, Object> map);
 
-    int queryTotal(Map<String, Object> map);
 
     int update(MaterialCategory t);
 

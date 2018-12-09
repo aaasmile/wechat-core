@@ -972,6 +972,13 @@ public enum Message {
      * */
     INTERFACECONFIG_SELECT_SUCCESS(42001, "接口列表查询成功"),
     INTERFACECONFIG_SELECT_FAIL(42002, "接口列表查询失败"),
+
+    /**
+     * material_category
+     */
+    MATERIAL_CATEGORY_NAME_NOT_NULL(50000,"分类名称不能为空"),
+    MATERIAL_CATEGORY_NAME_EXITS(50001,"分类名称已存在"),
+    MATERIAL_CATEGORY_ID_NOT_NULL(50002,"id不能为空"),
     ;
 
     private Integer code;

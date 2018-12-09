@@ -11,7 +11,7 @@ import com.d1m.wechat.model.MaterialCategory;
 import com.d1m.wechat.model.MaterialImageTextDetail;
 import com.d1m.wechat.model.enums.MaterialStatus;
 import com.d1m.wechat.model.enums.MaterialType;
-import com.d1m.wechat.pamametermodel.MaterialCategoryEntity;
+
 import com.d1m.wechat.service.MaterialCategoryService;
 import com.d1m.wechat.service.MaterialService;
 import com.d1m.wechat.service.NofSendService;

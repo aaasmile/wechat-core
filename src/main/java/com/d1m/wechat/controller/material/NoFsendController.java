@@ -6,7 +6,7 @@ import com.d1m.wechat.dto.MaterialDto;
 import com.d1m.wechat.dto.NofSendDto;
 import com.d1m.wechat.model.Material;
 import com.d1m.wechat.model.MaterialCategory;
-import com.d1m.wechat.pamametermodel.MaterialCategoryEntity;
+
 import com.d1m.wechat.pamametermodel.MaterialModel;
 import com.d1m.wechat.service.NofSendService;
 import com.d1m.wechat.util.Message;

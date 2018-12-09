@@ -2,7 +2,7 @@ package com.d1m.wechat.service;
 
 import com.d1m.wechat.dto.NofSendDto;
 import com.d1m.wechat.model.MaterialCategory;
-import com.d1m.wechat.pamametermodel.MaterialCategoryEntity;
+
 
 import java.util.List;
 import java.util.Map;

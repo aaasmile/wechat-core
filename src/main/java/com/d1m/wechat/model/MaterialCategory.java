@@ -1,9 +1,6 @@
 package com.d1m.wechat.model;
 
-import org.springframework.data.annotation.Id;
-
-import javax.persistence.Column;
-import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -14,117 +11,128 @@ import java.util.Date;
  * @Author: Liu weilin
  * @Description:
  */
-@Table(name = "material_category")
-public class MaterialCategory {
+public class MaterialCategory implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    @Id
-    @Column(name = "`id`")
-    //@KeySql(genId=UUIdGenId.class)
+    //主键ID
     private String id;
-
-    /**
-     * 素材名称
-     */
-    @Column(name = "name")
+    //分类名称
     private String name;
-
-    /**
-     * 是否删除（0 否，1 是）
-     */
-    @Column(name = "is_deleted")
-    private Boolean isDeleted;
-
-    /**
-     * 公众号ID
-     */
-    @Column(name = "wechat_id")
+    //是否删除（0 否，1 是）
+    private String deleted;
+    //公众号ID
     private Integer wechatId;
-
-    /**
-     * 创建时间
-     */
-    @Column(name = "created_at")
+    //创建时间
     private Date createdAt;
-
-    /**
-     * 创建人
-     */
-    @Column(name = "creator_id")
-    private Integer creatorId;
-
-    /**
-     * 最后更新时间
-     */
-    @Column(name = "laste_updated_at")
+    //创建人
+    private Integer createdBy;
+    //最后更新时间
     private Date lasteUpdatedAt;
+    //最后更新人
+    private Integer lasteUpdatedBy;
 
     /**
-     * 最后更新人
+     * 设置：主键ID
      */
-    @Column(name = "laste_updated_by")
-    private Date lasteUpdatedBy;
-
-    public String getId() {
-        return id;
-    }
-
     public void setId(String id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    /**
+     * 获取：主键ID
+     */
+    public String getId() {
+        return id;
     }
-
+    /**
+     * 设置：分类名称
+     */
     public void setName(String name) {
         this.name = name;
     }
 
-    public Boolean getDeleted() {
-        return isDeleted;
+    /**
+     * 获取：分类名称
+     */
+    public String getName() {
+        return name;
+    }
+    /**
+     * 设置：是否删除（0 否，1 是）
+     */
+    public void setDeleted(String deleted) {
+        this.deleted = deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
-        isDeleted = deleted;
+    /**
+     * 获取：是否删除（0 否，1 是）
+     */
+    public String getDeleted() {
+        return deleted;
     }
-
-    public Integer getWechatId() {
-        return wechatId;
-    }
-
+    /**
+     * 设置：公众号ID
+     */
     public void setWechatId(Integer wechatId) {
         this.wechatId = wechatId;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
+    /**
+     * 获取：公众号ID
+     */
+    public Integer getWechatId() {
+        return wechatId;
     }
-
+    /**
+     * 设置：创建时间
+     */
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Integer getCreatorId() {
-        return creatorId;
+    /**
+     * 获取：创建时间
+     */
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+    /**
+     * 设置：创建人
+     */
+    public void setCreatedBy(Integer createdBy) {
+        this.createdBy = createdBy;
     }
 
-    public void setCreatorId(Integer creatorId) {
-        this.creatorId = creatorId;
+    /**
+     * 获取：创建人
+     */
+    public Integer getCreatedBy() {
+        return createdBy;
     }
-
-    public Date getLasteUpdatedAt() {
-        return lasteUpdatedAt;
-    }
-
+    /**
+     * 设置：最后更新时间
+     */
     public void setLasteUpdatedAt(Date lasteUpdatedAt) {
         this.lasteUpdatedAt = lasteUpdatedAt;
     }
 
-    public Date getLasteUpdatedBy() {
-        return lasteUpdatedBy;
+    /**
+     * 获取：最后更新时间
+     */
+    public Date getLasteUpdatedAt() {
+        return lasteUpdatedAt;
+    }
+    /**
+     * 设置：最后更新人
+     */
+    public void setLasteUpdatedBy(Integer lasteUpdatedBy) {
+        this.lasteUpdatedBy = lasteUpdatedBy;
     }
 
-    public void setLasteUpdatedBy(Date lasteUpdatedBy) {
-        this.lasteUpdatedBy = lasteUpdatedBy;
+    /**
+     * 获取：最后更新人
+     */
+    public Integer getLasteUpdatedBy() {
+        return lasteUpdatedBy;
     }
 }
