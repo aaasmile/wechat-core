@@ -79,7 +79,7 @@ public class MaterialCategoryController extends BaseController {
      */
     @ApiOperation(value = "查看信息")
     //@ApiResponse(code = 200, message = "操作成功")
-    @RequestMapping("{id}/info.json")
+    @RequestMapping(value = "{id}/info.json",method = RequestMethod.GET)
     @ResponseBody
     public JSONObject info(@PathVariable("id") String id) {
         Preconditions.checkArgument(StringUtils.isNotBlank(id), Message.MATERIAL_CATEGORY_ID_NOT_NULL);
@@ -120,7 +120,7 @@ public class MaterialCategoryController extends BaseController {
      */
     @ApiOperation(value = "获取素材图文列表")
     //@ApiResponse(code = 200, message = "1-获取素材图文列表成功")
-    @RequestMapping(value = "list.json")
+    @RequestMapping(value = "list.json",method = RequestMethod.POST)
     @RequiresPermissions("app-msg:list")
     @ResponseBody
     public JSONObject queryList(@RequestBody MaterialCategoryDto dto) {

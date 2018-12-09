@@ -13,6 +13,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -78,7 +79,7 @@ public class MaterialCategoryServiceImpl implements MaterialCategoryService {
     @Override
     public PageInfo<MaterialCategory> queryList(MaterialCategoryDto dto) {
         PageHelper.startPage(dto.getCurrPage(), dto.getPageSize());
-        Query query = new Query(MapUtils.beanToMap(dto));
+        Map<String,Object> query = MapUtils.beanToMap(dto);
         List<MaterialCategory> list = materialCategoryMapper.queryList(query);
         PageInfo<MaterialCategory> pageInfo = new PageInfo<>(list);
         return pageInfo;
