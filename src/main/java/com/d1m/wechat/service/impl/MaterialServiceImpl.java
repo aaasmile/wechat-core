@@ -2,7 +2,6 @@ package com.d1m.wechat.service.impl;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.Resource;
@@ -13,13 +12,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.exception.BusinessException;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import groovy.util.logging.Log;
-import groovy.util.logging.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.common.Mapper;
@@ -52,9 +48,10 @@ import com.d1m.wechat.wechatclient.WechatClientDelegate;
 
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
+@Slf4j
 @Service
 public class MaterialServiceImpl extends BaseService<Material> implements MaterialService {
-    private static final Logger log = LoggerFactory.getLogger(MaterialServiceImpl.class);
+
     @Resource
     private MaterialMapper materialMapper;
 
@@ -131,7 +128,6 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
 
     /**
      * 暂时先注释门店图片上传
-     *
      * @param wechatId
      * @param user
      * @param upload
@@ -163,7 +159,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         Date current = new Date();
         Material material = createMaterialImage(wechatId, user, upload, current);
         //TODO 此处根据环境判断,如果是上线前的部署环境,不上传到微信服务器,后面通过定时任务处理
-        if ("0".equals(FileUploadConfig.getValue(wechatId, "running.env"))) {
+        if("0".equals(FileUploadConfig.getValue(wechatId, "running.env"))){
             WxMaterial wxMaterial = WechatClientDelegate.addMaterial(wechatId, "image", new File(upload.getAbsolutePath()));
             if (wxMaterial.fail()) {
                 throw new WechatException(Message.SYSTEM_ERROR);
@@ -312,9 +308,9 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         }
 
         //set disabled status to all imageTexts of this material
-        if (materialDto != null) {
+        if(materialDto != null) {
             List<ImageTextDto> items = materialDto.getItems();
-            for (ImageTextDto imageText : items) {
+            for(ImageTextDto imageText : items) {
                 MaterialImageTextDetail imageTextData = new MaterialImageTextDetail();
                 imageTextData.setWechatId(wechatId);
                 imageTextData.setId(imageText.getId());
@@ -432,7 +428,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
          wechatId, id, imagetexts, current);
         MaterialImageTextDetail detail = new MaterialImageTextDetail();
         detail.setWechatId(wechatId);
-        detail.setStatus((byte) 1);
+        detail.setStatus((byte)1);
         detail.setMaterialId(id);
         List<MaterialImageTextDetail> existDetails = materialImageTextDetailMapper
          .select(detail);
@@ -499,90 +495,14 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
             return false;
         }
         for (MaterialImageTextDetail materialImageTextDetail : list) {
-            if (null != materialImageTextDetail.getId() && materialImageTextDetail.getId().equals(detail.getId())) {
+            if (null!=materialImageTextDetail.getId()&&materialImageTextDetail.getId().equals(detail.getId())) {
                 return true;
             }
         }
         return false;
     }
 
-	public List<MaterialImageTextDetail> getMaterialImageTextDetails(
-			Integer wechatId, Integer materialId,
-			List<ImageTextModel> imageTexts, Date current)
-			throws WechatException {
-		List<MaterialImageTextDetail> materialImageTextDetails = new ArrayList<MaterialImageTextDetail>();
-		MaterialImageTextDetail detail, existDetail = null;
-		String title, author, content, contentSourceUrl, summary = null;
-		Integer materialCoverId = null;
-		Boolean showCover, contentSourceUrlChecked = null;
-		Material materialCover = null;
-		Integer materialImageTextDetailId = null;
-		int sequence = 1;
-		for (ImageTextModel imageTextModel : imageTexts) {
-			title = imageTextModel.getTitle();
-			content = imageTextModel.getContent();
-			materialCoverId = imageTextModel.getMaterialCoverId();
-			notBlank(title, Message.MATERIAL_IMAGE_TEXT_DETAIL_TITLE_NOT_BLANK);
-			notBlank(content,
-					Message.MATERIAL_IMAGE_TEXT_DETAIL_CONTENT_NOT_BLANK);
-			notBlank(materialCoverId,
-					Message.MATERIAL_IMAGE_TEXT_DETAIL_THUMB_MEDIA_NOT_BLANK);
-			materialCover = new Material();
-			materialCover.setId(materialCoverId);
-			materialCover.setWechatId(wechatId);
-			materialCover.setMaterialType(MaterialType.IMAGE.getValue());
-			materialCover.setStatus(MaterialStatus.INUSED.getValue());
-			materialCover = materialMapper.selectOne(materialCover);
-			notBlank(materialCover, Message.MATERIAL_IMAGE_NOT_EXIST);
-			author = imageTextModel.getAuthor();
-			contentSourceUrlChecked = ParamUtil.getBoolean(
-					imageTextModel.getContentSourceChecked(), false);
-			contentSourceUrl = imageTextModel.getContentSourceUrl();
-			summary = imageTextModel.getSummary();
-			showCover = imageTextModel.isShowCover();
-			if (contentSourceUrlChecked) {
-				notBlank(
-						contentSourceUrl,
-						Message.MATERIAL_IMAGE_TEXT_DETAIL_CONTENT_SOURCE_URL_NOT_BLANK);
-			}
-			detail = new MaterialImageTextDetail();
-			detail.setAuthor(author);
-			detail.setContent(content);
-			detail.setContentSourceChecked(contentSourceUrlChecked);
-			detail.setContentSourceUrl(contentSourceUrl);
-			detail.setShowCover(showCover);
-			detail.setMaterialCoverId(materialCoverId);
-			detail.setComment(imageTextModel.getComment());
-			if (StringUtils.isBlank(summary)) {
-				String delHTMLTagContent = HtmlUtils.delHTMLTag(content);
-				if (delHTMLTagContent.length() > 54) {
-					delHTMLTagContent = delHTMLTagContent.substring(0, 54);
-				}
-				detail.setSummary(delHTMLTagContent);
-			} else {
-				detail.setSummary(summary);
-			}
-			detail.setTitle(title);
-			detail.setWechatId(wechatId);
-			if (materialId != null) {
-				materialImageTextDetailId = imageTextModel.getId();
-				if (materialImageTextDetailId != null) {
-					existDetail = materialImageTextDetailMapper
-							.selectByPrimaryKey(materialImageTextDetailId);
-					if (!existDetail.getMaterialId().equals(materialId)) {
-						throw new WechatException(
-								Message.MATERIAL_IMAGE_TEXT_DETAIL_NOT_BELONGS_TO_MATERIAL);
-					}
-					detail.setId(materialImageTextDetailId);
-				}
-			}
-			detail.setSequence(sequence);
-			materialImageTextDetails.add(detail);
-			sequence++;
-		}
-		return materialImageTextDetails;
-	}
-    private List<MaterialImageTextDetail> getMaterialImageTextDetails(
+    public List<MaterialImageTextDetail> getMaterialImageTextDetails(
      Integer wechatId, Integer materialId,
      List<ImageTextModel> imageTexts, Date current)
      throws WechatException {
@@ -729,14 +649,14 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         WxArticle wxArticle = null;
         List<ImageTextDto> items = imageText.getItems();
 
-        String patternString = "(?i)<img(.*?)src=\"(.*?)\"\\s*data-wx-src=\"(.*?)\"(.*?)>";
-        String backgroundPatternString = "(.*?)url\\(&quot;(.*?)&quot;(.*?)background-wx-src=\"(.*?)\"(.*?)";
+        String patternString="(?i)<img(.*?)src=\"(.*?)\"\\s*data-wx-src=\"(.*?)\"(.*?)>";
+        String backgroundPatternString="(.*?)url\\(&quot;(.*?)&quot;(.*?)background-wx-src=\"(.*?)\"(.*?)";
         for (ImageTextDto imageTextDto : items) {
             wxArticle = new WxArticle();
             wxArticle.setAuthor(imageTextDto.getAuthor());
-            String textContent = imageTextDto.getContent();
-            textContent = textContent.replaceAll(patternString, "<img $1 src=\"$3\" data-wx-src=\"$2\"$4>");
-            textContent = textContent.replaceAll(backgroundPatternString, "$1url\\(&quot;$4&quot;$3background-wx-src=\"$2\"$5");
+            String textContent=imageTextDto.getContent();
+            textContent=textContent.replaceAll(patternString,"<img $1 src=\"$3\" data-wx-src=\"$2\"$4>");
+            textContent=textContent.replaceAll(backgroundPatternString, "$1url\\(&quot;$4&quot;$3background-wx-src=\"$2\"$5");
             wxArticle.setContent(textContent);
             wxArticle.setContentSourceUrl(imageTextDto.getContentSourceUrl());
             wxArticle.setDigest(imageTextDto.getSummary());
