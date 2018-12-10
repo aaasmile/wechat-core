@@ -3,9 +3,11 @@ package com.d1m.wechat.controller.material;
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.dto.MaterialCategoryDto;
+import com.d1m.wechat.model.Material;
 import com.d1m.wechat.model.MaterialCategory;
 
 import com.d1m.wechat.service.MaterialCategoryService;
+import com.d1m.wechat.service.MaterialService;
 import com.d1m.wechat.util.MapUtils;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.PageInfo;
@@ -31,14 +33,17 @@ import java.util.Map;
  * @Author: Liu weilin
  * @Description: 素材分类管理
  */
+@Api(tags = "素材分类管理API")
 @Slf4j
 @RestController
 @RequestMapping("/material/category")
-@Api(tags = "素材分类管理")
 public class MaterialCategoryController extends BaseController {
 
     @Autowired
     private MaterialCategoryService materialCategoryService;
+
+    @Autowired
+    private MaterialService materialService;
 
     /**
      * 保存

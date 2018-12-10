@@ -979,6 +979,15 @@ public enum Message {
     MATERIAL_CATEGORY_NAME_NOT_NULL(50000,"分类名称不能为空"),
     MATERIAL_CATEGORY_NAME_EXITS(50001,"分类名称已存在"),
     MATERIAL_CATEGORY_ID_NOT_NULL(50002,"id不能为空"),
+    MATERIAL_CATEGORY_BE_USED(50003,"有{0}条图文正在使用此分类，无法删除"),
+
+    /**
+     * NoFsend
+     */
+    NOFSEND_NOT_NULL(60000,"标题不能为空"),
+    NOFSEND_IAMGE_NOT_NULL(60001,"封面图不能为空"),
+
+
     ;
 
     private Integer code;

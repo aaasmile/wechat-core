@@ -33,10 +33,10 @@ import java.util.Map;
  * @Author: Liu weilin
  * @Description: 非群发单图文
  */
+@Api(tags = "非群发单图文API")
 @Slf4j
 @RestController
 @RequestMapping("/noFsend")
-@Api(value = "非群发单图文API", tags = "非群发单图文")
 public class NoFsendController extends BaseController {
 
     @Autowired
@@ -44,15 +44,15 @@ public class NoFsendController extends BaseController {
     /**
      * 保存
      */
-    @ApiOperation(value = "添加接口", tags = "非群发单图文")
-    @ApiResponse(code = 200, message = "操作成功")
+    @ApiOperation(value = "添加接口")
+    //@ApiResponse(code = 200, message = "操作成功")
     @RequestMapping(value = "save.json", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject save(@RequestBody NofSendDto dto) {
-        Preconditions.checkArgument(StringUtils.isNotBlank(dto.getTitle()), "标题不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(dto.getTitle()), Message.NOFSEND_NOT_NULL);
         Preconditions.checkArgument(dto.getText()!=null, Message.MATERIAL_IMAGE_TEXT_NOT_BLANK);
-        Preconditions.checkArgument(dto.getItems()!=null, "封面图不能为空");
-        dto.setCreatorId(getUser().getCreatorId());
+        Preconditions.checkArgument(dto.getItems()!=null, Message.NOFSEND_IAMGE_NOT_NULL);
+        dto.setCreatorId(getUser().getId());
         dto.setWechatId(getUser().getWechatId());
         nofSendService.save(dto);
         return representation(Message.SUCCESS);
@@ -61,15 +61,15 @@ public class NoFsendController extends BaseController {
     /**
      * 更新
      */
-    @ApiOperation(value = "更新接口", tags = "非群发单图文")
+    @ApiOperation(value = "更新接口")
     @ApiResponse(code = 200, message = "操作成功")
     @RequestMapping(value = "update.json", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject update(@RequestBody NofSendDto dto) {
-        Preconditions.checkArgument(StringUtils.isNotBlank(dto.getTitle()), "标题不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(dto.getTitle()), Message.NOFSEND_NOT_NULL);
         Preconditions.checkArgument(dto.getText()!=null, Message.MATERIAL_IMAGE_TEXT_NOT_BLANK);
-        Preconditions.checkArgument(dto.getItems()!=null, "封面图不能为空");
-        dto.setCreatorId(getUser().getCreatorId());
+        Preconditions.checkArgument(dto.getItems()!=null, Message.NOFSEND_IAMGE_NOT_NULL);
+        dto.setModifyById(getUser().getId());
         dto.setWechatId(getUser().getWechatId());
         nofSendService.update(dto);
         return representation(Message.SUCCESS);
@@ -77,7 +77,7 @@ public class NoFsendController extends BaseController {
     /**
      * 查看信息
      */
-    @ApiOperation(value = "查看信息", tags = "非群发单图文")
+    @ApiOperation(value = "查看信息")
     @ApiResponse(code = 200, message = "操作成功")
     @RequestMapping("{id}/info.json")
     @ResponseBody
@@ -87,35 +87,13 @@ public class NoFsendController extends BaseController {
         return representation(Message.SUCCESS, dto);
     }
 
-    /**
-     * 删除
-     *
-     * @param id
-     * @return
-     */
-    @ApiOperation(value = "删除", tags = "非群发单图文")
-    @ApiResponse(code = 200, message = "操作成功")
-    @RequestMapping(value = "{id}/delete.json", method = RequestMethod.DELETE)
-    @RequiresPermissions("app-msg:list")
-    @ResponseBody
-    public JSONObject delete(
-     @ApiParam("素材分类ID")
-     @PathVariable String id) {
-        try {
-            nofSendService.delete(id);
-            return representation(Message.SUCCESS);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return wrapException(e);
-        }
-    }
 
     /**
      * 获取非群发素材图文列表
      * @param params
      * @return
      */
-    @ApiOperation(value="获取非群发素材图文列表", tags="非群发单图文")
+    @ApiOperation(value="获取非群发素材图文列表")
     @ApiResponse(code=200, message="操作成功")
     @RequestMapping(value = "list.json")
     @RequiresPermissions("app-msg:list")
