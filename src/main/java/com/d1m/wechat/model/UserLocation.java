@@ -5,6 +5,8 @@ public class UserLocation {
 	private String eventName;
 	private Double locationX;
 	private Double locationY;
+	private String createdAt;
+	
 	public String getEventName() {
 		return eventName;
 	}
@@ -23,13 +25,20 @@ public class UserLocation {
 	public void setLocationY(Double locationY) {
 		this.locationY = locationY;
 	}
-	public UserLocation(String eventName, Double locationX, Double locationY) {
+	public String getCreatedAt() {
+		return createdAt;
+	}
+	public void setCreatedAt(String createdAt) {
+		this.createdAt = createdAt;
+	}
+	public UserLocation() {
+		super();
+	}
+	public UserLocation(String eventName, Double locationX, Double locationY, String createdAt) {
 		super();
 		this.eventName = eventName;
 		this.locationX = locationX;
 		this.locationY = locationY;
-	}
-	public UserLocation() {
-		super();
+		this.createdAt = createdAt;
 	}
 }

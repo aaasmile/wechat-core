@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.d1m.common.ds.TenantContext;
 import com.d1m.common.ds.TenantHelper;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.dto.ConversationDto;
@@ -40,6 +39,7 @@ import com.d1m.wechat.service.MemberService;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -188,8 +188,8 @@ public class ConversationController extends BaseController {
 		msgTypes.add(MsgType.VOICE.getValue());
 		conversationModel.setMsgTypes(msgTypes);
 		Page<ConversationDto> page = conversationService.searchUnread(getWechatId(session), conversationModel, true);
-		List<ConversationDto> result = convert(page);
-		return representation(Message.CONVERSATION_LIST_SUCCESS, result, conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
+//		List<ConversationDto> result = convert(page);
+		return representation(Message.CONVERSATION_LIST_SUCCESS, page.getResult(), conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
 	}
 
 	@ApiOperation(value = "获取会话列表", tags = "会话接口")
@@ -202,8 +202,8 @@ public class ConversationController extends BaseController {
 			}
 			conversationModel.setUpdateRead(true);
 			Page<ConversationDto> page = conversationService.search(getWechatId(session), conversationModel, true);
-			List<ConversationDto> result = convert(page);
-			return representation(Message.CONVERSATION_LIST_SUCCESS, result, conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
+//			List<ConversationDto> result = convert(page);
+			return representation(Message.CONVERSATION_LIST_SUCCESS, page.getResult(), conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			return wrapException(e);
@@ -212,25 +212,37 @@ public class ConversationController extends BaseController {
 	
 	@ApiOperation(value = "用户行为查询接口", tags = "用户行为查询接口")
 	@ApiResponse(code = 200, message = "用户行为查询接口查询成功")
-	@RequestMapping(value = "selectUserBehavior.json")
+	@RequestMapping(value = "selectUserBehavior.json", method = RequestMethod.POST)
 	public JSONObject selectUserBehavior(@ApiParam(name = "ConversationModel", required = false) @RequestBody(required = false) ConversationModel conversationModel, HttpSession session) {
-		if(conversationModel.getMemberId() == null) {
-			return this.representation(Message.CONVERSATION_LIST_FAIL, null);
+		try {
+			if(conversationModel.getMemberId() == null) {
+				return this.representation(Message.CONVERSATION_LIST_FAIL, null);
+			}
+			PageHelper.startPage(conversationModel.getPageNum(), conversationModel.getPageSize(), true);
+			Integer wechatId = getWechatId();
+			Page<UserBehavior> userBehaviorPage = conversationService.selectUserBehavior(wechatId, conversationModel);
+			return representation(Message.CONVERSATION_LIST_SUCCESS, userBehaviorPage.getResult(), userBehaviorPage.getPageSize(), userBehaviorPage.getPageNum(), userBehaviorPage.getTotal());
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			return representation(Message.CONVERSATION_LIST_FAIL);
 		}
-		Integer wechatId = getWechatId();
-		Page<UserBehavior> userBehaviorPage = conversationService.selectUserBehavior(wechatId, conversationModel);
-		return this.representation(Message.CONVERSATION_LIST_SUCCESS, userBehaviorPage.getResult());
 	}
 	@ApiOperation(value = "用户位置查询接口", tags = "用户位置查询接口")
 	@ApiResponse(code = 200, message = "用户位置查询接口查询成功")
-	@RequestMapping(value = "selectUserLocation.json")
+	@RequestMapping(value = "selectUserLocation.json", method = RequestMethod.POST)
 	public JSONObject selectUserLocation(@ApiParam(name = "ConversationModel", required = false) @RequestBody(required = false) ConversationModel conversationModel, HttpSession session) {
-		if(conversationModel.getMemberId() == null) {
-			return this.representation(Message.CONVERSATION_LIST_FAIL, null);
+		try {
+			if(conversationModel.getMemberId() == null) {
+				return this.representation(Message.CONVERSATION_LIST_FAIL, null);
+			}
+			Integer wechatId = getWechatId();
+			PageHelper.startPage(conversationModel.getPageNum(), conversationModel.getPageSize(), true);
+			Page<UserLocation> userLocationPage = conversationService.selectUserLocation(wechatId, conversationModel);
+			return this.representation(Message.CONVERSATION_LIST_SUCCESS, userLocationPage.getResult(), userLocationPage.getPageSize(), userLocationPage.getPageNum(), userLocationPage.getTotal());
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			return representation(Message.CONVERSATION_LIST_FAIL);
 		}
-		Integer wechatId = getWechatId();
-		Page<UserLocation> userLocationPage = conversationService.selectUserLocation(wechatId, conversationModel);
-		return this.representation(Message.CONVERSATION_LIST_SUCCESS, userLocationPage.getResult());
 	}
 
 	private List<ConversationDto> convertMass(Page<ConversationDto> page, Integer wechatId) {

@@ -27,6 +27,8 @@ public class MenuModel {
 	private String pagePath;
 
 	private String appUrl;
+	
+	private String interfaceId;
 
 	public List<MenuModel> getChildren() {
 		return children;
@@ -122,5 +124,13 @@ public class MenuModel {
 
 	public void setAppUrl(String appUrl) {
 		this.appUrl = appUrl;
+	}
+
+	public String getInterfaceId() {
+		return interfaceId;
+	}
+
+	public void setInterfaceId(String interfaceId) {
+		this.interfaceId = interfaceId;
 	}
 }
