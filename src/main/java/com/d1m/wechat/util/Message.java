@@ -2,6 +2,8 @@ package com.d1m.wechat.util;
 
 import org.apache.commons.lang.StringUtils;
 
+import java.text.MessageFormat;
+
 public enum Message {
 
     /**
@@ -294,6 +296,10 @@ public enum Message {
     MATERIAL_NOT_EXIST_IN_WX(16017, "微信不存在该素材"),
 
     MATERIAL_PREVIEW_SUCCESS(1, "微信预览素材成功"),
+
+    MATERIAL_UNABLE_DELETE(16020, "此图片正在被使用中，无法删除！"),
+
+    MATERIAL_WX_NOT_DELETE(16021, "DCRM已删除{0}微信图片删除失败，请在微信平台手动删除！"),
 
     /**
      * action_engine
@@ -1031,4 +1037,12 @@ public enum Message {
         return null;
     }
 
+    /**
+     * With parameters
+     * @param params
+     * @return
+     */
+    public String withParams(Object... params) {
+        return MessageFormat.format(this.name, params);
+    }
 }

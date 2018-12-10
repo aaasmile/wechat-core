@@ -35,6 +35,8 @@ import com.d1m.wechat.service.MaterialService;
 import com.d1m.wechat.util.Constants;
 import com.d1m.wechat.util.Message;
 
+import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
+
 @Controller
 @RequestMapping("/material")
 @Api(value="素材API", tags="素材接口")
@@ -527,9 +529,8 @@ public class MaterialController extends BaseController {
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response) {
 		try {
-			materialService.deleteImage(getWechatId(session), getUser(session),
-					materialId);
-			return representation(Message.MATERIAL_IMAGE_DELETE_SUCCESS);
+			notBlank(materialId, Message.MATERIAL_ID_NOT_BLANK);
+			return materialService.deleteImage(getWechatId(session),materialId);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			return wrapException(e);

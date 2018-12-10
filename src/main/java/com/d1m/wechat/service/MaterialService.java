@@ -1,5 +1,7 @@
 package com.d1m.wechat.service;
 
+import com.alibaba.fastjson.JSONObject;
+import com.d1m.wechat.exception.BusinessException;
 import com.github.pagehelper.Page;
 
 import com.d1m.wechat.controller.file.Upload;
@@ -44,8 +46,8 @@ public interface MaterialService extends IService<Material> {
 			MaterialImageTextDetail materialImageTextDetail, boolean pushToWx)
 			throws WechatException;
 
-	void deleteImage(Integer wechatId, User user, Integer id)
-			throws WechatException;
+	JSONObject deleteImage(Integer wechatId, Integer materialId)
+			throws BusinessException;
 
 	void deleteImageText(Integer wechatId, User user, Integer id)
 			throws WechatException;
