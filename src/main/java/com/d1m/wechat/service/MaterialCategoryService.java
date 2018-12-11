@@ -1,5 +1,6 @@
 package com.d1m.wechat.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.dto.MaterialCategoryDto;
 import com.d1m.wechat.model.MaterialCategory;
 import com.github.pagehelper.PageInfo;
@@ -54,7 +55,7 @@ public interface MaterialCategoryService {
      * 删除素材分类
      * @param id
      */
-    void delete(String id);
+    JSONObject delete(Integer wechatId, String id);
 
     /**
      * 分页查询

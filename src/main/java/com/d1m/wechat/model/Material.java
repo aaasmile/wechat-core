@@ -130,6 +130,21 @@ public class Material {
     @Column(name="is_scrm")
     private int isScrm;
 
+    /**
+     * 素材分类id
+     * @return
+     */
+    @Column(name = "material_type_id")
+    private String materialTypeId;
+
+    public String getMaterialTypeId() {
+        return materialTypeId;
+    }
+
+    public void setMaterialTypeId(String materialTypeId) {
+        this.materialTypeId = materialTypeId;
+    }
+
     public int getIsScrm() {
         return isScrm;
     }

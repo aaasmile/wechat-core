@@ -44,5 +44,7 @@ public interface MaterialMapper extends MyMapper<Material> {
 
     int update(Material material);
 
+    List<String> selectExistName(@Param("wechatId") Integer wechatId,@Param("id") String id);
+
 
 }

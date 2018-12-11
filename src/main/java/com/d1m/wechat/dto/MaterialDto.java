@@ -34,8 +34,17 @@ public class MaterialDto {
 
 	private String name;
 
+	private String materialTypeId;
 
-//	private Integer comment;
+	public String getMaterialTypeId() {
+		return materialTypeId;
+	}
+
+	public void setMaterialTypeId(String materialTypeId) {
+		this.materialTypeId = materialTypeId;
+	}
+
+	//	private Integer comment;
 
 	public String getCreatedAt() {
 		return DateUtil.formatYYYYMMDDHHMMSS(DateUtil.parse(createdAt));

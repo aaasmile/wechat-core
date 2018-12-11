@@ -18,6 +18,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +44,7 @@ public class MaterialCategoryServiceImpl implements MaterialCategoryService {
     @Override
     public int save(MaterialCategoryDto dto) {
         MaterialCategory materialCategory = new MaterialCategory();
-        BeanUtils.copyProperties(dto,materialCategory);
+        BeanUtils.copyProperties(dto, materialCategory);
         materialCategory.setCreatedAt(new Date());
         materialCategory.setDeleted("0");
         return materialCategoryMapper.add(materialCategory);
@@ -61,41 +62,42 @@ public class MaterialCategoryServiceImpl implements MaterialCategoryService {
     @Override
     public int update(MaterialCategoryDto dto) {
         MaterialCategory materialCategory = new MaterialCategory();
-        BeanUtils.copyProperties(dto,materialCategory);
+        BeanUtils.copyProperties(dto, materialCategory);
         materialCategory.setLasteUpdatedAt(new Date());
         return materialCategoryMapper.update(materialCategory);
     }
 
     /**
      * 查询素材名称是否存在
+     *
      * @param name
      * @return
      */
-    public MaterialCategory exitsName(String name){
+    public MaterialCategory exitsName(String name) {
         MaterialCategory materialCategory = new MaterialCategory();
         materialCategory.setName(name);
-         return materialCategoryMapper.selectOne(materialCategory);
+        return materialCategoryMapper.selectOne(materialCategory);
     }
 
 
     /**
      * 删除素材分类
+     *
      * @param id
      */
-    public void delete(String id){
-        Material material = new Material();
-       // material.setMaterialType(id);
-       List<Material> list =  materialMapper.select(material);
-       /*if(CollectionUtils.isNotEmpty(list)){
-           throw new response(Message.MATERIAL_CATEGORY_BE_USED,list);
-       }*/
+    public JSONObject delete(Integer wechatId, String id) {
+        List<String> list = materialMapper.selectExistName(wechatId, id);
+        if (CollectionUtils.isNotEmpty(list)) {
+            return response(Message.MATERIAL_CATEGORY_BE_USED, list);
+        }
         materialCategoryMapper.deleteByPrimaryKey(id);
+        return response(Message.MATERIAL_IMAGE_DELETE_SUCCESS, null);
     }
 
     @Override
     public PageInfo<MaterialCategory> queryList(MaterialCategoryDto dto) {
         PageHelper.startPage(dto.getCurrPage(), dto.getPageSize());
-        Map<String,Object> query = MapUtils.beanToMap(dto);
+        Map<String, Object> query = MapUtils.beanToMap(dto);
         List<MaterialCategory> list = materialCategoryMapper.queryList(query);
         PageInfo<MaterialCategory> pageInfo = new PageInfo<>(list);
         return pageInfo;
