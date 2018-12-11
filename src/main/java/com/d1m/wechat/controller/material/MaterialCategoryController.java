@@ -3,6 +3,7 @@ package com.d1m.wechat.controller.material;
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.dto.MaterialCategoryDto;
+import com.d1m.wechat.dto.QueryDto;
 import com.d1m.wechat.model.MaterialCategory;
 
 import com.d1m.wechat.service.MaterialCategoryService;
@@ -119,7 +120,7 @@ public class MaterialCategoryController extends BaseController {
     @RequestMapping(value = "list.json",method = RequestMethod.POST)
     @RequiresPermissions("app-msg:list")
     @ResponseBody
-    public JSONObject queryList(@RequestBody MaterialCategoryDto dto) {
+    public JSONObject queryList(@RequestBody QueryDto dto) {
         PageInfo<MaterialCategory> list = materialCategoryService.queryList(dto);
         return representation(Message.SUCCESS, list);
     }

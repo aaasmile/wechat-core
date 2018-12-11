@@ -231,11 +231,12 @@
         where id = #{id}
     </update>
 
-    <select id="selectExistName" resultType="java.lang.String">
-    SELECT IFNULL( a.`name`, c.title ) AS NAME
+    <select id="selectExistName" resultType="java.util.Map">
+    SELECT DISTINCT a.id,IFNULL( a.`name`, c.title ) AS NAME
     FROM material a
 	LEFT JOIN material_category b ON cast( a.material_type AS CHAR ( 8 ) ) = b.id
 	LEFT JOIN material_image_text_detail c ON a.id = c.material_id
     WHERE b.wechat_id = #{wechatId} and b.id=#{id}
     </select>
+
 </mapper>

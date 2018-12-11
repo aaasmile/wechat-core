@@ -1,7 +1,10 @@
 package com.d1m.wechat.service;
 
-import com.d1m.wechat.dto.NofSendDto;
+import com.d1m.wechat.dto.DcrmImageTextDetailDto;
+import com.d1m.wechat.dto.QueryDto;
+import com.d1m.wechat.model.Material;
 import com.d1m.wechat.model.MaterialCategory;
+import com.github.pagehelper.PageInfo;
 
 
 import java.util.List;
@@ -13,7 +16,7 @@ import java.util.Map;
  * @Author: Liu weilin
  * @Description:
  */
-public interface NofSendService {
+public interface DcrmImageTextDetailService {
 
     /**
      * 保存实体
@@ -23,7 +26,7 @@ public interface NofSendService {
      *
      * */
 
-    int save(NofSendDto dto);
+    int save(DcrmImageTextDetailDto dto);
 
     /**
     *
@@ -33,29 +36,24 @@ public interface NofSendService {
      * @return 实体
      * */
 
-    NofSendDto queryObject(String id);
+    DcrmImageTextDetailDto queryObject(Integer id);
 
     /**
      * 更新
      * @param
      * @return
      */
-    void update(NofSendDto dto);
+    int update(DcrmImageTextDetailDto dto);
 
 
-    /**
-     * 删除素材分类
-     * @param id
-     */
-    void delete(String id);
 
     /**
      * 分页查询
      *
-     * @param map 参数
+     * @param dto 参数
      * @return list
      */
-    List<NofSendDto> queryList(Map<String, Object> map);
+    PageInfo<DcrmImageTextDetailDto> queryList(QueryDto dto);
 
 
 }

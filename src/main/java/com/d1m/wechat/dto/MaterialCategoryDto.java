@@ -13,7 +13,7 @@ import java.util.List;
  * @Author: Liu weilin
  * @Description:
  */
-public class MaterialCategoryDto  extends PageUtils implements Serializable {
+public class MaterialCategoryDto  extends Page implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String id;

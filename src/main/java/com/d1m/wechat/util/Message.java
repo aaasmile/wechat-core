@@ -988,10 +988,11 @@ public enum Message {
     MATERIAL_CATEGORY_BE_USED(50003,"有{0}条图文正在使用此分类，无法删除"),
 
     /**
-     * NoFsend
+     * DcrmImageTextDetail
      */
-    NOFSEND_NOT_NULL(60000,"标题不能为空"),
-    NOFSEND_IAMGE_NOT_NULL(60001,"封面图不能为空"),
+    DcrmImageTextDetail_NOT_NULL(60000,"标题不能为空"),
+    DcrmImageTextDetail_IAMGE_NOT_NULL(60001,"封面图不能为空"),
+    DCRM_IMAGE_TEXT_DETAIL_ID_NOT(60002,"id不能为空"),
 
 
     ;

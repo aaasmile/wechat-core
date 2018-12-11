@@ -2,6 +2,7 @@ package com.d1m.wechat.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.dto.MaterialCategoryDto;
+import com.d1m.wechat.dto.QueryDto;
 import com.d1m.wechat.mapper.MaterialCategoryMapper;
 import com.d1m.wechat.mapper.MaterialMapper;
 import com.d1m.wechat.model.Material;
@@ -86,7 +87,7 @@ public class MaterialCategoryServiceImpl implements MaterialCategoryService {
      * @param id
      */
     public JSONObject delete(Integer wechatId, String id) {
-        List<String> list = materialMapper.selectExistName(wechatId, id);
+        List<Map<String,Object>> list = materialMapper.selectExistName(wechatId, id);
         if (CollectionUtils.isNotEmpty(list)) {
             return response(Message.MATERIAL_CATEGORY_BE_USED, list);
         }
@@ -95,7 +96,7 @@ public class MaterialCategoryServiceImpl implements MaterialCategoryService {
     }
 
     @Override
-    public PageInfo<MaterialCategory> queryList(MaterialCategoryDto dto) {
+    public PageInfo<MaterialCategory> queryList(QueryDto dto) {
         PageHelper.startPage(dto.getCurrPage(), dto.getPageSize());
         Map<String, Object> query = MapUtils.beanToMap(dto);
         List<MaterialCategory> list = materialCategoryMapper.queryList(query);

@@ -2,6 +2,7 @@ package com.d1m.wechat.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.dto.MaterialCategoryDto;
+import com.d1m.wechat.dto.QueryDto;
 import com.d1m.wechat.model.MaterialCategory;
 import com.github.pagehelper.PageInfo;
 
@@ -63,7 +64,7 @@ public interface MaterialCategoryService {
      * @param dto
      * @return list
      */
-    PageInfo<MaterialCategory> queryList(MaterialCategoryDto dto);
+    PageInfo<MaterialCategory> queryList(QueryDto dto);
 
 
 }

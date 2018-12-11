@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.DcrmImageTextDetailMapper">
+
+    <select id="queryList" resultType="com.d1m.wechat.dto.DcrmImageTextDetailDto">
+        select
+        `id`,
+        `title`,
+        `content`,
+        `link`,
+        `material_cover_id`,
+        `summary`,
+        `material_id`,
+        `wechat_id`,
+        status,
+        sequence,
+        remark,
+        material_category_id,
+        wx_image_text_id,
+        tag_id,
+        UNIX_TIMESTAMP(created_at) as created_at,
+        laste_updated_by,
+        UNIX_TIMESTAMP(laste_updated_at) as lasteUpdatedAt
+        from dcrm_image_text_detail
+        WHERE 1=1
+        <if test="search != null">
+            AND title like concat('%',#{search},'%')
+        </if>
+        <if test="search != null">
+            AND summary like concat('%',#{search},'%')
+        </if>
+        <if test="search != null">
+            AND remark like concat('%',#{search},'%')
+        </if>
+
+        <choose>
+            <when test="sidx != null">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by created_at desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+</mapper>

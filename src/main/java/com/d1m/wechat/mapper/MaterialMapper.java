@@ -1,6 +1,6 @@
 package com.d1m.wechat.mapper;
 
-import com.d1m.wechat.dto.NofSendDto;
+import com.d1m.wechat.dto.DcrmImageTextDetailDto;
 import com.d1m.wechat.model.MaterialCategory;
 import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Param;
@@ -31,7 +31,7 @@ public interface MaterialMapper extends MyMapper<Material> {
 
     MiniProgramDto getMiniProgramByMaterialId(@Param("wechatId") Integer wechatId, @Param("materialId") Integer materialId);
 
-	List<NofSendDto> queryList(Map<String, Object> map);
+	List<DcrmImageTextDetailDto> queryList(Map<String, Object> map);
 
     /**
      * 获取使用的图文信息
@@ -44,7 +44,7 @@ public interface MaterialMapper extends MyMapper<Material> {
 
     int update(Material material);
 
-    List<String> selectExistName(@Param("wechatId") Integer wechatId,@Param("id") String id);
+    List<Map<String,Object>> selectExistName(@Param("wechatId") Integer wechatId,@Param("id") String id);
 
 
 }
