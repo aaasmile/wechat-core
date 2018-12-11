@@ -47,8 +47,6 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
     @Autowired
     private MaterialService materialService;
 
-    @Autowired
-    private MaterialImageTextDetailMapper materialImageTextDetailMapper;
 
     @Autowired
     private DcrmImageTextDetailMapper dcrmImageTextDetailMapper;

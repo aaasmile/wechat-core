@@ -1,6 +1,5 @@
 package com.d1m.wechat.dto;
 
-import com.d1m.wechat.util.PageUtils;
 
 import java.io.Serializable;
 

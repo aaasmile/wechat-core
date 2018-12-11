@@ -83,6 +83,27 @@ public class DcrmImageTextDetailDto implements Serializable {
 
     private Integer createdBy;
 
+    //最后更新人
+    private Integer lasteUpdatedBy;
+
+    private String materialCategoryId;
+
+    public String getMaterialCategoryId() {
+        return materialCategoryId;
+    }
+
+    public void setMaterialCategoryId(String materialCategoryId) {
+        this.materialCategoryId = materialCategoryId;
+    }
+
+    public Integer getLasteUpdatedBy() {
+        return lasteUpdatedBy;
+    }
+
+    public void setLasteUpdatedBy(Integer lasteUpdatedBy) {
+        this.lasteUpdatedBy = lasteUpdatedBy;
+    }
+
     public Integer getCreatedBy() {
         return createdBy;
     }
