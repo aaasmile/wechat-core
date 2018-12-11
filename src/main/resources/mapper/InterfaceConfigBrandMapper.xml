@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.InterfaceConfigBrandMapper">
+	<resultMap type="com.d1m.wechat.dto.InterfaceConfigBrandDto" id="interfaceConfigBrandResultMap">
+		<id column="id" property="id" />
+    	<result column="name" property="name" />
+    	<result column="key" property="key" />
+    	<result column="secret" property="secret" />
+    	<result column="is_deleted" property="deleted" />
+	</resultMap>
+
+	<select id="listBrand" resultType="interfaceConfigBrandResultMap">
+		SELECT id,name,key,secret,is_deleted FROM interface_brand WHERE is_deleted != 1
+	</select>
+
+</mapper>
