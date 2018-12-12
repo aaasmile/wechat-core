@@ -9,7 +9,7 @@
     	<result column="is_deleted" property="deleted" />
 	</resultMap>
 
-	<select id="listBrand" resultType="interfaceConfigBrandResultMap">
+	<select id="listBrand" resultMap="interfaceConfigBrandResultMap">
 		SELECT id,name,key,secret,is_deleted FROM interface_brand WHERE is_deleted != 1
 	</select>
 
