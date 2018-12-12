@@ -8,6 +8,7 @@ import cn.d1m.wechat.client.model.common.WxList;
 import cn.d1m.wechat.client.model.common.WxPage;
 import cn.d1m.wechat.client.model.request.WxCardExt;
 import cn.d1m.wechat.client.model.request.WxVideoDesc;
+import com.alibaba.fastjson.JSON;
 import com.d1m.wechat.mapper.WechatMapper;
 import com.d1m.wechat.model.Wechat;
 import com.d1m.wechat.util.AppContextUtils;
@@ -181,7 +182,9 @@ public class WechatClientDelegate {
     }
 
     public static WxResponse deleteMaterial(Serializable key, String media_id) {
-        return get(key).deleteMaterial(media_id);
+        WxResponse wxResponse = get(key).deleteMaterial(media_id);
+        log.info("删除微信上wxResponse结果：", JSON.toJSON(wxResponse));
+        return wxResponse;
     }
 
     public static WxMaterialMixed getMaterial(Serializable key, String media_id) {

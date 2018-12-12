@@ -127,6 +127,32 @@ public class Material {
      */
     private Byte status;
 
+    @Column(name="is_scrm")
+    private int isScrm;
+
+    /**
+     * 素材分类id
+     * @return
+     */
+    @Column(name = "material_type_id")
+    private String materialTypeId;
+
+    public String getMaterialTypeId() {
+        return materialTypeId;
+    }
+
+    public void setMaterialTypeId(String materialTypeId) {
+        this.materialTypeId = materialTypeId;
+    }
+
+    public int getIsScrm() {
+        return isScrm;
+    }
+
+    public void setIsScrm(int isScrm) {
+        this.isScrm = isScrm;
+    }
+
     /**
      * 评论(0:不能评论,1:所有人可以评论，2：仅有粉丝可以评论)
      */
