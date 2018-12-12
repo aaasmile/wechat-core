@@ -2,6 +2,8 @@ package com.d1m.wechat.util;
 
 import org.apache.commons.lang.StringUtils;
 
+import java.text.MessageFormat;
+
 public enum Message {
 
     /**
@@ -294,6 +296,10 @@ public enum Message {
     MATERIAL_NOT_EXIST_IN_WX(16017, "微信不存在该素材"),
 
     MATERIAL_PREVIEW_SUCCESS(1, "微信预览素材成功"),
+
+    MATERIAL_UNABLE_DELETE(16020, "此图片正在被使用中，无法删除！"),
+
+    MATERIAL_WX_NOT_DELETE(16021, "DCRM已删除{0}微信图片删除失败，请在微信平台手动删除！"),
 
     /**
      * action_engine
@@ -969,6 +975,26 @@ public enum Message {
     
     /**
      * InterfaceConfig
+     * */
+    INTERFACECONFIG_SELECT_SUCCESS(42001, "接口列表查询成功"),
+    INTERFACECONFIG_SELECT_FAIL(42002, "接口列表查询失败"),
+
+    /**
+     * material_category
+     */
+    MATERIAL_CATEGORY_NAME_NOT_NULL(50000,"分类名称不能为空"),
+    MATERIAL_CATEGORY_NAME_EXITS(50001,"分类名称已存在"),
+    MATERIAL_CATEGORY_ID_NOT_NULL(50002,"id不能为空"),
+    MATERIAL_CATEGORY_BE_USED(50003,"有{0}条图文正在使用此分类，无法删除"),
+
+    /**
+     * DcrmImageTextDetail
+     */
+    DcrmImageTextDetail_NOT_NULL(60000,"标题不能为空"),
+    DcrmImageTextDetail_IAMGE_NOT_NULL(60001,"封面图不能为空"),
+    DCRM_IMAGE_TEXT_DETAIL_ID_NOT(60002,"id不能为空"),
+
+
      *
      */
     INTERFACECONFIG_SELECT_FAIL(42001, "接口查询失败"),
@@ -1036,4 +1062,12 @@ public enum Message {
         return null;
     }
 
+    /**
+     * With parameters
+     * @param params
+     * @return
+     */
+    public String withParams(Object... params) {
+        return MessageFormat.format(this.name, params);
+    }
 }

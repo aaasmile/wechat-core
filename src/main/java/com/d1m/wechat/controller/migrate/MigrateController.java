@@ -28,16 +28,16 @@ import io.swagger.annotations.ApiResponse;
  */
 @Controller
 @RequestMapping("migrate")
-@Api(value="迁移API", tags="同步接口")
+@Api(value = "迁移API", tags = "同步接口")
 public class MigrateController extends BaseController {
-	
-	private static final Logger log = LoggerFactory.getLogger(MigrateController.class);
+
+    private static final Logger log = LoggerFactory.getLogger(MigrateController.class);
 
     @Resource
     private MigrateService migrateService;
-    
-	@ApiOperation(value="迁移同步", tags="同步接口")
-	@ApiResponse(code=200, message="1-素材同步完成")
+
+    @ApiOperation(value = "迁移同步", tags = "同步接口")
+    @ApiResponse(code = 200, message = "1-素材同步完成")
     @RequestMapping(value = "/material.json", method = RequestMethod.GET)
     @ResponseBody
     public Object migrateMaterial(String type, Boolean update) {
@@ -54,9 +54,9 @@ public class MigrateController extends BaseController {
             return wrapException(e);
         }
     }
-	
-	@ApiOperation(value="菜单同步", tags="同步接口")
-	@ApiResponse(code=200, message="1-菜单同步完成")
+
+    @ApiOperation(value = "菜单同步", tags = "同步接口")
+    @ApiResponse(code = 200, message = "1-菜单同步完成")
     @RequestMapping(value = "/menu.json", method = RequestMethod.GET)
     @ResponseBody
     public Object migrateMenu(Boolean update) {
@@ -70,9 +70,9 @@ public class MigrateController extends BaseController {
             return wrapException(e);
         }
     }
-	
-	@ApiOperation(value="拉取微信会员信息", tags="同步接口")
-	@ApiResponse(code=200, message="1-拉取微信会员信息成功")
+
+    @ApiOperation(value = "拉取微信会员信息", tags = "同步接口")
+    @ApiResponse(code = 200, message = "1-拉取微信会员信息成功")
     @RequestMapping(value = "/openid.json")
     @ResponseBody
     public Object pullOpenId(String nextOpenId) {
@@ -84,9 +84,9 @@ public class MigrateController extends BaseController {
             return wrapException(e);
         }
     }
-	
-	@ApiOperation(value="会员同步", tags="同步接口")
-	@ApiResponse(code=200, message="1-会员同步完成")
+
+    @ApiOperation(value = "会员同步", tags = "同步接口")
+    @ApiResponse(code = 200, message = "1-会员同步完成")
     @RequestMapping(value = "/member.json", method = RequestMethod.GET)
     @ResponseBody
     public Object migrateMember() {
@@ -98,16 +98,16 @@ public class MigrateController extends BaseController {
             return wrapException(e);
         }
     }
-	
-	@ApiOperation(value="配置中心", tags="同步接口")
-	@ApiResponse(code=200, message="配置中心参数同步")
+
+    @ApiOperation(value = "配置中心", tags = "同步接口")
+    @ApiResponse(code = 200, message = "配置中心参数同步")
     @RequestMapping(value = "/config.json", method = RequestMethod.GET)
     @ResponseBody
     public Object migrateConfig() {
         try {
-        	ConsulProperties consulProperties = new ConsulProperties();
-    		consulProperties.onStartup();
-    		return "successful!";
+            ConsulProperties consulProperties = new ConsulProperties();
+            consulProperties.onStartup();
+            return "successful!";
         } catch (Exception e) {
             log.error(e.getMessage());
             return wrapException(e);

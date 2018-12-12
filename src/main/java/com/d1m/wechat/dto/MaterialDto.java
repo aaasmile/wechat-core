@@ -30,7 +30,21 @@ public class MaterialDto {
 	
 	private String wxPicUrl;
 
-//	private Integer comment;
+	private String mediaId;
+
+	private String name;
+
+	private String materialTypeId;
+
+	public String getMaterialTypeId() {
+		return materialTypeId;
+	}
+
+	public void setMaterialTypeId(String materialTypeId) {
+		this.materialTypeId = materialTypeId;
+	}
+
+	//	private Integer comment;
 
 	public String getCreatedAt() {
 		return DateUtil.formatYYYYMMDDHHMMSS(DateUtil.parse(createdAt));
@@ -122,7 +136,23 @@ public class MaterialDto {
 		this.wxPicUrl = wxPicUrl;
 	}
 
-//	public Integer getComment() {
+	public String getMediaId() {
+		return mediaId;
+	}
+
+	public void setMediaId(String mediaId) {
+		this.mediaId = mediaId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	//	public Integer getComment() {
 //		return comment;
 //	}
 //	public void setComment(Integer comment) {
