@@ -26,4 +26,4 @@ CREATE TABLE `interface_brand` (
   `secret` varchar(32) DEFAULT NULL COMMENT '接口密码',
   `is_deleted` tinyint(2) DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
