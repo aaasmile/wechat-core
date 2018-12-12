@@ -990,9 +990,6 @@ public enum Message {
     
     /**
      * InterfaceConfig
-     * */
-    INTERFACECONFIG_SELECT_SUCCESS(42001, "接口列表查询成功"),
-    INTERFACECONFIG_SELECT_FAIL(42002, "接口列表查询失败"),
      *
      */
     INTERFACECONFIG_SELECT_FAIL(42001, "接口查询失败"),
