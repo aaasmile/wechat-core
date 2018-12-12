@@ -972,12 +972,6 @@ public enum Message {
      *
      */
     MEMBER_QRCODE_STATISTICS(1, "查询会员扫码统计结果成功"),
-    
-    /**
-     * InterfaceConfig
-     * */
-    INTERFACECONFIG_SELECT_SUCCESS(42001, "接口列表查询成功"),
-    INTERFACECONFIG_SELECT_FAIL(42002, "接口列表查询失败"),
 
     /**
      * material_category
@@ -993,8 +987,12 @@ public enum Message {
     DcrmImageTextDetail_NOT_NULL(60000,"标题不能为空"),
     DcrmImageTextDetail_IAMGE_NOT_NULL(60001,"封面图不能为空"),
     DCRM_IMAGE_TEXT_DETAIL_ID_NOT(60002,"id不能为空"),
-
-
+    
+    /**
+     * InterfaceConfig
+     * */
+    INTERFACECONFIG_SELECT_SUCCESS(42001, "接口列表查询成功"),
+    INTERFACECONFIG_SELECT_FAIL(42002, "接口列表查询失败"),
      *
      */
     INTERFACECONFIG_SELECT_FAIL(42001, "接口查询失败"),
