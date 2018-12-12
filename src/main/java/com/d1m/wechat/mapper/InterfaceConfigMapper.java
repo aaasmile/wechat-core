@@ -1,17 +1,15 @@
 package com.d1m.wechat.mapper;
 
-import java.util.Map;
-
 import com.d1m.wechat.dto.InterfaceConfigDto;
 import com.d1m.wechat.model.InterfaceConfig;
 import com.d1m.wechat.util.MyMapper;
 import com.github.pagehelper.Page;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public interface InterfaceConfigMapper extends MyMapper<InterfaceConfig>{
+import java.util.Map;
 
-	Page<InterfaceConfigDto> selectItems(Map<String, String> query);
+public interface InterfaceConfigMapper extends MyMapper<InterfaceConfig> {
 
-	InterfaceConfigDto get(String id);
+    Page<InterfaceConfigDto> selectItems(Map<String, String> query);
+
+    InterfaceConfigDto get(String id);
 }

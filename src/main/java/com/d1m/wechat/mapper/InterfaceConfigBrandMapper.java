@@ -2,8 +2,7 @@ package com.d1m.wechat.mapper;
 
 import com.d1m.wechat.dto.InterfaceConfigBrandDto;
 import com.d1m.wechat.model.InterfaceConfigBrand;
-import org.apache.ibatis.annotations.Select;
-import tk.mybatis.mapper.common.BaseMapper;
+import com.d1m.wechat.util.MyMapper;
 
 import java.util.List;
 
@@ -11,7 +10,7 @@ import java.util.List;
  * Auth: Jo.Ho
  * Date: 2018/12/9
  */
-public interface InterfaceConfigBrandMapper extends BaseMapper<InterfaceConfigBrand>{
+public interface InterfaceConfigBrandMapper extends MyMapper<InterfaceConfigBrand> {
 
-	List<InterfaceConfigBrandDto> listBrand();
+    List<InterfaceConfigBrandDto> listBrand();
 }
