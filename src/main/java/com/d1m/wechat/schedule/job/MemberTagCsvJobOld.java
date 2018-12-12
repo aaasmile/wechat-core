@@ -15,7 +15,7 @@ import com.d1m.wechat.dto.MemberMemberTagDTO;
 import com.d1m.wechat.dto.MemberTagDto;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.model.*;
-import com.d1m.wechat.model.enums.MemberTagStatus;
+import com.d1m.wechat.model.enumeration.MemberTagStatus;
 import com.d1m.wechat.pamametermodel.MemberTagModel;
 import com.d1m.wechat.schedule.BaseJobHandler;
 import com.d1m.wechat.service.*;
