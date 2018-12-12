@@ -249,6 +249,9 @@
                 </if>
             </if>
         </where>
+        <if test="offset!=null and rows!=null">
+            limit #{offset},#{rows}
+        </if>
     </select>
 
 </mapper>
