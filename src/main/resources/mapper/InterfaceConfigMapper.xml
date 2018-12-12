@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.d1m.wechat.dao.InterfaceConfigMapper">
-	<resultMap type="com.d1m.wechat.dto.InterfaceConfigDto" id="interfaceConfigResultMap">
+	<resultMap type="com.d1m.wechat.dto.InterfaceConfigDto" id="InterfaceConfigResultMap">
 		<id column="id" property="id" />
     	<result column="brand" property="brand" />
     	<result column="name" property="name" />
