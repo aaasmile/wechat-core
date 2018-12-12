@@ -47,7 +47,7 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 
 	@Override
 	public int update(InterfaceConfig interfaceConfig) {
-		return interfaceConfigMapper.updateByPrimaryKey(interfaceConfig);
+		return interfaceConfigMapper.updateByPrimaryKeySelective(interfaceConfig);
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 		InterfaceConfig interfaceConfig = new InterfaceConfig();
 		interfaceConfig.setId(id);
 		interfaceConfig.setDeleted(true);
-		return interfaceConfigMapper.updateByPrimaryKey(interfaceConfig);
+		return interfaceConfigMapper.updateByPrimaryKeySelective(interfaceConfig);
 	}
 
 	@Override
@@ -86,7 +86,7 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 
 	@Override
 	public int updateBrand(InterfaceConfigBrand interfaceConfigBrand) {
-		return interfaceConfigBrandMapper.updateByPrimaryKey(interfaceConfigBrand);
+		return interfaceConfigBrandMapper.updateByPrimaryKeySelective(interfaceConfigBrand);
 	}
 
 	@Override
