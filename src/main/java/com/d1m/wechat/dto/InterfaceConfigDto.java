@@ -6,6 +6,7 @@ public class InterfaceConfigDto {
 	private String brand;
 	private String name;
 	private String methodType;
+	private String type;
 	private String event;
 	private String interfaceName;
 	private String parameter;
@@ -14,11 +15,11 @@ public class InterfaceConfigDto {
 	private String key;
 	private String secret;
 	private String sequence;
-	private String isDeleted;
+	private String deleted;
 	private String createdAt;
 	private String createdBy;
-	private String lasteUpdatedAt;
-	private String lasteUpdatedBy;
+	private String updatedAt;
+	private String updatedBy;
 
 	public String getId() {
 		return id;
@@ -50,6 +51,14 @@ public class InterfaceConfigDto {
 
 	public void setMethodType(String methodType) {
 		this.methodType = methodType;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public String getEvent() {
@@ -116,12 +125,12 @@ public class InterfaceConfigDto {
 		this.sequence = sequence;
 	}
 
-	public String getIsDeleted() {
-		return isDeleted;
+	public String getDeleted() {
+		return deleted;
 	}
 
-	public void setIsDeleted(String isDeleted) {
-		this.isDeleted = isDeleted;
+	public void setDeleted(String deleted) {
+		this.deleted = deleted;
 	}
 
 	public String getCreatedAt() {
@@ -140,28 +149,29 @@ public class InterfaceConfigDto {
 		this.createdBy = createdBy;
 	}
 
-	public String getLasteUpdatedAt() {
-		return lasteUpdatedAt;
+	public String getUpdatedAt() {
+		return updatedAt;
 	}
 
-	public void setLasteUpdatedAt(String lasteUpdatedAt) {
-		this.lasteUpdatedAt = lasteUpdatedAt;
+	public void setUpdatedAt(String updatedAt) {
+		this.updatedAt = updatedAt;
 	}
 
-	public String getLasteUpdatedBy() {
-		return lasteUpdatedBy;
+	public String getUpdatedBy() {
+		return updatedBy;
 	}
 
-	public void setLasteUpdatedBy(String lasteUpdatedBy) {
-		this.lasteUpdatedBy = lasteUpdatedBy;
+	public void setUpdatedBy(String updatedBy) {
+		this.updatedBy = updatedBy;
 	}
 
-	public InterfaceConfigDto(String id, String brand, String name, String methodType, String event, String interfaceName, String parameter, String description, String url, String key, String secret, String sequence, String isDeleted, String createdAt, String createdBy, String lasteUpdatedAt, String lasteUpdatedBy) {
+	public InterfaceConfigDto(String id, String brand, String name, String methodType, String type, String event, String interfaceName, String parameter, String description, String url, String key, String secret, String sequence, String deleted, String createdAt, String createdBy, String updatedAt, String updatedBy) {
 		super();
 		this.id = id;
 		this.brand = brand;
 		this.name = name;
 		this.methodType = methodType;
+		this.type = type;
 		this.event = event;
 		this.interfaceName = interfaceName;
 		this.parameter = parameter;
@@ -170,11 +180,11 @@ public class InterfaceConfigDto {
 		this.key = key;
 		this.secret = secret;
 		this.sequence = sequence;
-		this.isDeleted = isDeleted;
+		this.deleted = deleted;
 		this.createdAt = createdAt;
 		this.createdBy = createdBy;
-		this.lasteUpdatedAt = lasteUpdatedAt;
-		this.lasteUpdatedBy = lasteUpdatedBy;
+		this.updatedAt = updatedAt;
+		this.updatedBy = updatedBy;
 	}
 
 	public InterfaceConfigDto() {
@@ -186,6 +196,7 @@ public class InterfaceConfigDto {
 		private String brand;
 		private String name;
 		private String methodType;
+		private String type;
 		private String event;
 		private String interfaceName;
 		private String parameter;
@@ -217,6 +228,11 @@ public class InterfaceConfigDto {
 
 		public Builder methodType(String methodType) {
 			this.methodType = methodType;
+			return this;
+		}
+
+		public Builder type(String type) {
+			this.type = type;
 			return this;
 		}
 
@@ -295,6 +311,7 @@ public class InterfaceConfigDto {
 		this.brand = builder.brand;
 		this.name = builder.name;
 		this.methodType = builder.methodType;
+		this.type = builder.type;
 		this.event = builder.event;
 		this.interfaceName = builder.interfaceName;
 		this.parameter = builder.parameter;
@@ -303,10 +320,10 @@ public class InterfaceConfigDto {
 		this.key = builder.key;
 		this.secret = builder.secret;
 		this.sequence = builder.sequence;
-		this.isDeleted = builder.isDeleted;
+		this.deleted = builder.isDeleted;
 		this.createdAt = builder.createdAt;
 		this.createdBy = builder.createdBy;
-		this.lasteUpdatedAt = builder.lasteUpdatedAt;
-		this.lasteUpdatedBy = builder.lasteUpdatedBy;
+		this.updatedAt = builder.lasteUpdatedAt;
+		this.updatedBy = builder.lasteUpdatedBy;
 	}
 }
