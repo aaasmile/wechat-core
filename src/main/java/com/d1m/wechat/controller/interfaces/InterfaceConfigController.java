@@ -135,7 +135,7 @@ public class InterfaceConfigController extends BaseController {
 
 	@ApiOperation(value = "更新第三方类别", tags = "第三方接口列表")
 	@ApiResponse(code = 200, message = "更新第三方类别成功")
-	@RequestMapping(value = "listBrand.json", method = RequestMethod.POST)
+	@RequestMapping(value = "updateBrand.json", method = RequestMethod.POST)
 	public JSONObject updateBrand(@RequestBody InterfaceConfigBrand interfaceConfigBrand) {
 		try {
 			return representation(Message.SUCCESS, interfaceConfigService.updateBrand(interfaceConfigBrand));
