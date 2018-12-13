@@ -270,6 +270,7 @@ public class MemberController extends BaseController {
             String name = I18nUtil.getMessage("follwer.list", locale);
             Integer[] memberIds = addMemberTagModel.getMemberIds();
             Boolean sendToAll = addMemberTagModel.getSendToAll();
+            final int pageSize = 10000;
             if (memberIds != null && memberIds.length != 0) {
                 final ImmutableMap<String, Object> params = ImmutableMap.of("ids", memberIds);
                 final List<MemberExcel> result = memberService.findMemberExcelByParams(params);
@@ -282,14 +283,14 @@ public class MemberController extends BaseController {
 
                     int offset = 1;
 
-                    params.put("offset", (offset - 1) * 1000);
-                    params.put("rows", 1000);
+                    params.put("offset", (offset - 1) * pageSize);
+                    params.put("rows", pageSize);
 
                     List<MemberExcel> result = memberService.findMemberExcelByParams(params);
                     boolean hasMore;
                     if (CollectionUtils.isNotEmpty(result)) {
                         workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);
-                        hasMore = result.size() == 1000;
+                        hasMore = result.size() == pageSize;
                     } else {
                         hasMore = false;
                     }
@@ -297,11 +298,11 @@ public class MemberController extends BaseController {
 
                     while (hasMore) {
                         offset++;
-                        params.put("offset", (offset - 1) * 1000);
+                        params.put("offset", (offset - 1) * pageSize);
                         result = memberService.findMemberExcelByParams(params);
                         if (CollectionUtils.isNotEmpty(result)) {
                             workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);
-                            hasMore = result.size() == 1000;
+                            hasMore = result.size() == pageSize;
                         } else {
                             hasMore = false;
                         }
