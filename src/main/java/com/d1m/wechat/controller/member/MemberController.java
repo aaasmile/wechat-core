@@ -23,9 +23,8 @@ import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -235,7 +234,7 @@ public class MemberController extends BaseController {
 
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "Duplicates"})
     @ApiOperation(value = "导出会员列表", tags = "会员接口")
     @ApiResponse(code = 200, message = "导出会员列表")
     @RequestMapping(value = "/export.json", method = RequestMethod.POST)
@@ -279,42 +278,67 @@ public class MemberController extends BaseController {
             } else {
                 if (sendToAll != null && sendToAll) {
 
-                    PageHelper.startPage(1, 1000);
+                    final HashMap<String, Object> params = Maps.newHashMap();
 
-                    List<MemberExcel> result = memberService.findMemberExcelByParams(Collections.EMPTY_MAP);
-                    final PageInfo<MemberExcel> paged = new PageInfo<>(result);
+                    int offset = 1;
 
-                    workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);
-                    result.clear();
+                    params.put("offset", (offset - 1) * 1000);
+                    params.put("rows", 1000);
 
-                    final int pages = paged.getPages();
-                    if (pages > 1) {
-                        for (int i = 2; i <= pages; i++) {
-                            PageHelper.startPage(i, 1000);
-                            result = memberService.findMemberExcelByParams(Collections.EMPTY_MAP);
+                    List<MemberExcel> result = memberService.findMemberExcelByParams(params);
+                    boolean hasMore;
+                    if (CollectionUtils.isNotEmpty(result)) {
+                        workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);
+                        hasMore = result.size() == 1000;
+                    } else {
+                        hasMore = false;
+                    }
+
+
+                    while (hasMore) {
+                        offset++;
+                        params.put("offset", (offset - 1) * 1000);
+                        result = memberService.findMemberExcelByParams(params);
+                        if (CollectionUtils.isNotEmpty(result)) {
                             workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);
-                            result.clear();
+                            hasMore = result.size() == 1000;
+                        } else {
+                            hasMore = false;
                         }
+
                     }
 
                 } else {
                     final MapType mapType = objectMapper.getTypeFactory().constructMapType(HashMap.class, String.class, Object.class);
-                    final Map<String, Object> param = objectMapper.readValue(data, mapType);
-                    param.put("wechatId", getWechatId());
-                    PageHelper.startPage(1, 1000);
-                    List<MemberExcel> result = memberService.findMemberExcelByParams(param);
-                    final PageInfo<MemberExcel> paged = new PageInfo<>(result);
-                    workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);
-                    result.clear();
+                    final Map<String, Object> params = objectMapper.readValue(data, mapType);
 
-                    final int pages = paged.getPages();
-                    if (pages > 1) {
-                        for (int i = 2; i <= pages; i++) {
-                            PageHelper.startPage(i, 1000);
-                            result = memberService.findMemberExcelByParams(param);
+                    int offset = 1;
+
+                    params.put("wechatId", getWechatId());
+                    params.put("offset", (offset - 1) * 1000);
+                    params.put("rows", 1000);
+
+                    List<MemberExcel> result = memberService.findMemberExcelByParams(params);
+                    boolean hasMore;
+                    if (CollectionUtils.isNotEmpty(result)) {
+                        workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);
+                        hasMore = result.size() == 1000;
+                    } else {
+                        hasMore = false;
+                    }
+
+
+                    while (hasMore) {
+                        offset++;
+                        params.put("offset", (offset - 1) * 1000);
+                        result = memberService.findMemberExcelByParams(params);
+                        if (CollectionUtils.isNotEmpty(result)) {
                             workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);
-                            result.clear();
+                            hasMore = result.size() == 1000;
+                        } else {
+                            hasMore = false;
                         }
+
                     }
                 }
             }
@@ -327,7 +351,7 @@ public class MemberController extends BaseController {
             response.setHeader("Content-Disposition",
                     "attachment;filename=\"" + URLEncoder.encode(name + LocalDate.now() + ".xlsx", "UTF-8") + "\"");
 
-            workbook.write(outputStream);
+            Objects.requireNonNull(workbook).write(outputStream);
             workbook.close();
         } catch (IOException e) {
             log.error("Excel 导出错误！", e);

@@ -1,26 +1,24 @@
 package com.d1m.wechat.schedule.job;
 
-import java.util.Date;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import javax.annotation.Resource;
-
+import com.d1m.wechat.domain.entity.MemberTagData;
+import com.d1m.wechat.model.enums.MemberTagCsvStatus;
+import com.d1m.wechat.schedule.BaseJobHandler;
 import com.d1m.wechat.service.MemberService;
+import com.d1m.wechat.service.MemberTagCsvService;
+import com.d1m.wechat.service.MemberTagDataService;
+import com.d1m.wechat.util.AppContextUtils;
 import com.d1m.wechat.util.DateUtil;
+import com.d1m.wechat.util.ParamUtil;
+import com.xxl.job.core.biz.model.ReturnT;
+import com.xxl.job.core.handler.annotation.JobHander;
+import com.xxl.job.core.log.XxlJobLogger;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.d1m.wechat.domain.entity.MemberTagData;
-import com.d1m.wechat.model.enums.MemberTagCsvStatus;
-import com.d1m.wechat.schedule.BaseJobHandler;
-import com.d1m.wechat.service.MemberTagCsvService;
-import com.d1m.wechat.service.MemberTagDataService;
-import com.d1m.wechat.util.ParamUtil;
-import com.xxl.job.core.biz.model.ReturnT;
-import com.xxl.job.core.handler.annotation.JobHander;
-import com.xxl.job.core.log.XxlJobLogger;
+import java.util.Date;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @JobHander(value = "memberTagCsvJob")
 @Component
@@ -29,17 +27,14 @@ public class MemberTagCsvJob extends BaseJobHandler {
     private static final Logger log = LoggerFactory.getLogger(MemberTagCsvJob.class);
     //默认每批次处理数量
     private static final Integer BATCHSIZE = 1000;
-    @Resource
-    private MemberTagDataService memberTagDataService;
-    @Resource
-    private MemberTagCsvService memberTagCsvService;
-    @Resource
-    private MemberService memberService;
 
     @Override
     public ReturnT<String> run(String... strings) throws Exception {
         log.info("【异步调度加签】开始时间：" + DateUtil.formatYYYYMMDDHHMMSSS(new Date()));
         try {
+            MemberTagDataService memberTagDataService = AppContextUtils.getBean(MemberTagDataService.class);
+            MemberTagCsvService memberTagCsvService = AppContextUtils.getBean(MemberTagCsvService.class);
+            MemberService memberService = AppContextUtils.getBean(MemberService.class);
             if (strings != null) {
                 //获取导入文件id
                 Integer fileId = ParamUtil.getInt(strings[0], null);
@@ -52,7 +47,7 @@ public class MemberTagCsvJob extends BaseJobHandler {
                 int count = 0;
                 while (true) {
                     CopyOnWriteArrayList<MemberTagData> list = memberTagDataService.getMembertagCsvData(fileId,
-                     (count * batchSize), batchSize);
+                            (count * batchSize), batchSize);
                     if (CollectionUtils.isNotEmpty(list)) {
                         //发起批量处理
                         memberTagDataService.batchExecute(list);
@@ -74,7 +69,7 @@ public class MemberTagCsvJob extends BaseJobHandler {
             log.error(e.getMessage(), e);
             XxlJobLogger.log("会员导入批量加标签失败：" + e.getMessage());
             return ReturnT.FAIL;
-        }finally {
+        } finally {
             log.info("【异步调度加签】结束时间：" + DateUtil.formatYYYYMMDDHHMMSSS(new Date()));
         }
     }

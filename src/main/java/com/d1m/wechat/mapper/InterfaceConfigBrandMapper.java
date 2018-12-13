@@ -12,5 +12,5 @@ import java.util.List;
  */
 public interface InterfaceConfigBrandMapper extends MyMapper<InterfaceConfigBrand> {
 
-	List<InterfaceConfigBrandDto> listBrand();
+    List<InterfaceConfigBrandDto> listBrand();
 }
