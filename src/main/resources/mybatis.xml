@@ -34,5 +34,9 @@
                      javaType="com.d1m.wechat.model.enums.MemberTagCsvStatus"/>
         <typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
                      javaType="com.d1m.wechat.model.enums.MemberTagDataStatus"/>
+        <typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
+                     javaType="com.d1m.wechat.model.enums.Sex"/>
+        <typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
+                     javaType="com.d1m.wechat.model.enums.MemberProfileStatus"/>
     </typeHandlers>
 </configuration>

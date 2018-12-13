@@ -5,6 +5,7 @@ import com.d1m.wechat.util.Message;
 public class WechatException extends RuntimeException {
 
     private Message message;
+    private Integer code;
 
 	/**
 	 * 
@@ -22,6 +23,11 @@ public class WechatException extends RuntimeException {
 
     public Message getMessageInfo() {
         return message;
+    }
+
+    public WechatException(Integer code, String message) {
+        super(message);
+        this.code = code;
     }
 
 }
