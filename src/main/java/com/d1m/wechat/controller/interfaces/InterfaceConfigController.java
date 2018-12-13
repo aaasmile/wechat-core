@@ -75,6 +75,8 @@ public class InterfaceConfigController extends BaseController {
 	@RequestMapping(value = "updateItem.json", method = RequestMethod.POST)
 	public JSONObject updateItems(@RequestBody InterfaceConfig interfaceConfig) {
 		try {
+			interfaceConfig.setUpdatedBy(String.valueOf(getUser().getId()));
+			interfaceConfig.setUpdatedAt(new Date().getTime());
 			return representation(Message.SUCCESS, interfaceConfigService.update(interfaceConfig));
 		}catch (Exception e) {
 			log.error(e.getMessage(), e);
