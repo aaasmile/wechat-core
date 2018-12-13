@@ -2,6 +2,7 @@ package com.d1m.wechat.service;
 
 import com.d1m.wechat.dto.InterfaceConfigBrandDto;
 import com.d1m.wechat.dto.InterfaceConfigDto;
+import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.model.InterfaceConfig;
 import com.d1m.wechat.model.InterfaceConfigBrand;
 import com.github.pagehelper.Page;
@@ -22,7 +23,7 @@ public interface InterfaceConfigService {
 
 	List<InterfaceConfigBrandDto> listBrand();
 
-	Map<String, String> createBrand(InterfaceConfigBrand interfaceConfigBrand);
+	Map<String, String> createBrand(InterfaceConfigBrand interfaceConfigBrand) throws WechatException;
 
 	int updateBrand(InterfaceConfigBrand interfaceConfigBrand);
 
