@@ -75,6 +75,8 @@ public class InterfaceConfigController extends BaseController {
 	@RequestMapping(value = "updateItem.json", method = RequestMethod.POST)
 	public JSONObject updateItems(@RequestBody InterfaceConfig interfaceConfig) {
 		try {
+			interfaceConfig.setUpdatedBy(String.valueOf(getUser().getId()));
+			interfaceConfig.setUpdatedAt(new Date().getTime());
 			return representation(Message.SUCCESS, interfaceConfigService.update(interfaceConfig));
 		}catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -135,7 +137,7 @@ public class InterfaceConfigController extends BaseController {
 
 	@ApiOperation(value = "更新第三方类别", tags = "第三方接口列表")
 	@ApiResponse(code = 200, message = "更新第三方类别成功")
-	@RequestMapping(value = "listBrand.json", method = RequestMethod.POST)
+	@RequestMapping(value = "updateBrand.json", method = RequestMethod.POST)
 	public JSONObject updateBrand(@RequestBody InterfaceConfigBrand interfaceConfigBrand) {
 		try {
 			return representation(Message.SUCCESS, interfaceConfigService.updateBrand(interfaceConfigBrand));
@@ -147,7 +149,7 @@ public class InterfaceConfigController extends BaseController {
 
 	@ApiOperation(value = "删除第三方类别", tags = "第三方接口列表")
 	@ApiResponse(code = 200, message = "删除第三方类别成功")
-	@RequestMapping(value = "deleteBrand.json", method = RequestMethod.PUT)
+	@RequestMapping(value = "deleteBrand.json", method = RequestMethod.DELETE)
 	public JSONObject deleteBrand(@RequestParam("id") String id) {
 		try {
 			return representation(Message.SUCCESS, interfaceConfigService.deleteBrand(id));
