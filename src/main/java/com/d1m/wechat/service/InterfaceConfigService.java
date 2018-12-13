@@ -17,7 +17,7 @@ public interface InterfaceConfigService {
 
 	int update(InterfaceConfig interfaceConfig);
 
-	int delete(String id);
+	int delete(String id) throws WechatException;
 
 	InterfaceConfigDto get(String id);
 
@@ -27,5 +27,7 @@ public interface InterfaceConfigService {
 
 	int updateBrand(InterfaceConfigBrand interfaceConfigBrand);
 
-	int deleteBrand(String id);
+	int deleteBrand(String id) throws WechatException;
+
+	InterfaceConfigDto getSecret(String id);
 }

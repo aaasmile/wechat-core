@@ -93,7 +93,7 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 	}
 
 	@Override
-	public int deleteBrand(String id) {
+	public int deleteBrand(String id) throws WechatException{
 		InterfaceConfig interfaceConfig = new InterfaceConfig();
 		interfaceConfig.setBrand(id);
 		if (interfaceConfigMapper.selectCount(interfaceConfig) > 0) throw new WechatException(Message.INTERFACECONFIG_BRAND_IN_USED, Message.INTERFACECONFIG_BRAND_IN_USED.getName());
@@ -101,5 +101,10 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 		interfaceConfigBrand.setId(Long.valueOf(id));
 		interfaceConfigBrand.setDeleted(true);
 		return interfaceConfigBrandMapper.updateByPrimaryKeySelective(interfaceConfigBrand);
+	}
+
+	@Override
+	public InterfaceConfigDto getSecret(String id) {
+		return interfaceConfigMapper.getSecret(id);
 	}
 }
