@@ -9,23 +9,18 @@ import javax.persistence.*;
  * Auth: Jo.Ho
  * Date: 2018/12/9
  */
-@ApiModel("第三方接口类别参数")
 @Table(name = "interface_brand")
 public class InterfaceConfigBrand {
 
-	@ApiModelProperty("ID")
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ApiModelProperty("名称")
 	private String name;
 
-	@ApiModelProperty("接口KEY")
 	@Column(name = "app_key")
 	private String key;
 
-	@ApiModelProperty("接口密码")
 	@Column(name = "app_secret")
 	private String secret;
 

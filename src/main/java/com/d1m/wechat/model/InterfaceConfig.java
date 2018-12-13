@@ -1,45 +1,32 @@
 package com.d1m.wechat.model;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
 import javax.persistence.*;
 
-@ApiModel("第三方接口参数")
 @Table(name = "interface_config")
 public class InterfaceConfig {
 
 	/**
 	 * 主键
 	 */
-	@ApiModelProperty("ID")
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private String id;
 
-	@ApiModelProperty("第三方ID")
 	private String brand;
 
-	@ApiModelProperty("名称")
 	private String name;
 
-	@ApiModelProperty("方法类型 POST/GET")
 	@Column(name = "method_type")
 	private String methodType;
 
-	@ApiModelProperty("接口类型")
 	private String type;
 
-	@ApiModelProperty("事件")
 	private String event;
 
-	@ApiModelProperty("参数")
 	private String parameter;
 
-	@ApiModelProperty("描述")
 	private String description;
 
-	@ApiModelProperty("URL")
 	private String url;
 
 	private int sequence;
@@ -48,13 +35,13 @@ public class InterfaceConfig {
 	private boolean deleted;
 
 	@Column(name = "created_at")
-	private long createdAt;
+	private String createdAt;
 
 	@Column(name = "created_by")
 	private String createdBy;
 
 	@Column(name = "updated_at")
-	private long updatedAt;
+	private String updatedAt;
 
 	@Column(name = "updated_by")
 	private String updatedBy;
@@ -147,11 +134,11 @@ public class InterfaceConfig {
 		this.deleted = deleted;
 	}
 
-	public long getCreatedAt() {
+	public String getCreatedAt() {
 		return createdAt;
 	}
 
-	public void setCreatedAt(long createdAt) {
+	public void setCreatedAt(String createdAt) {
 		this.createdAt = createdAt;
 	}
 
@@ -163,11 +150,11 @@ public class InterfaceConfig {
 		this.createdBy = createdBy;
 	}
 
-	public long getUpdatedAt() {
+	public String getUpdatedAt() {
 		return updatedAt;
 	}
 
-	public void setUpdatedAt(long updatedAt) {
+	public void setUpdatedAt(String updatedAt) {
 		this.updatedAt = updatedAt;
 	}
 
