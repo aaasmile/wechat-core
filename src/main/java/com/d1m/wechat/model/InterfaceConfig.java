@@ -27,6 +27,9 @@ public class InterfaceConfig {
 	@Column(name = "method_type")
 	private String methodType;
 
+	@ApiModelProperty("接口类型")
+	private String type;
+
 	@ApiModelProperty("事件")
 	private String event;
 
@@ -86,6 +89,14 @@ public class InterfaceConfig {
 
 	public void setMethodType(String methodType) {
 		this.methodType = methodType;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public String getEvent() {
