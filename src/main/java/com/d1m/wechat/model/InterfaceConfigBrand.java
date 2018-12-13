@@ -22,10 +22,11 @@ public class InterfaceConfigBrand {
 	private String name;
 
 	@ApiModelProperty("接口KEY")
-	@Column(name = "`key`")
+	@Column(name = "app_key")
 	private String key;
 
 	@ApiModelProperty("接口密码")
+	@Column(name = "app_secret")
 	private String secret;
 
 	@Column(name = "is_deleted")

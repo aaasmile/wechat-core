@@ -4,8 +4,8 @@
 	<resultMap type="com.d1m.wechat.dto.InterfaceConfigDto" id="interfaceConfigResultMap">
 		<id column="id" property="id" />
     	<result column="brand" property="brand" />
-    	<result column="key" property="key" />
-    	<result column="secret" property="secret" />
+    	<result column="app_key" property="key" />
+    	<result column="app_secret" property="secret" />
     	<result column="name" property="name" />
     	<result column="method_type" property="methodType" />
     	<result column="type" property="type" />
@@ -22,7 +22,7 @@
 	</resultMap>
 
 	<select id="selectItems" resultMap="interfaceConfigResultMap" parameterType="java.util.HashMap">
-		SELECT ic.id,ic.name,ic.method_type,ic.type,ic.event,ic.parameter,ic.description,ic.url,ic.sequence,ic.is_deleted,ic.created_at,ic.created_by,ic.updated_at,ic.updated_by,ib.name AS brand,ib.key,ib.secret
+		SELECT ic.id,ic.name,ic.method_type,ic.type,ic.event,ic.parameter,ic.description,ic.url,ic.sequence,ic.is_deleted,ic.created_at,ic.created_by,ic.updated_at,ic.updated_by,ib.name AS brand,ib.app_key,ib.app_secret
 		FROM interface_config ic
 		LEFT JOIN interface_brand ib ON ib.id = ic.brand
 		WHERE ic.is_deleted != 1
@@ -37,7 +37,7 @@
 	</select>
 
 	<select id="get" resultMap="interfaceConfigResultMap" parameterType="java.lang.String">
-		SELECT ic.id,ic.name,ic.method_type,ic.type,ic.event,ic.parameter,ic.description,ic.url,ic.sequence,ic.is_deleted,ic.created_at,ic.created_by,ic.updated_at,ic.updated_by,ib.name AS brand,ib.key,ib.secret
+		SELECT ic.id,ic.name,ic.method_type,ic.type,ic.event,ic.parameter,ic.description,ic.url,ic.sequence,ic.is_deleted,ic.created_at,ic.created_by,ic.updated_at,ic.updated_by,ib.name AS brand,ib.app_key,ib.app_secret
 		FROM interface_config ic
 		LEFT JOIN interface_brand ib ON ib.id = ic.brand
 		WHERE ic.id != #{0}
