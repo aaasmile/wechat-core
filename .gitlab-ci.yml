@@ -24,7 +24,7 @@ rmi-dev:
     - shell-build-dev
   stage: cleanup
   script:
-    - docker rmi docker.d1m.cn/wechat-core:latest
+    - docker rmi docker.d1m.cn/wechat-core:$CI_COMMIT_TAG
   when: always
 build-dev:
   stage: build
