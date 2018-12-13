@@ -282,7 +282,7 @@ public class MemberController extends BaseController {
 
                     int offset = 1;
 
-                    params.put("offset", offset - 1);
+                    params.put("offset", (offset - 1) * 1000);
                     params.put("rows", 1000);
 
                     List<MemberExcel> result = memberService.findMemberExcelByParams(params);
@@ -297,7 +297,7 @@ public class MemberController extends BaseController {
 
                     while (hasMore) {
                         offset++;
-                        params.put("offset", offset - 1);
+                        params.put("offset", (offset - 1) * 1000);
                         result = memberService.findMemberExcelByParams(params);
                         if (CollectionUtils.isNotEmpty(result)) {
                             workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);
@@ -315,7 +315,7 @@ public class MemberController extends BaseController {
                     int offset = 1;
 
                     params.put("wechatId", getWechatId());
-                    params.put("offset", offset - 1);
+                    params.put("offset", (offset - 1) * 1000);
                     params.put("rows", 1000);
 
                     List<MemberExcel> result = memberService.findMemberExcelByParams(params);
@@ -330,7 +330,7 @@ public class MemberController extends BaseController {
 
                     while (hasMore) {
                         offset++;
-                        params.put("offset", offset - 1);
+                        params.put("offset", (offset - 1) * 1000);
                         result = memberService.findMemberExcelByParams(params);
                         if (CollectionUtils.isNotEmpty(result)) {
                             workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);

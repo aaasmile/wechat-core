@@ -169,7 +169,7 @@
                 m.wechat_id = #{wechatId}
             </if>
             <if test="ids!=null">
-                and id in
+                and m.id in
                 <foreach collection="ids" open="(" separator="," close=")" index="index" item="item">
                     #{item}
                 </foreach>
