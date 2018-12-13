@@ -5,6 +5,8 @@ import com.d1m.wechat.model.InterfaceConfig;
 import com.d1m.wechat.util.MyMapper;
 import com.github.pagehelper.Page;
 
+import java.util.Map;
+
 public interface InterfaceConfigMapper extends MyMapper<InterfaceConfig>{
 
     Page<InterfaceConfigDto> selectItems(Map<String, String> query);
