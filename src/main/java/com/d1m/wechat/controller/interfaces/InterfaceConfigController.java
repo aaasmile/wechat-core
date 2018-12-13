@@ -7,6 +7,7 @@ import com.d1m.wechat.dto.InterfaceConfigDto;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.model.InterfaceConfig;
 import com.d1m.wechat.model.InterfaceConfigBrand;
+import com.d1m.wechat.util.DateUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.swagger.annotations.*;
@@ -62,7 +63,7 @@ public class InterfaceConfigController extends BaseController {
 	public JSONObject createItems(@RequestBody InterfaceConfig interfaceConfig) {
 		try {
 			interfaceConfig.setCreatedBy(String.valueOf(getUser().getId()));
-			interfaceConfig.setCreatedAt(new Date().getTime());
+			interfaceConfig.setCreatedAt(DateUtil.formatYYYYMMDDHHMMSS(new Date()));
 			return representation(Message.SUCCESS, interfaceConfigService.create(interfaceConfig));
 		}catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -76,7 +77,7 @@ public class InterfaceConfigController extends BaseController {
 	public JSONObject updateItems(@RequestBody InterfaceConfig interfaceConfig) {
 		try {
 			interfaceConfig.setUpdatedBy(String.valueOf(getUser().getId()));
-			interfaceConfig.setUpdatedAt(new Date().getTime());
+			interfaceConfig.setUpdatedAt(DateUtil.formatYYYYMMDDHHMMSS(new Date()));
 			return representation(Message.SUCCESS, interfaceConfigService.update(interfaceConfig));
 		}catch (Exception e) {
 			log.error(e.getMessage(), e);
