@@ -40,7 +40,7 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 	public String create(InterfaceConfig interfaceConfig) {
 		String id = UUID.randomUUID().toString().replaceAll("-", "");
 		interfaceConfig.setId(id);
-		interfaceConfigMapper.insert(interfaceConfig);
+		interfaceConfigMapper.insertSelective(interfaceConfig);
 		return id;
 
 	}
@@ -77,7 +77,7 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 		String secret = MD5.MD5Encode(key + interfaceConfigBrand.getName());
 		interfaceConfigBrand.setKey(key);
 		interfaceConfigBrand.setSecret(secret);
-		interfaceConfigBrandMapper.insert(interfaceConfigBrand);
+		interfaceConfigBrandMapper.insertSelective(interfaceConfigBrand);
 		Map<String, String> result = new HashMap<>();
 		result.put("key", key);
 		result.put("secret", secret);
@@ -97,6 +97,6 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 		InterfaceConfigBrand interfaceConfigBrand = new InterfaceConfigBrand();
 		interfaceConfigBrand.setId(Long.valueOf(id));
 		interfaceConfigBrand.setDeleted(true);
-		return interfaceConfigBrandMapper.updateByPrimaryKey(interfaceConfigBrand);
+		return interfaceConfigBrandMapper.updateByPrimaryKeySelective(interfaceConfigBrand);
 	}
 }
