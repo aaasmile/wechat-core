@@ -63,7 +63,7 @@
 	</resultMap>
 
 	<select id="selectUserBehavior" parameterType="HashMap" resultMap="userBehaviorResultMap">
-		select ifnull(title, '') as title,ifnull(LOWER(event_name), '') AS event_name,created_at from conversation where member_id = #{memberId} and cast(event as char) in (1,2,3,5,6,9,10,22,30,31,32,33,35) order by created_at desc
+		select ifnull(title, '') as title,ifnull(LOWER(event_name), '') AS event_name,created_at from conversation where member_id = #{memberId} and cast(event as char) in (1,2,3,5,6,9,10,22,30,31,32,33,35,36) order by created_at desc
 	</select>
 	<select id="selectUserLocation" parameterType="HashMap" resultMap="userLocationResultMap">
 		select ifnull(location_x, '0.0') as location_x, ifnull(location_y, '0.0') as location_y, ifnull(LOWER(event_name), '') AS event_name, created_at from conversation where member_id = #{memberId} and cast(event as char) in (4,34) order by created_at desc
