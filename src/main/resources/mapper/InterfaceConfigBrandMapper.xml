@@ -4,13 +4,13 @@
 	<resultMap type="com.d1m.wechat.dto.InterfaceConfigBrandDto" id="interfaceConfigBrandResultMap">
 		<id column="id" property="id" />
     	<result column="name" property="name" />
-    	<result column="key" property="key" />
-    	<result column="secret" property="secret" />
+    	<result column="app_key" property="key" />
+    	<result column="app_secret" property="secret" />
     	<result column="is_deleted" property="deleted" />
 	</resultMap>
 
 	<select id="listBrand" resultMap="interfaceConfigBrandResultMap">
-		SELECT id,name,`key`,secret,is_deleted FROM interface_brand WHERE is_deleted != 1
+		SELECT id,name,app_key,app_secret,is_deleted FROM interface_brand WHERE is_deleted != 1
 	</select>
 
 </mapper>
