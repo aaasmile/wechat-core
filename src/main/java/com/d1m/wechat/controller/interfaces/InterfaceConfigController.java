@@ -162,4 +162,16 @@ public class InterfaceConfigController extends BaseController {
 			return representation(Message.INTERFACECONFIG_BRAND_DELETE_FAIL, e.getMessage());
 		}
 	}
+
+	@ApiOperation(value = "查看秘钥", tags = "第三方接口列表")
+	@ApiResponse(code = 200, message = "查看秘钥成功")
+	@RequestMapping(value = "getSecret.json", method = RequestMethod.GET)
+	public JSONObject getSecret(@RequestParam("id") String id) {
+		try {
+			return representation(Message.SUCCESS, interfaceConfigService.getSecret(id));
+		}catch (Exception e) {
+			log.error(e.getMessage(), e);
+			return representation(Message.INTERFACECONFIG_SECRET_GET_FAIL, e.getMessage());
+		}
+	}
 }

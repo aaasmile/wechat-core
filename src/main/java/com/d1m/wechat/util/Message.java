@@ -1014,7 +1014,9 @@ public enum Message {
 
     INTERFACECONFIG_BRAND_DELETE_FAIL(42081, "删除第三方列表失败"),
 
-    INTERFACECONFIG_BRAND_IN_USED(42082, "第三方类别在使用中")
+    INTERFACECONFIG_BRAND_IN_USED(42082, "第三方类别在使用中"),
+
+    INTERFACECONFIG_SECRET_GET_FAIL(42091, "获取秘钥失败")
 
     ;
 
