@@ -13,6 +13,7 @@ import com.d1m.wechat.model.Menu;
 import com.d1m.wechat.util.MD5;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -72,7 +73,9 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 	}
 
 	@Override
-	public Map<String, String> createBrand(InterfaceConfigBrand interfaceConfigBrand) {
+	public Map<String, String> createBrand(InterfaceConfigBrand interfaceConfigBrand) throws WechatException{
+		List<InterfaceConfigBrand> select = interfaceConfigBrandMapper.select(interfaceConfigBrand);
+		if (CollectionUtils.isNotEmpty(select)) throw new WechatException(Message.INTERFACECONFIG_BRAND_EXIST, Message.INTERFACECONFIG_BRAND_EXIST.getName());
 		String key = UUID.randomUUID().toString().replaceAll("-", "");
 		String secret = MD5.MD5Encode(key + interfaceConfigBrand.getName());
 		interfaceConfigBrand.setKey(key);
