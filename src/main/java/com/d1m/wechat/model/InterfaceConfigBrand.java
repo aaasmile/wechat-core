@@ -22,6 +22,7 @@ public class InterfaceConfigBrand {
 	private String name;
 
 	@ApiModelProperty("接口KEY")
+	@Column(name = "`key`")
 	private String key;
 
 	@ApiModelProperty("接口密码")
