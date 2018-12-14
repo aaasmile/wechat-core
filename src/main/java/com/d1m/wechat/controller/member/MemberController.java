@@ -7,7 +7,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.controller.report.ReportXlsxStreamView;
-import com.d1m.wechat.domain.web.BaseResponse;
 import com.d1m.wechat.dto.MemberDto;
 import com.d1m.wechat.dto.MemberLevelDto;
 import com.d1m.wechat.dto.MemberTagDto;
@@ -38,6 +37,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.RequestContextUtils;
@@ -136,13 +136,13 @@ public class MemberController extends BaseController {
     }
 
     @ApiOperation(value = "更新微信会员备注", tags = "会员接口")
-    @PatchMapping("/{id}/remark.json")
-    public BaseResponse updateMemberRemark(@PathVariable Integer id, @RequestBody UpdateMemberRemarkReq req) {
+    @PatchMapping(path = "/{id}/remark.json", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public JSONObject updateMemberRemark(@PathVariable Integer id, @RequestBody UpdateMemberRemarkReq req) {
         final Member member = new Member();
         member.setId(id);
         member.setRemark(req.getRemark());
         memberService.updateNotNull(member);
-        return new BaseResponse<>(1, "success", null);
+        return representation(Message.SUCCESS);
     }
 
     private static class UpdateMemberRemarkReq {
