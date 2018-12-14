@@ -30,9 +30,11 @@ public class TestController {
         final Member one = memberMapper.selectOne(member);
         final MemberDto memberDto = new MemberDto();
         memberDto.setId(1763304);
-        final MemberDto dto = memberMapper.selectByOpenId("oJOHetzCI7a5QollHWX71toluvS8", 6);
+        final MemberDto dto = memberMapper.selectByOpenId("oJOHet8x0o1O23c3FENBoBsiCRKU", 6);
         return BaseResponse.builder()
                 .data(dto)
+                .msg("success")
+                .resultCode(1)
                 .build();
     }
 }

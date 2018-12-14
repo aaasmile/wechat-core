@@ -142,10 +142,7 @@ public class MemberController extends BaseController {
         member.setId(id);
         member.setRemark(req.getRemark());
         memberService.updateNotNull(member);
-        return BaseResponse.builder()
-                .resultCode(1)
-                .msg("success")
-                .build();
+        return new BaseResponse<>(1, "success", null);
     }
 
     private static class UpdateMemberRemarkReq {
