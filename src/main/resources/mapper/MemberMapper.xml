@@ -255,6 +255,7 @@
         m.subscribe_scene,
         m.qr_scene,
         m.qr_scene_str,
+        m.remark,
         IF(ISNULL(m.status),2,m.status) as bindStatus
         from member as m
         <include refid="searchM"></include>
@@ -783,6 +784,7 @@
         <result column="subscribe_scene" jdbcType="VARCHAR" property="subscribeScene"/>
         <result column="qr_scene" jdbcType="VARCHAR" property="qrScene"/>
         <result column="qr_scene_str" jdbcType="VARCHAR" property="qrSceneStr"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
         <collection column="{memberId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.MemberTagDto"
                     property="memberTags" select="getMemberMemberTags"/>
     </resultMap>
