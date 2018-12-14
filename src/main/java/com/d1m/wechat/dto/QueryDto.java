@@ -22,7 +22,7 @@ public class QueryDto implements Serializable {
     private int pageSize;
 
     //当前页数
-    private int currPage;
+    private int pageNum;
 
 
     public int getPageSize() {
@@ -33,12 +33,12 @@ public class QueryDto implements Serializable {
         this.pageSize = pageSize;
     }
 
-    public int getCurrPage() {
-        return currPage;
+    public int getPageNum() {
+        return pageNum;
     }
 
-    public void setCurrPage(int currPage) {
-        this.currPage = currPage;
+    public void setPageNum(int pageNum) {
+        this.pageNum = pageNum;
     }
 
     public String getName() {

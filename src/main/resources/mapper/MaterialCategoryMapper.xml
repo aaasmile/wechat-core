@@ -82,4 +82,8 @@
         </set>
         where id = #{id}
     </update>
+
+    <delete id="del">
+        delete from material_category where id =#{id}
+    </delete>
 </mapper>
