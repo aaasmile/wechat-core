@@ -50,7 +50,7 @@ public class InterfaceConfigController extends BaseController {
 		try {
 			PageHelper.startPage(Integer.parseInt(query.get("pageNum")), Integer.parseInt(query.get("pageSize")), true);
 			Page<InterfaceConfigDto> interfaceConfigDtos = interfaceConfigService.selectItems(query);
-			return representation(Message.SUCCESS, interfaceConfigDtos, Integer.parseInt(query.get("pageNum")), Integer.parseInt(query.get("pageSize")), interfaceConfigDtos.getTotal());
+			return representation(Message.SUCCESS, interfaceConfigDtos, Integer.parseInt(query.get("pageSize")), Integer.parseInt(query.get("pageNum")), interfaceConfigDtos.getTotal());
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			return representation(Message.INTERFACECONFIG_SELECT_FAIL, e.getMessage());
