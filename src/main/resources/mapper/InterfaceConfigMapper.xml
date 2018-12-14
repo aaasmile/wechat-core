@@ -22,7 +22,7 @@
 	</resultMap>
 
 	<select id="selectItems" resultMap="interfaceConfigResultMap" parameterType="java.util.HashMap">
-		SELECT ic.id,ic.name,ic.method_type,ic.type,ic.event,ic.parameter,ic.description,ic.url,ic.sequence,ic.is_deleted,ic.created_at,ic.created_by,ic.updated_at,ic.updated_by,ib.name AS brand
+		SELECT ic.id,ic.name,ic.method_type,ic.type,ic.event,ic.parameter,ic.description,ic.url,ic.sequence,ic.is_deleted,ic.created_at,ic.created_by,ic.updated_at,ic.updated_by,ib.name AS brand,ib.app_key
 		FROM interface_config ic
 		LEFT JOIN interface_brand ib ON ib.id = ic.brand
 		WHERE ic.is_deleted = 0
