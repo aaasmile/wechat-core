@@ -94,7 +94,7 @@ public class MaterialCategoryController extends BaseController {
     @ApiOperation(value = "删除素材分类名称")
     //@ApiResponse(code = 200, message = "操作成功")
     @RequestMapping(value = "{id}/delete.json", method = RequestMethod.POST)
-    @RequiresPermissions("app-msg:list")
+    //@RequiresPermissions("app-msg:list")
     @ResponseBody
     public JSONObject delete(
      @ApiParam("素材分类ID")
@@ -118,7 +118,7 @@ public class MaterialCategoryController extends BaseController {
     @ApiOperation(value = "获取素材图文列表")
     //@ApiResponse(code = 200, message = "1-获取素材图文列表成功")
     @RequestMapping(value = "list.json",method = RequestMethod.POST)
-    @RequiresPermissions("app-msg:list")
+    //@RequiresPermissions("app-msg:list")
     @ResponseBody
     public JSONObject queryList(@RequestBody QueryDto dto) {
         PageInfo<MaterialCategory> list = materialCategoryService.queryList(dto);
