@@ -2,7 +2,7 @@ package com.d1m.wechat.mapper;
 
 import com.d1m.wechat.model.MaterialCategory;
 
-import com.d1m.wechat.util.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 import com.d1m.wechat.util.MyMapper;
 
 import java.util.List;
@@ -24,5 +24,7 @@ public interface MaterialCategoryMapper extends MyMapper<MaterialCategory> {
 
 
     int update(MaterialCategory t);
+
+    int del(@Param("id") String id);
 
 }

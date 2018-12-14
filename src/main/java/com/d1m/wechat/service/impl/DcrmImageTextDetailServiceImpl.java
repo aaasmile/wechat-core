@@ -81,7 +81,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
 
     @Override
     public PageInfo<DcrmImageTextDetailDto> queryList(QueryDto dto) {
-        PageHelper.startPage(dto.getCurrPage(), dto.getPageSize());
+        PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
         Map<String, Object> query = MapUtils.beanToMap(dto);
         List<DcrmImageTextDetailDto> list = dcrmImageTextDetailMapper.queryList(query);
         PageInfo<DcrmImageTextDetailDto> pageInfo = new PageInfo<>(list);

@@ -91,13 +91,13 @@ public class MaterialCategoryServiceImpl implements MaterialCategoryService {
         if (CollectionUtils.isNotEmpty(list)) {
             return response(Message.MATERIAL_CATEGORY_BE_USED, list);
         }
-        materialCategoryMapper.deleteByPrimaryKey(id);
+        materialCategoryMapper.del(id);
         return response(Message.MATERIAL_IMAGE_DELETE_SUCCESS, null);
     }
 
     @Override
     public PageInfo<MaterialCategory> queryList(QueryDto dto) {
-        PageHelper.startPage(dto.getCurrPage(), dto.getPageSize());
+        PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
         Map<String, Object> query = MapUtils.beanToMap(dto);
         List<MaterialCategory> list = materialCategoryMapper.queryList(query);
         PageInfo<MaterialCategory> pageInfo = new PageInfo<>(list);
