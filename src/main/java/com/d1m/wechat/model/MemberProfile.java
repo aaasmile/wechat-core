@@ -1,7 +1,9 @@
 package com.d1m.wechat.model;
 
-import java.util.Date;
+import com.d1m.wechat.model.enums.Sex;
+
 import javax.persistence.*;
+import java.util.Date;
 
 @Table(name = "member_profile")
 public class MemberProfile {
@@ -107,6 +109,21 @@ public class MemberProfile {
      */
     @Column(name = "unbund_at")
     private Date unbundAt;
+
+    @Column(name = "mobile")
+    private String mobile;
+
+    @Column(name = "sex")
+    private Sex sex;
+
+    @Column(name = "province")
+    private String province;
+
+    @Column(name = "city")
+    private String city;
+
+    @Column(name = "county")
+    private String county;
 
     /**
      * 获取主键ID
@@ -430,5 +447,45 @@ public class MemberProfile {
      */
     public void setUnbundAt(Date unbundAt) {
         this.unbundAt = unbundAt;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public Sex getSex() {
+        return sex;
+    }
+
+    public void setSex(Sex sex) {
+        this.sex = sex;
+    }
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getCounty() {
+        return county;
+    }
+
+    public void setCounty(String county) {
+        this.county = county;
     }
 }

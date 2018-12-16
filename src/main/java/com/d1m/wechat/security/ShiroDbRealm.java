@@ -82,7 +82,7 @@ public class ShiroDbRealm extends AuthorizingRealm {
 			}
 
 			// 判断账号是否已删除
-			if (user.getStatus() == 0) {
+ 			if (user.getStatus() == 0) {
 				throw new LockedAccountException("USER_DELETED");
 			}
 			// 判断账号是否已锁定(3次错误就锁)
