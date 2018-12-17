@@ -2,13 +2,9 @@ package com.d1m.wechat.controller.material;
 
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
-import com.d1m.wechat.dto.MaterialDto;
 import com.d1m.wechat.dto.DcrmImageTextDetailDto;
 import com.d1m.wechat.dto.QueryDto;
-import com.d1m.wechat.model.Material;
-import com.d1m.wechat.model.MaterialCategory;
-
-import com.d1m.wechat.pamametermodel.MaterialModel;
+import com.d1m.wechat.model.Qrcode;
 import com.d1m.wechat.service.DcrmImageTextDetailService;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.PageInfo;
@@ -16,18 +12,12 @@ import com.google.common.base.Preconditions;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @program: wechat-core
@@ -59,6 +49,7 @@ public class DcrmImageTextDetailController extends BaseController {
         DcrmImageTextDetailService.save(dto);
         return representation(Message.SUCCESS);
     }
+
 
     /**
      * 更新
@@ -105,6 +96,47 @@ public class DcrmImageTextDetailController extends BaseController {
     public JSONObject queryList(QueryDto dto) {
         PageInfo<DcrmImageTextDetailDto> list = DcrmImageTextDetailService.queryList(dto);
         return representation(Message.SUCCESS, list);
+    }
+
+
+    /**
+     * 素材图文推送微信（素材预览）
+     *
+     * @param detailDto
+     * @return
+     */
+    @ApiOperation(value = "素材图文推送微信")
+    //@ApiResponse(code = 200, message = "1-素材图文推送微信成功")
+    @RequestMapping(value = "preview.json", method = RequestMethod.POST)
+    @ResponseBody
+    @RequiresPermissions("app-msg:list")
+    public JSONObject preview(
+     @ApiParam(name = "DcrmImageTextDetailDto", required = false)
+     @RequestBody(required = false) DcrmImageTextDetailDto detailDto) {
+        try {
+            detailDto.setWechatId(getUser().getWechatId());
+            DcrmImageTextDetailService.previewMaterial(detailDto);
+            return representation(Message.MATERIAL_IMAGE_TEXT_PUSH_WX_SUCCESS);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return wrapException(e);
+        }
+    }
+
+
+    /**
+     * 生成二维码接口
+     */
+    @ApiOperation(value = "生成二维码接口")
+    //@ApiResponse(code = 200, message = "操作成功")
+    @RequestMapping(value = "createQrcode.json", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject createQrcode(@RequestBody DcrmImageTextDetailDto dto) {
+
+        dto.setCreatedBy(getUser().getId());
+        dto.setWechatId(getUser().getWechatId());
+        Qrcode qrcode = DcrmImageTextDetailService.createQrcode(dto);
+        return representation(Message.SUCCESS);
     }
 
 
