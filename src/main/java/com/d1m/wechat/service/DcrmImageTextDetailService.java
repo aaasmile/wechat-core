@@ -4,6 +4,7 @@ import com.d1m.wechat.dto.DcrmImageTextDetailDto;
 import com.d1m.wechat.dto.QueryDto;
 import com.d1m.wechat.model.Material;
 import com.d1m.wechat.model.MaterialCategory;
+import com.d1m.wechat.model.Qrcode;
 import com.github.pagehelper.PageInfo;
 
 
@@ -56,4 +57,16 @@ public interface DcrmImageTextDetailService {
     PageInfo<DcrmImageTextDetailDto> queryList(QueryDto dto);
 
 
+    /**
+     * 发送图文
+     * @param detailDto
+     */
+     void previewMaterial(DcrmImageTextDetailDto detailDto);
+
+    /**
+     * 生成二维码
+     * @param dto
+     * @return
+     */
+    Qrcode createQrcode(DcrmImageTextDetailDto dto);
 }

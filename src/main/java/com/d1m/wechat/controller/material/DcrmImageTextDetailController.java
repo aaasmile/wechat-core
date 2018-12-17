@@ -8,6 +8,7 @@ import com.d1m.wechat.dto.QueryDto;
 import com.d1m.wechat.model.Material;
 import com.d1m.wechat.model.MaterialCategory;
 
+import com.d1m.wechat.model.Qrcode;
 import com.d1m.wechat.pamametermodel.MaterialModel;
 import com.d1m.wechat.service.DcrmImageTextDetailService;
 import com.d1m.wechat.util.Message;
@@ -60,6 +61,7 @@ public class DcrmImageTextDetailController extends BaseController {
         return representation(Message.SUCCESS);
     }
 
+
     /**
      * 更新
      */
@@ -105,6 +107,47 @@ public class DcrmImageTextDetailController extends BaseController {
     public JSONObject queryList(QueryDto dto) {
         PageInfo<DcrmImageTextDetailDto> list = DcrmImageTextDetailService.queryList(dto);
         return representation(Message.SUCCESS, list);
+    }
+
+
+    /**
+     * 素材图文推送微信（素材预览）
+     *
+     * @param detailDto
+     * @return
+     */
+    @ApiOperation(value = "素材图文推送微信")
+    //@ApiResponse(code = 200, message = "1-素材图文推送微信成功")
+    @RequestMapping(value = "preview.json", method = RequestMethod.POST)
+    @ResponseBody
+    @RequiresPermissions("app-msg:list")
+    public JSONObject preview(
+     @ApiParam(name = "DcrmImageTextDetailDto", required = false)
+     @RequestBody(required = false) DcrmImageTextDetailDto detailDto) {
+        try {
+            detailDto.setWechatId(getUser().getWechatId());
+            DcrmImageTextDetailService.previewMaterial(detailDto);
+            return representation(Message.MATERIAL_IMAGE_TEXT_PUSH_WX_SUCCESS);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return wrapException(e);
+        }
+    }
+
+
+    /**
+     * 生成二维码接口
+     */
+    @ApiOperation(value = "生成二维码接口")
+    //@ApiResponse(code = 200, message = "操作成功")
+    @RequestMapping(value = "createQrcode.json", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject createQrcode(@RequestBody DcrmImageTextDetailDto dto) {
+
+        dto.setCreatedBy(getUser().getId());
+        dto.setWechatId(getUser().getWechatId());
+        Qrcode qrcode = DcrmImageTextDetailService.createQrcode(dto);
+        return representation(Message.SUCCESS);
     }
 
 
