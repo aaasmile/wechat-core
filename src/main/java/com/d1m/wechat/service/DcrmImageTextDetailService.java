@@ -2,14 +2,8 @@ package com.d1m.wechat.service;
 
 import com.d1m.wechat.dto.DcrmImageTextDetailDto;
 import com.d1m.wechat.dto.QueryDto;
-import com.d1m.wechat.model.Material;
-import com.d1m.wechat.model.MaterialCategory;
 import com.d1m.wechat.model.Qrcode;
 import com.github.pagehelper.PageInfo;
-
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * @program: wechat-core

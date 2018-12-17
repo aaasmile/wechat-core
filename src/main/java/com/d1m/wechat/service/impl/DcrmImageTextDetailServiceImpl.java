@@ -1,36 +1,25 @@
 package com.d1m.wechat.service.impl;
 
 import cn.d1m.wechat.client.model.WxMessage;
-import com.d1m.wechat.dto.ImageTextDto;
-import com.d1m.wechat.dto.ImportCsvDto;
 import com.d1m.wechat.dto.DcrmImageTextDetailDto;
 import com.d1m.wechat.dto.QueryDto;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.DcrmImageTextDetailMapper;
-import com.d1m.wechat.mapper.MaterialCategoryMapper;
-import com.d1m.wechat.mapper.MaterialImageTextDetailMapper;
 import com.d1m.wechat.mapper.MaterialMapper;
 import com.d1m.wechat.model.*;
 import com.d1m.wechat.model.enums.MaterialStatus;
-import com.d1m.wechat.model.enums.MaterialType;
-
 import com.d1m.wechat.pamametermodel.ConversationModel;
-import com.d1m.wechat.pamametermodel.MaterialModel;
 import com.d1m.wechat.service.*;
 import com.d1m.wechat.util.MapUtils;
 import com.d1m.wechat.util.Message;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import groovy.lang.DelegatesTo;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
