@@ -94,6 +94,16 @@ public class DcrmImageTextDetail {
     private Date lasteUpdatedAt;
     //最后更新人
     private Integer lasteUpdatedBy;
+    /**
+     * 发送次数
+     */
+    @Column(name="send_times")
+    private Integer sendTimes;
+    /**
+     * 阅读次数
+     */
+    @Column(name="read_times")
+    private Integer readTimes;
 
     public Integer getId() {
         return id;
@@ -237,5 +247,21 @@ public class DcrmImageTextDetail {
 
     public void setLasteUpdatedBy(Integer lasteUpdatedBy) {
         this.lasteUpdatedBy = lasteUpdatedBy;
+    }
+
+    public Integer getSendTimes() {
+        return sendTimes;
+    }
+
+    public void setSendTimes(Integer sendTimes) {
+        this.sendTimes = sendTimes;
+    }
+
+    public Integer getReadTimes() {
+        return readTimes;
+    }
+
+    public void setReadTimes(Integer readTimes) {
+        this.readTimes = readTimes;
     }
 }
