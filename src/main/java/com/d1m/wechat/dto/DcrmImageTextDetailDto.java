@@ -1,8 +1,6 @@
 package com.d1m.wechat.dto;
 
 import java.io.Serializable;
-import java.util.Date;
-
 public class DcrmImageTextDetailDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -87,6 +85,20 @@ public class DcrmImageTextDetailDto implements Serializable {
     private Integer lasteUpdatedBy;
 
     private String materialCategoryId;
+
+    private Integer memberId;
+
+    private Integer sendTimes;
+
+    private Integer readTimes;
+
+    public Integer getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(Integer memberId) {
+        this.memberId = memberId;
+    }
 
     public String getMaterialCategoryId() {
         return materialCategoryId;
@@ -238,5 +250,21 @@ public class DcrmImageTextDetailDto implements Serializable {
 
     public void setLasteUpdatedAt(Integer lasteUpdatedAt) {
         this.lasteUpdatedAt = lasteUpdatedAt;
+    }
+
+    public Integer getSendTimes() {
+        return sendTimes;
+    }
+
+    public void setSendTimes(Integer sendTimes) {
+        this.sendTimes = sendTimes;
+    }
+
+    public Integer getReadTimes() {
+        return readTimes;
+    }
+
+    public void setReadTimes(Integer readTimes) {
+        this.readTimes = readTimes;
     }
 }

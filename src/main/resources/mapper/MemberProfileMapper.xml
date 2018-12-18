@@ -163,7 +163,14 @@
             </foreach>
         </if>
         group by mmt.member_id
-        ) mmt on mmt.member_id = m.id ,( select @rowno:=0) t
+        ) mmt on mmt.member_id = m.id ,(
+        <if test="offset!=null">
+            select @rowno:=#{offset}
+        </if>
+        <if test="offset==null">
+            select @rowno:=0
+        </if>
+        ) t
         <where>
             <if test="wechatId != null">
                 m.wechat_id = #{wechatId}

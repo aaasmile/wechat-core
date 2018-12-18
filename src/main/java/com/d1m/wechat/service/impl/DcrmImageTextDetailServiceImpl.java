@@ -1,36 +1,30 @@
 package com.d1m.wechat.service.impl;
 
-import com.d1m.wechat.dto.ImageTextDto;
-import com.d1m.wechat.dto.ImportCsvDto;
+import cn.d1m.wechat.client.model.WxMessage;
 import com.d1m.wechat.dto.DcrmImageTextDetailDto;
 import com.d1m.wechat.dto.QueryDto;
+import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.DcrmImageTextDetailMapper;
-import com.d1m.wechat.mapper.MaterialCategoryMapper;
-import com.d1m.wechat.mapper.MaterialImageTextDetailMapper;
 import com.d1m.wechat.mapper.MaterialMapper;
-import com.d1m.wechat.model.DcrmImageTextDetail;
-import com.d1m.wechat.model.Material;
-import com.d1m.wechat.model.MaterialCategory;
-import com.d1m.wechat.model.MaterialImageTextDetail;
+import com.d1m.wechat.model.*;
 import com.d1m.wechat.model.enums.MaterialStatus;
-import com.d1m.wechat.model.enums.MaterialType;
-
-import com.d1m.wechat.service.MaterialCategoryService;
-import com.d1m.wechat.service.MaterialService;
-import com.d1m.wechat.service.DcrmImageTextDetailService;
+import com.d1m.wechat.pamametermodel.ConversationModel;
+import com.d1m.wechat.service.*;
 import com.d1m.wechat.util.MapUtils;
+import com.d1m.wechat.util.Message;
+import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import groovy.lang.DelegatesTo;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
 /**
  * @program: wechat-core
@@ -47,6 +41,10 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
     @Autowired
     private MaterialService materialService;
 
+    @Autowired
+    private MemberService memberService;
+    @Autowired
+    private ConversationService conversationService;
 
     @Autowired
     private DcrmImageTextDetailMapper dcrmImageTextDetailMapper;
@@ -81,12 +79,47 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
 
     @Override
     public PageInfo<DcrmImageTextDetailDto> queryList(QueryDto dto) {
-        PageHelper.startPage(dto.getCurrPage(), dto.getPageSize());
+        PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
         Map<String, Object> query = MapUtils.beanToMap(dto);
         List<DcrmImageTextDetailDto> list = dcrmImageTextDetailMapper.queryList(query);
         PageInfo<DcrmImageTextDetailDto> pageInfo = new PageInfo<>(list);
         return pageInfo;
     }
 
+
+    public void previewMaterial(DcrmImageTextDetailDto detailDto) {
+        Integer id = detailDto.getId();
+        notBlank(id, Message.MATERIAL_ID_NOT_BLANK);
+        notBlank(detailDto.getMemberId(), Message.MEMBER_ID_NOT_EMPTY);
+        Member member = memberService.getMember(detailDto.getWechatId(),
+         detailDto.getMemberId());
+        notBlank(member, Message.MEMBER_NOT_EXIST);
+        DcrmImageTextDetailDto dto = queryObject(id);
+        Material material = new Material();
+        if (dto.getMaterialId() != null) {
+            material = materialService.getMaterial(detailDto.getWechatId(), dto.getMaterialId());
+            ConversationModel conversationModel = new ConversationModel();
+            conversationModel.setMaterialId(detailDto.getId());
+            conversationModel.setMemberId(detailDto.getMemberId());
+            User user = (User) SecurityUtils.getSubject().getPrincipal();
+            conversationService.wechatToMember(detailDto.getWechatId(), user, conversationModel);
+            //发送图文
+            if (member.getWechatId() != null) {
+                WxMessage wxMessage = WechatClientDelegate.previewMessage(detailDto.getWechatId(), member.getOpenId()
+                 , "mpnews", material.getMediaId());
+                if (wxMessage.fail()) {
+                    throw new WechatException(Message.WEIXIN_HTTPS_REQUEST_ERROR);
+                }
+            }
+        }
+
+
+    }
+
+   public Qrcode createQrcode(DcrmImageTextDetailDto dto){
+       Qrcode qrcode = new Qrcode();
+
+       return qrcode;
+    }
 
 }

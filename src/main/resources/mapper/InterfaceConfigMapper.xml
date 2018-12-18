@@ -22,12 +22,12 @@
 	</resultMap>
 
 	<select id="selectItems" resultMap="interfaceConfigResultMap" parameterType="java.util.HashMap">
-		SELECT ic.id,ic.name,ic.method_type,ic.type,ic.event,ic.parameter,ic.description,ic.url,ic.sequence,ic.is_deleted,ic.created_at,ic.created_by,ic.updated_at,ic.updated_by,ib.name AS brand,ib.app_key,ib.app_secret
+		SELECT ic.id,ic.name,ic.method_type,ic.type,ic.event,ic.parameter,ic.description,ic.url,ic.sequence,ic.is_deleted,ic.created_at,ic.created_by,ic.updated_at,ic.updated_by,ib.name AS brand,ib.app_key
 		FROM interface_config ic
 		LEFT JOIN interface_brand ib ON ib.id = ic.brand
-		WHERE ic.is_deleted != 1
-		<if test="brand != null"> AND ic.brand = #{brand} </if>
-		<if test="name != null"> AND ic.name = #{name} </if>
+		WHERE ic.is_deleted = 0
+		<if test="brand != null"> AND ib.name LIKE "%"#{brand}"%" </if>
+		<if test="name != null"> AND ic.name LIKE "%"#{name}"%" </if>
 		<if test="method_type != null"> AND ic.method_type = #{method_type} </if>
 		<if test="type != null"> AND ic.type = #{type} </if>
 		<if test="create_from != null"> AND ic.created_at <![CDATA[ >= ]]> #{create_from} </if>
@@ -40,7 +40,14 @@
 		SELECT ic.id,ic.name,ic.method_type,ic.type,ic.event,ic.parameter,ic.description,ic.url,ic.sequence,ic.is_deleted,ic.created_at,ic.created_by,ic.updated_at,ic.updated_by,ib.name AS brand,ib.app_key,ib.app_secret
 		FROM interface_config ic
 		LEFT JOIN interface_brand ib ON ib.id = ic.brand
-		WHERE ic.id != #{0}
+		WHERE ic.id = #{0}
+	</select>
+
+	<select id="getSecret" resultMap="interfaceConfigResultMap" parameterType="java.lang.String">
+		SELECT ib.app_key,ib.app_secret
+		FROM interface_config ic
+		LEFT JOIN interface_brand ib ON ib.id = ic.brand
+		WHERE ic.id = #{0}
 	</select>
 
 </mapper>

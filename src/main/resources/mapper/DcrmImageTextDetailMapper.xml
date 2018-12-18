@@ -20,7 +20,9 @@
         tag_id,
         UNIX_TIMESTAMP(created_at) as created_at,
         laste_updated_by,
-        UNIX_TIMESTAMP(laste_updated_at) as lasteUpdatedAt
+        UNIX_TIMESTAMP(laste_updated_at) as lasteUpdatedAt,
+        send_times,
+        read_times
         from dcrm_image_text_detail
         WHERE 1=1
         <if test="search != null">

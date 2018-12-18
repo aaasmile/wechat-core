@@ -19,10 +19,10 @@ public class QueryDto implements Serializable {
     private String materialTypeId;
 
     //每页记录数
-    private int pageSize;
+    private int pageSize=10;
 
     //当前页数
-    private int currPage;
+    private int pageNum=1;
 
 
     public int getPageSize() {
@@ -33,12 +33,12 @@ public class QueryDto implements Serializable {
         this.pageSize = pageSize;
     }
 
-    public int getCurrPage() {
-        return currPage;
+    public int getPageNum() {
+        return pageNum;
     }
 
-    public void setCurrPage(int currPage) {
-        this.currPage = currPage;
+    public void setPageNum(int pageNum) {
+        this.pageNum = pageNum;
     }
 
     public String getName() {

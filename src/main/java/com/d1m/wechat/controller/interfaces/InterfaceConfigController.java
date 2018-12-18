@@ -50,7 +50,7 @@ public class InterfaceConfigController extends BaseController {
 		try {
 			PageHelper.startPage(Integer.parseInt(query.get("pageNum")), Integer.parseInt(query.get("pageSize")), true);
 			Page<InterfaceConfigDto> interfaceConfigDtos = interfaceConfigService.selectItems(query);
-			return representation(Message.SUCCESS, interfaceConfigDtos, Integer.parseInt(query.get("pageNum")), Integer.parseInt(query.get("pageSize")), interfaceConfigDtos.getTotal());
+			return representation(Message.SUCCESS, interfaceConfigDtos, Integer.parseInt(query.get("pageSize")), Integer.parseInt(query.get("pageNum")), interfaceConfigDtos.getTotal());
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			return representation(Message.INTERFACECONFIG_SELECT_FAIL, e.getMessage());
@@ -93,7 +93,7 @@ public class InterfaceConfigController extends BaseController {
 			return representation(Message.SUCCESS, interfaceConfigService.delete(id));
 		}catch (WechatException e) {
 			log.error(e.getMessage(), e);
-			return representation(e.getMessageInfo());
+			return representation(Message.INTERFACECONFIG_IN_USED, e.getMessageInfo());
 		}catch (Exception e) {
 			log.error(e.getMessage(), e);
 			return representation(Message.INTERFACECONFIG_DELETE_FAIL, e.getMessage());
@@ -124,8 +124,8 @@ public class InterfaceConfigController extends BaseController {
 		}
 	}
 
-	@ApiOperation(value = "创建第三方类别", tags = "第三方接口列表")
-	@ApiResponse(code = 200, message = "创建第三方类别成功")
+	@ApiOperation(value = "创建第三方列表", tags = "第三方接口列表")
+	@ApiResponse(code = 200, message = "创建第三方列表成功")
 	@RequestMapping(value = "createBrand.json", method = RequestMethod.PUT)
 	public JSONObject createBrand(@RequestBody InterfaceConfigBrand interfaceConfigBrand) {
 		try {
@@ -136,8 +136,8 @@ public class InterfaceConfigController extends BaseController {
 		}
 	}
 
-	@ApiOperation(value = "更新第三方类别", tags = "第三方接口列表")
-	@ApiResponse(code = 200, message = "更新第三方类别成功")
+	@ApiOperation(value = "更新第三方列表", tags = "第三方接口列表")
+	@ApiResponse(code = 200, message = "更新第三方列表成功")
 	@RequestMapping(value = "updateBrand.json", method = RequestMethod.POST)
 	public JSONObject updateBrand(@RequestBody InterfaceConfigBrand interfaceConfigBrand) {
 		try {
@@ -148,18 +148,30 @@ public class InterfaceConfigController extends BaseController {
 		}
 	}
 
-	@ApiOperation(value = "删除第三方类别", tags = "第三方接口列表")
-	@ApiResponse(code = 200, message = "删除第三方类别成功")
+	@ApiOperation(value = "删除第三方列表", tags = "第三方接口列表")
+	@ApiResponse(code = 200, message = "删除第三方列表成功")
 	@RequestMapping(value = "deleteBrand.json", method = RequestMethod.DELETE)
 	public JSONObject deleteBrand(@RequestParam("id") String id) {
 		try {
 			return representation(Message.SUCCESS, interfaceConfigService.deleteBrand(id));
 		}catch (WechatException e) {
 			log.error(e.getMessage(), e);
-			return representation(e.getMessageInfo());
+			return representation(Message.INTERFACECONFIG_BRAND_IN_USED, e.getMessageInfo());
 		}catch (Exception e) {
 			log.error(e.getMessage(), e);
 			return representation(Message.INTERFACECONFIG_BRAND_DELETE_FAIL, e.getMessage());
+		}
+	}
+
+	@ApiOperation(value = "查看秘钥", tags = "第三方接口列表")
+	@ApiResponse(code = 200, message = "查看秘钥成功")
+	@RequestMapping(value = "getSecret.json", method = RequestMethod.GET)
+	public JSONObject getSecret(@RequestParam("id") String id) {
+		try {
+			return representation(Message.SUCCESS, interfaceConfigService.getSecret(id));
+		}catch (Exception e) {
+			log.error(e.getMessage(), e);
+			return representation(Message.INTERFACECONFIG_SECRET_GET_FAIL, e.getMessage());
 		}
 	}
 }

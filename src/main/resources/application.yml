@@ -50,6 +50,10 @@ spring:
   jackson:
     date-format: 'yyyy-MM-dd HH:mm:ss'
     serialization:
+      indent_output: true                 #格式化打印json字符串
+      fail_on_empty_beans: false          #循环依赖自动拆开
+      wrap_root_value: false
+    default-property-inclusion: non_null
 
   http:
     multipart:
