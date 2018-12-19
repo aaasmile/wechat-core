@@ -58,6 +58,7 @@
         d.`content`,
         d.`link`,
         d.`material_cover_id`,
+        (select m.pic_url from material m where d.material_cover_id=m.id) as coverPicUrl,
         d.`summary`,
         d.`material_id`,
         d.`wechat_id`,
