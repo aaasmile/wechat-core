@@ -4,43 +4,46 @@
 
     <select id="queryList" resultType="com.d1m.wechat.dto.DcrmImageTextDetailDto">
         select
-        `id`,
-        `title`,
-        `content`,
-        `link`,
-        `material_cover_id`,
-        `summary`,
-        `material_id`,
-        `wechat_id`,
-        status,
-        sequence,
-        remark,
-        material_category_id,
-        wx_image_text_id,
-        tag_id,
+        d.`id`,
+        d.`title`,
+        d.`content`,
+        d.`link`,
+        d.`material_cover_id`,
+        (select m.pic_url from material m where d.material_cover_id=m.id) as coverPicUrl,
+        d.`summary`,
+        d.`material_id`,
+        d.`wechat_id`,
+        d.status,
+        d.sequence,
+        d.remark,
+        d.material_category_id,
+        (select m.`name` from material_category m where d.material_category_id=m.id) as categoryName,
+        d.wx_image_text_id,
+        d.tag_id,
         UNIX_TIMESTAMP(created_at) as created_at,
-        laste_updated_by,
+        d.laste_updated_by,
         UNIX_TIMESTAMP(laste_updated_at) as lasteUpdatedAt,
-        send_times,
-        read_times
-        from dcrm_image_text_detail
+        d.send_times,
+        d.read_times,
+        d.qrcode_id
+        from dcrm_image_text_detail d
         WHERE 1=1
         <if test="search != null">
-            AND title like concat('%',#{search},'%')
+            AND d.title like concat('%',#{search},'%')
         </if>
         <if test="search != null">
-            AND summary like concat('%',#{search},'%')
+            or d.summary like concat('%',#{search},'%')
         </if>
         <if test="search != null">
-            AND remark like concat('%',#{search},'%')
+            or d.remark like concat('%',#{search},'%')
         </if>
 
         <choose>
             <when test="sidx != null">
-                order by ${sidx} ${order}
+                order by d.${sidx} ${order}
             </when>
             <otherwise>
-                order by created_at desc
+                order by d.created_at desc
             </otherwise>
         </choose>
         <if test="offset != null and limit != null">
@@ -48,4 +51,39 @@
         </if>
     </select>
 
+    <select id="queryObject" resultType="com.d1m.wechat.dto.DcrmImageTextDetailDto">
+	    select
+        d.`id`,
+        d.`title`,
+        d.`content`,
+        d.`link`,
+        d.`material_cover_id`,
+        d.`summary`,
+        d.`material_id`,
+        d.`wechat_id`,
+        d.status,
+        d.sequence,
+        d.remark,
+        d.material_category_id,
+        d.wx_image_text_id,
+        d.tag_id,
+		(select GROUP_CONCAT(t.`name`) from member_tag t where FIND_IN_SET(t.id, d.tag_id)) as tagName,
+        UNIX_TIMESTAMP(created_at) as created_at,
+        d.laste_updated_by,
+        UNIX_TIMESTAMP(laste_updated_at) as lasteUpdatedAt,
+        d.send_times,
+        d.read_times,
+        d.qrcode_id
+        from dcrm_image_text_detail d
+		where id = #{id}
+	</select>
+
+    <update id="updateByid" parameterType="com.d1m.wechat.model.DcrmImageTextDetail">
+        update dcrm_image_text_detail
+        <set>
+            <if test="qrcodeId != null">qrcode_id=#{qrcodeId},</if>
+            <if test="materialId != null">material_id=#{materialId},</if>
+        </set>
+        where id=#{id}
+    </update>
 </mapper>

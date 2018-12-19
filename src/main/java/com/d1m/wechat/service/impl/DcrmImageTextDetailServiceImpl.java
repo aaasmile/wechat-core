@@ -1,28 +1,34 @@
 package com.d1m.wechat.service.impl;
 
 import cn.d1m.wechat.client.model.WxMessage;
+import cn.d1m.wechat.client.model.WxQRCode;
+import cn.d1m.wechat.client.model.common.WxFile;
+import com.alibaba.fastjson.JSON;
 import com.d1m.wechat.dto.DcrmImageTextDetailDto;
+import com.d1m.wechat.dto.QrcodeDto;
 import com.d1m.wechat.dto.QueryDto;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.DcrmImageTextDetailMapper;
 import com.d1m.wechat.mapper.MaterialMapper;
+import com.d1m.wechat.mapper.QrcodeMapper;
 import com.d1m.wechat.model.*;
 import com.d1m.wechat.model.enums.MaterialStatus;
 import com.d1m.wechat.pamametermodel.ConversationModel;
 import com.d1m.wechat.service.*;
-import com.d1m.wechat.util.MapUtils;
-import com.d1m.wechat.util.Message;
+import com.d1m.wechat.util.*;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.log4j.Logger;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
@@ -32,9 +38,10 @@ import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
  * @Author: Liu weilin
  * @Description:
  */
+
 @Service
 public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailService {
-
+    private Logger logger = Logger.getLogger(getClass());
     @Autowired
     private MaterialMapper materialMapper;
 
@@ -49,8 +56,13 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
     @Autowired
     private DcrmImageTextDetailMapper dcrmImageTextDetailMapper;
 
+    @Autowired
+    private QrcodeMapper qrcodeMapper;
+
     @Override
     public int save(DcrmImageTextDetailDto dto) {
+        Material material = new Material();
+
         DcrmImageTextDetail detail = new DcrmImageTextDetail();
         BeanUtils.copyProperties(dto, detail);
         detail.setCreatedAt(new Date());
@@ -60,10 +72,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
 
     @Override
     public DcrmImageTextDetailDto queryObject(Integer id) {
-        DcrmImageTextDetailDto DcrmImageTextDetailDto = new DcrmImageTextDetailDto();
-        DcrmImageTextDetail imageTextDetail = dcrmImageTextDetailMapper.selectByPrimaryKey(id);
-        BeanUtils.copyProperties(imageTextDetail, DcrmImageTextDetailDto);
-        return DcrmImageTextDetailDto;
+        return dcrmImageTextDetailMapper.queryObject(id);
     }
 
 
@@ -113,13 +122,131 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
             }
         }
 
-
     }
 
-   public Qrcode createQrcode(DcrmImageTextDetailDto dto){
-       Qrcode qrcode = new Qrcode();
-
-       return qrcode;
+    @Override
+    public Map<String, Object> createQrcode(DcrmImageTextDetailDto dto) {
+        Map<String, Object> map = new HashMap<>();
+        String qrcodeImgUrl = null;
+        Qrcode qrcode = new Qrcode();
+        qrcode.setId(dto.getQrcodeId());
+        qrcode = qrcodeMapper.selectByPrimaryKey(qrcode);
+        if (qrcode != null) {
+            //如果超过有效三天，则重新生成图文
+            if (isLate(DateUtils.plusDay2(qrcode.getCreatedAt(), 3))) {
+                //生成二维码并更新二维码表
+                qrcodeImgUrl = updateQrcode(dto);
+            } else {
+                qrcodeImgUrl = qrcode.getQrcodeImgUrl();
+            }
+        } else {
+            //生成二维码并插入数据库
+            qrcodeImgUrl = addQrcode(dto);
+            //更新非群发单图文表中二维码id
+            DcrmImageTextDetail detail = new DcrmImageTextDetail();
+            detail.setId(dto.getId());
+            detail.setQrcodeId(dto.getQrcodeId());
+            dcrmImageTextDetailMapper.updateByid(detail);
+        }
+        map.put("qrcodeImgUrl", qrcodeImgUrl);
+        map.put("id", dto.getId());//非群发单图文id
+        logger.info("wxQrcode二维码：" + JSON.toJSON(map));
+        return map;
     }
 
+
+    /**
+     * 有效期判断
+     *
+     * @param createTime
+     * @return
+     */
+    private static boolean isLate(Date createTime) {
+        if (createTime.compareTo(new Date()) < 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    /**
+     * 生成二维码并插入数据库
+     *
+     * @param dto
+     * @return
+     */
+    private String addQrcode(DcrmImageTextDetailDto dto) {
+        String format = DateUtil.yyyyMMddHHmmss.format(new Date());
+        String type = Constants.IMAGE + File.separator + Constants.QRCODE;
+        File root = FileUtils.getUploadPathRoot(dto.getWechatId(), type);
+        File dir = new File(root, format.substring(0, 6));
+        String sceneStr = Rand.getRandom(32);
+        Integer expire_scends = 259200;//有效期为3天
+        WxQRCode wxQrcode = WechatClientDelegate.createQRCode(dto.getWechatId(), expire_scends, sceneStr);
+        Qrcode qr = new Qrcode();
+        qr.setStatus((byte) 1);
+        qr.setWechatId(dto.getWechatId());
+        qr.setTicket(wxQrcode.getTicket());
+        qr.setName(dto.getTitle());
+        qr.setQrcodeUrl(wxQrcode.getUrl());
+        qr.setExpireSeconds(expire_scends);
+        qr.setCreatedAt(new Date());
+        qr.setCreatorId(dto.getCreatedBy());
+        WxFile wxFile = WechatClientDelegate.showQRCode(dto.getWechatId(), wxQrcode.getTicket());
+        if (!wxFile.moveFileTo(dir)) {
+            logger.error("文件移动失败! ticket =" + wxQrcode.getTicket());
+        }
+        qr.setQrcodeImgUrl(FileUploadConfigUtil.getInstance().getValue(dto.getWechatId(), "upload_url_base")
+         + File.separator
+         + type
+         + File.separator
+         + dir.getName()
+         + File.separator + wxFile.getFilename());
+        int t = qrcodeMapper.insert(qr);
+        logger.info("【插入二维码】二维码图片表结果：" + t);
+        String qrcodeImgUrl = qr.getQrcodeImgUrl();
+        logger.info("【插入二维码】二维码图片地址：" + qrcodeImgUrl);
+        return qrcodeImgUrl;
+    }
+
+    /**
+     * 生成二维码并更新二维码表
+     *
+     * @param dto
+     * @return
+     */
+    private String updateQrcode(DcrmImageTextDetailDto dto) {
+        String format = DateUtil.yyyyMMddHHmmss.format(new Date());
+        String type = Constants.IMAGE + File.separator + Constants.QRCODE;
+        File root = FileUtils.getUploadPathRoot(dto.getWechatId(), type);
+        File dir = new File(root, format.substring(0, 6));
+        String sceneStr = Rand.getRandom(32);
+        Integer expire_scends = 259200;//有效期为3天
+        WxQRCode wxQrcode = WechatClientDelegate.createQRCode(dto.getWechatId(), expire_scends, sceneStr);
+        Qrcode qr = new Qrcode();
+        qr.setStatus((byte) 1);
+        qr.setWechatId(dto.getWechatId());
+        qr.setTicket(wxQrcode.getTicket());
+        qr.setName(dto.getTitle());
+        qr.setQrcodeUrl(wxQrcode.getUrl());
+        qr.setExpireSeconds(expire_scends);
+        qr.setCreatedAt(new Date());
+        qr.setCreatorId(dto.getCreatedBy());
+        WxFile wxFile = WechatClientDelegate.showQRCode(dto.getWechatId(), wxQrcode.getTicket());
+        if (!wxFile.moveFileTo(dir)) {
+            logger.error("【更新二维码】文件移动失败! ticket =" + wxQrcode.getTicket());
+        }
+        qr.setQrcodeImgUrl(FileUploadConfigUtil.getInstance().getValue(dto.getWechatId(), "upload_url_base")
+         + File.separator
+         + type
+         + File.separator
+         + dir.getName()
+         + File.separator + wxFile.getFilename());
+        int t = qrcodeMapper.updateByPrimaryKey(qr);
+        logger.info("【更新二维码】二维码图片表结果：" + t);
+        String qrcodeImgUrl = qr.getQrcodeImgUrl();
+        logger.info("【更新二维码】二维码图片地址：" + qrcodeImgUrl);
+        return qrcodeImgUrl;
+    }
 }
