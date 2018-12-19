@@ -61,20 +61,9 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
 
     @Override
     public int save(DcrmImageTextDetailDto dto) {
-        Material material = new Material();
-        material.setMaterialType((byte)1);
-        material.setMaterialTypeId(dto.getImageTypeId());
-        material.setName(dto.getTitle());
-        material.setIsScrm(1);
-        material.setWechatId(dto.getWechatId());
-        material.setStatus(MaterialStatus.INUSED.getValue());
-        material.setCreatedAt(new Date());
-        material.setCreatorId(dto.getCreatedBy());
-        materialMapper.insert(material);
         DcrmImageTextDetail detail = new DcrmImageTextDetail();
         BeanUtils.copyProperties(dto, detail);
         detail.setCreatedAt(new Date());
-        detail.setMaterialId(material.getId());
         detail.setStatus(MaterialStatus.INUSED.getValue());
         return dcrmImageTextDetailMapper.insert(detail);
     }
@@ -87,22 +76,9 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
 
     @Override
     public int update(DcrmImageTextDetailDto dto) {
-        Material material = new Material();
-        material.setMaterialType((byte)1);
-        material.setMaterialTypeId(dto.getImageTypeId());
-        material.setName(dto.getTitle());
-        material.setIsScrm(1);
-        material.setWechatId(dto.getWechatId());
-        material.setStatus(MaterialStatus.INUSED.getValue());
-        material.setModifyAt(new Date());
-        material.setModifyById(dto.getLasteUpdatedBy());
-        material.setCreatorId(dto.getCreatedBy());
-        materialMapper.update(material);
-
         DcrmImageTextDetail detail = new DcrmImageTextDetail();
         BeanUtils.copyProperties(dto, detail);
         detail.setLasteUpdatedAt(new Date());
-        detail.setMaterialId(material.getId());
         detail.setStatus(MaterialStatus.INUSED.getValue());
         return dcrmImageTextDetailMapper.updateByPrimaryKey(detail);
     }
