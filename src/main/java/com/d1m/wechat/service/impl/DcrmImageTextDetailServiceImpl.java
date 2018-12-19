@@ -80,7 +80,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         BeanUtils.copyProperties(dto, detail);
         detail.setLasteUpdatedAt(new Date());
         detail.setStatus(MaterialStatus.INUSED.getValue());
-        return dcrmImageTextDetailMapper.updateByPrimaryKey(detail);
+        return dcrmImageTextDetailMapper.updateByPrimaryKeySelective(detail);
     }
 
 
@@ -103,10 +103,10 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         notBlank(member, Message.MEMBER_NOT_EXIST);
         DcrmImageTextDetailDto dto = queryObject(id);
         Material material = new Material();
-        if (dto.getMaterialId() != null) {
-            material = materialService.getMaterial(detailDto.getWechatId(), dto.getMaterialId());
+        if (dto.getMaterialCoverId() != null) {
+            material = materialService.getMaterial(detailDto.getWechatId(), dto.getMaterialCoverId());
             ConversationModel conversationModel = new ConversationModel();
-            conversationModel.setMaterialId(detailDto.getId());
+            conversationModel.setMaterialId(detailDto.getMaterialCoverId());
             conversationModel.setMemberId(detailDto.getMemberId());
             User user = (User) SecurityUtils.getSubject().getPrincipal();
             conversationService.wechatToMember(detailDto.getWechatId(), user, conversationModel);
