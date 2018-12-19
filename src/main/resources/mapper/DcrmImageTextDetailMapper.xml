@@ -29,13 +29,13 @@
         from dcrm_image_text_detail d
         WHERE 1=1
         <if test="search != null">
-            AND d.title like concat('%',#{search},'%')
+            AND (d.title like concat('%',#{search},'%')
         </if>
         <if test="search != null">
             or d.summary like concat('%',#{search},'%')
         </if>
         <if test="search != null">
-            or d.remark like concat('%',#{search},'%')
+            or d.remark like concat('%',#{search},'%'))
         </if>
 
         <if test="materialCategoryId !=null">
