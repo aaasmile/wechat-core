@@ -61,8 +61,6 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
 
     @Override
     public int save(DcrmImageTextDetailDto dto) {
-        Material material = new Material();
-
         DcrmImageTextDetail detail = new DcrmImageTextDetail();
         BeanUtils.copyProperties(dto, detail);
         detail.setCreatedAt(new Date());
@@ -80,7 +78,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
     public int update(DcrmImageTextDetailDto dto) {
         DcrmImageTextDetail detail = new DcrmImageTextDetail();
         BeanUtils.copyProperties(dto, detail);
-        detail.setCreatedAt(new Date());
+        detail.setLasteUpdatedAt(new Date());
         detail.setStatus(MaterialStatus.INUSED.getValue());
         return dcrmImageTextDetailMapper.updateByPrimaryKey(detail);
     }
