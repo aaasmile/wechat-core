@@ -73,24 +73,73 @@ public class DcrmImageTextDetailDto implements Serializable {
      */
     private String tagId;
 
-    //创建时间
+    /**
+     * 创建时间
+     */
     private Integer createdAt;
 
-    //最后更新时间
+    /**
+     * 最后更新时间
+     */
     private Integer lasteUpdatedAt;
 
     private Integer createdBy;
 
-    //最后更新人
+    /**
+     * 最后更新人
+     */
     private Integer lasteUpdatedBy;
-
+    /**
+     * 素材分类ID
+     */
     private String materialCategoryId;
-
+    /**
+     * 会员ID
+     */
     private Integer memberId;
-
+    /**
+     * 发送次数
+     */
     private Integer sendTimes;
-
+    /**
+     * 阅读次数
+     */
     private Integer readTimes;
+
+    /**
+     * 封面图url
+     */
+    private String coverPicUrl;
+    /**
+     * 素材分类名称
+     */
+    private String categoryName;
+
+    /**
+     * 标签名称
+     */
+    private String tagName;
+
+    /**
+     * 二维码id
+     */
+    private Integer qrcodeId;
+
+    public String getTagName() {
+        return tagName;
+    }
+
+    public void setTagName(String tagName) {
+        this.tagName = tagName;
+    }
+
+    public Integer getQrcodeId() {
+        return qrcodeId;
+    }
+
+    public void setQrcodeId(Integer qrcodeId) {
+        this.qrcodeId = qrcodeId;
+    }
 
     public Integer getMemberId() {
         return memberId;
@@ -266,5 +315,21 @@ public class DcrmImageTextDetailDto implements Serializable {
 
     public void setReadTimes(Integer readTimes) {
         this.readTimes = readTimes;
+    }
+
+    public String getCoverPicUrl() {
+        return coverPicUrl;
+    }
+
+    public void setCoverPicUrl(String coverPicUrl) {
+        this.coverPicUrl = coverPicUrl;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 }

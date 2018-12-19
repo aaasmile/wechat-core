@@ -1,9 +1,12 @@
 package com.d1m.wechat.service;
 
 import com.d1m.wechat.dto.DcrmImageTextDetailDto;
+import com.d1m.wechat.dto.QrcodeDto;
 import com.d1m.wechat.dto.QueryDto;
 import com.d1m.wechat.model.Qrcode;
 import com.github.pagehelper.PageInfo;
+
+import java.util.Map;
 
 /**
  * @program: wechat-core
@@ -62,5 +65,5 @@ public interface DcrmImageTextDetailService {
      * @param dto
      * @return
      */
-    Qrcode createQrcode(DcrmImageTextDetailDto dto);
+    Map<String, Object> createQrcode(DcrmImageTextDetailDto dto);
 }

@@ -105,6 +105,19 @@ public class DcrmImageTextDetail {
     @Column(name="read_times")
     private Integer readTimes;
 
+    /**
+     * 二维码id
+     */
+    private Integer qrcodeId;
+
+    public Integer getQrcodeId() {
+        return qrcodeId;
+    }
+
+    public void setQrcodeId(Integer qrcodeId) {
+        this.qrcodeId = qrcodeId;
+    }
+
     public Integer getId() {
         return id;
     }

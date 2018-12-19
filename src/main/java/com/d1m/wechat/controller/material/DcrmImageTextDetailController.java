@@ -3,6 +3,7 @@ package com.d1m.wechat.controller.material;
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.dto.DcrmImageTextDetailDto;
+import com.d1m.wechat.dto.QrcodeDto;
 import com.d1m.wechat.dto.QueryDto;
 import com.d1m.wechat.model.Qrcode;
 import com.d1m.wechat.service.DcrmImageTextDetailService;
@@ -17,6 +18,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 
 /**
@@ -132,11 +135,10 @@ public class DcrmImageTextDetailController extends BaseController {
     @RequestMapping(value = "createQrcode.json", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject createQrcode(@RequestBody DcrmImageTextDetailDto dto) {
-
         dto.setCreatedBy(getUser().getId());
         dto.setWechatId(getUser().getWechatId());
-        Qrcode qrcode = DcrmImageTextDetailService.createQrcode(dto);
-        return representation(Message.SUCCESS);
+        Map<String, Object> map = DcrmImageTextDetailService.createQrcode(dto);
+        return representation(Message.SUCCESS,map);
     }
 
 
