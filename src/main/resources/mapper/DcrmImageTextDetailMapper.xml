@@ -38,6 +38,10 @@
             or d.remark like concat('%',#{search},'%')
         </if>
 
+        <if test="materialCategoryId !=null">
+            and d.`material_category_id`=#{materialCategoryId}
+        </if>
+
         <choose>
             <when test="sidx != null">
                 order by d.${sidx} ${order}
