@@ -140,11 +140,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         } else {
             //生成二维码并插入数据库
             qrcodeImgUrl = addQrcode(dto);
-            //更新非群发单图文表中二维码id
-            DcrmImageTextDetail detail = new DcrmImageTextDetail();
-            detail.setId(dto.getId());
-            detail.setQrcodeId(dto.getQrcodeId());
-            dcrmImageTextDetailMapper.updateByid(detail);
+
         }
         map.put("qrcodeImgUrl", qrcodeImgUrl);
         map.put("id", dto.getId());//非群发单图文id
@@ -204,7 +200,12 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
          + dir.getName()
          + File.separator + wxFile.getFilename());
         int t = qrcodeMapper.insert(qr);
-        logger.info("【插入二维码】二维码图片表结果：" + t);
+        logger.info("【插入二维码】二维码图片表结果：" + t+"二维码编号："+qr.getId());
+        //更新非群发单图文表中二维码id
+        DcrmImageTextDetail detail = new DcrmImageTextDetail();
+        detail.setId(dto.getId());
+        detail.setQrcodeId(qr.getId());
+        dcrmImageTextDetailMapper.updateByPrimaryKeySelective(detail);
         String qrcodeImgUrl = qr.getQrcodeImgUrl();
         logger.info("【插入二维码】二维码图片地址：" + qrcodeImgUrl);
         return qrcodeImgUrl;
