@@ -128,7 +128,7 @@ public class Material {
     private Byte status;
 
     @Column(name="is_scrm")
-    private int isScrm;
+    private Integer isScrm;
 
     /**
      * 素材分类id
@@ -158,11 +158,11 @@ public class Material {
         this.materialTypeId = materialTypeId;
     }
 
-    public int getIsScrm() {
+    public Integer getIsScrm() {
         return isScrm;
     }
 
-    public void setIsScrm(int isScrm) {
+    public void setIsScrm(Integer isScrm) {
         this.isScrm = isScrm;
     }
 
