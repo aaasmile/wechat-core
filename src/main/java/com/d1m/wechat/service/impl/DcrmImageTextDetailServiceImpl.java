@@ -189,6 +189,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         qr.setCreatedAt(new Date());
         qr.setCreatorId(dto.getCreatedBy());
         qr.setActionName((byte) 1);
+        qr.setScene(sceneStr);
         WxFile wxFile = WechatClientDelegate.showQRCode(dto.getWechatId(), wxQrcode.getTicket());
         if (!wxFile.moveFileTo(dir)) {
             logger.error("文件移动失败! ticket =" + wxQrcode.getTicket());
@@ -235,6 +236,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         qr.setCreatedAt(new Date());
         qr.setCreatorId(dto.getCreatedBy());
         qr.setActionName((byte) 1);
+        qr.setScene(sceneStr);
         WxFile wxFile = WechatClientDelegate.showQRCode(dto.getWechatId(), wxQrcode.getTicket());
         if (!wxFile.moveFileTo(dir)) {
             logger.error("【更新二维码】文件移动失败! ticket =" + wxQrcode.getTicket());
