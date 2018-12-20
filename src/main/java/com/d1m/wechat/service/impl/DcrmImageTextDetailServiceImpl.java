@@ -8,9 +8,7 @@ import com.d1m.wechat.dto.DcrmImageTextDetailDto;
 import com.d1m.wechat.dto.QrcodeDto;
 import com.d1m.wechat.dto.QueryDto;
 import com.d1m.wechat.exception.WechatException;
-import com.d1m.wechat.mapper.DcrmImageTextDetailMapper;
-import com.d1m.wechat.mapper.MaterialMapper;
-import com.d1m.wechat.mapper.QrcodeMapper;
+import com.d1m.wechat.mapper.*;
 import com.d1m.wechat.model.*;
 import com.d1m.wechat.model.enums.MaterialStatus;
 import com.d1m.wechat.pamametermodel.ConversationModel;
@@ -58,6 +56,12 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
 
     @Autowired
     private QrcodeMapper qrcodeMapper;
+
+    @Autowired
+    private ActionEngineMapper actionEngineMapper;
+
+    @Autowired
+    private QrcodeActionEngineMapper qrcodeActionEngineMapper;
 
     @Override
     public int save(DcrmImageTextDetailDto dto) {
@@ -207,6 +211,8 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         detail.setId(dto.getId());
         detail.setQrcodeId(qr.getId());
         dcrmImageTextDetailMapper.updateByPrimaryKeySelective(detail);
+        //插入effect和关系表
+        saveEngine(dto,qr);
         String qrcodeImgUrl = qr.getQrcodeImgUrl();
         logger.info("【插入二维码】二维码图片地址：" + qrcodeImgUrl);
         return qrcodeImgUrl;
@@ -249,8 +255,33 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
          + File.separator + wxFile.getFilename());
         int t = qrcodeMapper.updateByPrimaryKeySelective(qr);
         logger.info("【更新二维码】二维码图片表结果：" + t);
+        //插入effect和关系表
+        saveEngine(dto,qr);
         String qrcodeImgUrl = qr.getQrcodeImgUrl();
         logger.info("【更新二维码】二维码图片地址：" + qrcodeImgUrl);
         return qrcodeImgUrl;
+    }
+
+    private void saveEngine(DcrmImageTextDetailDto dto,Qrcode qrcode){
+        ActionEngine actionEngine = new ActionEngine();
+        String effect ="[{\"code\":301,\"value\":["+dto.getId()+"]}]";
+        actionEngine.setEffect(effect);
+        actionEngine.setEndAt(new Date());
+        actionEngine.setStartAt(new Date());
+        actionEngine.setRunType((byte)1);
+        actionEngine.setStatus(MaterialStatus.INUSED.getValue());
+        actionEngine.setName(dto.getTitle());
+        actionEngine.setWechatId(dto.getWechatId());
+        actionEngine.setCreatorId(dto.getCreatedBy());
+        actionEngineMapper.insert(actionEngine);
+
+        QrcodeActionEngine qrcodeActionEngine = new QrcodeActionEngine();
+        qrcodeActionEngine.setWechatId(dto.getWechatId());
+        qrcodeActionEngine.setActionEngineId(actionEngine.getId());
+        qrcodeActionEngine.setCreatedAt(new Date());
+        qrcodeActionEngine.setCreatorId(dto.getCreatedBy());
+        qrcodeActionEngine.setQrcodeId(qrcode.getId());
+        qrcodeActionEngineMapper.insert(qrcodeActionEngine);
+
     }
 }
