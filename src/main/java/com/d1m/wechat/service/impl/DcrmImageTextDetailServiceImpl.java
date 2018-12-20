@@ -273,6 +273,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         actionEngine.setName(dto.getTitle());
         actionEngine.setWechatId(dto.getWechatId());
         actionEngine.setCreatorId(dto.getCreatedBy());
+        actionEngine.setCreatedAt(new Date());
         actionEngineMapper.insert(actionEngine);
 
         QrcodeActionEngine qrcodeActionEngine = new QrcodeActionEngine();
