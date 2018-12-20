@@ -102,7 +102,11 @@
 
 
     <select id="getImageText" parameterType="hashmap" resultMap="GetImageTextResultMap">
-        SELECT id, created_at, last_push_at, modify_at FROM material m
+        SELECT m.id ad id, m.created_at as created_at, m.last_push_at as last_push_at,
+        m.modify_at as modify_at, mc.name as
+        type_name FROM material
+        m
+        left join material_category mc on m.material_type_id = mc.id
         <where>
             m.wechat_id=#{wechatId} and m.id=#{id} and m.status = 1
         </where>
@@ -112,6 +116,7 @@
         <result column="created_at" jdbcType="TIMESTAMP" property="createdAt"/>
         <result column="last_push_at" jdbcType="TIMESTAMP" property="lastPushAt"/>
         <result column="modify_at" jdbcType="TIMESTAMP" property="modifyAt"/>
+        <result column="type_name" jdbcType="VARCHAR" property="typeName"/>
         <!--<result column="comment" jdbcType="TINYINT" property="comment" />-->
         <collection column="{materialId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.ImageTextDto"
                     property="items" select="getImageTextDetail"/>
@@ -233,11 +238,12 @@
     </update>
 
     <select id="selectExistName" resultType="java.util.Map">
-    SELECT DISTINCT a.id,IFNULL( a.`name`, c.title ) AS NAME
-    FROM material a
-	LEFT JOIN material_category b ON cast( a.material_type AS CHAR ( 8 ) ) = b.id
-	LEFT JOIN material_image_text_detail c ON a.id = c.material_id
-    WHERE b.wechat_id = #{wechatId} and b.id=#{id}
+        SELECT DISTINCT a.id, IFNULL(a.`name`, c.title) AS NAME
+        FROM material a
+                 LEFT JOIN material_category b ON cast(a.material_type AS CHAR(8)) = b.id
+                 LEFT JOIN material_image_text_detail c ON a.id = c.material_id
+        WHERE b.wechat_id = #{wechatId}
+          and b.id = #{id}
     </select>
 
 </mapper>

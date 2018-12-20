@@ -1,158 +1,167 @@
 package com.d1m.wechat.dto;
 
-import java.util.List;
-
+import com.d1m.wechat.util.DateUtil;
 import org.apache.commons.lang.StringUtils;
 
-import com.d1m.wechat.util.DateUtil;
+import java.util.List;
 
 public class MaterialDto {
 
-	private Integer id;
+    private Integer id;
 
-	private List<ImageTextDto> items;
+    private List<ImageTextDto> items;
 
-	private String url;
+    private String url;
 
-	private MaterialTextDetailDto text;
+    private MaterialTextDetailDto text;
 
-	private String title;
+    private String title;
 
-	private String createdAt;
+    private String createdAt;
 
-	private Byte materialType;
+    private Byte materialType;
 
-	private String lastPushAt;
+    private String lastPushAt;
 
-	private boolean isPushed;
+    private boolean isPushed;
 
-	private String modifyAt;
-	
-	private String wxPicUrl;
+    private String modifyAt;
 
-	private String mediaId;
+    private String wxPicUrl;
 
-	private String name;
+    private String mediaId;
 
-	private String materialTypeId;
+    private String name;
 
-	public String getMaterialTypeId() {
-		return materialTypeId;
-	}
+    private String materialTypeId;
 
-	public void setMaterialTypeId(String materialTypeId) {
-		this.materialTypeId = materialTypeId;
-	}
+    private String typeName;
 
-	//	private Integer comment;
+    public String getTypeName() {
+        return typeName;
+    }
 
-	public String getCreatedAt() {
-		return DateUtil.formatYYYYMMDDHHMMSS(DateUtil.parse(createdAt));
-	}
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
+    }
 
-	public Integer getId() {
-		return id;
-	}
+    public String getMaterialTypeId() {
+        return materialTypeId;
+    }
 
-	public List<ImageTextDto> getItems() {
-		return items;
-	}
+    public void setMaterialTypeId(String materialTypeId) {
+        this.materialTypeId = materialTypeId;
+    }
 
-	public String getLastPushAt() {
-		return DateUtil.formatYYYYMMDDHHMMSS(DateUtil.parse(lastPushAt));
-	}
+    //	private Integer comment;
 
-	public Byte getMaterialType() {
-		return materialType;
-	}
+    public String getCreatedAt() {
+        return DateUtil.formatYYYYMMDDHHMMSS(DateUtil.parse(createdAt));
+    }
 
-	public String getModifyAt() {
-		return DateUtil.formatYYYYMMDDHHMMSS(DateUtil.parse(modifyAt));
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public MaterialTextDetailDto getText() {
-		return text;
-	}
+    public List<ImageTextDto> getItems() {
+        return items;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    public String getLastPushAt() {
+        return DateUtil.formatYYYYMMDDHHMMSS(DateUtil.parse(lastPushAt));
+    }
 
-	public String getUrl() {
-		return url;
-	}
+    public Byte getMaterialType() {
+        return materialType;
+    }
 
-	public boolean isPushed() {
-		return StringUtils.isNotBlank(getLastPushAt())
-				&& StringUtils.isNotBlank(getModifyAt())
-				&& StringUtils.equals(getLastPushAt(), getModifyAt());
-	}
+    public String getModifyAt() {
+        return DateUtil.formatYYYYMMDDHHMMSS(DateUtil.parse(modifyAt));
+    }
 
-	public void setCreatedAt(String createdAt) {
-		this.createdAt = createdAt;
-	}
+    public MaterialTextDetailDto getText() {
+        return text;
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public void setItems(List<ImageTextDto> items) {
-		this.items = items;
-	}
+    public String getUrl() {
+        return url;
+    }
 
-	public void setLastPushAt(String lastPushAt) {
-		this.lastPushAt = lastPushAt;
-	}
+    public boolean isPushed() {
+        return StringUtils.isNotBlank(getLastPushAt())
+                && StringUtils.isNotBlank(getModifyAt())
+                && StringUtils.equals(getLastPushAt(), getModifyAt());
+    }
 
-	public void setMaterialType(Byte materialType) {
-		this.materialType = materialType;
-	}
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
 
-	public void setModifyAt(String modifyAt) {
-		this.modifyAt = modifyAt;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public void setPushed(boolean isPushed) {
-		this.isPushed = isPushed;
-	}
+    public void setItems(List<ImageTextDto> items) {
+        this.items = items;
+    }
 
-	public void setText(MaterialTextDetailDto text) {
-		this.text = text;
-	}
+    public void setLastPushAt(String lastPushAt) {
+        this.lastPushAt = lastPushAt;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public void setMaterialType(Byte materialType) {
+        this.materialType = materialType;
+    }
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
+    public void setModifyAt(String modifyAt) {
+        this.modifyAt = modifyAt;
+    }
 
-	public String getWxPicUrl() {
-		return wxPicUrl;
-	}
+    public void setPushed(boolean isPushed) {
+        this.isPushed = isPushed;
+    }
 
-	public void setWxPicUrl(String wxPicUrl) {
-		this.wxPicUrl = wxPicUrl;
-	}
+    public void setText(MaterialTextDetailDto text) {
+        this.text = text;
+    }
 
-	public String getMediaId() {
-		return mediaId;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	public void setMediaId(String mediaId) {
-		this.mediaId = mediaId;
-	}
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getWxPicUrl() {
+        return wxPicUrl;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setWxPicUrl(String wxPicUrl) {
+        this.wxPicUrl = wxPicUrl;
+    }
 
-	//	public Integer getComment() {
+    public String getMediaId() {
+        return mediaId;
+    }
+
+    public void setMediaId(String mediaId) {
+        this.mediaId = mediaId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    //	public Integer getComment() {
 //		return comment;
 //	}
 //	public void setComment(Integer comment) {
