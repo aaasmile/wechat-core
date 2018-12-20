@@ -1,5 +1,6 @@
 package com.d1m.wechat.controller.material;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.dto.DcrmImageTextDetailDto;
@@ -96,7 +97,8 @@ public class DcrmImageTextDetailController extends BaseController {
     @RequestMapping(value = "list.json", method = RequestMethod.POST)
     @RequiresPermissions("app-msg:list")
     @ResponseBody
-    public JSONObject queryList(QueryDto dto) {
+    public JSONObject queryList(@RequestBody QueryDto dto) {
+        log.info("获取非群发素材图文列表:{}",dto);
         PageInfo<DcrmImageTextDetailDto> list = DcrmImageTextDetailService.queryList(dto);
         return representation(Message.SUCCESS, list);
     }

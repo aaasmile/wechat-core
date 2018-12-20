@@ -61,8 +61,6 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
 
     @Override
     public int save(DcrmImageTextDetailDto dto) {
-        Material material = new Material();
-
         DcrmImageTextDetail detail = new DcrmImageTextDetail();
         BeanUtils.copyProperties(dto, detail);
         detail.setCreatedAt(new Date());
@@ -80,9 +78,9 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
     public int update(DcrmImageTextDetailDto dto) {
         DcrmImageTextDetail detail = new DcrmImageTextDetail();
         BeanUtils.copyProperties(dto, detail);
-        detail.setCreatedAt(new Date());
+        detail.setLasteUpdatedAt(new Date());
         detail.setStatus(MaterialStatus.INUSED.getValue());
-        return dcrmImageTextDetailMapper.updateByPrimaryKey(detail);
+        return dcrmImageTextDetailMapper.updateByPrimaryKeySelective(detail);
     }
 
 
@@ -105,10 +103,10 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         notBlank(member, Message.MEMBER_NOT_EXIST);
         DcrmImageTextDetailDto dto = queryObject(id);
         Material material = new Material();
-        if (dto.getMaterialId() != null) {
-            material = materialService.getMaterial(detailDto.getWechatId(), dto.getMaterialId());
+        if (dto.getMaterialCoverId() != null) {
+            material = materialService.getMaterial(detailDto.getWechatId(), dto.getMaterialCoverId());
             ConversationModel conversationModel = new ConversationModel();
-            conversationModel.setMaterialId(detailDto.getId());
+            conversationModel.setMaterialId(material.getId());
             conversationModel.setMemberId(detailDto.getMemberId());
             User user = (User) SecurityUtils.getSubject().getPrincipal();
             conversationService.wechatToMember(detailDto.getWechatId(), user, conversationModel);
@@ -142,11 +140,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         } else {
             //生成二维码并插入数据库
             qrcodeImgUrl = addQrcode(dto);
-            //更新非群发单图文表中二维码id
-            DcrmImageTextDetail detail = new DcrmImageTextDetail();
-            detail.setId(dto.getId());
-            detail.setQrcodeId(dto.getQrcodeId());
-            dcrmImageTextDetailMapper.updateByid(detail);
+
         }
         map.put("qrcodeImgUrl", qrcodeImgUrl);
         map.put("id", dto.getId());//非群发单图文id
@@ -184,6 +178,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         String sceneStr = Rand.getRandom(32);
         Integer expire_scends = 259200;//有效期为3天
         WxQRCode wxQrcode = WechatClientDelegate.createQRCode(dto.getWechatId(), expire_scends, sceneStr);
+        logger.info("wxQrcode:"+JSON.toJSON(wxQrcode));
         Qrcode qr = new Qrcode();
         qr.setStatus((byte) 1);
         qr.setWechatId(dto.getWechatId());
@@ -193,6 +188,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         qr.setExpireSeconds(expire_scends);
         qr.setCreatedAt(new Date());
         qr.setCreatorId(dto.getCreatedBy());
+        qr.setActionName((byte) 1);
         WxFile wxFile = WechatClientDelegate.showQRCode(dto.getWechatId(), wxQrcode.getTicket());
         if (!wxFile.moveFileTo(dir)) {
             logger.error("文件移动失败! ticket =" + wxQrcode.getTicket());
@@ -204,7 +200,12 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
          + dir.getName()
          + File.separator + wxFile.getFilename());
         int t = qrcodeMapper.insert(qr);
-        logger.info("【插入二维码】二维码图片表结果：" + t);
+        logger.info("【插入二维码】二维码图片表结果：" + t+"二维码编号："+qr.getId());
+        //更新非群发单图文表中二维码id
+        DcrmImageTextDetail detail = new DcrmImageTextDetail();
+        detail.setId(dto.getId());
+        detail.setQrcodeId(qr.getId());
+        dcrmImageTextDetailMapper.updateByPrimaryKeySelective(detail);
         String qrcodeImgUrl = qr.getQrcodeImgUrl();
         logger.info("【插入二维码】二维码图片地址：" + qrcodeImgUrl);
         return qrcodeImgUrl;
@@ -233,6 +234,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         qr.setExpireSeconds(expire_scends);
         qr.setCreatedAt(new Date());
         qr.setCreatorId(dto.getCreatedBy());
+        qr.setActionName((byte) 1);
         WxFile wxFile = WechatClientDelegate.showQRCode(dto.getWechatId(), wxQrcode.getTicket());
         if (!wxFile.moveFileTo(dir)) {
             logger.error("【更新二维码】文件移动失败! ticket =" + wxQrcode.getTicket());
@@ -243,7 +245,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
          + File.separator
          + dir.getName()
          + File.separator + wxFile.getFilename());
-        int t = qrcodeMapper.updateByPrimaryKey(qr);
+        int t = qrcodeMapper.updateByPrimaryKeySelective(qr);
         logger.info("【更新二维码】二维码图片表结果：" + t);
         String qrcodeImgUrl = qr.getQrcodeImgUrl();
         logger.info("【更新二维码】二维码图片地址：" + qrcodeImgUrl);
