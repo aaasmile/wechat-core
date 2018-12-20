@@ -27,6 +27,7 @@
         <result column="media_id" jdbcType="VARCHAR" property="mediaId"/>
         <result column="status" jdbcType="TINYINT" property="status"/>
         <result column="material_type_id" jdbcType="VARCHAR" property="materialTypeId"/>
+        <result column="url" jdbcType="VARCHAR" property="url"/>
     </resultMap>
 
     <select id="searchImage" parameterType="hashmap" resultMap="ImageResultMap">

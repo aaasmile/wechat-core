@@ -144,7 +144,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
             DcrmImageTextDetail detail = new DcrmImageTextDetail();
             detail.setId(dto.getId());
             detail.setQrcodeId(dto.getQrcodeId());
-            dcrmImageTextDetailMapper.updateByid(detail);
+            dcrmImageTextDetailMapper.updateByPrimaryKeySelective(detail);
         }
         map.put("qrcodeImgUrl", qrcodeImgUrl);
         map.put("id", dto.getId());//非群发单图文id
