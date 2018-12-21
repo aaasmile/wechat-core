@@ -35,6 +35,9 @@ public class MassConversationModel extends AddMemberTagModel {
 	
 	@ApiModelProperty("是否强制发送")
 	private Boolean isForce;
+	
+	private Integer newid;
+	private String newtype;
 
 	public String getContent() {
 		return content;
@@ -114,6 +117,22 @@ public class MassConversationModel extends AddMemberTagModel {
 
 	public void setIsForce(Boolean isForce) {
 		this.isForce = isForce;
+	}
+
+	public Integer getNewid() {
+		return newid;
+	}
+
+	public void setNewid(Integer newid) {
+		this.newid = newid;
+	}
+
+	public String getNewtype() {
+		return newtype;
+	}
+
+	public void setNewtype(String newtype) {
+		this.newtype = newtype;
 	}
 
 }
