@@ -125,9 +125,10 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
                  .description(dto.getContent())
                  .title(dto.getTitle()).build();
                 articlesList.add(articles);
+                News news = new News.Builder().articles(articlesList).build();
                 CustomRequestBody customRequestBody = new CustomRequestBody.Builder()
                  .touser(String.valueOf(detailDto.getCreatedBy()))
-                 .articles(articlesList)
+                 .news(news)
                  .msgtype("news")
                  .build();
                 //String result = customerService.sender(customRequestBody, dto.getWechatId());
