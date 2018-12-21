@@ -24,7 +24,7 @@ rmi-dev:
     - shell-build-dev
   stage: cleanup
   script:
-    - docker rmi docker.d1m.cn/wechat-core:4.4.2-RELEASE
+    - docker rmi docker.d1m.cn/wechat-core:latest
   when: always
 build-dev:
   stage: build
