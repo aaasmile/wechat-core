@@ -14,7 +14,7 @@ import java.util.Date;
 public class MemberExcel {
 
 
-    @Excel(name = "no")
+    @Excel(name = "no", type = 10)
     private Integer id;
 
     @Excel(name = "nickname")
