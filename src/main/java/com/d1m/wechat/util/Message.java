@@ -972,12 +972,6 @@ public enum Message {
      *
      */
     MEMBER_QRCODE_STATISTICS(1, "查询会员扫码统计结果成功"),
-    
-    /**
-     * InterfaceConfig
-     * */
-    INTERFACECONFIG_SELECT_SUCCESS(42001, "接口列表查询成功"),
-    INTERFACECONFIG_SELECT_FAIL(42002, "接口列表查询失败"),
 
     /**
      * material_category
@@ -993,7 +987,36 @@ public enum Message {
     DcrmImageTextDetail_NOT_NULL(60000,"标题不能为空"),
     DcrmImageTextDetail_IAMGE_NOT_NULL(60001,"封面图不能为空"),
     DCRM_IMAGE_TEXT_DETAIL_ID_NOT(60002,"id不能为空"),
+    
+    /**
+     * InterfaceConfig
+     *
+     */
+    INTERFACECONFIG_SELECT_FAIL(42001, "接口查询失败"),
 
+    INTERFACECONFIG_CREATE_FAIL(42011, "接口创建失败"),
+
+    INTERFACECONFIG_UPDATE_FAIL(42021, "接口编辑失败"),
+
+    INTERFACECONFIG_DELETE_FAIL(42031, "接口删除失败"),
+
+    INTERFACECONFIG_IN_USED(42032, "接口在使用中"),
+
+    INTERFACECONFIG_GET_FAIL(42041, "接口获取失败"),
+
+    INTERFACECONFIG_BRAND_LIST_FAIL(42051, "获取第三方列表失败"),
+
+    INTERFACECONFIG_BRAND_CREATE_FAIL(42061, "创建第三方列表失败"),
+
+    INTERFACECONFIG_BRAND_EXIST(42062, "第三方列表已存在"),
+
+    INTERFACECONFIG_BRAND_UPDATE_FAIL(42071, "更新第三方列表失败"),
+
+    INTERFACECONFIG_BRAND_DELETE_FAIL(42081, "删除第三方列表失败"),
+
+    INTERFACECONFIG_BRAND_IN_USED(42082, "第三方类别在使用中"),
+
+    INTERFACECONFIG_SECRET_GET_FAIL(42091, "获取秘钥失败")
 
     ;
 

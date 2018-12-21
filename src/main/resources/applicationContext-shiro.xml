@@ -47,6 +47,7 @@
                 /imagetext/html/** = anon
                 /order/** = anon
                 /static/** = anon
+                /test/** = anon
 
                 /mapi/popup/** = anon
                 

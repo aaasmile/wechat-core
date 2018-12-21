@@ -1,9 +1,6 @@
 package com.d1m.wechat.util;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.*;
 
 public class I18nUtil {
 
@@ -16,7 +13,9 @@ public class I18nUtil {
     }
 
     public static String getMessage(String key) {
-        return getMessage(key, Locale.CHINA);
+        return Optional.ofNullable(LocaleContextUtils.getLocale())
+                .map(locale -> getMessage(key, locale))
+                .orElseGet(() -> getMessage(key, Locale.CHINA));
     }
 
     public static List<String> getMessage(List<String> keys, Locale locale) {

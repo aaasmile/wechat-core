@@ -11,13 +11,13 @@ ALTER TABLE `conversation`
 ADD COLUMN `author`  varchar(64) NULL COMMENT '作者' AFTER `title`; 
 
 ALTER TABLE `conversation`
-ADD COLUMN `content_source_checked`  varchar(1) NULL COMMENT '原文链接是否存在' AFTER `author`; 
+ADD COLUMN `content_source_checked`  varchar(4) NULL COMMENT '原文链接是否存在' AFTER `author`; 
 
 ALTER TABLE `conversation`
 ADD COLUMN `content_source_url`  varchar(500) NULL COMMENT '原文链接' AFTER `content_source_checked`; 
 
 ALTER TABLE `conversation`
-ADD COLUMN `show_cover`  varchar(1) NULL COMMENT '封面图片显示在正文' AFTER `content_source_url`; 
+ADD COLUMN `show_cover`  varchar(4) NULL COMMENT '封面图片显示在正文' AFTER `content_source_url`; 
 
 ALTER TABLE `conversation`
 ADD COLUMN `material_cover_url`  varchar(255) NULL COMMENT '封面图片素材url' AFTER `show_cover`; 
