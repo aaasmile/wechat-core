@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.MaterialCategoryMapper">
+
+    <insert id="add" parameterType="com.d1m.wechat.model.MaterialCategory" useGeneratedKeys="true" keyProperty="id">
+        <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.String">
+            select UUID()
+        </selectKey>
+        insert into material_category(
+        `id`,
+        `name`,
+        `deleted`,
+        `wechat_id`,
+        `created_at`,
+        `created_by`,
+        `laste_updated_at`,
+        `laste_updated_by`        )
+        values(
+        #{id},
+        #{name},
+        #{deleted},
+        #{wechatId},
+        #{createdAt},
+        #{createdBy},
+        #{lasteUpdatedAt},
+        #{lasteUpdatedBy}         )
+    </insert>
+
+    <select id="queryObject" resultType="com.d1m.wechat.model.MaterialCategory">
+		select
+			`id`,
+			`name`,
+			`deleted`,
+			`wechat_id`,
+			`created_at`,
+			`created_by`,
+			`laste_updated_at`,
+			`laste_updated_by`
+		from material_category
+		where id = #{id}
+	</select>
+
+    <select id="queryList" resultType="com.d1m.wechat.model.MaterialCategory">
+        select
+        `id`,
+        `name`,
+        `deleted`,
+        `wechat_id`,
+        `created_at`,
+        `created_by`,
+        `laste_updated_at`,
+        `laste_updated_by`
+        from material_category
+        WHERE 1=1
+        <if test="name != null">
+            AND name = #{name}
+        </if>
+        <choose>
+            <when test="sidx != null">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by created_at desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <update id="update" parameterType="com.d1m.wechat.model.MaterialCategory">
+        update material_category
+        <set>
+            <if test="id != null">`id` = #{id},</if>
+            <if test="name != null">`name` = #{name},</if>
+            <if test="deleted != null">`deleted` = #{deleted},</if>
+            <if test="wechatId != null">`wechat_id` = #{wechatId},</if>
+            <if test="createdAt != null">`created_at` = #{createdAt},</if>
+            <if test="createdBy != null">`created_by` = #{createdBy},</if>
+            <if test="lasteUpdatedAt != null">`laste_updated_at` = #{lasteUpdatedAt},</if>
+            <if test="lasteUpdatedBy != null">`laste_updated_by` = #{lasteUpdatedBy}</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="del">
+        delete from material_category where id =#{id}
+    </delete>
+</mapper>

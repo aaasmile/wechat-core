@@ -82,6 +82,10 @@ public class MaterialImageTextDetail {
      */
     private Integer comment;
 
+
+    @Column(name = "remarks")
+    private String remarks;
+
     /**
      * 获取主键ID
      *
@@ -322,5 +326,13 @@ public class MaterialImageTextDetail {
     }
     public void setComment(Integer comment) {
         this.comment = comment;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 }

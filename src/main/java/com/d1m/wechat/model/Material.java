@@ -127,6 +127,45 @@ public class Material {
      */
     private Byte status;
 
+    @Column(name="is_scrm")
+    private Integer isScrm;
+
+    /**
+     * 素材分类id
+     * @return
+     */
+    @Column(name = "material_type_id")
+    private String materialTypeId;
+
+    /**
+     * 图文页的URL
+     */
+    private String url;
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getMaterialTypeId() {
+        return materialTypeId;
+    }
+
+    public void setMaterialTypeId(String materialTypeId) {
+        this.materialTypeId = materialTypeId;
+    }
+
+    public Integer getIsScrm() {
+        return isScrm;
+    }
+
+    public void setIsScrm(Integer isScrm) {
+        this.isScrm = isScrm;
+    }
+
     /**
      * 评论(0:不能评论,1:所有人可以评论，2：仅有粉丝可以评论)
      */

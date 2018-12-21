@@ -82,6 +82,16 @@ public class MemberDto {
 	// 二维码扫码场景描述
 	private String qrSceneStr;
 
+	private String remark;
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
 	/**
 	 * 是否在线(48小时内发过消息并且是已关注状态)
 	 */
