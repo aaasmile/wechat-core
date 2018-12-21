@@ -63,6 +63,9 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
     @Autowired
     private QrcodeActionEngineMapper qrcodeActionEngineMapper;
 
+    @Autowired
+    private CustomerService customerService;
+
     @Override
     public int save(DcrmImageTextDetailDto dto) {
         DcrmImageTextDetail detail = new DcrmImageTextDetail();
@@ -99,6 +102,9 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
 
 
     public void previewMaterial(DcrmImageTextDetailDto detailDto) {
+        String json ="这里是feigin调用方式";
+        /*String result = customerService.send(json);
+        logger.info("结果是："+result);*/
         Integer id = detailDto.getId();
         notBlank(id, Message.MATERIAL_ID_NOT_BLANK);
         notBlank(detailDto.getMemberId(), Message.MEMBER_ID_NOT_EMPTY);
@@ -114,6 +120,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
             conversationModel.setMemberId(detailDto.getMemberId());
             User user = (User) SecurityUtils.getSubject().getPrincipal();
             conversationService.wechatToMember(detailDto.getWechatId(), user, conversationModel);
+
             //发送图文
             if (member.getWechatId() != null) {
                 WxMessage wxMessage = WechatClientDelegate.previewMessage(detailDto.getWechatId(), member.getOpenId()
