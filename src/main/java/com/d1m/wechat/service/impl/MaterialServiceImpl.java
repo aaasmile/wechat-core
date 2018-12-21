@@ -32,6 +32,7 @@ import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -43,10 +44,7 @@ import tk.mybatis.mapper.common.Mapper;
 
 import javax.annotation.Resource;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
@@ -600,8 +598,13 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         }
         PageHelper.startPage(imageTextModel.getPageNum(),
                 imageTextModel.getPageSize(), queryCount);
-        return materialMapper.searchImageText(wechatId,
-                imageTextModel.getQuery(), imageTextModel.getPushed());
+        final HashMap<String, Object> params = Maps.newHashMap();
+        params.put("wechatId", wechatId);
+        params.put("query", imageTextModel.getQuery());
+        params.put("pushed", imageTextModel.getPushed());
+        params.put("materialTypeId", imageTextModel.getMaterialTypeId());
+
+        return materialMapper.searchImageText(params);
     }
 
     @Override

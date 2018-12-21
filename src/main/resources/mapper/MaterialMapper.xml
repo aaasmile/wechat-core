@@ -71,6 +71,9 @@
                     and m.modify_at = m.last_push_at
                 </if>
             </if>
+            <if test="materialTypeId!=null">
+                and m.material_type_id = #{materialTypeId}
+            </if>
             order by m.id desc
         </where>
     </select>

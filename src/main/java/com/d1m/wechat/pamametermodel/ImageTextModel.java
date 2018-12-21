@@ -5,156 +5,168 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel("图文参数")
 public class ImageTextModel extends BaseModel {
-	
-	@ApiModelProperty("主键ID")
-	private Integer id;
-	
-	@ApiModelProperty("标题")
-	private String title;
 
-	@ApiModelProperty("作者")
-	private String author;
-	
-	@ApiModelProperty("正文")
-	private String content;
+    @ApiModelProperty("主键ID")
+    private Integer id;
 
-	@ApiModelProperty("原文链接是否存在")
-	private Boolean contentSourceChecked;
+    @ApiModelProperty("标题")
+    private String title;
 
-	@ApiModelProperty("原文链接")
-	private String contentSourceUrl;
+    @ApiModelProperty("作者")
+    private String author;
 
-	@ApiModelProperty("是否展示封面")
-	private boolean showCover;
+    @ApiModelProperty("正文")
+    private String content;
 
-	@ApiModelProperty("摘要")
-	private String summary;
+    @ApiModelProperty("原文链接是否存在")
+    private Boolean contentSourceChecked;
 
-	@ApiModelProperty("素材封面ID")
-	private Integer materialCoverId;
+    @ApiModelProperty("原文链接")
+    private String contentSourceUrl;
 
-	@ApiModelProperty("素材封面URL")
-	private String materialCoverUrl;
+    @ApiModelProperty("是否展示封面")
+    private boolean showCover;
 
-	@ApiModelProperty("素材封面媒体ID")
-	private String materialCoverMediaId;
-	
-	@ApiModelProperty("查询条件")
-	private String query;
+    @ApiModelProperty("摘要")
+    private String summary;
 
-	@ApiModelProperty("是否推送")
-	private Boolean pushed;
-	
-	private Integer comment;
+    @ApiModelProperty("素材封面ID")
+    private Integer materialCoverId;
 
-	public String getAuthor() {
-		return author;
-	}
+    @ApiModelProperty("素材封面URL")
+    private String materialCoverUrl;
 
-	public String getContent() {
-		return content;
-	}
+    @ApiModelProperty("素材封面媒体ID")
+    private String materialCoverMediaId;
 
-	public Boolean getContentSourceChecked() {
-		return contentSourceChecked;
-	}
+    @ApiModelProperty("查询条件")
+    private String query;
 
-	public String getContentSourceUrl() {
-		return contentSourceUrl;
-	}
+    @ApiModelProperty("是否推送")
+    private Boolean pushed;
 
-	public Integer getId() {
-		return id;
-	}
+    @ApiModelProperty("素材分类id")
+    private String materialTypeId;
 
-	public Integer getMaterialCoverId() {
-		return materialCoverId;
-	}
+    private Integer comment;
 
-	public String getMaterialCoverMediaId() {
-		return materialCoverMediaId;
-	}
+    public String getMaterialTypeId() {
+        return materialTypeId;
+    }
 
-	public String getMaterialCoverUrl() {
-		return materialCoverUrl;
-	}
+    public void setMaterialTypeId(String materialTypeId) {
+        this.materialTypeId = materialTypeId;
+    }
 
-	public Boolean getPushed() {
-		return pushed;
-	}
+    public String getAuthor() {
+        return author;
+    }
 
-	public String getQuery() {
-		return query;
-	}
+    public String getContent() {
+        return content;
+    }
 
-	public String getSummary() {
-		return summary;
-	}
+    public Boolean getContentSourceChecked() {
+        return contentSourceChecked;
+    }
 
-	public String getTitle() {
-		return title;
-	}
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public String getContentSourceUrl() {
+        return contentSourceUrl;
+    }
 
-	public boolean isShowCover() {
-		return showCover;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public void setAuthor(String author) {
-		this.author = author;
-	}
+    public Integer getMaterialCoverId() {
+        return materialCoverId;
+    }
 
-	public void setContent(String content) {
-		this.content = content;
-	}
+    public String getMaterialCoverMediaId() {
+        return materialCoverMediaId;
+    }
 
-	public void setContentSourceChecked(Boolean contentSourceChecked) {
-		this.contentSourceChecked = contentSourceChecked;
-	}
+    public String getMaterialCoverUrl() {
+        return materialCoverUrl;
+    }
 
-	public void setContentSourceUrl(String contentSourceUrl) {
-		this.contentSourceUrl = contentSourceUrl;
-	}
+    public Boolean getPushed() {
+        return pushed;
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public String getQuery() {
+        return query;
+    }
 
-	public void setMaterialCoverId(Integer materialCoverId) {
-		this.materialCoverId = materialCoverId;
-	}
+    public String getSummary() {
+        return summary;
+    }
 
-	public void setMaterialCoverMediaId(String materialCoverMediaId) {
-		this.materialCoverMediaId = materialCoverMediaId;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public void setMaterialCoverUrl(String materialCoverUrl) {
-		this.materialCoverUrl = materialCoverUrl;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	public void setPushed(Boolean pushed) {
-		this.pushed = pushed;
-	}
+    public boolean isShowCover() {
+        return showCover;
+    }
 
-	public void setQuery(String query) {
-		this.query = query;
-	}
+    public void setAuthor(String author) {
+        this.author = author;
+    }
 
-	public void setShowCover(boolean showCover) {
-		this.showCover = showCover;
-	}
+    public void setContent(String content) {
+        this.content = content;
+    }
 
-	public void setSummary(String summary) {
-		this.summary = summary;
-	}
+    public void setContentSourceChecked(Boolean contentSourceChecked) {
+        this.contentSourceChecked = contentSourceChecked;
+    }
 
-	public Integer getComment() {
-		return this.comment;
-	}
+    public void setContentSourceUrl(String contentSourceUrl) {
+        this.contentSourceUrl = contentSourceUrl;
+    }
 
-	public void setComment(Integer comment) {
-		this.comment = comment;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setMaterialCoverId(Integer materialCoverId) {
+        this.materialCoverId = materialCoverId;
+    }
+
+    public void setMaterialCoverMediaId(String materialCoverMediaId) {
+        this.materialCoverMediaId = materialCoverMediaId;
+    }
+
+    public void setMaterialCoverUrl(String materialCoverUrl) {
+        this.materialCoverUrl = materialCoverUrl;
+    }
+
+    public void setPushed(Boolean pushed) {
+        this.pushed = pushed;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
+    }
+
+    public void setShowCover(boolean showCover) {
+        this.showCover = showCover;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
+    public Integer getComment() {
+        return this.comment;
+    }
+
+    public void setComment(Integer comment) {
+        this.comment = comment;
+    }
 }

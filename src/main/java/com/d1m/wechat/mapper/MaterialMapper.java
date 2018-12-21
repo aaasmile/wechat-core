@@ -26,6 +26,8 @@ public interface MaterialMapper extends MyMapper<Material> {
     Page<MaterialDto> searchImageText(@Param("wechatId") Integer wechatId,
                                       @Param("query") String query, @Param("pushed") Boolean pushed);
 
+    Page<MaterialDto> searchImageText(Map<String, Object> params);
+
     Page<MiniProgramDto> searchMiniProgram(MiniProgramModel miniProgramModel);
 
     MiniProgramDto getMiniProgramByMaterialId(@Param("wechatId") Integer wechatId, @Param("materialId") Integer materialId);
