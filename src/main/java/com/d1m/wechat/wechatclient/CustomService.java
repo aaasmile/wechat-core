@@ -15,5 +15,5 @@ import com.d1m.wechat.model.CustomRequestBody;
 )
 public interface CustomService {
 	@RequestMapping(value = "/custom/sender/{wechatId}", method = RequestMethod.POST)
-	public String sender(@RequestBody CustomRequestBody customRequestBody, @PathVariable Integer wechatId);
+	public String sender(@RequestBody CustomRequestBody customRequestBody, @PathVariable("wechatId") Integer wechatId);
 }
