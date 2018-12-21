@@ -105,7 +105,7 @@
 
 
     <select id="getImageText" parameterType="hashmap" resultMap="GetImageTextResultMap">
-        SELECT m.id ad id, m.created_at as created_at, m.last_push_at as last_push_at,
+        SELECT m.id as id, m.created_at as created_at, m.last_push_at as last_push_at,
         m.modify_at as modify_at, mc.name as
         type_name FROM material
         m
