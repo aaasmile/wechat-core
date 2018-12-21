@@ -491,6 +491,20 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         return material;
     }
 
+    @Override
+    public void updateMaterialAndImageText(Material material, List<MaterialImageTextDetail> imageTextDetail) {
+        final int result1 = materialMapper.updateByPrimaryKeySelective(material);
+        int result2 = 0;
+        int collectionSize = -1;
+        if (CollectionUtils.isNotEmpty(imageTextDetail)) {
+            result2 = imageTextDetail.stream().mapToInt(materialImageTextDetailMapper::updateByPrimaryKeySelective).sum();
+            collectionSize = imageTextDetail.size();
+        }
+        if (result1 != 1 || result2 != collectionSize) {
+            throw new WechatException(Message.MATERIAL_IMAGE_TEXT_DETAIL_NOT_EXIST);
+        }
+    }
+
     public Material getMaterial(Integer wechatId, Integer id) {
         Material material = new Material();
         material.setWechatId(wechatId);

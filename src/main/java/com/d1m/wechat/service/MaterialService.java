@@ -39,6 +39,8 @@ public interface MaterialService extends IService<Material> {
 	Material updateImageText(Integer wechatId, User user, Integer id,
 							 MaterialModel materialModel) throws WechatException;
 
+	void updateMaterialAndImageText(Material material, List<MaterialImageTextDetail> imageTextDetail);
+
 	@Deprecated
 	MaterialImageTextDetail updateImageTextDetail(Integer wechatId, User user,
 												  Integer imageTextDetailId,
