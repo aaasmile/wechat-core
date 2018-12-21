@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * @Author: Liu weilin
  * @Description:
  */
-@FeignClient(name = "wechat-scheduler", configuration = FeignClientConfiguration.class)
+@FeignClient(
+ name = "social-wechat-api"
+ , url = "http://social-wechat-api:10011/custom"
+ ,configuration = FeignClientConfiguration.class)
 public interface CustomerService {
 
-   /* @RequestMapping(value = "send", method = RequestMethod.POST)
-    String send(@RequestBody String json);
-
-    @RequestMapping(value = "sender/{wechatId}", method = RequestMethod.POST)
+    /*@RequestMapping(value = "sender/{wechatId}", method = RequestMethod.POST)
     String sender(@RequestBody CustomRequestBody customRequestBody, @PathVariable Integer wechatId) ;*/
 }
