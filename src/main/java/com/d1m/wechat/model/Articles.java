@@ -81,4 +81,16 @@ public class Articles {
 		this.url = builder.url;
 		this.picurl = builder.picurl;
 	}
+
+	public Articles(String title, String description, String url, String picurl) {
+		super();
+		this.title = title;
+		this.description = description;
+		this.url = url;
+		this.picurl = picurl;
+	}
+
+	public Articles() {
+		super();
+	}
 }

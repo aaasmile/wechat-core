@@ -1,5 +1,4 @@
 package com.d1m.wechat.model;
-import java.util.List;
 
 public class CustomRequestBody {
 
@@ -10,8 +9,8 @@ public class CustomRequestBody {
 	private Media mpnews;
 	private Video video;
 	private Music music;
-	private List<Articles> articles;
 	private Wxcard wxcard;
+	private News news;
 
 	public String getTouser() {
 		return touser;
@@ -69,14 +68,6 @@ public class CustomRequestBody {
 		this.music = music;
 	}
 
-	public List<Articles> getArticles() {
-		return articles;
-	}
-
-	public void setArticles(List<Articles> articles) {
-		this.articles = articles;
-	}
-
 	public Wxcard getWxcard() {
 		return wxcard;
 	}
@@ -85,9 +76,29 @@ public class CustomRequestBody {
 		this.wxcard = wxcard;
 	}
 
-	@Override
-	public String toString() {
-		return "CustomRequestBody [touser=" + touser + ", msgtype=" + msgtype + ", image=" + image + ", voice=" + voice + ", mpnews=" + mpnews + ", video=" + video + ", music=" + music + ", articles=" + articles + ", wxcard=" + wxcard + "]";
+	public News getNews() {
+		return news;
+	}
+
+	public void setNews(News news) {
+		this.news = news;
+	}
+
+	public CustomRequestBody(String touser, String msgtype, Media image, Media voice, Media mpnews, Video video, Music music, Wxcard wxcard, News news) {
+		super();
+		this.touser = touser;
+		this.msgtype = msgtype;
+		this.image = image;
+		this.voice = voice;
+		this.mpnews = mpnews;
+		this.video = video;
+		this.music = music;
+		this.wxcard = wxcard;
+		this.news = news;
+	}
+
+	public CustomRequestBody() {
+		super();
 	}
 
 	public static class Builder {
@@ -98,8 +109,8 @@ public class CustomRequestBody {
 		private Media mpnews;
 		private Video video;
 		private Music music;
-		private List<Articles> articles;
 		private Wxcard wxcard;
+		private News news;
 
 		public Builder touser(String touser) {
 			this.touser = touser;
@@ -136,13 +147,13 @@ public class CustomRequestBody {
 			return this;
 		}
 
-		public Builder articles(List<Articles> articles) {
-			this.articles = articles;
+		public Builder wxcard(Wxcard wxcard) {
+			this.wxcard = wxcard;
 			return this;
 		}
 
-		public Builder wxcard(Wxcard wxcard) {
-			this.wxcard = wxcard;
+		public Builder news(News news) {
+			this.news = news;
 			return this;
 		}
 
@@ -159,7 +170,7 @@ public class CustomRequestBody {
 		this.mpnews = builder.mpnews;
 		this.video = builder.video;
 		this.music = builder.music;
-		this.articles = builder.articles;
 		this.wxcard = builder.wxcard;
+		this.news = builder.news;
 	}
 }

@@ -31,6 +31,15 @@ public class Video {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+	public Video(String media_id, String thumb_media_id, String title, String description) {
+		super();
+		this.media_id = media_id;
+		this.thumb_media_id = thumb_media_id;
+		this.title = title;
+		this.description = description;
+	}
+	public Video() {
+		super();
+	}
 	
 }

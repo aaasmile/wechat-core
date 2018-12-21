@@ -33,4 +33,13 @@ public class Media {
 	private Media(Builder builder) {
 		this.media_id = builder.media_id;
 	}
+
+	public Media(String media_id) {
+		super();
+		this.media_id = media_id;
+	}
+
+	public Media() {
+		super();
+	}
 }
