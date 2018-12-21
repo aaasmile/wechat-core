@@ -21,6 +21,9 @@ public enum MaterialType {
 	OFFLINEACTIVITYIMAGE((byte) 9, "线下活动图片"),
 
     MINI_PROGRAM((byte) 10, "小程序"),
+    
+    WECHATNEWS((byte) 21, "微信图文"),
+    DCRMNEWS((byte) 22, "非群发图文"),
 	;
 
 	private byte value;
