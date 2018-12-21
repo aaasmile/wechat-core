@@ -14,6 +14,7 @@ import com.d1m.wechat.model.enums.MaterialStatus;
 import com.d1m.wechat.pamametermodel.ConversationModel;
 import com.d1m.wechat.service.*;
 import com.d1m.wechat.util.*;
+import com.d1m.wechat.wechatclient.CustomService;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -64,7 +65,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
     private QrcodeActionEngineMapper qrcodeActionEngineMapper;
 
     @Autowired
-    private CustomerService customerService;
+    private CustomService customService;
 
     @Override
     public int save(DcrmImageTextDetailDto dto) {
@@ -121,16 +122,18 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
                 //发送图文
                 Articles articles = new Articles.Builder()
                  .picurl(material.getPicUrl())
-                 .url(material.getUrl())
+                 .url(dto.getLink())
                  .description(dto.getContent())
                  .title(dto.getTitle()).build();
                 articlesList.add(articles);
+                News news = new News.Builder().articles(articlesList).build();
                 CustomRequestBody customRequestBody = new CustomRequestBody.Builder()
                  .touser(String.valueOf(detailDto.getCreatedBy()))
-                 .articles(articlesList)
                  .msgtype("news")
+                 .news(news)
                  .build();
-                //String result = customerService.sender(customRequestBody, dto.getWechatId());
+                String result = customService.sender(customRequestBody, dto.getWechatId());
+                logger.info("调用发送非群发图文接口返回："+result);
             }
         } catch (Exception e) {
             e.printStackTrace();
