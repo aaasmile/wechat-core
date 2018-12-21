@@ -46,13 +46,18 @@ public class MaterialCategoryController extends BaseController {
     @RequestMapping(value = "save.json", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject save(@RequestBody MaterialCategoryDto dto) {
-        Preconditions.checkArgument(StringUtils.isNotBlank(dto.getName()), Message.MATERIAL_CATEGORY_NAME_NOT_NULL);
-        MaterialCategory materialCategory = materialCategoryService.exitsName(dto.getName());
-        Preconditions.checkArgument(materialCategory == null, Message.MATERIAL_CATEGORY_NAME_EXITS);
-        dto.setCreatedBy(getUser().getId());
-        dto.setWechatId(getUser().getWechatId());
-        materialCategoryService.save(dto);
-        return representation(Message.SUCCESS);
+        try {
+            Preconditions.checkArgument(StringUtils.isNotBlank(dto.getName()), Message.MATERIAL_CATEGORY_NAME_NOT_NULL);
+            MaterialCategory materialCategory = materialCategoryService.exitsName(dto.getName());
+            Preconditions.checkArgument(materialCategory == null, Message.MATERIAL_CATEGORY_NAME_EXITS);
+            dto.setCreatedBy(getUser().getId());
+            dto.setWechatId(getUser().getWechatId());
+            materialCategoryService.save(dto);
+            return representation(Message.SUCCESS);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return wrapException(e);
+        }
     }
 
     /**
@@ -63,13 +68,18 @@ public class MaterialCategoryController extends BaseController {
     @RequestMapping(value = "update.json", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject update(@RequestBody MaterialCategoryDto dto) {
-        Preconditions.checkArgument(StringUtils.isNotBlank(dto.getName()), Message.MATERIAL_CATEGORY_NAME_NOT_NULL);
-        MaterialCategory materialCategory = materialCategoryService.exitsName(dto.getName());
-        Preconditions.checkArgument(materialCategory == null, Message.MATERIAL_CATEGORY_NAME_EXITS);
-        dto.setLasteUpdatedBy(getUser().getId());
-        dto.setWechatId(getUser().getWechatId());
-        materialCategoryService.update(dto);
-        return representation(Message.SUCCESS);
+        try {
+            Preconditions.checkArgument(StringUtils.isNotBlank(dto.getName()), Message.MATERIAL_CATEGORY_NAME_NOT_NULL);
+            MaterialCategory materialCategory = materialCategoryService.exitsName(dto.getName());
+            Preconditions.checkArgument(materialCategory == null, Message.MATERIAL_CATEGORY_NAME_EXITS);
+            dto.setLasteUpdatedBy(getUser().getId());
+            dto.setWechatId(getUser().getWechatId());
+            materialCategoryService.update(dto);
+            return representation(Message.SUCCESS);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return wrapException(e);
+        }
     }
 
     /**
@@ -77,12 +87,17 @@ public class MaterialCategoryController extends BaseController {
      */
     @ApiOperation(value = "查看信息")
     //@ApiResponse(code = 200, message = "操作成功")
-    @RequestMapping(value = "{id}/info.json",method = RequestMethod.GET)
+    @RequestMapping(value = "{id}/info.json", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject info(@PathVariable("id") String id) {
-        Preconditions.checkArgument(StringUtils.isNotBlank(id), Message.MATERIAL_CATEGORY_ID_NOT_NULL);
-        MaterialCategoryDto MaterialCategoryDto = materialCategoryService.queryObject(id);
-        return representation(Message.SUCCESS, MaterialCategoryDto);
+        try {
+            Preconditions.checkArgument(StringUtils.isNotBlank(id), Message.MATERIAL_CATEGORY_ID_NOT_NULL);
+            MaterialCategoryDto MaterialCategoryDto = materialCategoryService.queryObject(id);
+            return representation(Message.SUCCESS, MaterialCategoryDto);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return wrapException(e);
+        }
     }
 
     /**
@@ -101,7 +116,7 @@ public class MaterialCategoryController extends BaseController {
      @PathVariable String id) {
         try {
             Preconditions.checkArgument(StringUtils.isNotBlank(id), Message.MATERIAL_CATEGORY_ID_NOT_NULL);
-            return materialCategoryService.delete(getUser().getWechatId(),id);
+            return materialCategoryService.delete(getUser().getWechatId(), id);
         } catch (Exception e) {
             log.error(e.getMessage());
             return wrapException(e);
@@ -117,12 +132,17 @@ public class MaterialCategoryController extends BaseController {
      */
     @ApiOperation(value = "获取素材图文列表")
     //@ApiResponse(code = 200, message = "1-获取素材图文列表成功")
-    @RequestMapping(value = "list.json",method = RequestMethod.POST)
+    @RequestMapping(value = "list.json", method = RequestMethod.POST)
     //@RequiresPermissions("app-msg:list")
     @ResponseBody
     public JSONObject queryList(@RequestBody QueryDto dto) {
-        PageInfo<MaterialCategory> list = materialCategoryService.queryList(dto);
-        return representation(Message.SUCCESS, list);
+        try {
+            PageInfo<MaterialCategory> list = materialCategoryService.queryList(dto);
+            return representation(Message.SUCCESS, list);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return wrapException(e);
+        }
     }
 
 }
