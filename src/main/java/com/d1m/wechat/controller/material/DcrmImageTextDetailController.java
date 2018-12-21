@@ -46,12 +46,17 @@ public class DcrmImageTextDetailController extends BaseController {
     @RequestMapping(value = "save.json", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject save(@RequestBody DcrmImageTextDetailDto dto) {
+        try {
         Preconditions.checkArgument(StringUtils.isNotBlank(dto.getTitle()), Message.DcrmImageTextDetail_NOT_NULL);
         Preconditions.checkArgument(dto.getSummary() != null, Message.DcrmImageTextDetail_IAMGE_NOT_NULL);
         dto.setCreatedBy(getUser().getId());
         dto.setWechatId(getUser().getWechatId());
         DcrmImageTextDetailService.save(dto);
         return representation(Message.SUCCESS);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return wrapException(e);
+        }
     }
 
 
@@ -63,12 +68,17 @@ public class DcrmImageTextDetailController extends BaseController {
     @RequestMapping(value = "update.json", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject update(@RequestBody DcrmImageTextDetailDto dto) {
+        try {
         Preconditions.checkArgument(StringUtils.isNotBlank(dto.getTitle()), Message.DcrmImageTextDetail_NOT_NULL);
         Preconditions.checkArgument(dto.getSummary() != null, Message.DcrmImageTextDetail_IAMGE_NOT_NULL);
         dto.setLasteUpdatedBy(getUser().getId());
         dto.setWechatId(getUser().getWechatId());
         DcrmImageTextDetailService.update(dto);
         return representation(Message.SUCCESS);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return wrapException(e);
+        }
     }
 
 
@@ -80,9 +90,14 @@ public class DcrmImageTextDetailController extends BaseController {
     @RequestMapping(value = "{id}/info.json", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject info(@PathVariable("id") Integer id) {
+        try {
         Preconditions.checkNotNull(id, Message.DCRM_IMAGE_TEXT_DETAIL_ID_NOT);
         DcrmImageTextDetailDto dto = DcrmImageTextDetailService.queryObject(id);
         return representation(Message.SUCCESS, dto);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return wrapException(e);
+        }
     }
 
 
@@ -98,9 +113,14 @@ public class DcrmImageTextDetailController extends BaseController {
     @RequiresPermissions("app-msg:list")
     @ResponseBody
     public JSONObject queryList(@RequestBody QueryDto dto) {
+        try {
         log.info("获取非群发素材图文列表:{}",dto);
         PageInfo<DcrmImageTextDetailDto> list = DcrmImageTextDetailService.queryList(dto);
         return representation(Message.SUCCESS, list);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return wrapException(e);
+        }
     }
 
 
@@ -137,10 +157,15 @@ public class DcrmImageTextDetailController extends BaseController {
     @RequestMapping(value = "createQrcode.json", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject createQrcode(@RequestBody DcrmImageTextDetailDto dto) {
+        try {
         dto.setCreatedBy(getUser().getId());
         dto.setWechatId(getUser().getWechatId());
         Map<String, Object> map = DcrmImageTextDetailService.createQrcode(dto);
         return representation(Message.SUCCESS,map);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return wrapException(e);
+        }
     }
 
 
