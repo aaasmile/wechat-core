@@ -331,4 +331,24 @@ public class ConversationImageTextDetail {
 		this.conversationId = builder.conversationId;
 		this.content = builder.content;
 	}
+
+	public ConversationImageTextDetail(Integer id, Integer wechatId, String title, String author, Boolean contentSourceChecked, String contentSourceUrl, Boolean showCover, String materialCoverUrl, String summary, Integer conversationId, String content) {
+		super();
+		this.id = id;
+		this.wechatId = wechatId;
+		this.title = title;
+		this.author = author;
+		this.contentSourceChecked = contentSourceChecked;
+		this.contentSourceUrl = contentSourceUrl;
+		this.showCover = showCover;
+		this.materialCoverUrl = materialCoverUrl;
+		this.summary = summary;
+		this.conversationId = conversationId;
+		this.content = content;
+	}
+
+	public ConversationImageTextDetail() {
+		super();
+	}
+	
 }

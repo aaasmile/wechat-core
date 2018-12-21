@@ -162,7 +162,7 @@ public class CustomRequestBody {
 		}
 	}
 
-	private CustomRequestBody(Builder builder) {
+	public CustomRequestBody(Builder builder) {
 		this.touser = builder.touser;
 		this.msgtype = builder.msgtype;
 		this.image = builder.image;
