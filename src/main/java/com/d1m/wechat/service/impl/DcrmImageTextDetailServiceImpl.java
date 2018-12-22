@@ -96,10 +96,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
     }
 
 
-    /**
-     * 发送非群发单图文
-     * @param detailDto
-     */
+    @Override
     public void previewMaterial(DcrmImageTextDetailDto detailDto) {
         try {
             List<Articles> articlesList = new ArrayList<>();
@@ -122,7 +119,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
                 articlesList.add(articles);
                 News news = new News.Builder().articles(articlesList).build();
                 CustomRequestBody customRequestBody = new CustomRequestBody.Builder()
-                 .touser(String.valueOf(detailDto.getCreatedBy()))
+                 .touser(member.getOpenId())
                  .msgtype("news")
                  .news(news)
                  .build();
