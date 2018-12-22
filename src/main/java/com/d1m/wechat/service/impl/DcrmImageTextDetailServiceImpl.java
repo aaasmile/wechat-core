@@ -107,9 +107,11 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
              detailDto.getMemberId());
             notBlank(member, Message.MEMBER_NOT_EXIST);
             DcrmImageTextDetailDto dto = queryObject(id);
+            logger.info("查询非群发图文结果：" + JSON.toJSON(dto));
             Material material = new Material();
             if (dto.getMaterialCoverId() != null) {
                 material = materialService.getMaterial(detailDto.getWechatId(), dto.getMaterialCoverId());
+                logger.info("查询素材信息："+JSON.toJSON(material));
                 //发送图文
                 Articles articles = new Articles.Builder()
                  .picurl(material.getPicUrl())
@@ -123,8 +125,9 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
                  .msgtype("news")
                  .news(news)
                  .build();
+                logger.info("请求发送非群发图文消息入参：" + JSON.toJSON(customRequestBody));
                 String result = customService.sender(customRequestBody, dto.getWechatId());
-                logger.info("调用发送非群发图文接口返回："+result);
+                logger.info("调用发送非群发图文接口返回：" + result);
             }
         } catch (Exception e) {
             e.printStackTrace();
