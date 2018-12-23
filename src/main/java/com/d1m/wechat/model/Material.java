@@ -134,8 +134,8 @@ public class Material {
      * 素材分类id
      * @return
      */
-    @Column(name = "material_type_id")
-    private String materialTypeId;
+    @Column(name = "material_category_id")
+    private String materialCategoryId;
 
     /**
      * 图文页的URL
@@ -149,15 +149,6 @@ public class Material {
     public void setUrl(String url) {
         this.url = url;
     }
-
-    public String getMaterialTypeId() {
-        return materialTypeId;
-    }
-
-    public void setMaterialTypeId(String materialTypeId) {
-        this.materialTypeId = materialTypeId;
-    }
-
     public Integer getIsScrm() {
         return isScrm;
     }
@@ -550,7 +541,15 @@ public class Material {
         this.status = status;
     }
 
-//    public Integer getComment() {
+    public String getMaterialCategoryId() {
+        return materialCategoryId;
+    }
+
+    public void setMaterialCategoryId(String materialCategoryId) {
+        this.materialCategoryId = materialCategoryId;
+    }
+
+    //    public Integer getComment() {
 //        return comment;
 //    }
 //    public void setComment(Integer comment) {

@@ -616,7 +616,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         params.put("wechatId", wechatId);
         params.put("query", imageTextModel.getQuery());
         params.put("pushed", imageTextModel.getPushed());
-        params.put("materialTypeId", imageTextModel.getMaterialTypeId());
+        params.put("materialCategoryId", imageTextModel.getMaterialCategoryId());
 
         return materialMapper.searchImageText(params);
     }
