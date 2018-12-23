@@ -46,16 +46,16 @@ public class ImageTextModel extends BaseModel {
     private Boolean pushed;
 
     @ApiModelProperty("素材分类id")
-    private String materialTypeId;
+    private String materialCategoryId;
 
     private Integer comment;
 
-    public String getMaterialTypeId() {
-        return materialTypeId;
+    public String getMaterialCategoryId() {
+        return materialCategoryId;
     }
 
-    public void setMaterialTypeId(String materialTypeId) {
-        this.materialTypeId = materialTypeId;
+    public void setMaterialCategoryId(String materialCategoryId) {
+        this.materialCategoryId = materialCategoryId;
     }
 
     public String getAuthor() {

@@ -26,7 +26,7 @@
         <result column="wechat_id" jdbcType="INTEGER" property="wechatId"/>
         <result column="media_id" jdbcType="VARCHAR" property="mediaId"/>
         <result column="status" jdbcType="TINYINT" property="status"/>
-        <result column="material_type_id" jdbcType="VARCHAR" property="materialTypeId"/>
+        <result column="material_category_id" jdbcType="VARCHAR" property="materialCategoryId"/>
         <result column="url" jdbcType="VARCHAR" property="url"/>
     </resultMap>
 
@@ -71,8 +71,8 @@
                     and m.modify_at = m.last_push_at
                 </if>
             </if>
-            <if test="materialTypeId!=null">
-                and m.material_type_id = #{materialTypeId}
+            <if test="materialCategoryId!=null">
+                and m.material_category_id = #{materialCategoryId}
             </if>
             order by m.id desc
         </where>
@@ -109,7 +109,7 @@
         m.modify_at as modify_at, mc.name as
         type_name FROM material
         m
-        left join material_category mc on m.material_type_id = mc.id
+        left join material_category mc on m.material_category_id = mc.id
         <where>
             m.wechat_id=#{wechatId} and m.id=#{id} and m.status = 1
         </where>

@@ -348,7 +348,7 @@ public class MaterialController extends BaseController {
             final Material material = new Material();
             material.setId(materialId);
             material.setWechatId(getWechatId());
-            material.setMaterialTypeId(updateReq.getMaterialTypeId());
+            material.setMaterialCategoryId(updateReq.getMaterialCategoryId());
 
             final List<MaterialImageTextDetail> imageTextDetails = updateReq.getImageTextUpdateReqs().stream()
                     .filter(i -> Objects.nonNull(i.getId()))
@@ -379,19 +379,19 @@ public class MaterialController extends BaseController {
     @SuppressWarnings("NullableProblems")
     private static class MaterialUpdateReq {
 
-        private String materialTypeId;
+        private String materialCategoryId;
 
         @Size(min = 1, message = "图文数量至少一个")
         @NotNull(message = "图文数量至少一个")
         @Valid
         private List<ImageTextUpdateReq> imageTextUpdateReqs;
 
-        public String getMaterialTypeId() {
-            return materialTypeId;
+        public String getMaterialCategoryId() {
+            return materialCategoryId;
         }
 
-        public void setMaterialTypeId(String materialTypeId) {
-            this.materialTypeId = materialTypeId;
+        public void setMaterialCategoryId(String materialCategoryId) {
+            this.materialCategoryId = materialCategoryId;
         }
 
         public List<ImageTextUpdateReq> getImageTextUpdateReqs() {

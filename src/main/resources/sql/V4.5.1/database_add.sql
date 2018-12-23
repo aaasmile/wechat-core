@@ -1,6 +1,6 @@
 ALTER TABLE material ADD COLUMN  `is_scrm` int(1) DEFAULT '0' COMMENT '是否SCRM图文(SCRM新增图文为1，微信图文为0)';
 
-ALTER TABLE material ADD COLUMN `material_type_id` varchar(50) DEFAULT NULL COMMENT '素材分类id';
+ALTER TABLE material ADD COLUMN `material_category_id` varchar(50) DEFAULT NULL COMMENT '素材分类id';
 
 alter TABLE material add COLUMN `url` varchar(50)  DEFAULT NULL COMMENT '图文页的URL';
 
