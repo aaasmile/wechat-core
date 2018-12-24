@@ -8,6 +8,7 @@ import cn.d1m.wechat.client.model.WxMessage;
 import cn.d1m.wechat.client.model.common.WxHolder;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.d1m.common.rest.RestResponse;
 import com.d1m.wechat.component.FileUploadConfig;
 import com.d1m.wechat.controller.file.Upload;
 import com.d1m.wechat.dto.ImageTextDto;
@@ -18,6 +19,7 @@ import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.MaterialImageTextDetailMapper;
 import com.d1m.wechat.mapper.MaterialMapper;
 import com.d1m.wechat.mapper.MaterialMiniProgramMapper;
+import com.d1m.wechat.mapper.WechatMapper;
 import com.d1m.wechat.model.*;
 import com.d1m.wechat.model.enums.MaterialStatus;
 import com.d1m.wechat.model.enums.MaterialType;
@@ -29,6 +31,8 @@ import com.d1m.wechat.util.HtmlUtils;
 import com.d1m.wechat.util.Message;
 import com.d1m.wechat.util.ParamUtil;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
+import com.d1m.wechat.wechatclient.WechatTokenRestService;
+import com.d1m.wechat.wechatclient.WechatTokenRestServiceV1;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.ImmutableMap;
@@ -38,8 +42,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import tk.mybatis.mapper.common.Mapper;
 
 import javax.annotation.Resource;
@@ -51,6 +58,8 @@ import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 @Slf4j
 @Service
 public class MaterialServiceImpl extends BaseService<Material> implements MaterialService {
+
+    private static final String WEIXIN_DELETE_MATERIAL = "https://api.weixin.qq.com/cgi-bin/material/del_material?access_token={accessToken}";
 
     @Resource
     private MaterialMapper materialMapper;
@@ -67,12 +76,25 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
     @Resource
     private ConversationService conversationService;
 
+    @Resource
+    private WechatTokenRestService wechatTokenRestService;
+
+    @Resource
+    private WechatMapper wechatMapper;
+
+    @Resource
+    private WechatTokenRestServiceV1 wechatTokenRestServiceV1;
+
+    @Autowired
+    public RestTemplate restTemplate;
+
+
     public void setMaterialMapper(MaterialMapper materialMapper) {
         this.materialMapper = materialMapper;
     }
 
     public void setMaterialImageTextDetailMapper(
-            MaterialImageTextDetailMapper materialImageTextDetailMapper) {
+     MaterialImageTextDetailMapper materialImageTextDetailMapper) {
         this.materialImageTextDetailMapper = materialImageTextDetailMapper;
     }
 
@@ -93,7 +115,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
 
     @Override
     public Material createImage(Integer wechatId, User user, Upload upload)
-            throws WechatException {
+     throws WechatException {
         notBlank(upload.getAccessPath(), Message.MATERIAL_IMAGE_NOT_BLANK);
         Date current = new Date();
         Material material = createMaterialImage(wechatId, user, upload, current);
@@ -111,7 +133,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         notBlank(upload.getAccessPath(), Message.MATERIAL_IMAGE_NOT_BLANK);
         Date current = new Date();
         Material material = createMediaImage(wechatId, user, upload, current,
-                MaterialType.MEDIAIMAGE.getValue());
+         MaterialType.MEDIAIMAGE.getValue());
 
         WxHolder<String> wxURL = WechatClientDelegate.uploadImg(wechatId, new File(upload.getAbsolutePath()));
         if (wxURL.fail()) {
@@ -149,7 +171,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         notBlank(upload.getAccessPath(), Message.MATERIAL_IMAGE_NOT_BLANK);
         Date current = new Date();
         Material material = createMediaImage(wechatId, user, upload, current,
-                MaterialType.OUTLETIMAGE.getValue());
+         MaterialType.OUTLETIMAGE.getValue());
 
 //		WxUploadImg wxUploadImg = JwShopAPI.uploadImg(RefreshAccessTokenJob.getAccessTokenStr(wechatId),
 //				upload.getAbsolutePath());
@@ -206,8 +228,8 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         material.setCreatorId(user.getId());
         material.setMaterialType(MaterialType.VIDEO.getValue());
         material.setName(upload.getAccessPath().substring(
-                upload.getAccessPath().lastIndexOf("_") + 1,
-                upload.getAccessPath().lastIndexOf(".")));
+         upload.getAccessPath().lastIndexOf("_") + 1,
+         upload.getAccessPath().lastIndexOf(".")));
         material.setVideoUrl(upload.getAccessPath());
         material.setStatus(MaterialStatus.INUSED.getValue());
         material.setWechatId(wechatId);
@@ -232,7 +254,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         }
         Date current = new Date();
         List<MaterialImageTextDetail> materialImageTextDetails = getMaterialImageTextDetails(
-                wechatId, null, imageTexts, current);
+         wechatId, null, imageTexts, current);
         Material material = new Material();
         material.setCreatedAt(current);
         material.setCreatorId(user.getId());
@@ -263,7 +285,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
      */
     @Override
     public JSONObject deleteImage(Integer wechatId, Integer materialId)
-            throws BusinessException {
+     throws BusinessException {
         MaterialDto materialDto = materialMapper.getUsedImageText(wechatId, materialId);
         notBlank(materialDto, Message.MATERIAL_NOT_EXIST);
         if (CollectionUtils.isNotEmpty(materialDto.getItems()))
@@ -275,15 +297,60 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         // 删除微信上的永久素材
         if (res > 0) {
             if (StringUtils.isNotBlank(materialDto.getMediaId())) {
-                WxResponse wxResponse = WechatClientDelegate.deleteMaterial(wechatId, material.getMediaId());
-
-                log.info("删除微信上的永久素材返回结果：", JSON.toJSON(wxResponse));
-                if (wxResponse.fail()) {
-                    throw new BusinessException(Message.MATERIAL_WX_NOT_DELETE, materialDto.getName());
+                Wechat wechat = new Wechat();
+                wechat.setId(wechatId);
+                Wechat wt = wechatMapper.selectByPrimaryKey(wechat);
+                if (wt != null) {
+                    String accessToken = getAccesToken(wt.getAppid(),wt.getAppscret());
+                    log.info("返回结果：{}", accessToken);
+                    if (StringUtils.isNotBlank(accessToken)){
+                    ResponseEntity<Response> wxResponse = deleteMaterial(accessToken, material.getMediaId());
+                    log.info("删除微信上的永久素材返回结果：", JSON.toJSON(wxResponse));
+                    /*if (wxResponse.getStatusCode()) {
+                        throw new BusinessException(Message.MATERIAL_WX_NOT_DELETE, materialDto.getName());
+                    }*/
+                }
                 }
             }
         }
         return response(Message.MATERIAL_IMAGE_DELETE_SUCCESS, null);
+    }
+
+
+    private ResponseEntity<Response> deleteMaterial(String accessToken,String mediaId){
+        if(StringUtils.isEmpty(accessToken)){
+            log.info("accessToken不能为空");
+            return null;
+        }
+
+        if(StringUtils.isEmpty(mediaId)){
+            log.info("mediaId不能为空");
+            return null;
+        }
+
+        Map<String,Object> param = new HashMap<>();
+        param.put("accessToken",accessToken);
+        param.put("mediaId",mediaId);
+        return restTemplate.postForEntity(WEIXIN_DELETE_MATERIAL,param,Response.class);
+    }
+    /**
+     * 获取accessToken
+     * @param appid
+     * @param appscret
+     * @return
+     */
+    private String getAccesToken(String appid, String appscret) {
+        String accessToken = null;
+        try {
+            //String url = System.getProperty("wechat_token_server")!=null?System.getProperty("wechat_token_server"):accesTokenURL;
+            String result = restTemplate.getForObject(System.getProperty("wechat_token_server") + "/access-token/" + appid + "/" + appscret, String.class);
+            log.info("请求获取accessToken接口返回：{}",result);
+            JSONObject jsonObject= JSONObject.parseObject(result);
+            accessToken = (String) jsonObject.get("data");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return accessToken;
     }
 
     private JSONObject response(Message msg, Object data) {
@@ -300,7 +367,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
 
     @Override
     public void deleteImageText(Integer wechatId, User user, Integer id)
-            throws WechatException {
+     throws WechatException {
         notBlank(id, Message.MATERIAL_ID_NOT_BLANK);
         MaterialDto materialDto = materialMapper.getImageText(wechatId, id);
         Material material = new Material();
@@ -337,7 +404,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
     @Override
     @Deprecated
     public void deleteImageTextDetail(Integer wechatId, User user, Integer id)
-            throws WechatException {
+     throws WechatException {
         notBlank(id, Message.MATERIAL_IMAGE_TEXT_DETAIL_ID_NOT_BLANK);
         MaterialImageTextDetail detail = new MaterialImageTextDetail();
         detail.setWechatId(wechatId);
@@ -353,7 +420,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
 
     @Override
     public void renameImage(Integer wechatId, User user, Integer id, String name)
-            throws WechatException {
+     throws WechatException {
         notBlank(name, Message.MATERIAL_IMAGE_NAME_NOT_BLANK);
         Material material = getMaterial(wechatId, id);
         notBlank(material, Message.MATERIAL_NOT_EXIST);
@@ -366,17 +433,17 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
     public MaterialImageTextDetail updateImageTextDetail(Integer wechatId,
                                                          User user, Integer imageTextDetailId,
                                                          MaterialImageTextDetail materialImageTextDetail, boolean pushToWx)
-            throws WechatException {
+     throws WechatException {
         notBlank(imageTextDetailId,
-                Message.MATERIAL_IMAGE_TEXT_DETAIL_ID_NOT_BLANK);
+         Message.MATERIAL_IMAGE_TEXT_DETAIL_ID_NOT_BLANK);
         notBlank(materialImageTextDetail,
-                Message.MATERIAL_IMAGE_TEXT_DETAIL_ID_NOT_BLANK);
+         Message.MATERIAL_IMAGE_TEXT_DETAIL_ID_NOT_BLANK);
         notBlank(materialImageTextDetail.getTitle(),
-                Message.MATERIAL_IMAGE_TEXT_DETAIL_TITLE_NOT_BLANK);
+         Message.MATERIAL_IMAGE_TEXT_DETAIL_TITLE_NOT_BLANK);
         notBlank(materialImageTextDetail.getContent(),
-                Message.MATERIAL_IMAGE_TEXT_DETAIL_CONTENT_NOT_BLANK);
+         Message.MATERIAL_IMAGE_TEXT_DETAIL_CONTENT_NOT_BLANK);
         notBlank(materialImageTextDetail.getMaterialCoverId(),
-                Message.MATERIAL_IMAGE_TEXT_DETAIL_THUMB_MEDIA_NOT_BLANK);
+         Message.MATERIAL_IMAGE_TEXT_DETAIL_THUMB_MEDIA_NOT_BLANK);
         Material materialCover = new Material();
         materialCover.setId(materialImageTextDetail.getMaterialCoverId());
         materialCover.setWechatId(wechatId);
@@ -385,8 +452,8 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         notBlank(materialCover, Message.MATERIAL_IMAGE_NOT_EXIST);
         if (materialImageTextDetail.getContentSourceChecked()) {
             notBlank(
-                    materialImageTextDetail.getContentSourceUrl(),
-                    Message.MATERIAL_IMAGE_TEXT_DETAIL_CONTENT_SOURCE_URL_NOT_BLANK);
+             materialImageTextDetail.getContentSourceUrl(),
+             Message.MATERIAL_IMAGE_TEXT_DETAIL_CONTENT_SOURCE_URL_NOT_BLANK);
         }
 
         MaterialImageTextDetail record = new MaterialImageTextDetail();
@@ -397,15 +464,15 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         record.setAuthor(materialImageTextDetail.getAuthor());
         record.setContent(materialImageTextDetail.getContent());
         record.setContentSourceChecked(materialImageTextDetail
-                .getContentSourceChecked());
+         .getContentSourceChecked());
         record.setContentSourceUrl(materialImageTextDetail
-                .getContentSourceUrl());
+         .getContentSourceUrl());
         record.setMaterialCoverId(materialImageTextDetail.getMaterialCoverId());
         record.setShowCover(materialImageTextDetail.getShowCover());
         record.setSummary(StringUtils.isBlank(materialImageTextDetail
-                .getSummary()) ? StringUtils.substring(
-                materialImageTextDetail.getContent(), 0, 54)
-                : materialImageTextDetail.getSummary());
+         .getSummary()) ? StringUtils.substring(
+         materialImageTextDetail.getContent(), 0, 54)
+         : materialImageTextDetail.getSummary());
         record.setTitle(materialImageTextDetail.getTitle());
         record.setComment(materialImageTextDetail.getComment());
         materialImageTextDetailMapper.updateByPrimaryKey(record);
@@ -436,13 +503,13 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         }
         Date current = new Date();
         List<MaterialImageTextDetail> materialImageTextDetails = getMaterialImageTextDetails(
-                wechatId, id, imagetexts, current);
+         wechatId, id, imagetexts, current);
         MaterialImageTextDetail detail = new MaterialImageTextDetail();
         detail.setWechatId(wechatId);
         detail.setStatus((byte) 1);
         detail.setMaterialId(id);
         List<MaterialImageTextDetail> existDetails = materialImageTextDetailMapper
-                .select(detail);
+         .select(detail);
         List<MaterialImageTextDetail> deleteList = new ArrayList<MaterialImageTextDetail>();
         List<MaterialImageTextDetail> addList = new ArrayList<MaterialImageTextDetail>();
         for (MaterialImageTextDetail materialImageTextDetail : existDetails) {
@@ -456,26 +523,26 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
                 continue;
             }
             detail = materialImageTextDetailMapper
-                    .selectByPrimaryKey(materialImageTextDetail.getId());
+             .selectByPrimaryKey(materialImageTextDetail.getId());
             detail.setAuthor(materialImageTextDetail.getAuthor());
             detail.setContent(materialImageTextDetail.getContent());
             detail.setContentSourceChecked(materialImageTextDetail
-                    .getContentSourceChecked());
+             .getContentSourceChecked());
             detail.setContentSourceUrl(materialImageTextDetail
-                    .getContentSourceUrl());
+             .getContentSourceUrl());
             detail.setShowCover(materialImageTextDetail.getShowCover());
             detail.setSummary(materialImageTextDetail.getSummary());
             detail.setTitle(materialImageTextDetail.getTitle());
             detail.setSequence(materialImageTextDetail.getSequence());
             detail.setMaterialCoverId(materialImageTextDetail
-                    .getMaterialCoverId());
+             .getMaterialCoverId());
             detail.setComment(materialImageTextDetail.getComment());
             materialImageTextDetailMapper.updateByPrimaryKey(detail);
         }
         for (MaterialImageTextDetail materialImageTextDetail : deleteList) {
             materialImageTextDetail.setStatus((byte) 0);
             materialImageTextDetailMapper
-                    .updateByPrimaryKey(materialImageTextDetail);
+             .updateByPrimaryKey(materialImageTextDetail);
         }
         for (MaterialImageTextDetail materialImageTextDetail : addList) {
             materialImageTextDetail.setStatus((byte) 1);
@@ -528,9 +595,9 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
     }
 
     public List<MaterialImageTextDetail> getMaterialImageTextDetails(
-            Integer wechatId, Integer materialId,
-            List<ImageTextModel> imageTexts, Date current)
-            throws WechatException {
+     Integer wechatId, Integer materialId,
+     List<ImageTextModel> imageTexts, Date current)
+     throws WechatException {
         List<MaterialImageTextDetail> materialImageTextDetails = new ArrayList<MaterialImageTextDetail>();
         MaterialImageTextDetail detail, existDetail = null;
         String title, author, content, contentSourceUrl, summary = null;
@@ -545,9 +612,9 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
             materialCoverId = imageTextModel.getMaterialCoverId();
             notBlank(title, Message.MATERIAL_IMAGE_TEXT_DETAIL_TITLE_NOT_BLANK);
             notBlank(content,
-                    Message.MATERIAL_IMAGE_TEXT_DETAIL_CONTENT_NOT_BLANK);
+             Message.MATERIAL_IMAGE_TEXT_DETAIL_CONTENT_NOT_BLANK);
             notBlank(materialCoverId,
-                    Message.MATERIAL_IMAGE_TEXT_DETAIL_THUMB_MEDIA_NOT_BLANK);
+             Message.MATERIAL_IMAGE_TEXT_DETAIL_THUMB_MEDIA_NOT_BLANK);
             materialCover = new Material();
             materialCover.setId(materialCoverId);
             materialCover.setWechatId(wechatId);
@@ -557,14 +624,14 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
             notBlank(materialCover, Message.MATERIAL_IMAGE_NOT_EXIST);
             author = imageTextModel.getAuthor();
             contentSourceUrlChecked = ParamUtil.getBoolean(
-                    imageTextModel.getContentSourceChecked(), false);
+             imageTextModel.getContentSourceChecked(), false);
             contentSourceUrl = imageTextModel.getContentSourceUrl();
             summary = imageTextModel.getSummary();
             showCover = imageTextModel.isShowCover();
             if (contentSourceUrlChecked) {
                 notBlank(
-                        contentSourceUrl,
-                        Message.MATERIAL_IMAGE_TEXT_DETAIL_CONTENT_SOURCE_URL_NOT_BLANK);
+                 contentSourceUrl,
+                 Message.MATERIAL_IMAGE_TEXT_DETAIL_CONTENT_SOURCE_URL_NOT_BLANK);
             }
             detail = new MaterialImageTextDetail();
             detail.setAuthor(author);
@@ -589,10 +656,10 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
                 materialImageTextDetailId = imageTextModel.getId();
                 if (materialImageTextDetailId != null) {
                     existDetail = materialImageTextDetailMapper
-                            .selectByPrimaryKey(materialImageTextDetailId);
+                     .selectByPrimaryKey(materialImageTextDetailId);
                     if (!existDetail.getMaterialId().equals(materialId)) {
                         throw new WechatException(
-                                Message.MATERIAL_IMAGE_TEXT_DETAIL_NOT_BELONGS_TO_MATERIAL);
+                         Message.MATERIAL_IMAGE_TEXT_DETAIL_NOT_BELONGS_TO_MATERIAL);
                     }
                     detail.setId(materialImageTextDetailId);
                 }
@@ -611,7 +678,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
             imageTextModel = new ImageTextModel();
         }
         PageHelper.startPage(imageTextModel.getPageNum(),
-                imageTextModel.getPageSize(), queryCount);
+         imageTextModel.getPageSize(), queryCount);
         final HashMap<String, Object> params = Maps.newHashMap();
         params.put("wechatId", wechatId);
         params.put("query", imageTextModel.getQuery());
@@ -628,10 +695,10 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
             imageModel = new ImageModel();
         }
         PageHelper.startPage(imageModel.getPageNum(), imageModel.getPageSize(),
-                queryCount);
+         queryCount);
         return materialMapper.searchImage(wechatId,
-                imageModel.getMaterialImageTypeId(), imageModel.getQuery(),
-                imageModel.getPushed(), imageModel.getMaterialType());
+         imageModel.getMaterialImageTypeId(), imageModel.getQuery(),
+         imageModel.getPushed(), imageModel.getMaterialType());
     }
 
     @Override
@@ -730,14 +797,14 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         notBlank(id, Message.MATERIAL_ID_NOT_BLANK);
         notBlank(materialModel.getMemberId(), Message.MEMBER_ID_NOT_EMPTY);
         Member member = memberService.getMember(wechatId,
-                materialModel.getMemberId());
+         materialModel.getMemberId());
         notBlank(member, Message.MEMBER_NOT_EXIST);
 
         Material material = getMaterial(wechatId, id);
         if (material.getLastPushAt() == null
-                || material.getModifyAt() == null
-                || material.getLastPushAt().compareTo(material.getModifyAt()) != 0
-                || StringUtils.isBlank(material.getMediaId())) {
+         || material.getModifyAt() == null
+         || material.getLastPushAt().compareTo(material.getModifyAt()) != 0
+         || StringUtils.isBlank(material.getMediaId())) {
             ConversationModel conversationModel = new ConversationModel();
             conversationModel.setMaterialId(materialModel.getId());
             conversationModel.setMemberId(materialModel.getMemberId());
