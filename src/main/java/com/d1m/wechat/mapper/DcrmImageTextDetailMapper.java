@@ -21,4 +21,6 @@ public interface DcrmImageTextDetailMapper extends MyMapper<DcrmImageTextDetail>
     DcrmImageTextDetailDto queryObject(@Param("id") Integer id);
 
     int updateByid(DcrmImageTextDetail detail);
+
+    Integer selectSendTimesById(@Param("id") Integer id);
 }

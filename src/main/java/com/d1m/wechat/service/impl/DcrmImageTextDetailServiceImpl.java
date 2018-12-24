@@ -306,4 +306,24 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         qrcodeActionEngineMapper.insert(qrcodeActionEngine);
 
     }
+
+    /**
+     * 更新发送数量
+     *
+     * @param id
+     * @return
+     */
+    public int updateSendTimes(Integer id) {
+        DcrmImageTextDetailDto dto = dcrmImageTextDetailMapper.queryObject(id);
+        if (dto != null) {
+            Integer sendTimes = dto.getSendTimes() != null ? dto.getSendTimes() : 0;
+            Integer count = sendTimes + 1;
+            DcrmImageTextDetail dcrmImageTextDetail = new DcrmImageTextDetail();
+            dcrmImageTextDetail.setId(id);
+            dcrmImageTextDetail.setSendTimes(count);
+            return dcrmImageTextDetailMapper.updateByid(dcrmImageTextDetail);
+        }
+
+        return 0;
+    }
 }
