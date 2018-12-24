@@ -43,6 +43,7 @@ import com.d1m.wechat.pamametermodel.MassConversationModel;
 import com.d1m.wechat.service.ConversationService;
 import com.d1m.wechat.service.MaterialService;
 import com.d1m.wechat.service.MemberService;
+import com.d1m.wechat.util.CommonUtils;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
@@ -126,17 +127,7 @@ public class ConversationController extends BaseController {
 			notBlank(member, Message.MEMBER_NOT_EXIST);
 			//转发至social-wechat-core-api
 			if(conversationModel.getNewid() != null) {
-				Map<String, String> wechatMessage = new HashMap<String, String>();
-				member.MemberToMap(wechatMessage);
-				wechatMessage.put("wechatId", getWechatId().toString());
-				wechatMessage.put("FromUserName", member.getOpenId());
-				if("dcrm".equals(conversationModel.getNewtype())) {
-					wechatMessage.put("dcrmImageTextDetailId", conversationModel.getNewid().toString());
-					conversationService.send2SocialWechatCoreApi(RabbitmqTable.DCRM_IMAGE_TEXT, RabbitmqMethod.SEND_DCRM_IMAGE_TEXT, wechatMessage);
-				} else {
-					wechatMessage.put("materialImageTextDetailId", conversationModel.getNewid().toString());
-					conversationService.send2SocialWechatCoreApi(RabbitmqTable.WECHAT_IMAGE_TEXT, RabbitmqMethod.SEND_WECHAT_IMAGE_TEXT, wechatMessage);
-				}
+				CommonUtils.send2SocialWechatCoreApi(getWechatId(), member, conversationModel.getNewid(), conversationModel.getNewtype(), conversationService);
 				ConversationDto dto = new ConversationDto();
 				return representation(Message.CONVERSATION_CREATE_SUCCESS, dto);
 			}

@@ -4,10 +4,14 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.dto.DcrmImageTextDetailDto;
+import com.d1m.wechat.dto.MemberDto;
 import com.d1m.wechat.dto.QrcodeDto;
 import com.d1m.wechat.dto.QueryDto;
 import com.d1m.wechat.model.Qrcode;
+import com.d1m.wechat.service.ConversationService;
 import com.d1m.wechat.service.DcrmImageTextDetailService;
+import com.d1m.wechat.service.MemberService;
+import com.d1m.wechat.util.CommonUtils;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
@@ -19,6 +23,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
 import java.util.Map;
 
@@ -37,7 +43,11 @@ public class DcrmImageTextDetailController extends BaseController {
 
     @Autowired
     private DcrmImageTextDetailService DcrmImageTextDetailService;
+	@Autowired
+	private ConversationService conversationService;
 
+	@Autowired
+	private MemberService memberService;
     /**
      * 保存
      */
@@ -140,7 +150,11 @@ public class DcrmImageTextDetailController extends BaseController {
      @RequestBody(required = false) DcrmImageTextDetailDto detailDto) {
         try {
             detailDto.setWechatId(getUser().getWechatId());
-            DcrmImageTextDetailService.previewMaterial(detailDto);
+//            DcrmImageTextDetailService.previewMaterial(detailDto);
+            notBlank(detailDto.getMemberId(), Message.MEMBER_ID_NOT_EMPTY);
+			MemberDto member = memberService.getMemberDto(getWechatId(), detailDto.getMemberId());
+			notBlank(member, Message.MEMBER_NOT_EXIST);
+			CommonUtils.send2SocialWechatCoreApi(getWechatId(), member, detailDto.getNewid(), detailDto.getNewtype(), conversationService);
             return representation(Message.MATERIAL_IMAGE_TEXT_PUSH_WX_SUCCESS);
         } catch (Exception e) {
             log.error(e.getMessage());

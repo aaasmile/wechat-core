@@ -723,6 +723,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         }
     }
 
+    @Deprecated
     @Override
     public void previewMaterial(Integer wechatId, MaterialModel materialModel) {
         Integer id = materialModel.getId();
@@ -741,7 +742,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
             conversationModel.setMaterialId(materialModel.getId());
             conversationModel.setMemberId(materialModel.getMemberId());
             User user = (User) SecurityUtils.getSubject().getPrincipal();
-            conversationService.wechatToMember(wechatId, user, conversationModel);
+//            conversationService.wechatToMember(wechatId, user, conversationModel);
             return;
         }
 
