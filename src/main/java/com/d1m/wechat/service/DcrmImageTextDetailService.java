@@ -66,4 +66,11 @@ public interface DcrmImageTextDetailService {
      * @return
      */
     Map<String, Object> createQrcode(DcrmImageTextDetailDto dto);
+
+    /**
+     * 更新发送数量
+     * @param id
+     * @return
+     */
+    int updateSendTimes(Integer id);
 }
