@@ -59,7 +59,7 @@ import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 @Service
 public class MaterialServiceImpl extends BaseService<Material> implements MaterialService {
 
-    private static final String WEIXIN_DELETE_MATERIAL = "https://api.weixin.qq.com/cgi-bin/material/del_material?access_token={accessToken}";
+    private static final String WEIXIN_DELETE_MATERIAL = "https://api.weixin.qq.com/cgi-bin/material/del_material";
 
     @Resource
     private MaterialMapper materialMapper;
@@ -330,9 +330,9 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         }
 
         Map<String,Object> param = new HashMap<>();
-        param.put("accessToken",accessToken);
+        //param.put("accessToken",accessToken);
         param.put("mediaId",mediaId);
-        return restTemplate.postForEntity(WEIXIN_DELETE_MATERIAL,param,Response.class);
+        return restTemplate.postForEntity(WEIXIN_DELETE_MATERIAL+"?access_token="+accessToken,param,Response.class);
     }
     /**
      * 获取accessToken
