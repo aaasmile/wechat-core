@@ -304,7 +304,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
                     String accessToken = getAccesToken(wt.getAppid(),wt.getAppscret());
                     log.info("返回结果：{}", accessToken);
                     if (StringUtils.isNotBlank(accessToken)){
-                    ResponseEntity<Response> wxResponse = deleteMaterial(accessToken, materialDto.getMediaId());
+                        Object wxResponse = deleteMaterial(accessToken, materialDto.getMediaId());
                     log.info("删除微信上的永久素材返回结果：", JSON.toJSON(wxResponse));
                     /*if (wxResponse.getStatusCode()) {
                         throw new BusinessException(Message.MATERIAL_WX_NOT_DELETE, materialDto.getName());
@@ -317,7 +317,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
     }
 
 
-    private ResponseEntity<Response> deleteMaterial(String accessToken,String mediaId){
+    private Object deleteMaterial(String accessToken,String mediaId){
         log.info("删除永久素材请求入参：accessToken:{},mediaId:{}",accessToken,mediaId);
         if(StringUtils.isEmpty(accessToken)){
             log.info("accessToken不能为空");
@@ -332,7 +332,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         Map<String,Object> param = new HashMap<>();
         //param.put("accessToken",accessToken);
         param.put("mediaId",mediaId);
-        return restTemplate.postForEntity(WEIXIN_DELETE_MATERIAL+"?access_token="+accessToken,param,Response.class);
+        return restTemplate.postForEntity(WEIXIN_DELETE_MATERIAL+"?access_token="+accessToken,param,Object.class);
     }
     /**
      * 获取accessToken
