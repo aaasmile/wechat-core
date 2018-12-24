@@ -1037,13 +1037,15 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 		try {
 			String queueName = "social.wechat.core.api.conversation";
 			String content = om.writeValueAsString(obj);
-			org.json.JSONObject json = new org.json.JSONObject();
+			Map<String, String> json = new HashMap<String, String>();
 			json.put("table", table.getValue());
 			json.put("method", method.getValue());
 			json.put("content", content);
+			String message = om.writeValueAsString(json);
+			
 			rabbitTemplate.setRoutingKey(queueName);
 			rabbitTemplate.setQueue(queueName);
-			rabbitTemplate.convertAndSend(json.toString());
+			rabbitTemplate.convertAndSend(message);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
