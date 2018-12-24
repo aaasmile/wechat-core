@@ -279,9 +279,6 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 		if (massConversationModel == null) {
 			massConversationModel = new MassConversationModel();
 		}
-		if (massConversationModel.getMaterialId() == null && StringUtils.isBlank(massConversationModel.getContent())) {
-			throw new WechatException(Message.CONVERSATION_CONTENT_NOT_BLANK);
-		}
 		if (!massConversationModel.emptyQuery()) {
 			Long massMemberSize = preMassGetMembers(wechatId, massConversationModel);
 			if (null == massMemberSize || massMemberSize.longValue() == 0) {
