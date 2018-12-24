@@ -37,7 +37,7 @@ public class MaterialDto {
 
     private String typeName;
 
-    public String getTypeName() {
+        public String getTypeName() {
         return typeName;
     }
 
