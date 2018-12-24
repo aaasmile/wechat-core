@@ -307,8 +307,8 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
                         String result = deleteMaterial(accessToken, materialDto.getMediaId());
                         log.info("删除微信上的永久素材返回结果：{}", JSON.toJSON(result));
                         JSONObject jsonObject = JSONObject.parseObject(result);
-                        String errcode = (String) jsonObject.get("errcode");
-                        if (!errcode.equals("0")) {
+                        Integer errcode = (Integer) jsonObject.get("errcode");
+                        if (errcode != 0) {
                             throw new BusinessException(Message.MATERIAL_WX_NOT_DELETE, materialDto.getName());
                         }
                     }
