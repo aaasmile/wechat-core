@@ -25,6 +25,9 @@ ADD COLUMN `material_cover_url`  varchar(255) NULL COMMENT '封面图片素材ur
 ALTER TABLE `conversation`
 ADD COLUMN `summary`  varchar(255) NULL COMMENT '摘要' AFTER `material_cover_url`; 
 
+ALTER TABLE `conversation`
+ADD COLUMN `source` varchar(64) NULL COMMENT '来源' AFTER `event_name`;
+
 update conversation set event_name = (case `event` when 1 then 'subscribe' when 2 then 'unsubscribe'  
 when 3 then 'SCAN' when 4 then 'LOCATION' when 5 then 'CLICK' 
 when 6 then 'VIEW' when 7 then 'poi_check_notify' when 8 then 'MASSSENDJOBFINISH' 

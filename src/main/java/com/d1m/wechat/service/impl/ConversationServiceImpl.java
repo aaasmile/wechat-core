@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,6 +53,8 @@ import com.d1m.wechat.model.enums.MassConversationResultStatus;
 import com.d1m.wechat.model.enums.MaterialStatus;
 import com.d1m.wechat.model.enums.MaterialType;
 import com.d1m.wechat.model.enums.MsgType;
+import com.d1m.wechat.model.enums.RabbitmqMethod;
+import com.d1m.wechat.model.enums.RabbitmqTable;
 import com.d1m.wechat.pamametermodel.ConversationModel;
 import com.d1m.wechat.pamametermodel.MassConversationModel;
 import com.d1m.wechat.pamametermodel.MemberModel;
@@ -62,19 +65,18 @@ import com.d1m.wechat.service.DcrmImageTextDetailService;
 import com.d1m.wechat.service.MassConversationBatchResultService;
 import com.d1m.wechat.service.MaterialImageTextDetailService;
 import com.d1m.wechat.service.MaterialService;
-import com.d1m.wechat.service.MemberService;
 import com.d1m.wechat.util.Constants;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.IllegalArgumentUtil;
 import com.d1m.wechat.util.Message;
 import com.d1m.wechat.wechatclient.CustomService;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.xxl.job.core.biz.model.ReturnT;
 
 import cn.d1m.wechat.client.model.WxMessage;
-import cn.d1m.wechat.client.model.request.WxArticleMessage;
 import tk.mybatis.mapper.common.Mapper;
 
 @Service
@@ -84,9 +86,6 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 
 	@Autowired
 	private ConversationMapper conversationMapper;
-
-	@Autowired
-	private MemberService memberService;
 
 	@Autowired
 	private MemberMapper memberMapper;
@@ -128,80 +127,17 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 	}
 
 	@Override
-	public Conversation wechatToMember(Integer wechatId, User user, ConversationModel conversationModel) {
-		log.info("wechat to member start.");
-		if (conversationModel == null) {
-			conversationModel = new ConversationModel();
-		}
-		notBlank(conversationModel.getMemberId(), Message.MEMBER_ID_NOT_EMPTY);
-		if (conversationModel.getMaterialId() == null && StringUtils.isBlank(conversationModel.getContent())) {
-			throw new WechatException(Message.CONVERSATION_CONTENT_NOT_BLANK);
-		}
-		MemberDto member = memberService.getMemberDto(wechatId, conversationModel.getMemberId());
-		notBlank(member, Message.MEMBER_NOT_EXIST);
-
-		// 防止最后会话时间没更新，暂时屏蔽
-		/*
-		 * if (!member.isOnline()) { throw new
-		 * WechatException(Message.CONVERSATION_MEMBER_NOT_ONLINE); }
-		 */
-
+	public Conversation wechatToMember(Integer wechatId, User user, ConversationModel conversationModel, MemberDto member) {
+		log.info("ConversationServiceImpl...wechatToMember...");
 		Object message;
 		MsgType msgType = null;
 		Date current = new Date();
 		Material material = null;
-		List<ConversationImageTextDetail> conversationImageTextDetails = new ArrayList<ConversationImageTextDetail>();
-		ConversationImageTextDetail conversationImageTextDetail = null;
 		if (conversationModel.getMaterialId() != null) {
 			material = materialService.getMaterial(wechatId, conversationModel.getMaterialId());
 			notBlank(material, Message.MATERIAL_NOT_EXIST);
 			log.info("material mediaId : {}", material.getMediaId());
-			if (material.getMaterialType() == MaterialType.IMAGE_TEXT.getValue()) {
-				MaterialDto materialDto = materialService.getImageText(wechatId, conversationModel.getMaterialId());
-				log.info("items : {}", materialDto.getItems() != null ? materialDto.getItems().size() : "");
-				List<ImageTextDto> items = materialDto.getItems();
-				if (items != null && !items.isEmpty()) {
-					JSONArray itemArray = new JSONArray();
-					JSONObject itemJson = null;
-					for (ImageTextDto imageTextDto : items) {
-						conversationImageTextDetail = new ConversationImageTextDetail.Builder().build();
-						conversationImageTextDetail.setWechatId(imageTextDto.getWechatId());
-						conversationImageTextDetail.setAuthor(imageTextDto.getAuthor());
-						conversationImageTextDetail.setContent(imageTextDto.getContent());
-						conversationImageTextDetail.setContentSourceChecked(imageTextDto.getContentSourceChecked());
-						conversationImageTextDetail.setContentSourceUrl(imageTextDto.getContentSourceUrl());
-						conversationImageTextDetail.setShowCover(imageTextDto.isShowCover());
-						conversationImageTextDetail.setSummary(imageTextDto.getSummary());
-						conversationImageTextDetail.setTitle(imageTextDto.getTitle());
-						conversationImageTextDetail.setMaterialCoverUrl(imageTextDto.getMaterialCoverUrl());
-						conversationImageTextDetails.add(conversationImageTextDetail);
-						itemJson = new JSONObject();
-						itemJson.put("title", imageTextDto.getTitle());
-						itemJson.put("summary", imageTextDto.getSummary());
-						itemJson.put("materialCoverUrl", imageTextDto.getMaterialCoverUrl());
-						itemArray.add(itemJson);
-					}
-					log.info("content : {}", itemArray.toJSONString());
-					conversationModel.setContent(itemArray.toJSONString());
-				}
-				String mediaId = material.getMediaId();
-				if (mediaId != null) {
-					msgType = MsgType.MPNEWS;
-					message = material.getMediaId();
-				} else {
-					List<WxArticleMessage> articles = new ArrayList<WxArticleMessage>();
-					for (ImageTextDto imageTextDto : items) {
-						WxArticleMessage article = new WxArticleMessage();
-						article.setTitle(imageTextDto.getTitle());
-						article.setDescription(imageTextDto.getSummary());
-						article.setPicUrl(imageTextDto.getMaterialCoverUrl());
-						article.setUrl(imageTextDto.getContentSourceUrl());
-						articles.add(article);
-					}
-					msgType = MsgType.NEWS;
-					message = articles;
-				}
-			} else if (material.getMaterialType() == MaterialType.IMAGE.getValue()) {
+			if (material.getMaterialType() == MaterialType.IMAGE.getValue()) {
 				msgType = MsgType.IMAGE;
 				message = material.getMediaId();
 				conversationModel.setContent(material.getPicUrl());
@@ -219,35 +155,11 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 				throw new WechatException(Message.CONVERSATION_CONTENT_NOT_SUPPORT);
 			}
 		} else {
-			/**
-			 * MaterialTextDetail materialTextDetail = new MaterialTextDetail();
-			 * materialTextDetail.setContent(conversationModel.getContent());
-			 * materialTextDetail.setWechatId(wechatId); materialTextDetail =
-			 * materialTextDetailMapper .selectOne(materialTextDetail); if
-			 * (materialTextDetail == null) { material = new Material();
-			 * material.setCreatedAt(current); if (user != null) {
-			 * material.setCreatorId(user.getId()); } else { material.setCreatorId(-1); }
-			 * material.setMaterialType(MaterialType.TEXT.getValue());
-			 * material.setStatus(MaterialStatus.INUSED.getValue());
-			 * material.setWechatId(wechatId); materialService.save(material);
-			 * 
-			 * materialTextDetail = new MaterialTextDetail();
-			 * materialTextDetail.setContent(conversationModel.getContent());
-			 * materialTextDetail.setMaterialId(material.getId());
-			 * materialTextDetail.setWechatId(wechatId);
-			 * materialTextDetailMapper.insert(materialTextDetail); } else { material =
-			 * materialService.getMaterial(wechatId, materialTextDetail.getMaterialId()); }
-			 */
 			material = new Material();
 			msgType = MsgType.TEXT;
 			message = conversationModel.getContent();
 		}
-
 		log.info("msgType : {}", msgType);
-		// Customservice customservice = new Customservice();
-		// customservice.setKf_account(user != null ? user.getEmail() : null);
-		// kfcustomSend.setCustomservice(customservice);
-
 		Conversation conversation = new Conversation();
 		conversation.setContent(conversationModel.getContent());
 		conversation.setCreatedAt(current);
@@ -267,12 +179,6 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 		log.info("conversation : {}", conversation);
 		conversationMapper.insert(conversation);
 		log.info("conversation id : {}", conversation.getId());
-		if (!conversationImageTextDetails.isEmpty()) {
-			for (ConversationImageTextDetail citd : conversationImageTextDetails) {
-				citd.setConversationId(conversation.getId());
-			}
-			conversationImageTextDetailMapper.insertList(conversationImageTextDetails);
-		}
 		String msgtype = msgType.name().toLowerCase();
 		WechatClientDelegate.sendCustomMessage(wechatId, member.getOpenId(), msgtype, message);
 		log.info("send message success.");
@@ -372,9 +278,6 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 	public void preMassConversation(Integer wechatId, User user, MassConversationModel massConversationModel) {
 		if (massConversationModel == null) {
 			massConversationModel = new MassConversationModel();
-		}
-		if (massConversationModel.getMaterialId() == null && StringUtils.isBlank(massConversationModel.getContent())) {
-			throw new WechatException(Message.CONVERSATION_CONTENT_NOT_BLANK);
 		}
 		if (!massConversationModel.emptyQuery()) {
 			Long massMemberSize = preMassGetMembers(wechatId, massConversationModel);
@@ -1119,5 +1022,29 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 	@Override
 	public Page<UserLocation> selectUserLocation(Integer wechatId, ConversationModel conversationModel) {
 		return conversationMapper.selectUserLocation(wechatId, conversationModel.getMemberId());
+	}
+	
+	@Autowired
+	public RabbitTemplate rabbitTemplate;
+	
+	private static ObjectMapper om = new ObjectMapper();
+
+	@Override
+	public void send2SocialWechatCoreApi(RabbitmqTable table, RabbitmqMethod method, Object obj) {
+		try {
+			String queueName = "social.wechat.core.api.conversation";
+			String content = om.writeValueAsString(obj);
+			Map<String, String> json = new HashMap<String, String>();
+			json.put("table", table.getValue());
+			json.put("method", method.getValue());
+			json.put("content", content);
+			String message = om.writeValueAsString(json);
+			
+			rabbitTemplate.setRoutingKey(queueName);
+			rabbitTemplate.setQueue(queueName);
+			rabbitTemplate.convertAndSend(message);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
 	}
 }

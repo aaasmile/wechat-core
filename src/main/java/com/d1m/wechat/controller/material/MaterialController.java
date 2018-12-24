@@ -6,13 +6,17 @@ import com.d1m.wechat.controller.file.Upload;
 import com.d1m.wechat.controller.file.UploadController;
 import com.d1m.wechat.dto.MaterialDto;
 import com.d1m.wechat.dto.MaterialImageTextDetailDto;
+import com.d1m.wechat.dto.MemberDto;
 import com.d1m.wechat.model.Material;
 import com.d1m.wechat.model.MaterialImageTextDetail;
 import com.d1m.wechat.pamametermodel.ImageModel;
 import com.d1m.wechat.pamametermodel.ImageTextModel;
 import com.d1m.wechat.pamametermodel.MaterialModel;
+import com.d1m.wechat.service.ConversationService;
 import com.d1m.wechat.service.MaterialImageTextDetailService;
 import com.d1m.wechat.service.MaterialService;
+import com.d1m.wechat.service.MemberService;
+import com.d1m.wechat.util.CommonUtils;
 import com.d1m.wechat.util.Constants;
 import com.d1m.wechat.util.Message;
 import com.d1m.wechat.util.StringUtils;
@@ -56,6 +60,11 @@ public class MaterialController extends BaseController {
 
     @Autowired
     private MaterialImageTextDetailService materialImageTextDetailService;
+    
+    @Autowired
+	private MemberService memberService;
+    @Autowired
+	private ConversationService conversationService;
 
     /**
      * 图片素材推送到微信
@@ -109,8 +118,10 @@ public class MaterialController extends BaseController {
             HttpSession session, HttpServletRequest request,
             HttpServletResponse response) {
         try {
-            materialService
-                    .previewMaterial(getWechatId(session), materialModel);
+        	notBlank(materialModel.getMemberId(), Message.MEMBER_ID_NOT_EMPTY);
+			MemberDto member = memberService.getMemberDto(getWechatId(), materialModel.getMemberId());
+			notBlank(member, Message.MEMBER_NOT_EXIST);
+			CommonUtils.send2SocialWechatCoreApi(getWechatId(), member, materialModel.getNewid(), materialModel.getNewtype(), conversationService);
             return representation(Message.MATERIAL_IMAGE_TEXT_PUSH_WX_SUCCESS);
         } catch (Exception e) {
             log.error(e.getMessage());
