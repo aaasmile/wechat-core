@@ -33,24 +33,16 @@ public class MaterialDto {
 
     private String name;
 
-    private String materialTypeId;
+    private String materialCategoryId;
 
     private String typeName;
 
-    public String getTypeName() {
+        public String getTypeName() {
         return typeName;
     }
 
     public void setTypeName(String typeName) {
         this.typeName = typeName;
-    }
-
-    public String getMaterialTypeId() {
-        return materialTypeId;
-    }
-
-    public void setMaterialTypeId(String materialTypeId) {
-        this.materialTypeId = materialTypeId;
     }
 
     //	private Integer comment;
@@ -160,6 +152,16 @@ public class MaterialDto {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String getMaterialCategoryId() {
+        return materialCategoryId;
+    }
+
+    public void setMaterialCategoryId(String materialCategoryId) {
+        this.materialCategoryId = materialCategoryId;
+    }
+
+
 
     //	public Integer getComment() {
 //		return comment;

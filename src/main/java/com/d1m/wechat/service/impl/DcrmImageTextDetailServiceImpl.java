@@ -5,27 +5,26 @@ import cn.d1m.wechat.client.model.WxQRCode;
 import cn.d1m.wechat.client.model.common.WxFile;
 import com.alibaba.fastjson.JSON;
 import com.d1m.wechat.dto.DcrmImageTextDetailDto;
-import com.d1m.wechat.dto.QrcodeDto;
 import com.d1m.wechat.dto.QueryDto;
-import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.*;
 import com.d1m.wechat.model.*;
 import com.d1m.wechat.model.enums.MaterialStatus;
-import com.d1m.wechat.pamametermodel.ConversationModel;
 import com.d1m.wechat.service.*;
 import com.d1m.wechat.util.*;
+import com.d1m.wechat.wechatclient.CustomService;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.log4j.Logger;
-import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
@@ -40,6 +39,7 @@ import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 @Service
 public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailService {
     private Logger logger = Logger.getLogger(getClass());
+    private static final String SOCIAL_WECHAT_API = "http://social-wechat-api:10011/custom/sender/";
     @Autowired
     private MaterialMapper materialMapper;
 
@@ -64,7 +64,10 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
     private QrcodeActionEngineMapper qrcodeActionEngineMapper;
 
     @Autowired
-    private CustomerService customerService;
+    private CustomService customService;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Override
     public int save(DcrmImageTextDetailDto dto) {
@@ -101,10 +104,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
     }
 
 
-    /**
-     * 发送非群发单图文
-     * @param detailDto
-     */
+    @Override
     public void previewMaterial(DcrmImageTextDetailDto detailDto) {
         try {
             List<Articles> articlesList = new ArrayList<>();
@@ -115,23 +115,30 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
              detailDto.getMemberId());
             notBlank(member, Message.MEMBER_NOT_EXIST);
             DcrmImageTextDetailDto dto = queryObject(id);
+            logger.info("查询非群发图文结果：" + JSON.toJSON(dto));
             Material material = new Material();
             if (dto.getMaterialCoverId() != null) {
                 material = materialService.getMaterial(detailDto.getWechatId(), dto.getMaterialCoverId());
+                logger.info("查询素材信息：" + JSON.toJSON(material));
                 //发送图文
                 Articles articles = new Articles.Builder()
                  .picurl(material.getPicUrl())
-                 .url(material.getUrl())
+                 .url(dto.getLink())
                  .description(dto.getContent())
                  .title(dto.getTitle()).build();
                 articlesList.add(articles);
                 News news = new News.Builder().articles(articlesList).build();
                 CustomRequestBody customRequestBody = new CustomRequestBody.Builder()
-                 .touser(String.valueOf(detailDto.getCreatedBy()))
-                 .news(news)
+                 .touser(member.getOpenId())
                  .msgtype("news")
+                 .news(news)
                  .build();
-                //String result = customerService.sender(customRequestBody, dto.getWechatId());
+                logger.info("请求发送非群发图文消息入参：" + JSON.toJSON(customRequestBody));
+                String socialWechatApi = System.getProperty("social.wechat.api") == null ? SOCIAL_WECHAT_API : System.getProperty("social.wechat.api");
+                String customUrl = socialWechatApi + detailDto.getWechatId();
+                //String result = customService.sender(customRequestBody, dto.getWechatId());
+                String result = restTemplate.postForObject(customUrl, customRequestBody, String.class);
+                logger.info("调用发送非群发图文接口返回：" + result);
             }
         } catch (Exception e) {
             e.printStackTrace();
