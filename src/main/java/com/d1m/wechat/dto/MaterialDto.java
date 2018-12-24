@@ -37,17 +37,7 @@ public class MaterialDto {
 
     private String typeName;
 
-    private String materialCategoryId;
-
-    public String getMaterialCategoryId() {
-        return materialCategoryId;
-    }
-
-    public void setMaterialCategoryId(String materialCategoryId) {
-        this.materialCategoryId = materialCategoryId;
-    }
-
-    public String getTypeName() {
+        public String getTypeName() {
         return typeName;
     }
 
