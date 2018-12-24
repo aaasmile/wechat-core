@@ -301,15 +301,17 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
                 wechat.setId(wechatId);
                 Wechat wt = wechatMapper.selectByPrimaryKey(wechat);
                 if (wt != null) {
-                    String accessToken = getAccesToken(wt.getAppid(),wt.getAppscret());
+                    String accessToken = getAccesToken(wt.getAppid(), wt.getAppscret());
                     log.info("返回结果：{}", accessToken);
-                    if (StringUtils.isNotBlank(accessToken)){
-                        String wxResponse = deleteMaterial(accessToken, materialDto.getMediaId());
-                    log.info("删除微信上的永久素材返回结果：", JSON.toJSON(wxResponse));
-                    /*if (wxResponse.getStatusCode()) {
-                        throw new BusinessException(Message.MATERIAL_WX_NOT_DELETE, materialDto.getName());
-                    }*/
-                }
+                    if (StringUtils.isNotBlank(accessToken)) {
+                        String result = deleteMaterial(accessToken, materialDto.getMediaId());
+                        log.info("删除微信上的永久素材返回结果：{}", JSON.toJSON(result));
+                        JSONObject jsonObject = JSONObject.parseObject(result);
+                        String errcode = (String) jsonObject.get("errcode");
+                        if (!errcode.equals("0")) {
+                            throw new BusinessException(Message.MATERIAL_WX_NOT_DELETE, materialDto.getName());
+                        }
+                    }
                 }
             }
         }
@@ -317,27 +319,29 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
     }
 
 
-    private String deleteMaterial(String accessToken,String mediaId){
-        log.info("删除永久素材请求入参：accessToken:{},mediaId:{}",accessToken,mediaId);
-        if(StringUtils.isEmpty(accessToken)){
+    private String deleteMaterial(String accessToken, String mediaId) {
+        log.info("删除永久素材请求入参：accessToken:{},mediaId:{}", accessToken, mediaId);
+        if (StringUtils.isEmpty(accessToken)) {
             log.info("accessToken不能为空");
             return null;
         }
 
-        if(StringUtils.isEmpty(mediaId)){
+        if (StringUtils.isEmpty(mediaId)) {
             log.info("mediaId不能为空");
             return null;
         }
 
-        Map<String,Object> param = new HashMap<>();
+        Map<String, Object> param = new HashMap<>();
         //param.put("accessToken",accessToken);
-        param.put("media_id",mediaId);
-        String url=WEIXIN_DELETE_MATERIAL+"?access_token="+accessToken;
-        log.debug("请求url：{}",url);
-        return restTemplate.postForObject(url,param,String.class);
+        param.put("media_id", mediaId);
+        String url = WEIXIN_DELETE_MATERIAL + "?access_token=" + accessToken;
+        log.debug("请求url：{}", url);
+        return restTemplate.postForObject(url, param, String.class);
     }
+
     /**
      * 获取accessToken
+     *
      * @param appid
      * @param appscret
      * @return
@@ -346,8 +350,8 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         String accessToken = null;
         try {
             String result = restTemplate.getForObject(System.getProperty("wechat_token_server") + "/access-token/" + appid + "/" + appscret, String.class);
-            log.info("请求获取accessToken接口返回：{}",result);
-            JSONObject jsonObject= JSONObject.parseObject(result);
+            log.info("请求获取accessToken接口返回：{}", result);
+            JSONObject jsonObject = JSONObject.parseObject(result);
             accessToken = (String) jsonObject.get("data");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
