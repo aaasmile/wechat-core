@@ -39,6 +39,9 @@ public class MaterialModel {
     private Boolean push;
 
     private Integer memberId;
+    
+	private Integer newid;
+	private String newtype;
 
 	public Integer getId() {
 		return id;
@@ -126,5 +129,21 @@ public class MaterialModel {
 
 	public void setMemberId(Integer memberId) {
 		this.memberId = memberId;
+	}
+
+	public Integer getNewid() {
+		return newid;
+	}
+
+	public void setNewid(Integer newid) {
+		this.newid = newid;
+	}
+
+	public String getNewtype() {
+		return newtype;
+	}
+
+	public void setNewtype(String newtype) {
+		this.newtype = newtype;
 	}
 }
