@@ -124,6 +124,9 @@ public class DcrmImageTextDetailDto implements Serializable {
      * 二维码id
      */
     private Integer qrcodeId;
+    
+	private Integer newid;
+	private String newtype;
 
     public String getTagName() {
         return tagName;
@@ -332,4 +335,20 @@ public class DcrmImageTextDetailDto implements Serializable {
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
     }
+
+	public Integer getNewid() {
+		return newid;
+	}
+
+	public void setNewid(Integer newid) {
+		this.newid = newid;
+	}
+
+	public String getNewtype() {
+		return newtype;
+	}
+
+	public void setNewtype(String newtype) {
+		this.newtype = newtype;
+	}
 }

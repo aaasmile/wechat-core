@@ -1,7 +1,11 @@
 package com.d1m.wechat.controller.conversation;
 
+import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -26,16 +30,20 @@ import com.d1m.wechat.dto.ConversationDto;
 import com.d1m.wechat.dto.ImageTextDto;
 import com.d1m.wechat.dto.MaterialDto;
 import com.d1m.wechat.dto.MemberDto;
+import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.model.Conversation;
 import com.d1m.wechat.model.UserBehavior;
 import com.d1m.wechat.model.UserLocation;
 import com.d1m.wechat.model.enums.MassConversationResultStatus;
 import com.d1m.wechat.model.enums.MsgType;
+import com.d1m.wechat.model.enums.RabbitmqMethod;
+import com.d1m.wechat.model.enums.RabbitmqTable;
 import com.d1m.wechat.pamametermodel.ConversationModel;
 import com.d1m.wechat.pamametermodel.MassConversationModel;
 import com.d1m.wechat.service.ConversationService;
 import com.d1m.wechat.service.MaterialService;
 import com.d1m.wechat.service.MemberService;
+import com.d1m.wechat.util.CommonUtils;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
@@ -111,8 +119,22 @@ public class ConversationController extends BaseController {
 	@RequestMapping(value = "kfmember.json", method = RequestMethod.POST)
 	public JSONObject create(@ApiParam(name = "ConversationModel", required = false) @RequestBody(required = false) ConversationModel conversationModel, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		try {
-			Conversation conversation = conversationService.wechatToMember(getWechatId(session), getUser(session), conversationModel);
-			MemberDto member = memberService.getMemberDto(getWechatId(session), conversation.getMemberId());
+			if (conversationModel == null) {
+				conversationModel = new ConversationModel();
+			}
+			notBlank(conversationModel.getMemberId(), Message.MEMBER_ID_NOT_EMPTY);
+			MemberDto member = memberService.getMemberDto(getWechatId(), conversationModel.getMemberId());
+			notBlank(member, Message.MEMBER_NOT_EXIST);
+			//转发至social-wechat-core-api
+			if(conversationModel.getNewid() != null) {
+				CommonUtils.send2SocialWechatCoreApi(getWechatId(), member, conversationModel.getNewid(), conversationModel.getNewtype(), conversationService);
+				ConversationDto dto = new ConversationDto();
+				return representation(Message.CONVERSATION_CREATE_SUCCESS, dto);
+			}
+			else if (conversationModel.getMaterialId() == null && StringUtils.isBlank(conversationModel.getContent())) {
+				throw new WechatException(Message.CONVERSATION_CONTENT_NOT_BLANK);
+			}
+			Conversation conversation = conversationService.wechatToMember(getWechatId(), getUser(), conversationModel, member);
 			ConversationDto dto = new ConversationDto();
 			dto.setId(conversation.getId());
 			dto.setCreatedAt(DateUtil.formatYYYYMMDDHHMMSS(conversation.getCreatedAt()));
