@@ -304,7 +304,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
                     String accessToken = getAccesToken(wt.getAppid(),wt.getAppscret());
                     log.info("返回结果：{}", accessToken);
                     if (StringUtils.isNotBlank(accessToken)){
-                        Object wxResponse = deleteMaterial(accessToken, materialDto.getMediaId());
+                        String wxResponse = deleteMaterial(accessToken, materialDto.getMediaId());
                     log.info("删除微信上的永久素材返回结果：", JSON.toJSON(wxResponse));
                     /*if (wxResponse.getStatusCode()) {
                         throw new BusinessException(Message.MATERIAL_WX_NOT_DELETE, materialDto.getName());
@@ -317,7 +317,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
     }
 
 
-    private Object deleteMaterial(String accessToken,String mediaId){
+    private String deleteMaterial(String accessToken,String mediaId){
         log.info("删除永久素材请求入参：accessToken:{},mediaId:{}",accessToken,mediaId);
         if(StringUtils.isEmpty(accessToken)){
             log.info("accessToken不能为空");
@@ -331,8 +331,10 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
 
         Map<String,Object> param = new HashMap<>();
         //param.put("accessToken",accessToken);
-        param.put("mediaId",mediaId);
-        return restTemplate.postForEntity(WEIXIN_DELETE_MATERIAL+"?access_token="+accessToken,param,Object.class);
+        param.put("media_id",mediaId);
+        String url=WEIXIN_DELETE_MATERIAL+"?access_token="+accessToken;
+        log.debug("请求url：{}",url);
+        return restTemplate.postForObject(url,param,String.class);
     }
     /**
      * 获取accessToken
@@ -343,7 +345,6 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
     private String getAccesToken(String appid, String appscret) {
         String accessToken = null;
         try {
-            //String url = System.getProperty("wechat_token_server")!=null?System.getProperty("wechat_token_server"):accesTokenURL;
             String result = restTemplate.getForObject(System.getProperty("wechat_token_server") + "/access-token/" + appid + "/" + appscret, String.class);
             log.info("请求获取accessToken接口返回：{}",result);
             JSONObject jsonObject= JSONObject.parseObject(result);
