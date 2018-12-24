@@ -5,27 +5,22 @@ import cn.d1m.wechat.client.model.WxQRCode;
 import cn.d1m.wechat.client.model.common.WxFile;
 import com.alibaba.fastjson.JSON;
 import com.d1m.wechat.dto.DcrmImageTextDetailDto;
-import com.d1m.wechat.dto.QrcodeDto;
 import com.d1m.wechat.dto.QueryDto;
-import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.*;
 import com.d1m.wechat.model.*;
 import com.d1m.wechat.model.enums.MaterialStatus;
-import com.d1m.wechat.pamametermodel.ConversationModel;
 import com.d1m.wechat.service.*;
 import com.d1m.wechat.util.*;
+import com.d1m.wechat.wechatclient.CustomService;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.log4j.Logger;
-import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
@@ -64,7 +59,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
     private QrcodeActionEngineMapper qrcodeActionEngineMapper;
 
     @Autowired
-    private CustomerService customerService;
+    private CustomService customService;
 
     @Override
     public int save(DcrmImageTextDetailDto dto) {
@@ -101,37 +96,45 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
     }
 
 
+    @Override
     public void previewMaterial(DcrmImageTextDetailDto detailDto) {
-        String json ="这里是feigin调用方式";
-        /*String result = customerService.send(json);
-        logger.info("结果是："+result);*/
-        Integer id = detailDto.getId();
-        notBlank(id, Message.MATERIAL_ID_NOT_BLANK);
-        notBlank(detailDto.getMemberId(), Message.MEMBER_ID_NOT_EMPTY);
-        Member member = memberService.getMember(detailDto.getWechatId(),
-         detailDto.getMemberId());
-        notBlank(member, Message.MEMBER_NOT_EXIST);
-        DcrmImageTextDetailDto dto = queryObject(id);
-        Material material = new Material();
-        if (dto.getMaterialCoverId() != null) {
-            material = materialService.getMaterial(detailDto.getWechatId(), dto.getMaterialCoverId());
-            ConversationModel conversationModel = new ConversationModel();
-            conversationModel.setMaterialId(material.getId());
-            conversationModel.setMemberId(detailDto.getMemberId());
-            User user = (User) SecurityUtils.getSubject().getPrincipal();
-            conversationService.wechatToMember(detailDto.getWechatId(), user, conversationModel);
-
-            //发送图文
-            if (member.getWechatId() != null) {
-                WxMessage wxMessage = WechatClientDelegate.previewMessage(detailDto.getWechatId(), member.getOpenId()
-                 , "mpnews", material.getMediaId());
-                if (wxMessage.fail()) {
-                    throw new WechatException(Message.WEIXIN_HTTPS_REQUEST_ERROR);
-                }
+        try {
+            List<Articles> articlesList = new ArrayList<>();
+            Integer id = detailDto.getId();
+            notBlank(id, Message.MATERIAL_ID_NOT_BLANK);
+            notBlank(detailDto.getMemberId(), Message.MEMBER_ID_NOT_EMPTY);
+            Member member = memberService.getMember(detailDto.getWechatId(),
+             detailDto.getMemberId());
+            notBlank(member, Message.MEMBER_NOT_EXIST);
+            DcrmImageTextDetailDto dto = queryObject(id);
+            logger.info("查询非群发图文结果：" + JSON.toJSON(dto));
+            Material material = new Material();
+            if (dto.getMaterialCoverId() != null) {
+                material = materialService.getMaterial(detailDto.getWechatId(), dto.getMaterialCoverId());
+                logger.info("查询素材信息："+JSON.toJSON(material));
+                //发送图文
+                Articles articles = new Articles.Builder()
+                 .picurl(material.getPicUrl())
+                 .url(dto.getLink())
+                 .description(dto.getContent())
+                 .title(dto.getTitle()).build();
+                articlesList.add(articles);
+                News news = new News.Builder().articles(articlesList).build();
+                CustomRequestBody customRequestBody = new CustomRequestBody.Builder()
+                 .touser(member.getOpenId())
+                 .msgtype("news")
+                 .news(news)
+                 .build();
+                logger.info("请求发送非群发图文消息入参：" + JSON.toJSON(customRequestBody));
+                String result = customService.sender(customRequestBody, dto.getWechatId());
+                logger.info("调用发送非群发图文接口返回：" + result);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
+
 
     @Override
     public Map<String, Object> createQrcode(DcrmImageTextDetailDto dto) {
@@ -189,7 +192,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         String sceneStr = Rand.getRandom(32);
         Integer expire_scends = 259200;//有效期为3天
         WxQRCode wxQrcode = WechatClientDelegate.createQRCode(dto.getWechatId(), expire_scends, sceneStr);
-        logger.info("wxQrcode:"+JSON.toJSON(wxQrcode));
+        logger.info("wxQrcode:" + JSON.toJSON(wxQrcode));
         Qrcode qr = new Qrcode();
         qr.setStatus((byte) 1);
         qr.setWechatId(dto.getWechatId());
@@ -212,14 +215,14 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
          + dir.getName()
          + File.separator + wxFile.getFilename());
         int t = qrcodeMapper.insert(qr);
-        logger.info("【插入二维码】二维码图片表结果：" + t+"二维码编号："+qr.getId());
+        logger.info("【插入二维码】二维码图片表结果：" + t + "二维码编号：" + qr.getId());
         //更新非群发单图文表中二维码id
         DcrmImageTextDetail detail = new DcrmImageTextDetail();
         detail.setId(dto.getId());
         detail.setQrcodeId(qr.getId());
         dcrmImageTextDetailMapper.updateByPrimaryKeySelective(detail);
         //插入effect和关系表
-        saveEngine(dto,qr);
+        saveEngine(dto, qr);
         String qrcodeImgUrl = qr.getQrcodeImgUrl();
         logger.info("【插入二维码】二维码图片地址：" + qrcodeImgUrl);
         return qrcodeImgUrl;
@@ -263,19 +266,19 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         int t = qrcodeMapper.updateByPrimaryKeySelective(qr);
         logger.info("【更新二维码】二维码图片表结果：" + t);
         //插入effect和关系表
-        saveEngine(dto,qr);
+        saveEngine(dto, qr);
         String qrcodeImgUrl = qr.getQrcodeImgUrl();
         logger.info("【更新二维码】二维码图片地址：" + qrcodeImgUrl);
         return qrcodeImgUrl;
     }
 
-    private void saveEngine(DcrmImageTextDetailDto dto,Qrcode qrcode){
+    private void saveEngine(DcrmImageTextDetailDto dto, Qrcode qrcode) {
         ActionEngine actionEngine = new ActionEngine();
-        String effect ="[{\"code\":301,\"value\":["+dto.getId()+"]}]";
+        String effect = "[{\"code\":301,\"value\":[" + dto.getId() + "]}]";
         actionEngine.setEffect(effect);
         actionEngine.setEndAt(new Date());
         actionEngine.setStartAt(new Date());
-        actionEngine.setRunType((byte)1);
+        actionEngine.setRunType((byte) 1);
         actionEngine.setStatus(MaterialStatus.INUSED.getValue());
         actionEngine.setName(dto.getTitle());
         actionEngine.setWechatId(dto.getWechatId());

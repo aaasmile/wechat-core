@@ -52,6 +52,8 @@ public enum MsgType {
 	 * 接收事件推送
 	 */
 	EVENT((byte) 10, "事件"),
+	WECHATNEWS((byte) 21, "微信图文"),
+	DCRMNEWS((byte) 22, "非群发图文"),
 	/**
 	 * 接收事件推送
 	 */

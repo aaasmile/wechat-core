@@ -33,4 +33,13 @@ public class Wxcard {
 	private Wxcard(Builder builder) {
 		this.card_id = builder.card_id;
 	}
+
+	public Wxcard(String card_id) {
+		super();
+		this.card_id = card_id;
+	}
+
+	public Wxcard() {
+		super();
+	}
 }

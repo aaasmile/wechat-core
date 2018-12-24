@@ -96,4 +96,17 @@ public class Music {
 		this.hqmusicurl = builder.hqmusicurl;
 		this.thumb_media_id = builder.thumb_media_id;
 	}
+
+	public Music(String title, String description, String musicurl, String hqmusicurl, String thumb_media_id) {
+		super();
+		this.title = title;
+		this.description = description;
+		this.musicurl = musicurl;
+		this.hqmusicurl = hqmusicurl;
+		this.thumb_media_id = thumb_media_id;
+	}
+
+	public Music() {
+		super();
+	}
 }

@@ -74,7 +74,7 @@ public class BaseResponse<T> {
         }
 
         public BaseResponse build() {
-            return new BaseResponse(this);
+            return new BaseResponse<>(this);
         }
     }
 
