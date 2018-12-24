@@ -4,8 +4,10 @@ import java.util.Date;
 import java.util.List;
 
 import com.d1m.wechat.model.*;
-
+import com.d1m.wechat.model.enums.RabbitmqMethod;
+import com.d1m.wechat.model.enums.RabbitmqTable;
 import com.d1m.wechat.dto.ConversationDto;
+import com.d1m.wechat.dto.MemberDto;
 import com.d1m.wechat.dto.ReportMessageDto;
 import com.d1m.wechat.pamametermodel.ConversationModel;
 import com.d1m.wechat.pamametermodel.MassConversationModel;
@@ -13,7 +15,9 @@ import com.github.pagehelper.Page;
 
 public interface ConversationService extends IService<Conversation> {
 
-	Conversation wechatToMember(Integer wechatId, User user, ConversationModel conversationModel);
+	public void send2SocialWechatCoreApi(RabbitmqTable table, RabbitmqMethod method, Object obj);
+	
+	Conversation wechatToMember(Integer wechatId, User user, ConversationModel conversationModel, MemberDto member);
 
 	Page<ConversationDto> search(Integer wechatId, ConversationModel conversationModel, boolean queryCount);
 
