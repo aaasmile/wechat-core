@@ -32,7 +32,17 @@ public class ImageTextDto {
 
 	private Integer comment;
 
-    public Integer getWechatId() {
+	private String remarks;
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+
+	public Integer getWechatId() {
         return wechatId;
     }
 
