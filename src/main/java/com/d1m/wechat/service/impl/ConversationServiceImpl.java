@@ -515,9 +515,6 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 		
 		
 		IllegalArgumentUtil.notBlank(massConversationResult, Message.CONVERSATION_MASS_NOT_EXIST);
-		if (massConversationResult.getMaterialId() == null) {
-			throw new WechatException(Message.CONVERSATION_CONTENT_NOT_BLANK);
-		}
 		MassConversationModel condition = JSONObject.parseObject(massConversationResult.getConditions(), MassConversationModel.class);
 
 		Byte materialType = null;
@@ -525,6 +522,9 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 		if(MsgType.DCRMNEWS.getValue() == massConversationResult.getMsgType() || MsgType.WECHATNEWS.getValue() == massConversationResult.getMsgType()) {
 			materialType = massConversationResult.getMsgType();
 		} else {
+			if (massConversationResult.getMaterialId() == null) {
+				throw new WechatException(Message.CONVERSATION_CONTENT_NOT_BLANK);
+			}
 			material = materialService.getMaterial(wechatId, massConversationResult.getMaterialId());
 			notBlank(material, Message.MATERIAL_NOT_EXIST);
 			materialType = material.getMaterialType();
