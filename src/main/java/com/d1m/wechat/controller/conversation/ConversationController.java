@@ -4,9 +4,7 @@ import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -41,8 +39,6 @@ import com.d1m.wechat.model.UserLocation;
 import com.d1m.wechat.model.enums.ConversationStatus;
 import com.d1m.wechat.model.enums.MassConversationResultStatus;
 import com.d1m.wechat.model.enums.MsgType;
-import com.d1m.wechat.model.enums.RabbitmqMethod;
-import com.d1m.wechat.model.enums.RabbitmqTable;
 import com.d1m.wechat.pamametermodel.ConversationModel;
 import com.d1m.wechat.pamametermodel.MassConversationModel;
 import com.d1m.wechat.service.ConversationService;
@@ -327,12 +323,16 @@ public class ConversationController extends BaseController {
 					item.setTitle(imageTextDto.getTitle());
 					item.setSummary(imageTextDto.getSummary());
 					item.setMaterialCoverUrl(imageTextDto.getCoverPicUrl());
+					item.setId(imageTextDto.getId());
+					conversationDto.setNewtype("dcrm");
 				} else {
 					MaterialImageTextDetail imageTextDto = materialImageTextDetailService.selectByKey(condition.getNewid());
 					Material material = materialService.selectByKey(imageTextDto.getMaterialCoverId());
 					item.setTitle(imageTextDto.getTitle());
 					item.setSummary(imageTextDto.getSummary());
 					item.setMaterialCoverUrl(material.getPicUrl());
+					item.setId(imageTextDto.getId());
+					conversationDto.setNewtype("wechat");
 				}
 				itemDtos.add(item);
 				conversationDto.setItems(itemDtos);

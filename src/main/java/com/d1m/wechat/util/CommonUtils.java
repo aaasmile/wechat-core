@@ -59,6 +59,7 @@ public class CommonUtils {
 		member.MemberToMap(wechatMessage);
 		wechatMessage.put("wechatId", wechatId.toString());
 		wechatMessage.put("FromUserName", member.getOpenId());
+		wechatMessage.put("MsgType", "news");
 		if("dcrm".equals(newtype)) {
 			wechatMessage.put("dcrmImageTextDetailId", newid.toString());
 			conversationService.send2SocialWechatCoreApi(RabbitmqTable.DCRM_IMAGE_TEXT, RabbitmqMethod.SEND_DCRM_IMAGE_TEXT, wechatMessage);

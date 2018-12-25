@@ -523,10 +523,8 @@ public class MaterialController extends BaseController {
             @PathVariable Integer id,
             HttpSession session, HttpServletRequest request,
             HttpServletResponse response) {
-        MaterialDto materialDto = materialService.getImageText(
-                getWechatId(session), id);
-        return representation(Message.MATERIAL_IMAGE_TEXT_GET_SUCCESS,
-                materialDto);
+        MaterialDto materialDto = materialService.getImageText(getWechatId(), id);
+        return representation(Message.MATERIAL_IMAGE_TEXT_GET_SUCCESS, materialDto);
     }
 
     /**
