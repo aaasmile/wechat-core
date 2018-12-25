@@ -513,7 +513,6 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 		massConversationResult.setStatus(MassConversationResultStatus.getByName(massConversationModel.getStatus()).getValue());
 		massConversationResult = massConversationResultMapper.selectOne(massConversationResult);
 		
-		
 		IllegalArgumentUtil.notBlank(massConversationResult, Message.CONVERSATION_MASS_NOT_EXIST);
 		MassConversationModel condition = JSONObject.parseObject(massConversationResult.getConditions(), MassConversationModel.class);
 
@@ -545,6 +544,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 			List<ConversationImageTextDetail> conversationImageTextDetails = new ArrayList<ConversationImageTextDetail>();
 			ConversationImageTextDetail conversationImageTextDetail = null;
 			if (materialType == MaterialType.IMAGE_TEXT.getValue()) {
+				log.info("materialType..." + MaterialType.IMAGE_TEXT.toString());
 				MaterialDto materialDto = materialService.getImageText(wechatId, massConversationResult.getMaterialId());
 				List<ImageTextDto> items = materialDto.getItems();
 				JSONArray itemArray = new JSONArray();
@@ -573,10 +573,12 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 				msgType = MsgType.MPNEWS;
 				message = material.getMediaId();
 			} else if (materialType == MaterialType.IMAGE.getValue()) {
+				log.info("materialType..." + MaterialType.IMAGE.toString());
 				msgType = MsgType.IMAGE;
 				message = material.getMediaId();
 				massConversationModel.setContent(material.getPicUrl());
 			} else if (materialType == MaterialType.TEXT.getValue()) {
+				log.info("materialType..." + MaterialType.TEXT.toString());
 				MaterialTextDetail materialTextDetail = new MaterialTextDetail();
 				materialTextDetail.setMaterialId(material.getId());
 				materialTextDetail.setWechatId(material.getWechatId());
@@ -588,12 +590,13 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 				massConversationModel.setContent(materialTextDetail.getContent());
 			} 
 			else if(materialType == MaterialType.DCRMNEWS.getValue()) {
+				log.info("materialType..." + MaterialType.DCRMNEWS.toString());
 				Integer id = condition.getNewid();
 				DcrmImageTextDetailDto dto = dcrmImageTextDetailService.queryObject(id);
 				ConversationImageTextDetail details = new ConversationImageTextDetail.Builder()
 						.title(dto.getTitle()).content(dto.getContent()).contentSourceUrl(dto.getLink()).materialCoverUrl(dto.getCoverPicUrl())
 						.build();
-				Material materialR = materialService.getMaterial(wechatId, massConversationResult.getMaterialId());
+				Material materialR = materialService.getMaterial(wechatId, dto.getMaterialId());
 				material = materialR;
 				JSONObject itemJson = new JSONObject();
 				itemJson.put("id", dto.getId());
@@ -606,9 +609,10 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 				conversationImageTextDetails.add(details);
 			}
 			else if(materialType == MaterialType.WECHATNEWS.getValue()) {
+				log.info("materialType..." + MaterialType.WECHATNEWS.toString());
 				Integer id = condition.getNewid();
 				MaterialImageTextDetail dto = materialImageTextDetailService.selectByKey(id);
-				Material materialR = materialService.getMaterial(wechatId, massConversationResult.getMaterialId());
+				Material materialR = materialService.getMaterial(wechatId, dto.getMaterialId());
 				material = materialR;
 				ConversationImageTextDetail details = new ConversationImageTextDetail.Builder()
 						.title(dto.getTitle()).content(dto.getContent()).contentSourceUrl(dto.getContentSourceUrl()).materialCoverUrl(materialR.getPicUrl())
