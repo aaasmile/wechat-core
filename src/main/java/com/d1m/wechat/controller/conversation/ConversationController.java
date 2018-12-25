@@ -171,14 +171,14 @@ public class ConversationController extends BaseController {
 					itemArray.add(itemJson);
 					conversation.setContent(itemArray.toJSONString());
 					conversation.setMaterialId(imageTextDto.getMaterialId());
-				} else {
-					conversation = conversationService.wechatToMember(getWechatId(), getUser(), conversationModel, member);
-				}
+				} 
 			}
 			else if (conversationModel.getNewid() == null && conversationModel.getMaterialId() == null && StringUtils.isBlank(conversationModel.getContent())) {
 				throw new WechatException(Message.CONVERSATION_CONTENT_NOT_BLANK);
 			}
-			
+			if(conversationModel.getNewid() == null) {
+				conversation = conversationService.wechatToMember(getWechatId(), getUser(), conversationModel, member);
+			}
 			ConversationDto dto = new ConversationDto();
 			if(conversation != null && conversation.getId() != null) {
 				dto.setId(conversation.getId());
