@@ -88,6 +88,9 @@ public class ConversationDto {
 	
 	@ApiModelProperty("群发会话结果ID")
 	private Integer csrId;
+	
+	@ApiModelProperty("图文内容json串")
+	private String conditions;
 
 	public Integer getCid() {
 		return cid;
@@ -303,5 +306,13 @@ public class ConversationDto {
 
 	public void setCsrId(Integer csrId) {
 		this.csrId = csrId;
+	}
+
+	public String getConditions() {
+		return conditions;
+	}
+
+	public void setConditions(String conditions) {
+		this.conditions = conditions;
 	}
 }

@@ -43,14 +43,14 @@ public class ImageTextDto {
 	}
 
 	public Integer getWechatId() {
-        return wechatId;
-    }
+		return wechatId;
+	}
 
-    public void setWechatId(Integer wechatId) {
-        this.wechatId = wechatId;
-    }
+	public void setWechatId(Integer wechatId) {
+		this.wechatId = wechatId;
+	}
 
-    public String getAuthor() {
+	public String getAuthor() {
 		return author;
 	}
 
@@ -146,10 +146,10 @@ public class ImageTextDto {
 		this.title = title;
 	}
 
-
 	public Integer getComment() {
 		return comment;
 	}
+
 	public void setComment(Integer comment) {
 		this.comment = comment;
 	}
