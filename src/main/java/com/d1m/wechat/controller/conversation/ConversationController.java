@@ -90,7 +90,7 @@ public class ConversationController extends BaseController {
 	@RequiresPermissions("member:list")
 	public JSONObject createMass(@ApiParam(name = "MassConversationModel", required = false) @RequestBody(required = false) MassConversationModel massConversationModel, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		try {
-			conversationService.preMassConversation(getWechatId(session), getUser(session), massConversationModel);
+			conversationService.preMassConversation(getWechatId(), getUser(), massConversationModel);
 			return representation(Message.CONVERSATION_MASS_CREATE_SUCCESS);
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -171,16 +171,18 @@ public class ConversationController extends BaseController {
 					itemArray.add(itemJson);
 					conversation.setContent(itemArray.toJSONString());
 					conversation.setMaterialId(imageTextDto.getMaterialId());
-				} else {
-					conversation = conversationService.wechatToMember(getWechatId(), getUser(), conversationModel, member);
-				}
+				} 
 			}
 			else if (conversationModel.getNewid() == null && conversationModel.getMaterialId() == null && StringUtils.isBlank(conversationModel.getContent())) {
 				throw new WechatException(Message.CONVERSATION_CONTENT_NOT_BLANK);
 			}
-			
+			if(conversationModel.getNewid() == null) {
+				conversation = conversationService.wechatToMember(getWechatId(), getUser(), conversationModel, member);
+			}
 			ConversationDto dto = new ConversationDto();
-			dto.setId(conversation.getId());
+			if(conversation != null && conversation.getId() != null) {
+				dto.setId(conversation.getId());
+			}
 			dto.setCreatedAt(DateUtil.formatYYYYMMDDHHMMSS(new Date()));
 			dto.setContent(conversation.getContent());
 			dto.setCurrent(DateUtil.formatYYYYMMDDHHMMSS(new Date()));
@@ -208,7 +210,7 @@ public class ConversationController extends BaseController {
 		if (conversationModel == null) {
 			conversationModel = new ConversationModel();
 		}
-		Integer wechatId = getWechatId(session);
+		Integer wechatId = getWechatId();
 		Page<ConversationDto> page = conversationService.searchMass(wechatId, conversationModel, true);
 		List<ConversationDto> result = convertMass(page, wechatId);
 		return representation(Message.CONVERSATION_MASS_LIST_SUCCESS, result, conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
@@ -316,6 +318,28 @@ public class ConversationController extends BaseController {
 		ImageTextDto item = null;
 		JSONObject itemJson = null;
 		for (ConversationDto conversationDto : result) {
+			MassConversationModel condition = JSONObject.parseObject(conversationDto.getConditions(), MassConversationModel.class);
+			if(condition.getNewid() != null) {
+				List<ImageTextDto> itemDtos = new ArrayList<ImageTextDto>();
+				item = new ImageTextDto();
+				if("dcrm".equals(condition.getNewtype())) {
+					DcrmImageTextDetailDto imageTextDto = dcrmImageTextDetailService.queryObject(condition.getNewid());
+					item.setTitle(imageTextDto.getTitle());
+					item.setSummary(imageTextDto.getSummary());
+					item.setMaterialCoverUrl(imageTextDto.getCoverPicUrl());
+				} else {
+					MaterialImageTextDetail imageTextDto = materialImageTextDetailService.selectByKey(condition.getNewid());
+					Material material = materialService.selectByKey(imageTextDto.getMaterialCoverId());
+					item.setTitle(imageTextDto.getTitle());
+					item.setSummary(imageTextDto.getSummary());
+					item.setMaterialCoverUrl(material.getPicUrl());
+				}
+				itemDtos.add(item);
+				conversationDto.setItems(itemDtos);
+				conversationDto.setContent(null);
+				conversationDto.setMsgType(MsgType.MPNEWS.getValue());
+				continue;
+			}
 			if (conversationDto.getMsgType() != MsgType.MPNEWS.getValue()) {
 				continue;
 			}
