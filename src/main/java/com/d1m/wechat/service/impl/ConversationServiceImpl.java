@@ -595,7 +595,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 				DcrmImageTextDetailDto dto = dcrmImageTextDetailService.queryObject(id);
 				ConversationImageTextDetail details = new ConversationImageTextDetail.Builder()
 						.title(dto.getTitle()).content(dto.getContent()).contentSourceUrl(dto.getLink()).materialCoverUrl(dto.getCoverPicUrl())
-						.build();
+						.summary(dto.getSummary()).showCover(false).contentSourceChecked(false).author("").wechatId(wechatId).build();
 				Material materialR = materialService.getMaterial(wechatId, dto.getMaterialCoverId());
 				material = materialR;
 				JSONObject itemJson = new JSONObject();
@@ -616,7 +616,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 				material = materialR;
 				ConversationImageTextDetail details = new ConversationImageTextDetail.Builder()
 						.title(dto.getTitle()).content(dto.getContent()).contentSourceUrl(dto.getContentSourceUrl()).materialCoverUrl(materialR.getPicUrl())
-						.build();
+						.summary(dto.getSummary()).showCover(dto.getShowCover()).contentSourceChecked(dto.getContentSourceChecked()).author("").wechatId(wechatId).build();
 				
 				JSONObject itemJson = new JSONObject();
 				itemJson.put("id", dto.getId());
