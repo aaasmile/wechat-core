@@ -91,6 +91,8 @@ public class ConversationDto {
 	
 	@ApiModelProperty("图文内容json串")
 	private String conditions;
+	
+	private String newtype;
 
 	public Integer getCid() {
 		return cid;
@@ -314,5 +316,13 @@ public class ConversationDto {
 
 	public void setConditions(String conditions) {
 		this.conditions = conditions;
+	}
+
+	public String getNewtype() {
+		return newtype;
+	}
+
+	public void setNewtype(String newtype) {
+		this.newtype = newtype;
 	}
 }
