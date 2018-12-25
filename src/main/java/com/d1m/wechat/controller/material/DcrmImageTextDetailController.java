@@ -151,7 +151,7 @@ public class DcrmImageTextDetailController extends BaseController {
             notBlank(detailDto.getId(), Message.DCRM_IMAGE_TEXT_DETAIL_ID_NOT);
             notBlank(detailDto.getMemberId(), Message.MEMBER_ID_NOT_EMPTY);
             detailDto.setWechatId(getUser().getWechatId());
-//            DcrmImageTextDetailService.previewMaterial(detailDto);
+            notBlank(detailDto.getMemberId(), Message.MEMBER_ID_NOT_EMPTY);
 			MemberDto member = memberService.getMemberDto(getWechatId(), detailDto.getMemberId());
 			notBlank(member, Message.MEMBER_NOT_EXIST);
 			CommonUtils.send2SocialWechatCoreApi(getWechatId(), member, detailDto.getNewid(), detailDto.getNewtype(), conversationService);

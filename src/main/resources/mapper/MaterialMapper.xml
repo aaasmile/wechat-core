@@ -108,9 +108,8 @@
 
     <select id="getImageText" parameterType="hashmap" resultMap="GetImageTextResultMap">
         SELECT m.id as id, m.created_at as created_at, m.last_push_at as last_push_at,
-        m.modify_at as modify_at, mc.name as,m.material_category_id as material_category_id
-        type_name FROM material
-        m
+        	m.modify_at as modify_at, mc.name as type_name,m.material_category_id as material_category_id
+        FROM material m
         left join material_category mc on m.material_category_id = mc.id
         <where>
             m.wechat_id=#{wechatId} and m.id=#{id} and m.status = 1
