@@ -337,6 +337,8 @@ public class ConversationController extends BaseController {
 				itemDtos.add(item);
 				conversationDto.setItems(itemDtos);
 				conversationDto.setContent(null);
+				conversationDto.setMsgType(MsgType.MPNEWS.getValue());
+				continue;
 			}
 			if (conversationDto.getMsgType() != MsgType.MPNEWS.getValue()) {
 				continue;
