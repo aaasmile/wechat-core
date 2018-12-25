@@ -108,7 +108,7 @@
 
     <select id="getImageText" parameterType="hashmap" resultMap="GetImageTextResultMap">
         SELECT m.id as id, m.created_at as created_at, m.last_push_at as last_push_at,
-        	m.modify_at as modify_at, mc.name as type_name,m.material_category_id as material_category_id
+        m.modify_at as modify_at, mc.name as type_name,m.material_category_id as material_category_id
         FROM material m
         left join material_category mc on m.material_category_id = mc.id
         <where>
@@ -133,7 +133,7 @@
         m.media_id as material_cover_media_id ,mt.comment
         FROM material_image_text_detail mt LEFT JOIN material m ON mt.material_cover_id = m.id
         <where>
-            mt.material_id = #{materialId} and mt.status = 1
+            mt.id = #{materialId} and mt.status = 1
         </where>
         order by mt.sequence asc
     </select>
