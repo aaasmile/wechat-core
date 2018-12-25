@@ -88,7 +88,12 @@
         <set>
             <if test="qrcodeId != null">qrcode_id=#{qrcodeId},</if>
             <if test="materialId != null">material_id=#{materialId},</if>
+            <if test="sendTimes != null">send_times=#{sendTimes},</if>
         </set>
         where id=#{id}
     </update>
+
+    <select id="selectSendTimesById" resultType="java.lang.Integer">
+        select send_times from dcrm_image_text_detail where id=#{id}
+    </select>
 </mapper>

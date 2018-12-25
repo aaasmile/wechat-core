@@ -77,6 +77,7 @@ import com.github.pagehelper.PageHelper;
 import com.xxl.job.core.biz.model.ReturnT;
 
 import cn.d1m.wechat.client.model.WxMessage;
+import cn.d1m.wechat.client.model.request.WxArticleMessage;
 import tk.mybatis.mapper.common.Mapper;
 
 @Service
@@ -128,16 +129,71 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 
 	@Override
 	public Conversation wechatToMember(Integer wechatId, User user, ConversationModel conversationModel, MemberDto member) {
-		log.info("ConversationServiceImpl...wechatToMember...");
+		log.info("wechat to member start.");
+		if (conversationModel == null) {
+			conversationModel = new ConversationModel();
+		}
+		notBlank(conversationModel.getMemberId(), Message.MEMBER_ID_NOT_EMPTY);
+		if (conversationModel.getMaterialId() == null && StringUtils.isBlank(conversationModel.getContent())) {
+			throw new WechatException(Message.CONVERSATION_CONTENT_NOT_BLANK);
+		}
+		notBlank(member, Message.MEMBER_NOT_EXIST);
 		Object message;
 		MsgType msgType = null;
 		Date current = new Date();
 		Material material = null;
+		List<ConversationImageTextDetail> conversationImageTextDetails = new ArrayList<ConversationImageTextDetail>();
+		ConversationImageTextDetail conversationImageTextDetail = null;
 		if (conversationModel.getMaterialId() != null) {
 			material = materialService.getMaterial(wechatId, conversationModel.getMaterialId());
 			notBlank(material, Message.MATERIAL_NOT_EXIST);
 			log.info("material mediaId : {}", material.getMediaId());
-			if (material.getMaterialType() == MaterialType.IMAGE.getValue()) {
+			if (material.getMaterialType() == MaterialType.IMAGE_TEXT.getValue()) {
+				MaterialDto materialDto = materialService.getImageText(wechatId, conversationModel.getMaterialId());
+				log.info("items : {}", materialDto.getItems() != null ? materialDto.getItems().size() : "");
+				List<ImageTextDto> items = materialDto.getItems();
+				if (items != null && !items.isEmpty()) {
+					JSONArray itemArray = new JSONArray();
+					JSONObject itemJson = null;
+					for (ImageTextDto imageTextDto : items) {
+						conversationImageTextDetail = new ConversationImageTextDetail.Builder().build();
+						conversationImageTextDetail.setWechatId(imageTextDto.getWechatId());
+						conversationImageTextDetail.setAuthor(imageTextDto.getAuthor());
+						conversationImageTextDetail.setContent(imageTextDto.getContent());
+						conversationImageTextDetail.setContentSourceChecked(imageTextDto.getContentSourceChecked());
+						conversationImageTextDetail.setContentSourceUrl(imageTextDto.getContentSourceUrl());
+						conversationImageTextDetail.setShowCover(imageTextDto.isShowCover());
+						conversationImageTextDetail.setSummary(imageTextDto.getSummary());
+						conversationImageTextDetail.setTitle(imageTextDto.getTitle());
+						conversationImageTextDetail.setMaterialCoverUrl(imageTextDto.getMaterialCoverUrl());
+						conversationImageTextDetails.add(conversationImageTextDetail);
+						itemJson = new JSONObject();
+						itemJson.put("title", imageTextDto.getTitle());
+						itemJson.put("summary", imageTextDto.getSummary());
+						itemJson.put("materialCoverUrl", imageTextDto.getMaterialCoverUrl());
+						itemArray.add(itemJson);
+					}
+					log.info("content : {}", itemArray.toJSONString());
+					conversationModel.setContent(itemArray.toJSONString());
+				}
+				String mediaId = material.getMediaId();
+				if (mediaId != null) {
+					msgType = MsgType.MPNEWS;
+					message = material.getMediaId();
+				} else {
+					List<WxArticleMessage> articles = new ArrayList<WxArticleMessage>();
+					for (ImageTextDto imageTextDto : items) {
+						WxArticleMessage article = new WxArticleMessage();
+						article.setTitle(imageTextDto.getTitle());
+						article.setDescription(imageTextDto.getSummary());
+						article.setPicUrl(imageTextDto.getMaterialCoverUrl());
+						article.setUrl(imageTextDto.getContentSourceUrl());
+						articles.add(article);
+					}
+					msgType = MsgType.NEWS;
+					message = articles;
+				}
+			} else if (material.getMaterialType() == MaterialType.IMAGE.getValue()) {
 				msgType = MsgType.IMAGE;
 				message = material.getMediaId();
 				conversationModel.setContent(material.getPicUrl());
@@ -159,7 +215,9 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 			msgType = MsgType.TEXT;
 			message = conversationModel.getContent();
 		}
+
 		log.info("msgType : {}", msgType);
+
 		Conversation conversation = new Conversation();
 		conversation.setContent(conversationModel.getContent());
 		conversation.setCreatedAt(current);
@@ -179,6 +237,12 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 		log.info("conversation : {}", conversation);
 		conversationMapper.insert(conversation);
 		log.info("conversation id : {}", conversation.getId());
+		if (!conversationImageTextDetails.isEmpty()) {
+			for (ConversationImageTextDetail citd : conversationImageTextDetails) {
+				citd.setConversationId(conversation.getId());
+			}
+			conversationImageTextDetailMapper.insertList(conversationImageTextDetails);
+		}
 		String msgtype = msgType.name().toLowerCase();
 		WechatClientDelegate.sendCustomMessage(wechatId, member.getOpenId(), msgtype, message);
 		log.info("send message success.");
@@ -329,8 +393,14 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 		} else if (massConversationModel.getNewid() != null) {
 			if ("dcrm".equals(massConversationModel.getNewtype())) {
 				msgType = MsgType.DCRMNEWS;
+				DcrmImageTextDetailDto detail = dcrmImageTextDetailService.queryObject(massConversationModel.getNewid());
+				material = new Material();
+				material.setId(detail.getMaterialId());
 			} else {
 				msgType = MsgType.WECHATNEWS;
+				MaterialImageTextDetail detail = materialImageTextDetailService.selectByKey(massConversationModel.getNewid());
+				material = new Material();
+				material.setId(detail.getMaterialId());
 			}
 		} else {
 			MaterialTextDetail materialTextDetail = new MaterialTextDetail();
@@ -445,9 +515,6 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 		
 		
 		IllegalArgumentUtil.notBlank(massConversationResult, Message.CONVERSATION_MASS_NOT_EXIST);
-		if (massConversationResult.getMaterialId() == null) {
-			throw new WechatException(Message.CONVERSATION_CONTENT_NOT_BLANK);
-		}
 		MassConversationModel condition = JSONObject.parseObject(massConversationResult.getConditions(), MassConversationModel.class);
 
 		Byte materialType = null;
@@ -455,6 +522,9 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 		if(MsgType.DCRMNEWS.getValue() == massConversationResult.getMsgType() || MsgType.WECHATNEWS.getValue() == massConversationResult.getMsgType()) {
 			materialType = massConversationResult.getMsgType();
 		} else {
+			if (massConversationResult.getMaterialId() == null) {
+				throw new WechatException(Message.CONVERSATION_CONTENT_NOT_BLANK);
+			}
 			material = materialService.getMaterial(wechatId, massConversationResult.getMaterialId());
 			notBlank(material, Message.MATERIAL_NOT_EXIST);
 			materialType = material.getMaterialType();
@@ -523,7 +593,8 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 				ConversationImageTextDetail details = new ConversationImageTextDetail.Builder()
 						.title(dto.getTitle()).content(dto.getContent()).contentSourceUrl(dto.getLink()).materialCoverUrl(dto.getCoverPicUrl())
 						.build();
-				
+				Material materialR = materialService.getMaterial(wechatId, massConversationResult.getMaterialId());
+				material = materialR;
 				JSONObject itemJson = new JSONObject();
 				itemJson.put("id", dto.getId());
 				itemJson.put("materialId", dto.getId());
@@ -538,6 +609,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 				Integer id = condition.getNewid();
 				MaterialImageTextDetail dto = materialImageTextDetailService.selectByKey(id);
 				Material materialR = materialService.getMaterial(wechatId, massConversationResult.getMaterialId());
+				material = materialR;
 				ConversationImageTextDetail details = new ConversationImageTextDetail.Builder()
 						.title(dto.getTitle()).content(dto.getContent()).contentSourceUrl(dto.getContentSourceUrl()).materialCoverUrl(materialR.getPicUrl())
 						.build();
