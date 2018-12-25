@@ -314,6 +314,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
 
 
     private String deleteMaterial(String accessToken, String mediaId) {
+    	String WEIXIN_DELETE_MATERIAL = "https://api.weixin.qq.com/cgi-bin/material/del_material";
         log.info("删除永久素材请求入参：accessToken:{},mediaId:{}", accessToken, mediaId);
         if (StringUtils.isEmpty(accessToken)) {
             log.info("accessToken不能为空");
