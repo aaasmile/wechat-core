@@ -148,11 +148,16 @@ public class DcrmImageTextDetailController extends BaseController {
      @ApiParam(name = "DcrmImageTextDetailDto", required = false)
      @RequestBody(required = false) DcrmImageTextDetailDto detailDto) {
         try {
+            notBlank(detailDto.getId(), Message.DCRM_IMAGE_TEXT_DETAIL_ID_NOT);
+            notBlank(detailDto.getMemberId(), Message.MEMBER_ID_NOT_EMPTY);
             detailDto.setWechatId(getUser().getWechatId());
             notBlank(detailDto.getMemberId(), Message.MEMBER_ID_NOT_EMPTY);
 			MemberDto member = memberService.getMemberDto(getWechatId(), detailDto.getMemberId());
 			notBlank(member, Message.MEMBER_NOT_EXIST);
 			CommonUtils.send2SocialWechatCoreApi(getWechatId(), member, detailDto.getNewid(), detailDto.getNewtype(), conversationService);
+            //更新发送数量
+			int t = DcrmImageTextDetailService.updateSendTimes(detailDto.getId());
+            log.debug("发送次数更新状态：{}",t);
             return representation(Message.MATERIAL_IMAGE_TEXT_PUSH_WX_SUCCESS);
         } catch (Exception e) {
             log.error(e.getMessage());
