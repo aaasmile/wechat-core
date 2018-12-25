@@ -148,6 +148,7 @@ public class DcrmImageTextDetailController extends BaseController {
      @ApiParam(name = "DcrmImageTextDetailDto", required = false)
      @RequestBody(required = false) DcrmImageTextDetailDto detailDto) {
         try {
+        	detailDto.setId(detailDto.getNewid());
             notBlank(detailDto.getId(), Message.DCRM_IMAGE_TEXT_DETAIL_ID_NOT);
             notBlank(detailDto.getMemberId(), Message.MEMBER_ID_NOT_EMPTY);
             detailDto.setWechatId(getUser().getWechatId());
