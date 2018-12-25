@@ -149,7 +149,6 @@ public class DcrmImageTextDetailController extends BaseController {
      @RequestBody(required = false) DcrmImageTextDetailDto detailDto) {
         try {
             detailDto.setWechatId(getUser().getWechatId());
-//            DcrmImageTextDetailService.previewMaterial(detailDto);
             notBlank(detailDto.getMemberId(), Message.MEMBER_ID_NOT_EMPTY);
 			MemberDto member = memberService.getMemberDto(getWechatId(), detailDto.getMemberId());
 			notBlank(member, Message.MEMBER_NOT_EXIST);
