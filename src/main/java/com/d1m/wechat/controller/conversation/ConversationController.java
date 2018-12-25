@@ -222,8 +222,8 @@ public class ConversationController extends BaseController {
 		}
 		// conversationModel.setStatus(MassConversationResultStatus.WAIT_AUDIT
 		// .getValue());
-		Integer wechatId = getWechatId(session);
-		Page<ConversationDto> page = conversationService.searchMass(getWechatId(session), conversationModel, true);
+		Integer wechatId = getWechatId();
+		Page<ConversationDto> page = conversationService.searchMass(getWechatId(), conversationModel, true);
 		List<ConversationDto> result = convertMass(page, wechatId);
 		return representation(Message.CONVERSATION_MASS_LIST_SUCCESS, result, conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
 	}
