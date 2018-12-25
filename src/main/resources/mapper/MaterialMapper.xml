@@ -133,7 +133,13 @@
         m.media_id as material_cover_media_id ,mt.comment
         FROM material_image_text_detail mt LEFT JOIN material m ON mt.material_cover_id = m.id
         <where>
-            mt.id = #{materialId} and mt.status = 1
+            mt.status = 1
+            <if test="materialId!=null">
+                and mt.material_id = #{materialId}
+            </if>
+            <if test="id!=null">
+                and mt.id = #{id}
+            </if>
         </where>
         order by mt.sequence asc
     </select>
