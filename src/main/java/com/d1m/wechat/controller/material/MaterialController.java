@@ -1,40 +1,10 @@
 package com.d1m.wechat.controller.material;
 
-import com.alibaba.fastjson.JSONObject;
-import com.d1m.wechat.controller.BaseController;
-import com.d1m.wechat.controller.file.Upload;
-import com.d1m.wechat.controller.file.UploadController;
-import com.d1m.wechat.dto.MaterialDto;
-import com.d1m.wechat.dto.MaterialImageTextDetailDto;
-import com.d1m.wechat.dto.MemberDto;
-import com.d1m.wechat.model.Material;
-import com.d1m.wechat.model.MaterialImageTextDetail;
-import com.d1m.wechat.pamametermodel.ImageModel;
-import com.d1m.wechat.pamametermodel.ImageTextModel;
-import com.d1m.wechat.pamametermodel.MaterialModel;
-import com.d1m.wechat.service.ConversationService;
-import com.d1m.wechat.service.MaterialImageTextDetailService;
-import com.d1m.wechat.service.MaterialService;
-import com.d1m.wechat.service.MemberService;
-import com.d1m.wechat.util.CommonUtils;
-import com.d1m.wechat.util.Constants;
-import com.d1m.wechat.util.Message;
-import com.d1m.wechat.util.StringUtils;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.StringUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import org.apache.shiro.authz.annotation.Logical;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,11 +12,45 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
-import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.alibaba.fastjson.JSONObject;
+import com.d1m.wechat.controller.BaseController;
+import com.d1m.wechat.controller.file.Upload;
+import com.d1m.wechat.controller.file.UploadController;
+import com.d1m.wechat.dto.MaterialDto;
+import com.d1m.wechat.dto.MaterialImageTextDetailDto;
+import com.d1m.wechat.model.Material;
+import com.d1m.wechat.model.MaterialImageTextDetail;
+import com.d1m.wechat.pamametermodel.ImageModel;
+import com.d1m.wechat.pamametermodel.ImageTextModel;
+import com.d1m.wechat.pamametermodel.MaterialModel;
+import com.d1m.wechat.service.MaterialImageTextDetailService;
+import com.d1m.wechat.service.MaterialService;
+import com.d1m.wechat.util.Constants;
+import com.d1m.wechat.util.Message;
+import com.d1m.wechat.util.StringUtils;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.StringUtil;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
 
 @Controller
 @RequestMapping("/material")
@@ -61,11 +65,6 @@ public class MaterialController extends BaseController {
     @Autowired
     private MaterialImageTextDetailService materialImageTextDetailService;
     
-    @Autowired
-	private MemberService memberService;
-    @Autowired
-	private ConversationService conversationService;
-
     /**
      * 图片素材推送到微信
      *
@@ -118,11 +117,8 @@ public class MaterialController extends BaseController {
             HttpSession session, HttpServletRequest request,
             HttpServletResponse response) {
         try {
-        	notBlank(materialModel.getMemberId(), Message.MEMBER_ID_NOT_EMPTY);
-			MemberDto member = memberService.getMemberDto(getWechatId(), materialModel.getMemberId());
-			notBlank(member, Message.MEMBER_NOT_EXIST);
-			CommonUtils.send2SocialWechatCoreApi(getWechatId(), member, materialModel.getNewid(), materialModel.getNewtype(), conversationService);
-            return representation(Message.MATERIAL_IMAGE_TEXT_PUSH_WX_SUCCESS);
+        	materialService.previewMaterial(getWechatId(), materialModel);
+        	return representation(Message.MATERIAL_IMAGE_TEXT_PUSH_WX_SUCCESS);
         } catch (Exception e) {
             log.error(e.getMessage());
             return wrapException(e);

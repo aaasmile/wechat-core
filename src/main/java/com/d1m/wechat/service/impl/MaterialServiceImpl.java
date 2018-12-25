@@ -13,6 +13,7 @@ import com.d1m.wechat.component.FileUploadConfig;
 import com.d1m.wechat.controller.file.Upload;
 import com.d1m.wechat.dto.ImageTextDto;
 import com.d1m.wechat.dto.MaterialDto;
+import com.d1m.wechat.dto.MemberDto;
 import com.d1m.wechat.dto.MiniProgramDto;
 import com.d1m.wechat.exception.BusinessException;
 import com.d1m.wechat.exception.WechatException;
@@ -37,10 +38,11 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -55,12 +57,10 @@ import java.util.*;
 
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
-@Slf4j
 @Service
 public class MaterialServiceImpl extends BaseService<Material> implements MaterialService {
 
-    private static final String WEIXIN_DELETE_MATERIAL = "https://api.weixin.qq.com/cgi-bin/material/del_material";
-
+	private static final Logger log = LoggerFactory.getLogger(MaterialServiceImpl.class);
     @Resource
     private MaterialMapper materialMapper;
 
@@ -173,12 +173,6 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         Material material = createMediaImage(wechatId, user, upload, current,
          MaterialType.OUTLETIMAGE.getValue());
 
-//		WxUploadImg wxUploadImg = JwShopAPI.uploadImg(RefreshAccessTokenJob.getAccessTokenStr(wechatId),
-//				upload.getAbsolutePath());
-//		if (wxUploadImg == null) {
-//			throw new WechatException(Message.BUSINESS_WEIXIN_PHOTO_UPLOAD_FAIL);
-//		}
-//		material.setWxPicUrl(wxUploadImg.getUrl());
         material.setLastPushAt(current);
         material.setModifyAt(current);
         materialMapper.insert(material);
@@ -191,7 +185,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         notBlank(upload.getAccessPath(), Message.MATERIAL_IMAGE_NOT_BLANK);
         Date current = new Date();
         Material material = createMaterialImage(wechatId, user, upload, current);
-        //TODO 此处根据环境判断,如果是上线前的部署环境,不上传到微信服务器,后面通过定时任务处理
+        // 此处根据环境判断,如果是上线前的部署环境,不上传到微信服务器,后面通过定时任务处理
         if ("0".equals(FileUploadConfig.getValue(wechatId, "running.env"))) {
             WxMaterial wxMaterial = WechatClientDelegate.addMaterial(wechatId, "image", new File(upload.getAbsolutePath()));
             if (wxMaterial.fail()) {
@@ -802,8 +796,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         Integer id = materialModel.getId();
         notBlank(id, Message.MATERIAL_ID_NOT_BLANK);
         notBlank(materialModel.getMemberId(), Message.MEMBER_ID_NOT_EMPTY);
-        Member member = memberService.getMember(wechatId,
-         materialModel.getMemberId());
+        MemberDto member = memberService.getMemberDto(wechatId, materialModel.getMemberId());
         notBlank(member, Message.MEMBER_NOT_EXIST);
 
         Material material = getMaterial(wechatId, id);
@@ -815,7 +808,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
             conversationModel.setMaterialId(materialModel.getId());
             conversationModel.setMemberId(materialModel.getMemberId());
             User user = (User) SecurityUtils.getSubject().getPrincipal();
-//            conversationService.wechatToMember(wechatId, user, conversationModel);
+            conversationService.wechatToMember(wechatId, user, conversationModel, member);
             return;
         }
 
