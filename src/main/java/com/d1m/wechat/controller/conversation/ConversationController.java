@@ -117,7 +117,7 @@ public class ConversationController extends BaseController {
 	public JSONObject sendMass(@ApiParam(name = "MassConversationModel", required = false) @RequestBody(required = false) MassConversationModel massConversationModel, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			massConversationModel.setStatus(MassConversationResultStatus.AUDIT_PASS.name());
-			conversationService.sendMassConversation(getWechatId(session), getUser(session), massConversationModel);
+			conversationService.sendMassConversation(getWechatId(), getUser(), massConversationModel);
 			return representation(Message.CONVERSATION_MASS_SEND_SUCCESS);
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -160,7 +160,7 @@ public class ConversationController extends BaseController {
 					itemArray.add(itemJson);
 					conversation.setContent(itemArray.toJSONString());
 					conversation.setMaterialId(imageTextDto.getMaterialId());
-				} else {
+				} else if("wechat".equals(conversationModel.getNewtype())) {
 					MaterialImageTextDetail imageTextDto = materialImageTextDetailService.selectByKey(conversationModel.getNewid());
 					Material material = materialService.selectByKey(imageTextDto.getMaterialCoverId());
 					JSONArray itemArray = new JSONArray();
@@ -171,12 +171,14 @@ public class ConversationController extends BaseController {
 					itemArray.add(itemJson);
 					conversation.setContent(itemArray.toJSONString());
 					conversation.setMaterialId(imageTextDto.getMaterialId());
+				} else {
+					conversation = conversationService.wechatToMember(getWechatId(), getUser(), conversationModel, member);
 				}
 			}
 			else if (conversationModel.getNewid() == null && conversationModel.getMaterialId() == null && StringUtils.isBlank(conversationModel.getContent())) {
 				throw new WechatException(Message.CONVERSATION_CONTENT_NOT_BLANK);
 			}
-			conversation = conversationService.wechatToMember(getWechatId(), getUser(), conversationModel, member);
+			
 			ConversationDto dto = new ConversationDto();
 			dto.setId(conversation.getId());
 			dto.setCreatedAt(DateUtil.formatYYYYMMDDHHMMSS(new Date()));
