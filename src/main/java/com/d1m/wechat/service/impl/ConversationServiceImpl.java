@@ -596,7 +596,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 				ConversationImageTextDetail details = new ConversationImageTextDetail.Builder()
 						.title(dto.getTitle()).content(dto.getContent()).contentSourceUrl(dto.getLink()).materialCoverUrl(dto.getCoverPicUrl())
 						.build();
-				Material materialR = materialService.getMaterial(wechatId, dto.getMaterialId());
+				Material materialR = materialService.getMaterial(wechatId, dto.getMaterialCoverId());
 				material = materialR;
 				JSONObject itemJson = new JSONObject();
 				itemJson.put("id", dto.getId());
@@ -612,7 +612,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 				log.info("materialType..." + MaterialType.WECHATNEWS.toString());
 				Integer id = condition.getNewid();
 				MaterialImageTextDetail dto = materialImageTextDetailService.selectByKey(id);
-				Material materialR = materialService.getMaterial(wechatId, dto.getMaterialId());
+				Material materialR = materialService.getMaterial(wechatId, dto.getMaterialCoverId());
 				material = materialR;
 				ConversationImageTextDetail details = new ConversationImageTextDetail.Builder()
 						.title(dto.getTitle()).content(dto.getContent()).contentSourceUrl(dto.getContentSourceUrl()).materialCoverUrl(materialR.getPicUrl())
