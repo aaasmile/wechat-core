@@ -2,22 +2,22 @@ package com.d1m.wechat.controller.qrcode;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.github.pagehelper.Page;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.dto.DcrmImageTextDetailDto;
 import com.d1m.wechat.dto.ImageTextDto;
@@ -26,6 +26,7 @@ import com.d1m.wechat.dto.MemberTagDto;
 import com.d1m.wechat.dto.MiniProgramDto;
 import com.d1m.wechat.dto.QrcodeActionEngineDto;
 import com.d1m.wechat.model.Material;
+import com.d1m.wechat.model.MaterialImageTextDetail;
 import com.d1m.wechat.model.MemberTag;
 import com.d1m.wechat.model.QrcodeActionEngine;
 import com.d1m.wechat.model.enums.Effect;
@@ -34,11 +35,18 @@ import com.d1m.wechat.pamametermodel.ActionEngineEffect;
 import com.d1m.wechat.pamametermodel.ActionEngineModel;
 import com.d1m.wechat.pamametermodel.QrcodeModel;
 import com.d1m.wechat.service.DcrmImageTextDetailService;
+import com.d1m.wechat.service.MaterialImageTextDetailService;
 import com.d1m.wechat.service.MaterialService;
 import com.d1m.wechat.service.MemberTagService;
 import com.d1m.wechat.service.QrcodeActionEngineService;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
+import com.github.pagehelper.Page;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
 
 @Api(value = "二维码行为API", tags = "二维码行为接口")
 @Controller
@@ -57,6 +65,8 @@ public class QrcodeActionEngineController extends BaseController {
 	private MaterialService materialService;
 	@Autowired
     private DcrmImageTextDetailService DcrmImageTextDetailService;
+	@Autowired
+	private MaterialImageTextDetailService materialImageTextDetailService;
 
 	@ApiOperation(value = "创建二维码行为规则", tags = "二维码行为接口")
 	@ApiResponse(code = 200, message = "1-创建二维码行为规则成功")
@@ -180,10 +190,25 @@ public class QrcodeActionEngineController extends BaseController {
 					} else if (qae.getCode().byteValue() == Effect.SEND_IMAGE_TEXT.getValue()) {
 						log.info("convert...effect..." + Effect.SEND_IMAGE_TEXT.toString());
 						valueArray = new JSONArray();
-						MaterialDto materialDto = null;
 						for (Integer id : value) {
-							materialDto = materialService.getImageText(wechatId, id);
-							if (materialDto != null) {
+							MaterialImageTextDetail detailDto = materialImageTextDetailService.selectByKey(id);
+							Material material = materialService.selectByKey(detailDto.getMaterialCoverId());
+							MaterialDto materialDto = new MaterialDto();
+							ImageTextDto imageTextDto = new ImageTextDto();
+							List<ImageTextDto> items = new ArrayList<ImageTextDto>();
+							if(detailDto != null) {
+								materialDto.setId(material.getId());
+								materialDto.setTitle(material.getTitle());
+								
+								imageTextDto.setAuthor("");
+								imageTextDto.setContent(detailDto.getContent());
+								imageTextDto.setSummary(detailDto.getSummary());
+								imageTextDto.setTitle(detailDto.getTitle());
+								imageTextDto.setMaterialCoverUrl(material.getPicUrl());
+								imageTextDto.setContentSourceUrl(detailDto.getContentSourceUrl());
+								items.add(imageTextDto);
+								
+								materialDto.setItems(items);
 								valueArray.add(materialDto);
 							}
 						}
