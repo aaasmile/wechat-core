@@ -220,11 +220,12 @@ public class QrcodeActionEngineController extends BaseController {
 						valueArray = new JSONArray();
 						for (Integer id : value) {
 							DcrmImageTextDetailDto detailDto = DcrmImageTextDetailService.queryObject(id);
+							MaterialDto materialDto = new MaterialDto();
 							if(detailDto != null) {
-								valueJson = new JSONObject();
-								valueJson.put("id", detailDto.getMaterialCategoryId());
-								valueJson.put("url", detailDto.getCoverPicUrl());
-								valueArray.add(valueJson);
+								materialDto.setId(detailDto.getMaterialCoverId());
+								materialDto.setUrl(detailDto.getCoverPicUrl());
+								materialDto.setTitle(detailDto.getTitle());
+								valueArray.add(materialDto);
 							}
 						}
 					}
