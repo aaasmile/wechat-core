@@ -28,7 +28,7 @@ public class MenuDto {
 
 	private String appUrl;
 	
-	private String interfaceId;
+	private String menuKey;
 	
 	public List<MenuDto> getChildren() {
 		return children;
@@ -126,11 +126,11 @@ public class MenuDto {
 		this.appUrl = appUrl;
 	}
 
-	public String getInterfaceId() {
-		return interfaceId;
+	public String getMenuKey() {
+		return menuKey;
 	}
 
-	public void setInterfaceId(String interfaceId) {
-		this.interfaceId = interfaceId;
+	public void setMenuKey(String menuKey) {
+		this.menuKey = menuKey;
 	}
 }

@@ -22,8 +22,8 @@ public enum MaterialType {
 
     MINI_PROGRAM((byte) 10, "小程序"),
     
-    WECHATNEWS((byte) 21, "微信图文"),
-    DCRMNEWS((byte) 22, "非群发图文"),
+    WECHATNEWS((byte) 201, "微信图文"),
+    DCRMNEWS((byte) 301, "非群发图文"),
 	;
 
 	private byte value;
