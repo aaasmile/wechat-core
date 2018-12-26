@@ -279,8 +279,13 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
             throws BusinessException {
         MaterialDto materialDto = materialMapper.getUsedImageText(wechatId, materialId);
         notBlank(materialDto, Message.MATERIAL_NOT_EXIST);
-        if (CollectionUtils.isNotEmpty(materialDto.getItems()))
-            return response(Message.MATERIAL_UNABLE_DELETE, materialDto.getItems());
+        if (CollectionUtils.isNotEmpty(materialDto.getItems())) {
+            Map<Object, Object> map = new HashMap<>();
+            for (ImageTextDto imageTextDto : materialDto.getItems()) {
+                map.put(imageTextDto.getId(),imageTextDto.getTitle());
+            }
+            return response(Message.MATERIAL_UNABLE_DELETE, map);
+        }
         Material material = new Material();
         material.setId(materialId);
         material.setStatus((byte) 0);

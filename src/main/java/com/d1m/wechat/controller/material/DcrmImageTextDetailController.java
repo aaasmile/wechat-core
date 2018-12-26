@@ -57,7 +57,7 @@ public class DcrmImageTextDetailController extends BaseController {
     public JSONObject save(@RequestBody DcrmImageTextDetailDto dto) {
         try {
         Preconditions.checkArgument(StringUtils.isNotBlank(dto.getTitle()), Message.DcrmImageTextDetail_NOT_NULL);
-        Preconditions.checkArgument(dto.getSummary() != null, Message.DcrmImageTextDetail_IAMGE_NOT_NULL);
+        Preconditions.checkArgument(dto.getMaterialCoverId() != null, Message.DcrmImageTextDetail_IAMGE_NOT_NULL);
         dto.setCreatedBy(getUser().getId());
         dto.setWechatId(getUser().getWechatId());
         DcrmImageTextDetailService.save(dto);
@@ -79,7 +79,7 @@ public class DcrmImageTextDetailController extends BaseController {
     public JSONObject update(@RequestBody DcrmImageTextDetailDto dto) {
         try {
         Preconditions.checkArgument(StringUtils.isNotBlank(dto.getTitle()), Message.DcrmImageTextDetail_NOT_NULL);
-        Preconditions.checkArgument(dto.getSummary() != null, Message.DcrmImageTextDetail_IAMGE_NOT_NULL);
+        Preconditions.checkArgument(dto.getMaterialCoverId() != null, Message.DcrmImageTextDetail_IAMGE_NOT_NULL);
         dto.setLasteUpdatedBy(getUser().getId());
         dto.setWechatId(getUser().getWechatId());
         DcrmImageTextDetailService.update(dto);
