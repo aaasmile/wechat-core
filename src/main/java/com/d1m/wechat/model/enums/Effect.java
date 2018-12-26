@@ -16,6 +16,7 @@ public enum Effect {
 
 	SEND_MINI_PROGRAM((byte) 205, "发送小程序"),
 
+	SEND_DCRM_IMAGE_TEXT((byte) 301, "发送图文"),
 	;
 
 	private byte value;
