@@ -75,8 +75,8 @@ public class MenuGroupController extends BaseController {
 	@RequiresPermissions("menu:list")
 	public JSONObject create(@ApiParam(name = "MenuGroupModel", required = false) @RequestBody(required = false) MenuGroupModel menuGroupModel, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		try {
-			Integer wechatId = getWechatId(session);
-			MenuGroup menuGroup = menuGroupService.create(getUser(session), wechatId, menuGroupModel);
+			Integer wechatId = getWechatId();
+			MenuGroup menuGroup = menuGroupService.create(getUser(), wechatId, menuGroupModel);
 			if (menuGroupModel.getPush() != null && menuGroupModel.getPush()) {
 				menuGroupService.pushMenuGroupToWx(wechatId, menuGroup.getId());
 			}
