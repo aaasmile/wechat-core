@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import com.d1m.wechat.controller.BaseController;
+import com.d1m.wechat.dto.DcrmImageTextDetailDto;
 import com.d1m.wechat.dto.MaterialDto;
 import com.d1m.wechat.dto.MemberTagDto;
 import com.d1m.wechat.dto.MiniProgramDto;
@@ -31,13 +32,14 @@ import com.d1m.wechat.pamametermodel.ActionEngineCondition;
 import com.d1m.wechat.pamametermodel.ActionEngineEffect;
 import com.d1m.wechat.pamametermodel.ActionEngineModel;
 import com.d1m.wechat.pamametermodel.QrcodeModel;
+import com.d1m.wechat.service.DcrmImageTextDetailService;
 import com.d1m.wechat.service.MaterialService;
 import com.d1m.wechat.service.MemberTagService;
 import com.d1m.wechat.service.QrcodeActionEngineService;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
 
-@Api(value="二维码行为API", tags="二维码行为接口")
+@Api(value = "二维码行为API", tags = "二维码行为接口")
 @Controller
 @RequestMapping("/qrcode-action-engine")
 public class QrcodeActionEngineController extends BaseController {
@@ -52,57 +54,46 @@ public class QrcodeActionEngineController extends BaseController {
 
 	@Autowired
 	private MaterialService materialService;
-	
-	@ApiOperation(value="创建二维码行为规则", tags="二维码行为接口")
-	@ApiResponse(code=200, message="1-创建二维码行为规则成功")
+	@Autowired
+    private DcrmImageTextDetailService DcrmImageTextDetailService;
+
+	@ApiOperation(value = "创建二维码行为规则", tags = "二维码行为接口")
+	@ApiResponse(code = 200, message = "1-创建二维码行为规则成功")
 	@RequestMapping(value = "new.json", method = RequestMethod.POST)
 	@ResponseBody
-	public JSONObject create(
-			@ApiParam("QrcodeModel")
-				@RequestBody(required = false) QrcodeModel qrcodeModel,
-			HttpSession session) {
+	public JSONObject create(@ApiParam("QrcodeModel") @RequestBody(required = false) QrcodeModel qrcodeModel, HttpSession session) {
 		try {
-			QrcodeActionEngine qae = qrcodeActionEngineService.create(
-					getWechatId(session), getUser(session), qrcodeModel);
+			QrcodeActionEngine qae = qrcodeActionEngineService.create(getWechatId(session), getUser(session), qrcodeModel);
 			QrcodeActionEngineDto dto = new QrcodeActionEngineDto();
 			dto.setId(qae.getId());
-			return representation(Message.QRCODE_ACTION_ENGINE_CREATE_SUCCESS,
-					dto);
+			return representation(Message.QRCODE_ACTION_ENGINE_CREATE_SUCCESS, dto);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			return wrapException(e);
 		}
 	}
-	
-	@ApiOperation(value="更新二维码行为规则", tags="二维码行为接口")
-	@ApiResponse(code=200, message="1-更新二维码行为规则成功")
+
+	@ApiOperation(value = "更新二维码行为规则", tags = "二维码行为接口")
+	@ApiResponse(code = 200, message = "1-更新二维码行为规则成功")
 	@RequestMapping(value = "update.json", method = RequestMethod.POST)
 	@ResponseBody
-	public JSONObject update(
-			@ApiParam("QrcodeModel")
-				@RequestBody(required = false) QrcodeModel qrcodeModel,
-			HttpSession session) {
+	public JSONObject update(@ApiParam("QrcodeModel") @RequestBody(required = false) QrcodeModel qrcodeModel, HttpSession session) {
 		try {
-			qrcodeActionEngineService.update(getWechatId(session),
-					getUser(session), qrcodeModel);
+			qrcodeActionEngineService.update(getWechatId(session), getUser(session), qrcodeModel);
 			return representation(Message.QRCODE_ACTION_ENGINE_UPDATE_SUCCESS);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			return wrapException(e);
 		}
 	}
-	
-	@ApiOperation(value="删除二维码行为规则", tags="二维码行为接口")
-	@ApiResponse(code=200, message="1-删除二维码行为规则成功")
+
+	@ApiOperation(value = "删除二维码行为规则", tags = "二维码行为接口")
+	@ApiResponse(code = 200, message = "1-删除二维码行为规则成功")
 	@RequestMapping(value = "{qrcodeActionEngineId}/delete.json", method = RequestMethod.DELETE)
 	@ResponseBody
-	public JSONObject delete(
-			@ApiParam("二维码行为规则ID")
-				@PathVariable Integer qrcodeActionEngineId,
-			HttpSession session) {
+	public JSONObject delete(@ApiParam("二维码行为规则ID") @PathVariable Integer qrcodeActionEngineId, HttpSession session) {
 		try {
-			qrcodeActionEngineService.delete(getWechatId(session),
-					getUser(session), qrcodeActionEngineId);
+			qrcodeActionEngineService.delete(getWechatId(session), getUser(session), qrcodeActionEngineId);
 			return representation(Message.QRCODE_ACTION_ENGINE_DELETE_SUCCESS);
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -110,21 +101,17 @@ public class QrcodeActionEngineController extends BaseController {
 		}
 	}
 
-	@ApiOperation(value="获取二维码行为规则列表", tags="二维码行为接口")
-	@ApiResponse(code=200, message="1-获取二维码行为规则列表成功")
+	@ApiOperation(value = "获取二维码行为规则列表", tags = "二维码行为接口")
+	@ApiResponse(code = 200, message = "1-获取二维码行为规则列表成功")
 	@RequestMapping(value = "list.json", method = RequestMethod.POST)
 	@ResponseBody
-	public JSONObject list(
-			@ApiParam("ActionEngineModel")
-				@RequestBody(required = false) ActionEngineModel actionEngineModel,
-			HttpSession session) {
+	public JSONObject list(@ApiParam("ActionEngineModel") @RequestBody(required = false) ActionEngineModel actionEngineModel, HttpSession session) {
 		try {
 			if (actionEngineModel == null) {
 				actionEngineModel = new ActionEngineModel();
 			}
-			Integer wechatId = getWechatId(session);
-			Page<QrcodeActionEngineDto> page = qrcodeActionEngineService
-					.search(wechatId, actionEngineModel, false);
+			Integer wechatId = getWechatId();
+			Page<QrcodeActionEngineDto> page = qrcodeActionEngineService.search(wechatId, actionEngineModel, false);
 			JSONArray array = new JSONArray();
 			List<QrcodeActionEngineDto> result = page.getResult();
 			for (QrcodeActionEngineDto dto : result) {
@@ -132,9 +119,7 @@ public class QrcodeActionEngineController extends BaseController {
 			}
 			JSONObject json = new JSONObject();
 			json.put("rules", array);
-			return representation(Message.QRCODE_ACTION_ENGINE_LIST_SUCCESS,
-					json, actionEngineModel.getPageSize(),
-					actionEngineModel.getPageNum(), page.getTotal());
+			return representation(Message.QRCODE_ACTION_ENGINE_LIST_SUCCESS, json, actionEngineModel.getPageSize(), actionEngineModel.getPageNum(), page.getTotal());
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			return wrapException(e);
@@ -148,8 +133,7 @@ public class QrcodeActionEngineController extends BaseController {
 		json.put("start_at", DateUtil.formatYYYYMMDDHHMMSS(dto.getStart_at()));
 		json.put("end_at", DateUtil.formatYYYYMMDDHHMMSS(dto.getEnd_at()));
 		if (StringUtils.isNotBlank(dto.getConditions())) {
-			ActionEngineCondition parseObject = JSONObject.parseObject(
-					dto.getConditions(), ActionEngineCondition.class);
+			ActionEngineCondition parseObject = JSONObject.parseObject(dto.getConditions(), ActionEngineCondition.class);
 			if (parseObject != null) {
 				Integer[] memberTagIds = parseObject.getMemberTagIds();
 				if (memberTagIds != null && memberTagIds.length > 0) {
@@ -169,9 +153,9 @@ public class QrcodeActionEngineController extends BaseController {
 				json.put("condition", parseObject);
 			}
 		}
+		log.info("convert...effect..." + dto.getEffect());
 		if (StringUtils.isNotBlank(dto.getEffect())) {
-			List<ActionEngineEffect> qrcodeActionEngineEffects = JSONObject
-					.parseArray(dto.getEffect(), ActionEngineEffect.class);
+			List<ActionEngineEffect> qrcodeActionEngineEffects = JSONObject.parseArray(dto.getEffect(), ActionEngineEffect.class);
 			JSONArray codeArray = new JSONArray();
 			JSONObject codeJson = null;
 			if (qrcodeActionEngineEffects != null) {
@@ -179,8 +163,8 @@ public class QrcodeActionEngineController extends BaseController {
 				JSONObject valueJson = null;
 				for (ActionEngineEffect qae : qrcodeActionEngineEffects) {
 					Integer[] value = qae.getValue();
-					if (qae.getCode().byteValue() == Effect.ADD_MEMBER_TAG
-							.getValue()) {
+					if (qae.getCode().byteValue() == Effect.ADD_MEMBER_TAG.getValue()) {
+						log.info("convert...effect..." + Effect.ADD_MEMBER_TAG.toString());
 						valueArray = new JSONArray();
 						MemberTag memberTag = null;
 						for (Integer id : value) {
@@ -192,24 +176,22 @@ public class QrcodeActionEngineController extends BaseController {
 								valueArray.add(valueJson);
 							}
 						}
-					} else if (qae.getCode().byteValue() == Effect.SEND_IMAGE_TEXT
-							.getValue()) {
+					} else if (qae.getCode().byteValue() == Effect.SEND_IMAGE_TEXT.getValue()) {
+						log.info("convert...effect..." + Effect.SEND_IMAGE_TEXT.toString());
 						valueArray = new JSONArray();
 						MaterialDto materialDto = null;
 						for (Integer id : value) {
-							materialDto = materialService.getImageText(
-									wechatId, id);
+							materialDto = materialService.getImageText(wechatId, id);
 							if (materialDto != null) {
 								valueArray.add(materialDto);
 							}
 						}
-					} else if (qae.getCode().byteValue() == Effect.SEND_IMAGE
-							.getValue()) {
+					} else if (qae.getCode().byteValue() == Effect.SEND_IMAGE.getValue()) {
+						log.info("convert...effect..." + Effect.SEND_IMAGE.toString());
 						Material material = null;
 						for (Integer id : value) {
 							valueArray = new JSONArray();
-							material = materialService
-									.getMaterial(wechatId, id);
+							material = materialService.getMaterial(wechatId, id);
 							if (material != null) {
 								valueJson = new JSONObject();
 								valueJson.put("id", material.getId());
@@ -217,22 +199,36 @@ public class QrcodeActionEngineController extends BaseController {
 								valueArray.add(valueJson);
 							}
 						}
-                    } else if (qae.getCode().byteValue() == Effect.SEND_MINI_PROGRAM.getValue()) {
-                        MiniProgramDto miniProgramDto;
-                        for (Integer id : value) {
-                            valueArray = new JSONArray();
-                            miniProgramDto = materialService.getMiniProgramByMaterialId(wechatId, id);
-                            if (miniProgramDto != null) {
-                                valueJson = new JSONObject();
-                                valueJson.put("id", miniProgramDto.getId());
-                                valueJson.put("thumbUrl", miniProgramDto.getThumbUrl());
-                                valueArray.add(valueJson);
-                            }
-                        }
-					} else if (qae.getCode().byteValue() == Effect.SEND_TEXT
-							.getValue()) {
+					} else if (qae.getCode().byteValue() == Effect.SEND_MINI_PROGRAM.getValue()) {
+						log.info("convert...effect..." + Effect.SEND_MINI_PROGRAM.toString());
+						MiniProgramDto miniProgramDto;
+						for (Integer id : value) {
+							valueArray = new JSONArray();
+							miniProgramDto = materialService.getMiniProgramByMaterialId(wechatId, id);
+							if (miniProgramDto != null) {
+								valueJson = new JSONObject();
+								valueJson.put("id", miniProgramDto.getId());
+								valueJson.put("thumbUrl", miniProgramDto.getThumbUrl());
+								valueArray.add(valueJson);
+							}
+						}
+					} else if (qae.getCode().byteValue() == Effect.SEND_TEXT.getValue()) {
+						log.info("convert...effect..." + Effect.SEND_TEXT.toString());
 						valueArray = new JSONArray();
-					} else {
+					} else if(qae.getCode().byteValue() == Effect.SEND_DCRM_IMAGE_TEXT.getValue()) {
+						log.info("convert...effect..." + Effect.SEND_DCRM_IMAGE_TEXT.toString());
+						valueArray = new JSONArray();
+						for (Integer id : value) {
+							DcrmImageTextDetailDto detailDto = DcrmImageTextDetailService.queryObject(id);
+							if(detailDto != null) {
+								valueJson = new JSONObject();
+								valueJson.put("id", detailDto.getMaterialCategoryId());
+								valueJson.put("url", detailDto.getCoverPicUrl());
+								valueArray.add(valueJson);
+							}
+						}
+					}
+					else {
 						continue;
 					}
 					codeJson = new JSONObject();
