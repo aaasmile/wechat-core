@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.dto.DcrmImageTextDetailDto;
+import com.d1m.wechat.dto.ImageTextDto;
 import com.d1m.wechat.dto.MaterialDto;
 import com.d1m.wechat.dto.MemberTagDto;
 import com.d1m.wechat.dto.MiniProgramDto;
@@ -221,10 +222,21 @@ public class QrcodeActionEngineController extends BaseController {
 						for (Integer id : value) {
 							DcrmImageTextDetailDto detailDto = DcrmImageTextDetailService.queryObject(id);
 							MaterialDto materialDto = new MaterialDto();
+							ImageTextDto imageTextDto = new ImageTextDto();
+							List<ImageTextDto> items = new ArrayList<ImageTextDto>();
 							if(detailDto != null) {
 								materialDto.setId(detailDto.getMaterialCoverId());
-								materialDto.setUrl(detailDto.getCoverPicUrl());
 								materialDto.setTitle(detailDto.getTitle());
+								
+								imageTextDto.setAuthor("");
+								imageTextDto.setContent(detailDto.getContent());
+								imageTextDto.setSummary(detailDto.getSummary());
+								imageTextDto.setTitle(detailDto.getTitle());
+								imageTextDto.setMaterialCoverUrl(detailDto.getCoverPicUrl());
+								imageTextDto.setContentSourceUrl(detailDto.getLink());
+								items.add(imageTextDto);
+								
+								materialDto.setItems(items);
 								valueArray.add(materialDto);
 							}
 						}
