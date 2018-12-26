@@ -127,7 +127,7 @@ public class MaterialController extends BaseController {
             HttpServletResponse response) {
         try {
         	//如果是预览单图文，无materialId，则走客服预览接口
-        	if(materialModel.getId() == null) {
+        	if(materialModel.getId() == null && materialModel.getNewid() != null) {
         		MemberDto member = memberService.getMemberDto(getWechatId(), materialModel.getMemberId());
     			notBlank(member, Message.MEMBER_NOT_EXIST);
     			CommonUtils.send2SocialWechatCoreApi(getWechatId(), member, materialModel.getNewid(), materialModel.getNewtype(), conversationService);
