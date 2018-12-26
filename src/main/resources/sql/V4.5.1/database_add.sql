@@ -2,7 +2,7 @@ ALTER TABLE material ADD COLUMN  `is_scrm` int(1) DEFAULT '0' COMMENT '是否SCR
 
 ALTER TABLE material ADD COLUMN `material_category_id` varchar(50) DEFAULT NULL COMMENT '素材分类id';
 
-alter TABLE material add COLUMN `url` varchar(50)  DEFAULT NULL COMMENT '图文页的URL';
+alter TABLE material add COLUMN `url` varchar(200)  DEFAULT NULL COMMENT '图文页的URL';
 
 -- 素材分类表 --
 CREATE TABLE `material_category` (
