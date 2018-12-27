@@ -517,12 +517,16 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 				//第三方接口401
 				else if(StringUtils.isNotEmpty(m.getUrl())) {
 					menu.setUrl(m.getUrl());
+				} 
+				if(material.getMaterialType() == null) {
+					menu.setUrl(null);
 				}
 			} else if (material != null) {
 				menu.setMenuKey(material.getId());
 				menu.setUrl(material.getUrl());
 			} else {
 				menu.setMenuKey(null);
+				menu.setUrl(null);
 			}
 			menu.setName(m.getName());
 			MenuType menuType = MenuType.getByValue(m.getType());
