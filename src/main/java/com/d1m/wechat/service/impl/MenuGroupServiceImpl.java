@@ -243,6 +243,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 		log.info(this.getClass().getCanonicalName() + ">>" + JSON.toJSONString(menuModel, true));
 		String content = null, url = null;
 		Integer materialId = null;
+		byte materialType = (byte) 0;
 		notBlank(menuModel.getName(), Message.MENU_NAME_NOT_BLANK);
 		notBlank(menuModel.getType(), Message.MENU_TYPE_NOT_BLANK);
 		MenuType menuType = MenuType.getByValue(menuModel.getType());
@@ -300,12 +301,16 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 					materialId = record.getMaterialId();
 				}
 			} else {
-				Material record = new Material();
-				record.setWechatId(wechatId);
-				record.setId(materialId);
-				record.setStatus(MenuStatus.INUSED.getValue());
-				if (materialMapper.selectCount(record) == 0) {
-					throw new WechatException(Message.MATERIAL_NOT_EXIST);
+				if(materialModel.getMaterialType() != MaterialType.DCRMNEWS.getValue() && materialModel.getMaterialType() != MaterialType.WECHATNEWS.getValue()) {
+					Material record = new Material();
+					record.setWechatId(wechatId);
+					record.setId(materialId);
+					record.setStatus(MenuStatus.INUSED.getValue());
+					if (materialMapper.selectCount(record) == 0) {
+						throw new WechatException(Message.MATERIAL_NOT_EXIST);
+					}
+				} else {
+					materialType = materialModel.getMaterialType();
 				}
 			}
 		} else {
@@ -347,6 +352,9 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 		MaterialDto material = new MaterialDto();
 		material.setId(materialId);
 		material.setUrl(url);
+		if(materialType != (byte) 0) {
+			material.setMaterialType(materialType);
+		}
 		menu.setMaterial(material);
 		return menu;
 	}
