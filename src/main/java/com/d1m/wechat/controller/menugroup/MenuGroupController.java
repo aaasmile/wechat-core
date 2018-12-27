@@ -82,7 +82,6 @@ public class MenuGroupController extends BaseController {
 	public JSONObject create(@ApiParam(name = "MenuGroupModel", required = false) @RequestBody(required = false) MenuGroupModel menuGroupModel, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			Integer wechatId = getWechatId();
-			convert(menuGroupModel);
 			MenuGroup menuGroup = menuGroupService.create(getUser(), wechatId, menuGroupModel);
 			if (menuGroupModel.getPush() != null && menuGroupModel.getPush()) {
 				menuGroupService.pushMenuGroupToWx(wechatId, menuGroup.getId());
@@ -102,7 +101,6 @@ public class MenuGroupController extends BaseController {
 	public JSONObject update(@ApiParam("菜单组ID") @PathVariable Integer id, @ApiParam(name = "MenuGroupModel", required = false) @RequestBody(required = false) MenuGroupModel menuGroupModel, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			Integer wechatId = getWechatId();
-			convert(menuGroupModel);
 			menuGroupService.update(getUser(), wechatId, id, menuGroupModel);
 			if (menuGroupModel.getPush() != null && menuGroupModel.getPush()) {
 				menuGroupService.pushMenuGroupToWx(wechatId, id);
@@ -161,48 +159,5 @@ public class MenuGroupController extends BaseController {
 		Integer wechatId = getWechatId();
 		WxList<WxTag> wxTagList = WechatClientDelegate.getTags(wechatId);
 		return representation(Message.SUCCESS, wxTagList.get());
-	}
-
-	private void convert(MenuGroupModel menuGroupModel) {
-		if(menuGroupModel == null) {
-			log.error("menuGroupModel is empty!");
-			return;
-		}
-		if(menuGroupModel.getMenus() != null && menuGroupModel.getMenus().isEmpty()) {
-			log.error("menuGroupModel.getMenus() is empty!");
-			return;
-		}
-		for(int i = 0; i < menuGroupModel.getMenus().size(); i++) {
-			MaterialModel menuMaterial = menuGroupModel.getMenus().get(i).getMaterial();
-			if(menuMaterial == null) {
-				continue;
-			}
-			//替换menu 3个主菜单  参数 将21, 22 (微信图文，非微信图文) 替换为201, 301 (微信图文，非微信图文)
-			if(menuMaterial.getMaterialType() == (byte) 21) {
-				log.info("menuMaterial...convert... 21 to 201");
-				menuMaterial.setMaterialType((byte) 201);
-			} else if(menuMaterial.getMaterialType() == (byte) 22) {
-				log.info("menuMaterial...convert... 22 to 301");
-				menuMaterial.setMaterialType((byte) 301);
-			}
-			
-			if(menuGroupModel.getMenus().get(i).getChildren() == null) {
-				continue;
-			}
-			//替换menu子菜单
-			for(int j = 0; j < menuGroupModel.getMenus().get(i).getChildren().size(); j++) {
-				MaterialModel subMenuMaterial = menuGroupModel.getMenus().get(i).getChildren().get(j).getMaterial();
-				if(subMenuMaterial == null) {
-					continue;
-				}
-				if(subMenuMaterial.getMaterialType() == (byte) 21) {
-					log.info("subMenuMaterial...convert... 21 to 201");
-					subMenuMaterial.setMaterialType((byte) 201);
-				} else if(subMenuMaterial.getMaterialType() == (byte) 22) {
-					log.info("subMenuMaterial...convert... 22 to 301");
-					subMenuMaterial.setMaterialType((byte) 301);
-				}
-			}
-		}
 	}
 }

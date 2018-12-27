@@ -76,7 +76,7 @@
 				now() AS created_at,
 				'' AS pic_url
 			FROM
-				material
+				dual 
 		</if>
 		<if test="type == 1 and url == null">
 			SELECT * FROM material WHERE id = #{materialId} and status = 1
@@ -99,11 +99,11 @@
 		SELECT * FROM material_text_detail WHERE material_id = #{materialTextDetailId}
 	</select>
 	<select id="getImageTextDetail" parameterType="HashMap" resultMap="GetImageTextDetailResultMap">
-	  	<if test="materialType != 201 and materialType != 301">
+	  	<if test="materialType != 21 and materialType != 22">
 		  	SELECT mt.id as id,mt.title as title, mt.summary as summary, m.pic_url as material_cover_url, m.created_at as created_at 
 		  	 FROM material_image_text_detail mt LEFT JOIN material m ON mt.material_cover_id = m.id WHERE mt.material_id = #{materialId} and mt.status = 1
 	  	</if>
-		<if test="materialType == 201">
+		<if test="materialType == 21">
 			SELECT
 				mt.id AS id,
 				mt.title AS title,
@@ -117,7 +117,7 @@
 			mt.status = 1
 			and mt.id =  #{materialId}
 		</if>
-		<if test="materialType == 301">
+		<if test="materialType == 22">
 			select d.`id`, d.`title`, d.`summary`,
 				(select m.pic_url from material m where d.material_cover_id=m.id) as material_cover_url,
 				UNIX_TIMESTAMP(created_at) as created_at

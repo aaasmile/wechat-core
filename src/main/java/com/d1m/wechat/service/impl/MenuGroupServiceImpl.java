@@ -8,6 +8,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.google.gson.Gson;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +41,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 
 	private Logger log = LoggerFactory.getLogger(MenuGroupServiceImpl.class);
 
+	private Gson gson = new Gson();
 	@Autowired
 	private MenuGroupMapper menuGroupMapper;
 
@@ -141,6 +144,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 	}
 
 	private Menu create(User user, Integer wechatId, Date current, MenuGroup menuGroup, Integer parentId, MenuDto menuDto) {
+		log.info("create...menuGroup..." + gson.toJson(menuDto));
 		Menu menu = new Menu();
 		menu.setCreatedAt(current);
 		menu.setCreatorId(user.getId());
@@ -497,6 +501,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 	}
 
 	private Menu createdOrUpdated(User user, Integer wechatId, MenuGroup menuGroup, Date current, MenuDto m, Integer parentId) {
+		log.info("createdOrUpdated...menuGroup..." + gson.toJson(m));
 		Menu menu = null;
 		MaterialDto material = m.getMaterial();
 		if (m.getId() != null) {
