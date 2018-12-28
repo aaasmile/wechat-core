@@ -65,6 +65,9 @@ public class MemberExcel {
     @Excel(name = "bind.at", width = 20, exportFormat = "yyyy-MM-dd HH:mm:ss")
     private Date bindAt;
 
+    @Excel(name = "bind.name", width = 20)
+    private String bindName;
+
     @Excel(name = "bind.province")
     private String bindProvince;
 
@@ -278,5 +281,13 @@ public class MemberExcel {
 
     public void setBindGender(Sex bindGender) {
         this.bindGender = bindGender;
+    }
+
+    public String getBindName() {
+        return bindName;
+    }
+
+    public void setBindName(String bindName) {
+        this.bindName = bindName;
     }
 }
