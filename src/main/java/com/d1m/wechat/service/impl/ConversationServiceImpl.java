@@ -72,6 +72,7 @@ import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.google.gson.Gson;
 import com.xxl.job.core.biz.model.ReturnT;
 
 import cn.d1m.wechat.client.model.WxMessage;
@@ -82,6 +83,8 @@ import tk.mybatis.mapper.common.Mapper;
 public class ConversationServiceImpl extends BaseService<Conversation> implements ConversationService {
 
 	private static Logger log = LoggerFactory.getLogger(ConversationServiceImpl.class);
+	
+	private Gson gson = new Gson();
 
 	@Autowired
 	private ConversationMapper conversationMapper;
@@ -493,7 +496,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 	@Override
 	public void sendMassConversation(Integer wechatId, User user, MassConversationModel massConversationModel) {
 		long start = System.currentTimeMillis();
-		log.info("start sendMassConversation >>> " + start);
+		log.info("start sendMassConversation >>> " + gson.toJson(massConversationModel));
 		if (massConversationModel == null) {
 			massConversationModel = new MassConversationModel();
 		}
@@ -763,7 +766,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 
 		for (MemberDto dto : members) {
 			boolean success = false;
-			if(MsgType.DCRMNEWS.getValue() == msgType.getValue() || MsgType.DCRMNEWS.getValue() == msgType.getValue()) {
+			if(MsgType.DCRMNEWS.getValue() == msgType.getValue() || MsgType.WECHATNEWS.getValue() == msgType.getValue()) {
 				try {
 					CommonUtils.send2SocialWechatCoreApi(wechatId, dto, condition.getNewid(), condition.getNewtype(), conversationService);
 					success = true;
