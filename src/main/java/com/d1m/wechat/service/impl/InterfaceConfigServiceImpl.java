@@ -54,7 +54,7 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 	@Override
 	public int delete(String id) throws WechatException {
 		Menu menu = new Menu();
-		menu.setInterfaceId(id);
+		menu.setMenuKey(Integer.valueOf(id));
 		if (menuMapper.selectCount(menu) > 0) throw new WechatException(Message.INTERFACECONFIG_IN_USED, Message.INTERFACECONFIG_IN_USED.getName());
 		InterfaceConfig interfaceConfig = new InterfaceConfig();
 		interfaceConfig.setId(id);

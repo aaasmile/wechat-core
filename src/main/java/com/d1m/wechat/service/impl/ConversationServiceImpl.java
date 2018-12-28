@@ -35,16 +35,13 @@ import com.d1m.wechat.mapper.MassConversationMapper;
 import com.d1m.wechat.mapper.MassConversationResultMapper;
 import com.d1m.wechat.mapper.MaterialTextDetailMapper;
 import com.d1m.wechat.mapper.MemberMapper;
-import com.d1m.wechat.model.Articles;
 import com.d1m.wechat.model.Conversation;
 import com.d1m.wechat.model.ConversationImageTextDetail;
-import com.d1m.wechat.model.CustomRequestBody;
 import com.d1m.wechat.model.MassConversation;
 import com.d1m.wechat.model.MassConversationResult;
 import com.d1m.wechat.model.Material;
 import com.d1m.wechat.model.MaterialImageTextDetail;
 import com.d1m.wechat.model.MaterialTextDetail;
-import com.d1m.wechat.model.News;
 import com.d1m.wechat.model.User;
 import com.d1m.wechat.model.UserBehavior;
 import com.d1m.wechat.model.UserLocation;
@@ -65,6 +62,7 @@ import com.d1m.wechat.service.DcrmImageTextDetailService;
 import com.d1m.wechat.service.MassConversationBatchResultService;
 import com.d1m.wechat.service.MaterialImageTextDetailService;
 import com.d1m.wechat.service.MaterialService;
+import com.d1m.wechat.util.CommonUtils;
 import com.d1m.wechat.util.Constants;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.IllegalArgumentUtil;
@@ -121,6 +119,8 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 	private DcrmImageTextDetailService dcrmImageTextDetailService;
 	@Autowired
 	private  CustomService customService;
+	@Autowired
+	private ConversationService conversationService;
 
 	@Override
 	public Mapper<Conversation> getGenericMapper() {
@@ -730,19 +730,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 	 */
 	// @Async("callerRunsExecutor")
 	private void pushMessage(Integer wechatId, MassConversationResult massConversationResult, MsgType msgType, String wxMassMessage, Date current, MassConversationModel condition, Material material, List<ConversationImageTextDetail> conversationImageTextDetails) {
-		News news = null;
-		if(MsgType.DCRMNEWS.getValue() == msgType.getValue() || MsgType.DCRMNEWS.getValue() == msgType.getValue()) {
-			ConversationImageTextDetail details = conversationImageTextDetails.get(0);
-			Articles articles = new Articles.Builder()
-					.title(details.getTitle()).url(details.getContentSourceUrl())
-					.description(details.getContent())
-					.picurl(details.getMaterialCoverUrl()).build();
-			List<Articles> articlesL = new ArrayList<Articles>();
-			articlesL.add(articles);
-			news = new News.Builder().articles(articlesL).build();
-		}
 		List<MemberDto> members = null;
-
 		if (condition.getMemberIds() == null || condition.getMemberIds().length == 0) {
 			MemberModel memberModel = condition.getMemberModel();
 			members = memberMapper.search(wechatId, memberModel.getOpenId(), memberModel.getNickname(), memberModel.getSex(), memberModel.getCountry(), memberModel.getProvince(), memberModel.getCity(), memberModel.getSubscribe(), memberModel.getActivityStartAt(), memberModel.getActivityEndAt(), memberModel.getBatchSendOfMonthStartAt(), memberModel.getBatchSendOfMonthEndAt(), DateUtil.getDateBegin(DateUtil.parse(memberModel.getAttentionStartAt())), DateUtil.getDateEnd(DateUtil.parse(memberModel.getAttentionEndAt())), DateUtil.getDateBegin(DateUtil.parse(memberModel.getCancelSubscribeStartAt())), DateUtil.getDateEnd(DateUtil.parse(memberModel.getCancelSubscribeEndAt())), true, null, memberModel.getMobile(), memberModel.getMemberTags(), null, null, null, DateUtil.getDate(-2));
@@ -777,8 +765,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 			boolean success = false;
 			if(MsgType.DCRMNEWS.getValue() == msgType.getValue() || MsgType.DCRMNEWS.getValue() == msgType.getValue()) {
 				try {
-					CustomRequestBody customRequestBody = new CustomRequestBody.Builder().touser(dto.getOpenId()).msgtype("news").news(news).build();
-					customService.sender(customRequestBody, wechatId);
+					CommonUtils.send2SocialWechatCoreApi(wechatId, dto, condition.getNewid(), condition.getNewtype(), conversationService);
 					success = true;
 				} catch (Exception e) {
 					success = false;

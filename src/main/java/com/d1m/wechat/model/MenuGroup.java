@@ -291,4 +291,9 @@ public class MenuGroup {
     public void setDeletorId(Integer deletorId) {
         this.deletorId = deletorId;
     }
+
+	@Override
+	public String toString() {
+		return "MenuGroup [id=" + id + ", name=" + name + ", menuRuleId=" + menuRuleId + ", createdAt=" + createdAt + ", modifyAt=" + modifyAt + ", pushAt=" + pushAt + ", wxMenuId=" + wxMenuId + ", creatorId=" + creatorId + ", wechatId=" + wechatId + ", status=" + status + ", deletedAt=" + deletedAt + ", deletorId=" + deletorId + "]";
+	}
 }

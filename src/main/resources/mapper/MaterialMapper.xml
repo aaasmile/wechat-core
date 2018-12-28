@@ -49,7 +49,7 @@
                 </if>
             </if>
         </where>
-        order by id desc
+        order by last_push_at desc
     </select>
     <resultMap id="ImageResultMap" type="com.d1m.wechat.dto.MaterialDto">
         <id column="id" jdbcType="INTEGER" property="id"/>
@@ -75,7 +75,7 @@
             <if test="materialCategoryId!=null">
                 and m.material_category_id = #{materialCategoryId}
             </if>
-            order by m.id desc
+            order by m.last_push_at desc
         </where>
     </select>
     <resultMap id="ImageTextResultMap" type="com.d1m.wechat.dto.MaterialDto">
