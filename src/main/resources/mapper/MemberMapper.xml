@@ -200,6 +200,9 @@
                     and m.status is null
                 </if>
             </if>
+            <if test="fuzzyRemarks!=null">
+                and m.remark like CONCAT('%', #{fuzzyRemarks}, '%')
+            </if>
         </where>
     </sql>
 
