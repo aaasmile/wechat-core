@@ -25,7 +25,8 @@
         UNIX_TIMESTAMP(laste_updated_at) as lasteUpdatedAt,
         d.send_times,
         d.read_times,
-        d.qrcode_id
+        d.qrcode_id,
+        d.url
         from dcrm_image_text_detail d
         WHERE 1=1
         <if test="search != null">
@@ -78,7 +79,8 @@
         UNIX_TIMESTAMP(laste_updated_at) as lasteUpdatedAt,
         d.send_times,
         d.read_times,
-        d.qrcode_id
+        d.qrcode_id,
+        d.url
         from dcrm_image_text_detail d
 		where id = #{id}
 	</select>
