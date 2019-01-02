@@ -110,6 +110,19 @@ public class DcrmImageTextDetail {
      */
     private Integer qrcodeId;
 
+    /**
+     * 图文页的URL
+     */
+    private String url;
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     public Integer getQrcodeId() {
         return qrcodeId;
     }
