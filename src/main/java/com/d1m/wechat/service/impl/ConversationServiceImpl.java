@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.common.Mapper;
 
@@ -82,6 +83,9 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
     @Autowired
     private ConversationService conversationService;
 
+    @Value("${access-trace-oauth-url}")
+    private String traceUrl;
+
     @Override
     public Mapper<Conversation> getGenericMapper() {
         return conversationMapper;
@@ -121,7 +125,8 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
                         conversationImageTextDetail.setAuthor(imageTextDto.getAuthor());
                         conversationImageTextDetail.setContent(imageTextDto.getContent());
                         conversationImageTextDetail.setContentSourceChecked(imageTextDto.getContentSourceChecked());
-                        conversationImageTextDetail.setContentSourceUrl(imageTextDto.getContentSourceUrl());
+                        final String wrapper = String.format(traceUrl, wechatId, imageTextDto.getContentSourceUrl(), imageTextDto.getId(), "mass-send");
+                        conversationImageTextDetail.setContentSourceUrl(wrapper);
                         conversationImageTextDetail.setShowCover(imageTextDto.isShowCover());
                         conversationImageTextDetail.setSummary(imageTextDto.getSummary());
                         conversationImageTextDetail.setTitle(imageTextDto.getTitle());
@@ -147,7 +152,8 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
                         article.setTitle(imageTextDto.getTitle());
                         article.setDescription(imageTextDto.getSummary());
                         article.setPicUrl(imageTextDto.getMaterialCoverUrl());
-                        article.setUrl(imageTextDto.getContentSourceUrl());
+                        final String wrapper = String.format(traceUrl, wechatId, imageTextDto.getContentSourceUrl(), imageTextDto.getId(), "mass-send");
+                        article.setUrl(wrapper);
                         articles.add(article);
                     }
                     msgType = MsgType.NEWS;
