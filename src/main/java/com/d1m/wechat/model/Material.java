@@ -137,18 +137,6 @@ public class Material {
     @Column(name = "material_category_id")
     private String materialCategoryId;
 
-    /**
-     * 图文页的URL
-     */
-    private String url;
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
     public Integer getIsScrm() {
         return isScrm;
     }

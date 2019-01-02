@@ -459,7 +459,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
     @Override
     public void sendMassConversation(Integer wechatId, User user, MassConversationModel massConversationModel) {
         long start = System.currentTimeMillis();
-        log.info("start sendMassConversation >>> " + gson.toJson(massConversationModel));
+        log.info("start sendMassConversation >>> " + massConversationModel == null ? "" : massConversationModel.toString());
         if (massConversationModel == null) {
             massConversationModel = new MassConversationModel();
         }
