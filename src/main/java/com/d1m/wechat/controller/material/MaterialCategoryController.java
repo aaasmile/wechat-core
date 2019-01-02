@@ -48,7 +48,7 @@ public class MaterialCategoryController extends BaseController {
     public JSONObject save(@RequestBody MaterialCategoryDto dto) {
         try {
             Preconditions.checkArgument(StringUtils.isNotBlank(dto.getName()), Message.MATERIAL_CATEGORY_NAME_NOT_NULL);
-            MaterialCategory materialCategory = materialCategoryService.exitsName(dto.getName());
+            MaterialCategory materialCategory = materialCategoryService.exitsName(dto.getName().trim());
             Preconditions.checkArgument(materialCategory == null, Message.MATERIAL_CATEGORY_NAME_EXITS);
             dto.setCreatedBy(getUser().getId());
             dto.setWechatId(getUser().getWechatId());
