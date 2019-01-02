@@ -25,6 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
@@ -286,9 +288,15 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
     private void saveEngine(DcrmImageTextDetailDto dto, Qrcode qrcode) {
         ActionEngine actionEngine = new ActionEngine();
         String effect = "[{\"code\":301,\"value\":[" + dto.getId() + "]}]";
+
+        LocalDateTime localDateTimeToday = LocalDateTime.now();
+        LocalDateTime endTime = localDateTimeToday.plusDays(3);
+        Date endDate = Date.from(endTime.atZone(ZoneId.systemDefault()).toInstant());
+        Date startDate = Date.from(localDateTimeToday.atZone(ZoneId.systemDefault()).toInstant());
+
         actionEngine.setEffect(effect);
-        actionEngine.setEndAt(new Date());
-        actionEngine.setStartAt(new Date());
+        actionEngine.setEndAt(endDate);
+        actionEngine.setStartAt(startDate);
         actionEngine.setRunType((byte) 1);
         actionEngine.setStatus(MaterialStatus.INUSED.getValue());
         actionEngine.setName(dto.getTitle());
