@@ -8,6 +8,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.google.gson.Gson;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +41,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 
 	private Logger log = LoggerFactory.getLogger(MenuGroupServiceImpl.class);
 
+	private Gson gson = new Gson();
 	@Autowired
 	private MenuGroupMapper menuGroupMapper;
 
@@ -141,14 +144,23 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 	}
 
 	private Menu create(User user, Integer wechatId, Date current, MenuGroup menuGroup, Integer parentId, MenuDto menuDto) {
+		log.info("create...menuGroup..." + gson.toJson(menuDto));
 		Menu menu = new Menu();
-		if (StringUtils.isNotEmpty(menuDto.getInterfaceId())) {
-			menu.setInterfaceId(menuDto.getInterfaceId());
-		}
 		menu.setCreatedAt(current);
 		menu.setCreatorId(user.getId());
 		MaterialDto materialDto = menuDto.getMaterial();
-		if (materialDto != null) {
+		
+		if(MenuType.CLICK.getValue() == menuDto.getType()) {
+			menu.setMenuKey(materialDto.getId());
+			//click 201  微信图文，301非微信图文
+			if(materialDto.getMaterialType() != null) {
+				menu.setUrl(String.valueOf(materialDto.getMaterialType()));
+			} 
+			//第三方接口401
+			else if(StringUtils.isNotEmpty(menuDto.getUrl())) {
+				menu.setUrl(menuDto.getUrl());
+			}
+		} else if (materialDto != null) {
 			menu.setMenuKey(materialDto.getId());
 			menu.setUrl(materialDto.getUrl());
 		}
@@ -214,9 +226,6 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 					menuDto.setPagePath(menuModel.getPagePath());
 				if (menuModel.getAppUrl() != null)
 					menuDto.setAppUrl(menuModel.getAppUrl());
-				if (StringUtils.isNotEmpty(menuModel.getInterfaceId())) {
-					menuDto.setInterfaceId(menuModel.getInterfaceId());
-				}
 				menuList.add(menuDto);
 				childrenMenuDtos = new ArrayList<MenuDto>();
 				Integer subSeq = 1;
@@ -238,6 +247,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 		log.info(this.getClass().getCanonicalName() + ">>" + JSON.toJSONString(menuModel, true));
 		String content = null, url = null;
 		Integer materialId = null;
+		byte materialType = (byte) 0;
 		notBlank(menuModel.getName(), Message.MENU_NAME_NOT_BLANK);
 		notBlank(menuModel.getType(), Message.MENU_TYPE_NOT_BLANK);
 		MenuType menuType = MenuType.getByValue(menuModel.getType());
@@ -295,12 +305,16 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 					materialId = record.getMaterialId();
 				}
 			} else {
-				Material record = new Material();
-				record.setWechatId(wechatId);
-				record.setId(materialId);
-				record.setStatus(MenuStatus.INUSED.getValue());
-				if (materialMapper.selectCount(record) == 0) {
-					throw new WechatException(Message.MATERIAL_NOT_EXIST);
+				if(materialModel.getMaterialType() != MaterialType.DCRMNEWS.getValue() && materialModel.getMaterialType() != MaterialType.WECHATNEWS.getValue()) {
+					Material record = new Material();
+					record.setWechatId(wechatId);
+					record.setId(materialId);
+					record.setStatus(MenuStatus.INUSED.getValue());
+					if (materialMapper.selectCount(record) == 0) {
+						throw new WechatException(Message.MATERIAL_NOT_EXIST);
+					}
+				} else {
+					materialType = materialModel.getMaterialType();
 				}
 			}
 		} else {
@@ -339,12 +353,12 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 			menu.setPagePath(menuModel.getPagePath());
 		if (menuModel.getAppUrl() != null)
 			menu.setAppUrl(menuModel.getAppUrl());
-		if (StringUtils.isNotEmpty(menuModel.getInterfaceId())) {
-			menu.setInterfaceId(menuModel.getInterfaceId());
-		}
 		MaterialDto material = new MaterialDto();
 		material.setId(materialId);
 		material.setUrl(url);
+		if(materialType != (byte) 0) {
+			material.setMaterialType(materialType);
+		}
 		menu.setMaterial(material);
 		return menu;
 	}
@@ -487,16 +501,32 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 	}
 
 	private Menu createdOrUpdated(User user, Integer wechatId, MenuGroup menuGroup, Date current, MenuDto m, Integer parentId) {
+		log.info("createdOrUpdated...menuGroup..." + gson.toJson(m));
 		Menu menu = null;
 		MaterialDto material = m.getMaterial();
 		if (m.getId() != null) {
 			/** update */
 			menu = menuMapper.selectByPrimaryKey(m.getId());
-			if (material != null) {
+			
+			if(MenuType.CLICK.getValue() == m.getType()) {
+				menu.setMenuKey(material.getId());
+				//201  微信图文，301非微信图文
+				if(material.getMaterialType() != null) {
+					menu.setUrl(String.valueOf(material.getMaterialType()));
+				} 
+				//第三方接口401
+				else if(StringUtils.isNotEmpty(m.getUrl())) {
+					menu.setUrl(m.getUrl());
+				} 
+				if(material.getMaterialType() == null) {
+					menu.setUrl(null);
+				}
+			} else if (material != null) {
 				menu.setMenuKey(material.getId());
 				menu.setUrl(material.getUrl());
 			} else {
 				menu.setMenuKey(null);
+				menu.setUrl(null);
 			}
 			menu.setName(m.getName());
 			MenuType menuType = MenuType.getByValue(m.getType());
@@ -508,10 +538,6 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 			menu.setModifyAt(current);
 			menu.setParentId(parentId);
 			menu.setSeq(m.getSeq());
-
-			if (StringUtils.isNotEmpty(m.getInterfaceId())) {
-				menu.setInterfaceId(m.getInterfaceId());
-			}
 
 			menuMapper.updateByPrimaryKey(menu);
 			MenuExtraAttr menuExtraAttr = new MenuExtraAttr();
@@ -555,10 +581,6 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 			menu.setWechatId(wechatId);
 			menu.setParentId(parentId);
 			menu.setSeq(m.getSeq());
-
-			if (StringUtils.isNotEmpty(m.getInterfaceId())) {
-				menu.setInterfaceId(m.getInterfaceId());
-			}
 
 			menuMapper.insert(menu);
 			MenuExtraAttr menuExtraAttr = new MenuExtraAttr();

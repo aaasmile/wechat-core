@@ -191,25 +191,32 @@ public class QrcodeActionEngineController extends BaseController {
 						log.info("convert...effect..." + Effect.SEND_IMAGE_TEXT.toString());
 						valueArray = new JSONArray();
 						for (Integer id : value) {
-							MaterialImageTextDetail detailDto = materialImageTextDetailService.selectByKey(id);
-							Material material = materialService.selectByKey(detailDto.getMaterialCoverId());
-							MaterialDto materialDto = new MaterialDto();
-							ImageTextDto imageTextDto = new ImageTextDto();
-							List<ImageTextDto> items = new ArrayList<ImageTextDto>();
-							if(detailDto != null) {
-								materialDto.setId(material.getId());
-								materialDto.setTitle(material.getTitle());
-								
-								imageTextDto.setAuthor("");
-								imageTextDto.setContent(detailDto.getContent());
-								imageTextDto.setSummary(detailDto.getSummary());
-								imageTextDto.setTitle(detailDto.getTitle());
-								imageTextDto.setMaterialCoverUrl(material.getPicUrl());
-								imageTextDto.setContentSourceUrl(detailDto.getContentSourceUrl());
-								items.add(imageTextDto);
-								
-								materialDto.setItems(items);
-								valueArray.add(materialDto);
+							try {
+								MaterialImageTextDetail detailDto = materialImageTextDetailService.selectByKey(id);
+								if(detailDto == null) {
+									continue;
+								}
+								Material material = materialService.selectByKey(detailDto.getMaterialCoverId());
+								MaterialDto materialDto = new MaterialDto();
+								ImageTextDto imageTextDto = new ImageTextDto();
+								List<ImageTextDto> items = new ArrayList<ImageTextDto>();
+								if(detailDto != null) {
+									materialDto.setId(material.getId());
+									materialDto.setTitle(material.getTitle());
+									
+									imageTextDto.setAuthor("");
+									imageTextDto.setContent(detailDto.getContent());
+									imageTextDto.setSummary(detailDto.getSummary());
+									imageTextDto.setTitle(detailDto.getTitle());
+									imageTextDto.setMaterialCoverUrl(material.getPicUrl());
+									imageTextDto.setContentSourceUrl(detailDto.getContentSourceUrl());
+									items.add(imageTextDto);
+									
+									materialDto.setItems(items);
+									valueArray.add(materialDto);
+								}
+							} catch (Exception e) {
+								log.error(e.getMessage(), e);
 							}
 						}
 					} else if (qae.getCode().byteValue() == Effect.SEND_IMAGE.getValue()) {
@@ -245,24 +252,31 @@ public class QrcodeActionEngineController extends BaseController {
 						log.info("convert...effect..." + Effect.SEND_DCRM_IMAGE_TEXT.toString());
 						valueArray = new JSONArray();
 						for (Integer id : value) {
-							DcrmImageTextDetailDto detailDto = DcrmImageTextDetailService.queryObject(id);
-							MaterialDto materialDto = new MaterialDto();
-							ImageTextDto imageTextDto = new ImageTextDto();
-							List<ImageTextDto> items = new ArrayList<ImageTextDto>();
-							if(detailDto != null) {
-								materialDto.setId(detailDto.getMaterialCoverId());
-								materialDto.setTitle(detailDto.getTitle());
-								
-								imageTextDto.setAuthor("");
-								imageTextDto.setContent(detailDto.getContent());
-								imageTextDto.setSummary(detailDto.getSummary());
-								imageTextDto.setTitle(detailDto.getTitle());
-								imageTextDto.setMaterialCoverUrl(detailDto.getCoverPicUrl());
-								imageTextDto.setContentSourceUrl(detailDto.getLink());
-								items.add(imageTextDto);
-								
-								materialDto.setItems(items);
-								valueArray.add(materialDto);
+							try {
+								DcrmImageTextDetailDto detailDto = DcrmImageTextDetailService.queryObject(id);
+								if(detailDto == null) {
+									continue;
+								}
+								MaterialDto materialDto = new MaterialDto();
+								ImageTextDto imageTextDto = new ImageTextDto();
+								List<ImageTextDto> items = new ArrayList<ImageTextDto>();
+								if(detailDto != null) {
+									materialDto.setId(detailDto.getMaterialCoverId());
+									materialDto.setTitle(detailDto.getTitle());
+									
+									imageTextDto.setAuthor("");
+									imageTextDto.setContent(detailDto.getContent());
+									imageTextDto.setSummary(detailDto.getSummary());
+									imageTextDto.setTitle(detailDto.getTitle());
+									imageTextDto.setMaterialCoverUrl(detailDto.getCoverPicUrl());
+									imageTextDto.setContentSourceUrl(detailDto.getLink());
+									items.add(imageTextDto);
+									
+									materialDto.setItems(items);
+									valueArray.add(materialDto);
+								}
+							} catch (Exception e) {
+								log.error(e.getMessage(), e);
 							}
 						}
 					}

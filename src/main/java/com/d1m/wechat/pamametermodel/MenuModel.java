@@ -28,8 +28,6 @@ public class MenuModel {
 
 	private String appUrl;
 	
-	private String interfaceId;
-
 	public List<MenuModel> getChildren() {
 		return children;
 	}
@@ -126,11 +124,4 @@ public class MenuModel {
 		this.appUrl = appUrl;
 	}
 
-	public String getInterfaceId() {
-		return interfaceId;
-	}
-
-	public void setInterfaceId(String interfaceId) {
-		this.interfaceId = interfaceId;
-	}
 }

@@ -116,6 +116,7 @@
         <result property="tag" jdbcType="VARCHAR" column="tag"/>
         <result property="unionId" jdbcType="VARCHAR" column="union_id"/>
         <result property="unsubscribeAt" jdbcType="TIMESTAMP" column="unsubscribe_at"/>
+        <result property="bindName" jdbcType="TIMESTAMP" column="bind_name"/>
     </resultMap>
 
 
@@ -144,7 +145,8 @@
         mp.birth_date as bind_birthday,
         m.remark as remarks,
         m.language as lang,
-        m.subscribe_scene as subscribe_scene
+        m.subscribe_scene as subscribe_scene,
+        mp.name as bind_name
         from member m
         left join member_profile mp on mp.member_id = m.id
         LEFT JOIN area_info ai on m.province = ai.id

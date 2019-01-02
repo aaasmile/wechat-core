@@ -4,14 +4,28 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.alibaba.fastjson.JSONObject;
-import com.github.pagehelper.Page;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSONObject;
+import com.d1m.wechat.controller.BaseController;
+import com.d1m.wechat.dto.MenuGroupDto;
+import com.d1m.wechat.model.MenuGroup;
+import com.d1m.wechat.pamametermodel.MaterialModel;
+import com.d1m.wechat.pamametermodel.MenuGroupModel;
+import com.d1m.wechat.service.MenuGroupService;
+import com.d1m.wechat.util.Message;
+import com.d1m.wechat.wechatclient.WechatClientDelegate;
+import com.github.pagehelper.Page;
 
 import cn.d1m.wechat.client.model.WxTag;
 import cn.d1m.wechat.client.model.common.WxList;
@@ -19,14 +33,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
-
-import com.d1m.wechat.wechatclient.WechatClientDelegate;
-import com.d1m.wechat.controller.BaseController;
-import com.d1m.wechat.dto.MenuGroupDto;
-import com.d1m.wechat.model.MenuGroup;
-import com.d1m.wechat.pamametermodel.MenuGroupModel;
-import com.d1m.wechat.service.MenuGroupService;
-import com.d1m.wechat.util.Message;
 
 @Controller
 @RequestMapping("/menugroup")
@@ -75,8 +81,8 @@ public class MenuGroupController extends BaseController {
 	@RequiresPermissions("menu:list")
 	public JSONObject create(@ApiParam(name = "MenuGroupModel", required = false) @RequestBody(required = false) MenuGroupModel menuGroupModel, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		try {
-			Integer wechatId = getWechatId(session);
-			MenuGroup menuGroup = menuGroupService.create(getUser(session), wechatId, menuGroupModel);
+			Integer wechatId = getWechatId();
+			MenuGroup menuGroup = menuGroupService.create(getUser(), wechatId, menuGroupModel);
 			if (menuGroupModel.getPush() != null && menuGroupModel.getPush()) {
 				menuGroupService.pushMenuGroupToWx(wechatId, menuGroup.getId());
 			}
@@ -94,8 +100,8 @@ public class MenuGroupController extends BaseController {
 	@RequiresPermissions("menu:list")
 	public JSONObject update(@ApiParam("菜单组ID") @PathVariable Integer id, @ApiParam(name = "MenuGroupModel", required = false) @RequestBody(required = false) MenuGroupModel menuGroupModel, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		try {
-			Integer wechatId = getWechatId(session);
-			menuGroupService.update(getUser(session), wechatId, id, menuGroupModel);
+			Integer wechatId = getWechatId();
+			menuGroupService.update(getUser(), wechatId, id, menuGroupModel);
 			if (menuGroupModel.getPush() != null && menuGroupModel.getPush()) {
 				menuGroupService.pushMenuGroupToWx(wechatId, id);
 			}
@@ -154,5 +160,4 @@ public class MenuGroupController extends BaseController {
 		WxList<WxTag> wxTagList = WechatClientDelegate.getTags(wechatId);
 		return representation(Message.SUCCESS, wxTagList.get());
 	}
-
 }

@@ -188,7 +188,8 @@ public class MemberServiceImpl extends BaseService<Member> implements
                             .getIsOnline(), null, memberModel.getMobile(),
                     memberModel.getMemberTags(), addMemberTagModel.getSortName(),
                     addMemberTagModel.getSortDir(), addMemberTagModel
-                            .getBindStatus(), DateUtil.getDate(-2));
+                            .getBindStatus(), DateUtil.getDate(-2),
+                    addMemberTagModel.getFuzzyRemarks());
         } else {
             // 优化数据表过大，limit的offset值过大，查询缓慢
             List<Integer> ids = memberMapper.searchIds(wechatId, memberModel
@@ -209,7 +210,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
                             .getIsOnline(), null, memberModel.getMobile(),
                     memberModel.getMemberTags(), addMemberTagModel.getSortName(),
                     addMemberTagModel.getSortDir(), addMemberTagModel
-                            .getBindStatus(), offset, pageSize);
+                            .getBindStatus(), offset, pageSize, addMemberTagModel.getFuzzyRemarks());
             list = memberMapper.searchByIds(ids, ids.size());
         }
         list.setTotal(total);
@@ -265,7 +266,8 @@ public class MemberServiceImpl extends BaseService<Member> implements
                             .getDateEnd(DateUtil.parse(memberModel
                                     .getCancelSubscribeEndAt())), null, null,
                     memberModel.getMobile(), memberModel.getMemberTags(), null,
-                    null, null, DateUtil.getDate(-2));
+                    null, null, DateUtil.getDate(-2),
+                    addMemberTagModel.getFuzzyRemarks());
         } else {
             members = memberMapper.selectByMemberId(
                     addMemberTagModel.getMemberIds(), wechatId, null);
@@ -1065,7 +1067,8 @@ public class MemberServiceImpl extends BaseService<Member> implements
                         .getIsOnline(), null, memberModel.getMobile(),
                 memberModel.getMemberTags(), addMemberTagModel.getSortName(),
                 addMemberTagModel.getSortDir(), addMemberTagModel
-                        .getBindStatus(), DateUtil.getDate(-2));
+                        .getBindStatus(), DateUtil.getDate(-2),
+                addMemberTagModel.getFuzzyRemarks());
     }
 
     @Override
