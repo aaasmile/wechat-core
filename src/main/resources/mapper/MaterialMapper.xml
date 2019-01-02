@@ -124,7 +124,7 @@
         <result column="type_name" jdbcType="VARCHAR" property="typeName"/>
         <result column="material_category_id" jdbcType="VARCHAR" property="materialCategoryId"/>
         <!--<result column="comment" jdbcType="TINYINT" property="comment" />-->
-        <collection column="{materialId=id,id=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.ImageTextDto"
+        <collection column="{materialId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.ImageTextDto"
                     property="items" select="getImageTextDetail"/>
     </resultMap>
     <select id="getImageTextDetail" parameterType="hashmap" resultMap="GetImageTextDetailResultMap">
