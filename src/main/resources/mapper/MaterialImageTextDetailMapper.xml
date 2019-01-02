@@ -20,6 +20,7 @@
         <result column="content" jdbcType="LONGVARCHAR" property="content"/>
         <result column="comment" jdbcType="TINYINT" property="comment"/>
         <result column="remarks" jdbcType="TINYINT" property="remarks"/>
+        <result column="url" jdbcType="VARCHAR" property="url"/>
     </resultMap>
 
     <select id="search" parameterType="HashMap" resultMap="MaterialImageTextDetailResultMap">
