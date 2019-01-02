@@ -27,7 +27,6 @@
         <result column="media_id" jdbcType="VARCHAR" property="mediaId"/>
         <result column="status" jdbcType="TINYINT" property="status"/>
         <result column="material_category_id" jdbcType="VARCHAR" property="materialCategoryId"/>
-        <result column="url" jdbcType="VARCHAR" property="url"/>
     </resultMap>
 
     <select id="searchImage" parameterType="hashmap" resultMap="ImageResultMap">
@@ -125,7 +124,7 @@
         <result column="type_name" jdbcType="VARCHAR" property="typeName"/>
         <result column="material_category_id" jdbcType="VARCHAR" property="materialCategoryId"/>
         <!--<result column="comment" jdbcType="TINYINT" property="comment" />-->
-        <collection column="{materialId=id,status=1}" javaType="ArrayList" ofType="com.d1m.wechat.dto.ImageTextDto"
+        <collection column="{materialId=id,id=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.ImageTextDto"
                     property="items" select="getImageTextDetail"/>
     </resultMap>
     <select id="getImageTextDetail" parameterType="hashmap" resultMap="GetImageTextDetailResultMap">
@@ -135,9 +134,9 @@
         m.media_id as material_cover_media_id ,mt.comment , mt.remarks as remarks, mt.status as deleted
         FROM material_image_text_detail mt LEFT JOIN material m ON mt.material_cover_id = m.id
         <where>
-            <if test="status!=null">
-                mt.status = #{status}
-            </if>
+            <!--<if test="status!=null">-->
+                mt.status = 1
+            <!--</if>-->
             <if test="materialId!=null">
                 and mt.material_id = #{materialId}
             </if>
