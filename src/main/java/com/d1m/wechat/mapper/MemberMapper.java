@@ -82,7 +82,8 @@ public interface MemberMapper extends MyMapper<Member> {
                @Param("mobile") String mobile,
                @Param("memberTags") Integer[] memberTags,
                @Param("sortName") String sortName, @Param("sortDir") String sortDir,
-               @Param("bindStatus") Integer bindStatus, @Param("daytime") Date daytime);
+               @Param("bindStatus") Integer bindStatus, @Param("daytime") Date daytime,
+               @Param("fuzzyRemarks") String fuzzyRemarks);
 
     List<MemberDto> selectByWechat(@Param("wechatId") Integer wechatId);
 

@@ -159,7 +159,8 @@ public class MemberServiceImpl extends BaseService<Member> implements
                         .getIsOnline(), null, memberModel.getMobile(),
                 memberModel.getMemberTags(), addMemberTagModel.getSortName(),
                 addMemberTagModel.getSortDir(), addMemberTagModel
-                        .getBindStatus(), DateUtil.getDate(-2));
+                        .getBindStatus(), DateUtil.getDate(-2),
+                addMemberTagModel.getFuzzyRemarks());
 
         Integer pageSize = addMemberTagModel.getPageSize();
         Integer offset = (addMemberTagModel.getPageNum() - 1) * pageSize;
