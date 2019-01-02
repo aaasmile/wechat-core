@@ -87,6 +87,19 @@ public class MaterialImageTextDetail {
     private String remarks;
 
     /**
+     * 图文页的URL
+     */
+    private String url;
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    /**
      * 获取主键ID
      *
      * @return id - 主键ID
