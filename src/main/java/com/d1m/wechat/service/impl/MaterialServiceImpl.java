@@ -1,6 +1,5 @@
 package com.d1m.wechat.service.impl;
 
-import cn.d1m.wechat.client.core.WxResponse;
 import cn.d1m.wechat.client.model.WxArticle;
 import cn.d1m.wechat.client.model.WxMaterial;
 import cn.d1m.wechat.client.model.WxMedia;
@@ -8,7 +7,6 @@ import cn.d1m.wechat.client.model.WxMessage;
 import cn.d1m.wechat.client.model.common.WxHolder;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.d1m.common.rest.RestResponse;
 import com.d1m.wechat.component.FileUploadConfig;
 import com.d1m.wechat.controller.file.Upload;
 import com.d1m.wechat.dto.ImageTextDto;
@@ -45,7 +43,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -60,7 +57,7 @@ import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 @Service
 public class MaterialServiceImpl extends BaseService<Material> implements MaterialService {
 
-	private static final Logger log = LoggerFactory.getLogger(MaterialServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(MaterialServiceImpl.class);
     @Resource
     private MaterialMapper materialMapper;
 
@@ -104,7 +101,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         if (Objects.nonNull(materialDto)) {
             return materialDto;
         }
-        final List<ImageTextDto> imageTextDtos = materialMapper.getImageTextDetail(ImmutableMap.of("materialId", id));
+        final List<ImageTextDto> imageTextDtos = materialMapper.getImageTextDetail(ImmutableMap.of("id", id));
         if (CollectionUtils.isNotEmpty(imageTextDtos)) {
             materialDto = new MaterialDto();
             BeanUtils.copyProperties(imageTextDtos.get(0), materialDto);
@@ -282,8 +279,16 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
      throws BusinessException {
         MaterialDto materialDto = materialMapper.getUsedImageText(wechatId, materialId);
         notBlank(materialDto, Message.MATERIAL_NOT_EXIST);
-        if (CollectionUtils.isNotEmpty(materialDto.getItems()))
-            return response(Message.MATERIAL_UNABLE_DELETE, materialDto.getItems());
+        List<Map<Object, Object>> list = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(materialDto.getItems())) {
+            Map<Object, Object> map = new HashMap<>();
+            for (ImageTextDto imageTextDto : materialDto.getItems()) {
+                map.put("id", imageTextDto.getId());
+                map.put("title", imageTextDto.getTitle());
+                list.add(map);
+            }
+            return response(Message.MATERIAL_UNABLE_DELETE, list);
+        }
         Material material = new Material();
         material.setId(materialId);
         material.setStatus((byte) 0);
@@ -314,7 +319,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
 
 
     private String deleteMaterial(String accessToken, String mediaId) {
-    	String WEIXIN_DELETE_MATERIAL = "https://api.weixin.qq.com/cgi-bin/material/del_material";
+        String WEIXIN_DELETE_MATERIAL = "https://api.weixin.qq.com/cgi-bin/material/del_material";
         log.info("删除永久素材请求入参：accessToken:{},mediaId:{}", accessToken, mediaId);
         if (StringUtils.isEmpty(accessToken)) {
             log.info("accessToken不能为空");
@@ -561,15 +566,9 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
 
     @Override
     public void updateMaterialAndImageText(Material material, List<MaterialImageTextDetail> imageTextDetail) {
-        final int result1 = materialMapper.updateByPrimaryKeySelective(material);
-        int result2 = 0;
-        int collectionSize = -1;
+        materialMapper.updateByPrimaryKeySelective(material);
         if (CollectionUtils.isNotEmpty(imageTextDetail)) {
-            result2 = imageTextDetail.stream().mapToInt(materialImageTextDetailMapper::updateByPrimaryKeySelective).sum();
-            collectionSize = imageTextDetail.size();
-        }
-        if (result1 != 1 || result2 != collectionSize) {
-            throw new WechatException(Message.MATERIAL_IMAGE_TEXT_DETAIL_NOT_EXIST);
+            imageTextDetail.stream().mapToInt(materialImageTextDetailMapper::updateByPrimaryKeySelective).sum();
         }
     }
 

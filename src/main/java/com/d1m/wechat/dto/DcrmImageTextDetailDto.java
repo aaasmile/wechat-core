@@ -126,7 +126,21 @@ public class DcrmImageTextDetailDto implements Serializable {
     private Integer qrcodeId;
     
 	private Integer newid;
+
 	private String newtype;
+
+    /**
+     * 图文页的URL
+     */
+    private String url;
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
     public String getTagName() {
         return tagName;
