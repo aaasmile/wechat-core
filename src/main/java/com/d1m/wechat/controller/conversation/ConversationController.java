@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
@@ -378,6 +379,7 @@ public class ConversationController extends BaseController {
 		return result;
 	}
 
+	private static ObjectMapper om = new ObjectMapper();
 	private List<ConversationDto> convert(Page<ConversationDto> page) {
 		List<ConversationDto> result = page.getResult();
 		ImageTextDto item = null;
@@ -389,7 +391,7 @@ public class ConversationController extends BaseController {
 				}
 				List<ImageTextDto> items = new ArrayList<ImageTextDto>();
 				itemJson = JSONObject.parseObject(conversationDto.getContent());
-				if(!itemJson.containsKey("summary")) {
+				if(!itemJson.containsKey("title")) {
 					continue;
 				}
 				item = new ImageTextDto();
@@ -401,7 +403,7 @@ public class ConversationController extends BaseController {
 					conversationDto.setMaterialId(itemJson.getInteger("materialId"));
 				}
 				conversationDto.setItems(items);
-				conversationDto.setContent(null);
+				conversationDto.setContent(om.writeValueAsString(items));
 				conversationDto.setMsgType(Byte.valueOf("1"));
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
