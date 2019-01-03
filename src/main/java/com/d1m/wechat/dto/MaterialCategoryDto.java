@@ -34,11 +34,24 @@ public class MaterialCategoryDto  extends Page implements Serializable {
      */
     private Integer createdBy;
 
-
     /**
      * 最后更新人
      */
     private Integer lasteUpdatedBy;
+
+    /**
+     * 图文数量
+     */
+    private Integer newsCount;
+
+
+    public Integer getNewsCount() {
+        return newsCount;
+    }
+
+    public void setNewsCount(Integer newsCount) {
+        this.newsCount = newsCount;
+    }
 
 
 

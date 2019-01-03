@@ -48,6 +48,7 @@ public class MaterialCategoryController extends BaseController {
     public JSONObject save(@RequestBody MaterialCategoryDto dto) {
         try {
             Preconditions.checkArgument(StringUtils.isNotBlank(dto.getName()), Message.MATERIAL_CATEGORY_NAME_NOT_NULL);
+            Preconditions.checkArgument(dto.getName().length()<=30, Message.MATERIAL_CATEGORY_OVER_LIMIT);
             MaterialCategory materialCategory = materialCategoryService.exitsName(dto.getName().trim());
             Preconditions.checkArgument(materialCategory == null, Message.MATERIAL_CATEGORY_NAME_EXITS);
             dto.setCreatedBy(getUser().getId());
@@ -70,6 +71,7 @@ public class MaterialCategoryController extends BaseController {
     public JSONObject update(@RequestBody MaterialCategoryDto dto) {
         try {
             Preconditions.checkArgument(StringUtils.isNotBlank(dto.getName()), Message.MATERIAL_CATEGORY_NAME_NOT_NULL);
+            Preconditions.checkArgument(dto.getName().length()<=30, Message.MATERIAL_CATEGORY_OVER_LIMIT);
             MaterialCategory materialCategory = materialCategoryService.exitsName(dto.getName());
             Preconditions.checkArgument(materialCategory == null, Message.MATERIAL_CATEGORY_NAME_EXITS);
             dto.setLasteUpdatedBy(getUser().getId());
@@ -137,7 +139,7 @@ public class MaterialCategoryController extends BaseController {
     @ResponseBody
     public JSONObject queryList(@RequestBody QueryDto dto) {
         try {
-            PageInfo<MaterialCategory> list = materialCategoryService.queryList(dto);
+            PageInfo<MaterialCategoryDto> list = materialCategoryService.queryList(dto);
             return representation(Message.SUCCESS, list);
         } catch (Exception e) {
             log.error(e.getMessage());
