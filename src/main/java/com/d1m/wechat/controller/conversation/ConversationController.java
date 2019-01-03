@@ -406,7 +406,7 @@ public class ConversationController extends BaseController {
 				conversationDto.setContent(om.writeValueAsString(items));
 				conversationDto.setMsgType(Byte.valueOf("1"));
 			} catch (Exception e) {
-				log.error(e.getMessage(), e);
+				log.error(e.getMessage());
 			}
 		}
 		return result;
