@@ -29,6 +29,8 @@ public class MenuDto {
 	private String appUrl;
 	
 	private String menuKey;
+
+	private String apiClass;
 	
 	public List<MenuDto> getChildren() {
 		return children;
@@ -132,5 +134,13 @@ public class MenuDto {
 
 	public void setMenuKey(String menuKey) {
 		this.menuKey = menuKey;
+	}
+
+	public String getApiClass() {
+		return apiClass;
+	}
+
+	public void setApiClass(String apiClass) {
+		this.apiClass = apiClass;
 	}
 }
