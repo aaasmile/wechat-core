@@ -266,7 +266,7 @@ public class ConversationController extends BaseController {
 			}
 			conversationModel.setUpdateRead(true);
 			Page<ConversationDto> page = conversationService.search(getWechatId(session), conversationModel, true);
-//			List<ConversationDto> result = convert(page);
+			List<ConversationDto> result = convert(page);
 			return representation(Message.CONVERSATION_LIST_SUCCESS, page.getResult(), conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -383,24 +383,28 @@ public class ConversationController extends BaseController {
 		ImageTextDto item = null;
 		JSONObject itemJson = null;
 		for (ConversationDto conversationDto : result) {
-			if (conversationDto.getMsgType() != MsgType.MPNEWS.getValue()) {
-				continue;
+			try {
+				if (StringUtils.isBlank(conversationDto.getContent())) {
+					continue;
+				}
+				List<ImageTextDto> items = new ArrayList<ImageTextDto>();
+				itemJson = JSONArray.parseArray(conversationDto.getContent()).getJSONObject(0);
+				if(itemJson.containsKey("summary")) {
+					continue;
+				}
+				item = new ImageTextDto();
+				item.setTitle(itemJson.getString("title"));
+				item.setSummary(itemJson.getString("summary"));
+				item.setMaterialCoverUrl(itemJson.getString("picurl"));
+				items.add(item);
+				if (conversationDto.getMaterialId() == null) {
+					conversationDto.setMaterialId(itemJson.getInteger("materialId"));
+				}
+				conversationDto.setItems(items);
+				conversationDto.setContent(null);
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
 			}
-			if (StringUtils.isBlank(conversationDto.getContent())) {
-				continue;
-			}
-			List<ImageTextDto> items = new ArrayList<ImageTextDto>();
-			itemJson = JSONArray.parseArray(conversationDto.getContent()).getJSONObject(0);
-			item = new ImageTextDto();
-			item.setTitle(itemJson.getString("title"));
-			item.setSummary(itemJson.getString("summary"));
-			item.setMaterialCoverUrl(itemJson.getString("materialCoverUrl"));
-			items.add(item);
-			if (conversationDto.getMaterialId() == null) {
-				conversationDto.setMaterialId(itemJson.getInteger("materialId"));
-			}
-			conversationDto.setItems(items);
-			conversationDto.setContent(null);
 		}
 		return result;
 	}

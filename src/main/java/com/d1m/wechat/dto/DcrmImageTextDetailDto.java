@@ -133,6 +133,31 @@ public class DcrmImageTextDetailDto implements Serializable {
      * 图文页的URL
      */
     private String url;
+    /**
+     * 是否不完整图文
+     */
+    private Boolean notComplete;
+
+    /**
+     * 微信图文是否存在
+     */
+    private Boolean wxImageTextExist;
+
+    public Boolean getWxImageTextExist() {
+        return wxImageTextExist;
+    }
+
+    public void setWxImageTextExist(Boolean wxImageTextExist) {
+        this.wxImageTextExist = wxImageTextExist;
+    }
+
+    public Boolean getNotComplete() {
+        return notComplete;
+    }
+
+    public void setNotComplete(Boolean notComplete) {
+        this.notComplete = notComplete;
+    }
 
     public String getUrl() {
         return url;

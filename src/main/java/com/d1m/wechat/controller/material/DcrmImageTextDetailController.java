@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -42,11 +43,12 @@ public class DcrmImageTextDetailController extends BaseController {
 
     @Autowired
     private DcrmImageTextDetailService DcrmImageTextDetailService;
-	@Autowired
-	private ConversationService conversationService;
+    @Autowired
+    private ConversationService conversationService;
 
-	@Autowired
-	private MemberService memberService;
+    @Autowired
+    private MemberService memberService;
+
     /**
      * 保存
      */
@@ -56,12 +58,12 @@ public class DcrmImageTextDetailController extends BaseController {
     @ResponseBody
     public JSONObject save(@RequestBody DcrmImageTextDetailDto dto) {
         try {
-        Preconditions.checkArgument(StringUtils.isNotBlank(dto.getTitle()), Message.DcrmImageTextDetail_NOT_NULL);
-        Preconditions.checkArgument(dto.getMaterialCoverId() != null, Message.DcrmImageTextDetail_IAMGE_NOT_NULL);
-        dto.setCreatedBy(getUser().getId());
-        dto.setWechatId(getUser().getWechatId());
-        DcrmImageTextDetailService.save(dto);
-        return representation(Message.SUCCESS);
+            Preconditions.checkArgument(StringUtils.isNotBlank(dto.getTitle()), Message.DcrmImageTextDetail_NOT_NULL);
+            Preconditions.checkArgument(dto.getMaterialCoverId() != null, Message.DcrmImageTextDetail_IAMGE_NOT_NULL);
+            dto.setCreatedBy(getUser().getId());
+            dto.setWechatId(getUser().getWechatId());
+            DcrmImageTextDetailService.save(dto);
+            return representation(Message.SUCCESS);
         } catch (Exception e) {
             log.error(e.getMessage());
             return wrapException(e);
@@ -78,12 +80,12 @@ public class DcrmImageTextDetailController extends BaseController {
     @ResponseBody
     public JSONObject update(@RequestBody DcrmImageTextDetailDto dto) {
         try {
-        Preconditions.checkArgument(StringUtils.isNotBlank(dto.getTitle()), Message.DcrmImageTextDetail_NOT_NULL);
-        Preconditions.checkArgument(dto.getMaterialCoverId() != null, Message.DcrmImageTextDetail_IAMGE_NOT_NULL);
-        dto.setLasteUpdatedBy(getUser().getId());
-        dto.setWechatId(getUser().getWechatId());
-        DcrmImageTextDetailService.update(dto);
-        return representation(Message.SUCCESS);
+            Preconditions.checkArgument(StringUtils.isNotBlank(dto.getTitle()), Message.DcrmImageTextDetail_NOT_NULL);
+            Preconditions.checkArgument(dto.getMaterialCoverId() != null, Message.DcrmImageTextDetail_IAMGE_NOT_NULL);
+            dto.setLasteUpdatedBy(getUser().getId());
+            dto.setWechatId(getUser().getWechatId());
+            DcrmImageTextDetailService.update(dto);
+            return representation(Message.SUCCESS);
         } catch (Exception e) {
             log.error(e.getMessage());
             return wrapException(e);
@@ -100,9 +102,9 @@ public class DcrmImageTextDetailController extends BaseController {
     @ResponseBody
     public JSONObject info(@PathVariable("id") Integer id) {
         try {
-        Preconditions.checkNotNull(id, Message.DCRM_IMAGE_TEXT_DETAIL_ID_NOT);
-        DcrmImageTextDetailDto dto = DcrmImageTextDetailService.queryObject(id);
-        return representation(Message.SUCCESS, dto);
+            Preconditions.checkNotNull(id, Message.DCRM_IMAGE_TEXT_DETAIL_ID_NOT);
+            DcrmImageTextDetailDto dto = DcrmImageTextDetailService.queryObject(id);
+            return representation(Message.SUCCESS, dto);
         } catch (Exception e) {
             log.error(e.getMessage());
             return wrapException(e);
@@ -123,9 +125,9 @@ public class DcrmImageTextDetailController extends BaseController {
     @ResponseBody
     public JSONObject queryList(@RequestBody QueryDto dto) {
         try {
-        log.info("获取非群发素材图文列表:{}",dto);
-        PageInfo<DcrmImageTextDetailDto> list = DcrmImageTextDetailService.queryList(dto);
-        return representation(Message.SUCCESS, list);
+            log.info("获取非群发素材图文列表:{}", dto);
+            PageInfo<DcrmImageTextDetailDto> list = DcrmImageTextDetailService.queryList(dto);
+            return representation(Message.SUCCESS, list);
         } catch (Exception e) {
             log.error(e.getMessage());
             return wrapException(e);
@@ -148,17 +150,17 @@ public class DcrmImageTextDetailController extends BaseController {
      @ApiParam(name = "DcrmImageTextDetailDto", required = false)
      @RequestBody(required = false) DcrmImageTextDetailDto detailDto) {
         try {
-        	detailDto.setId(detailDto.getNewid());
+            detailDto.setId(detailDto.getNewid());
             notBlank(detailDto.getId(), Message.DCRM_IMAGE_TEXT_DETAIL_ID_NOT);
             notBlank(detailDto.getMemberId(), Message.MEMBER_ID_NOT_EMPTY);
             detailDto.setWechatId(getUser().getWechatId());
             notBlank(detailDto.getMemberId(), Message.MEMBER_ID_NOT_EMPTY);
-			MemberDto member = memberService.getMemberDto(getWechatId(), detailDto.getMemberId());
-			notBlank(member, Message.MEMBER_NOT_EXIST);
-			CommonUtils.send2SocialWechatCoreApi(getWechatId(), member, detailDto.getNewid(), detailDto.getNewtype(), conversationService);
+            MemberDto member = memberService.getMemberDto(getWechatId(), detailDto.getMemberId());
+            notBlank(member, Message.MEMBER_NOT_EXIST);
+            CommonUtils.send2SocialWechatCoreApi(getWechatId(), member, detailDto.getNewid(), detailDto.getNewtype(), conversationService);
             //更新发送数量
-			int t = DcrmImageTextDetailService.updateSendTimes(detailDto.getId());
-            log.debug("发送次数更新状态：{}",t);
+            int t = DcrmImageTextDetailService.updateSendTimes(detailDto.getId());
+            log.debug("发送次数更新状态：{}", t);
             return representation(Message.MATERIAL_IMAGE_TEXT_PUSH_WX_SUCCESS);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -176,10 +178,30 @@ public class DcrmImageTextDetailController extends BaseController {
     @ResponseBody
     public JSONObject createQrcode(@RequestBody DcrmImageTextDetailDto dto) {
         try {
-        dto.setCreatedBy(getUser().getId());
-        dto.setWechatId(getUser().getWechatId());
-        Map<String, Object> map = DcrmImageTextDetailService.createQrcode(dto);
-        return representation(Message.SUCCESS,map);
+            dto.setCreatedBy(getUser().getId());
+            dto.setWechatId(getUser().getWechatId());
+            Map<String, Object> map = DcrmImageTextDetailService.createQrcode(dto);
+            return representation(Message.SUCCESS, map);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return wrapException(e);
+        }
+    }
+
+    /**
+     * 发送数
+     *
+     * @param id 非群发单图文id
+     * @return
+     */
+    @ApiOperation(value = "添加非群发单图文发送数接口")
+    @GetMapping("/updateSendTimes/{id}")
+    public JSONObject updateSendTimes(@PathVariable("id") Integer id) {
+        try {
+            //更新发送数量
+            int t = DcrmImageTextDetailService.updateSendTimes(id);
+            log.debug("发送次数更新状态：{}", t);
+            return representation(Message.SUCCESS, null);
         } catch (Exception e) {
             log.error(e.getMessage());
             return wrapException(e);
