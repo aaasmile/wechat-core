@@ -41,7 +41,7 @@
 	</select>
 
     <select id="queryList" resultType="com.d1m.wechat.model.MaterialCategory">
-        select
+        SELECT
         `id`,
         `name`,
         `deleted`,
@@ -49,18 +49,22 @@
         `created_at`,
         `created_by`,
         `laste_updated_at`,
-        `laste_updated_by`
-        from material_category
+        `laste_updated_by`,
+        SUM(
+        ( SELECT count( t.material_category_id ) FROM material t WHERE m.id = t.material_category_id and t.status=1) + ( SELECT count( d.material_category_id ) FROM dcrm_image_text_detail d WHERE m.id = d.material_category_id and d.status=1)
+        ) newsCount
+        FROM material_category m
         WHERE 1=1
         <if test="name != null">
-            AND name = #{name}
+            AND m.name = #{name}
         </if>
+        GROUP BY m.id
         <choose>
             <when test="sidx != null">
-                order by ${sidx} ${order}
+                order by m.${sidx} ${order}
             </when>
             <otherwise>
-                order by created_at desc
+                order by m.created_at desc
             </otherwise>
         </choose>
         <if test="offset != null and limit != null">

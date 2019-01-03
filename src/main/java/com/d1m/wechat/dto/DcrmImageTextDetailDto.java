@@ -133,6 +133,18 @@ public class DcrmImageTextDetailDto implements Serializable {
      * 图文页的URL
      */
     private String url;
+    /**
+     * 是否不完整图文
+     */
+    private Boolean notComplete;
+
+    public Boolean getNotComplete() {
+        return notComplete;
+    }
+
+    public void setNotComplete(Boolean notComplete) {
+        this.notComplete = notComplete;
+    }
 
     public String getUrl() {
         return url;
