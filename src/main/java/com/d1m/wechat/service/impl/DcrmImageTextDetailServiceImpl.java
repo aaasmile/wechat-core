@@ -63,6 +63,9 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
     @Autowired
     private QrcodeActionEngineMapper qrcodeActionEngineMapper;
 
+    @Autowired
+    private MaterialImageTextDetailMapper materialImageTextDetailMapper;
+
 
     @Autowired
     private RestTemplate restTemplate;
@@ -106,6 +109,8 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         List<DcrmImageTextDetailDto> list = dcrmImageTextDetailMapper.queryList(query);
         //检验是否不完整非群发单图文
         checkIsNotComplete(list);
+        //检查微信图文是否存在
+        checkIsWxImageTextExist(list);
         PageInfo<DcrmImageTextDetailDto> pageInfo = new PageInfo<>(list);
         return pageInfo;
     }
@@ -135,6 +140,27 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
                     detailDto.setNotComplete(true);
                     continue;
                 }
+            }
+    }
+
+    /**
+     * 检查微信图文是否存在
+     *
+     * @param list
+     */
+    private void checkIsWxImageTextExist(List<DcrmImageTextDetailDto> list) {
+        if (CollectionUtils.isNotEmpty(list))
+            for (DcrmImageTextDetailDto detailDto : list) {
+                detailDto.setWxImageTextExist(true);
+                if (detailDto.getWxImageTextId() != null) {
+                    MaterialImageTextDetail materialImageTextDetail = new MaterialImageTextDetail();
+                    materialImageTextDetail.setStatus((byte) 1);
+                    materialImageTextDetail.setId(detailDto.getWxImageTextId());
+                    MaterialImageTextDetail m = materialImageTextDetailMapper.selectOne(materialImageTextDetail);
+                    if (m == null) detailDto.setWxImageTextExist(false);
+                    continue;
+                }
+
             }
     }
 
