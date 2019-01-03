@@ -64,7 +64,7 @@ public interface MaterialCategoryService {
      * @param dto
      * @return list
      */
-    PageInfo<MaterialCategory> queryList(QueryDto dto);
+    PageInfo<MaterialCategoryDto> queryList(QueryDto dto);
 
 
 }
