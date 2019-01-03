@@ -154,9 +154,9 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
                         article.setTitle(imageTextDto.getTitle());
                         article.setDescription(imageTextDto.getSummary());
                         article.setPicUrl(imageTextDto.getMaterialCoverUrl());
-                        String wrapper = imageTextDto.getContentSourceUrl();
+                        String wrapper = imageTextDto.getUrl();
                         try {
-                            wrapper = String.format(traceUrl, wechatId, URLEncoder.encode(imageTextDto.getContentSourceUrl(), StandardCharsets.UTF_8.displayName()), imageTextDto.getId(), "mass-send");
+                            wrapper = String.format(traceUrl, wechatId, URLEncoder.encode(imageTextDto.getUrl(), StandardCharsets.UTF_8.displayName()), imageTextDto.getId(), "mass-send");
                         } catch (UnsupportedEncodingException e) {
                             log.error("url 编码错误", e);
                         }
