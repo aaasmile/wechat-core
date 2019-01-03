@@ -351,7 +351,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
     /**
      * 更新发送数量
      *
-     * @param id
+     * @param id 非群发图文id
      * @return
      */
     public int updateSendTimes(Integer id) {
