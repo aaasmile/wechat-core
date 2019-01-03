@@ -33,6 +33,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.common.Mapper;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
@@ -125,8 +128,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
                         conversationImageTextDetail.setAuthor(imageTextDto.getAuthor());
                         conversationImageTextDetail.setContent(imageTextDto.getContent());
                         conversationImageTextDetail.setContentSourceChecked(imageTextDto.getContentSourceChecked());
-                        final String wrapper = String.format(traceUrl, wechatId, imageTextDto.getContentSourceUrl(), imageTextDto.getId(), "mass-send");
-                        conversationImageTextDetail.setContentSourceUrl(wrapper);
+                        conversationImageTextDetail.setContentSourceUrl(imageTextDto.getContentSourceUrl());
                         conversationImageTextDetail.setShowCover(imageTextDto.isShowCover());
                         conversationImageTextDetail.setSummary(imageTextDto.getSummary());
                         conversationImageTextDetail.setTitle(imageTextDto.getTitle());
@@ -152,7 +154,12 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
                         article.setTitle(imageTextDto.getTitle());
                         article.setDescription(imageTextDto.getSummary());
                         article.setPicUrl(imageTextDto.getMaterialCoverUrl());
-                        final String wrapper = String.format(traceUrl, wechatId, imageTextDto.getContentSourceUrl(), imageTextDto.getId(), "mass-send");
+                        String wrapper = imageTextDto.getContentSourceUrl();
+                        try {
+                            wrapper = String.format(traceUrl, wechatId, URLEncoder.encode(imageTextDto.getContentSourceUrl(), StandardCharsets.UTF_8.displayName()), imageTextDto.getId(), "mass-send");
+                        } catch (UnsupportedEncodingException e) {
+                            log.error("url 编码错误", e);
+                        }
                         article.setUrl(wrapper);
                         articles.add(article);
                     }
