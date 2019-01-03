@@ -135,7 +135,7 @@
         FROM material_image_text_detail mt LEFT JOIN material m ON mt.material_cover_id = m.id
         <where>
             <!--<if test="status!=null">-->
-                mt.status = 1
+            mt.status = 1
             <!--</if>-->
             <if test="materialId!=null">
                 and mt.material_id = #{materialId}
@@ -258,6 +258,7 @@
     </update>
 
     <select id="selectExistName" resultType="java.util.Map">
+
         select t.id,t.`NAME` from (
         select  a.id , a.title AS NAME, c.id as material_category_id,c.wechat_id from material_image_text_detail a
         INNER JOIN material b on a.material_id=b.id and a.`status`=1 and b.status=1
