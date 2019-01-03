@@ -64,6 +64,7 @@
 		<result column="app_id" jdbcType="VARCHAR" property="appId" />
 		<result column="page_path" jdbcType="VARCHAR" property="pagePath" />
 		<result column="app_url" jdbcType="VARCHAR" property="appUrl" />
+		<result column="api_class" jdbcType="VARCHAR" property="apiClass" />
 		<association column="{materialId=menu_key,url=url,type=type}" javaType="com.d1m.wechat.dto.MaterialDto" property="material" select="getMaterial" />
 	    <collection column="{parentId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.MenuDto" property="children" select="getChildrenMenus" />
 	</resultMap>
