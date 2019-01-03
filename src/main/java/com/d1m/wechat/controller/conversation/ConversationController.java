@@ -315,7 +315,7 @@ public class ConversationController extends BaseController {
 		JSONObject itemJson = null;
 		for (ConversationDto conversationDto : result) {
 			MassConversationModel condition = JSONObject.parseObject(conversationDto.getConditions(), MassConversationModel.class);
-			if(condition.getNewid() != null) {
+			if(condition != null && condition.getNewid() != null) {
 				List<ImageTextDto> itemDtos = new ArrayList<ImageTextDto>();
 				item = new ImageTextDto();
 				if("dcrm".equals(condition.getNewtype())) {
