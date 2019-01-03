@@ -1,6 +1,5 @@
 package com.d1m.wechat.service.impl;
 
-import cn.d1m.wechat.client.model.WxMessage;
 import cn.d1m.wechat.client.model.WxQRCode;
 import cn.d1m.wechat.client.model.common.WxFile;
 import com.alibaba.fastjson.JSON;
@@ -50,8 +49,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
 
     @Autowired
     private MemberService memberService;
-    @Autowired
-    private ConversationService conversationService;
+
 
     @Autowired
     private DcrmImageTextDetailMapper dcrmImageTextDetailMapper;
@@ -65,8 +63,6 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
     @Autowired
     private QrcodeActionEngineMapper qrcodeActionEngineMapper;
 
-    @Autowired
-    private CustomService customService;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -123,47 +119,25 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
     private void checkIsNotComplete(List<DcrmImageTextDetailDto> list) {
         if (CollectionUtils.isNotEmpty(list))
             for (DcrmImageTextDetailDto detailDto : list) {
+                detailDto.setNotComplete(false);
                 if (StringUtils.isEmpty(detailDto.getTitle())) {
                     detailDto.setNotComplete(true);
-                    break;
+                    continue;
                 }
 
                 if (StringUtils.isEmpty(detailDto.getLink())
-                 || detailDto.getWxImageTextId() == null) {
+                 && detailDto.getWxImageTextId() == null) {
                     detailDto.setNotComplete(true);
-                    break;
+                    continue;
                 }
 
                 if (StringUtils.isEmpty(detailDto.getCoverPicUrl())) {
                     detailDto.setNotComplete(true);
-                    break;
+                    continue;
                 }
             }
     }
 
-    /**
-     * 检验是否不完整非群发单图文
-     *
-     * @param detailDto
-     * @return
-     */
-    private void checkIsNotComplete(DcrmImageTextDetailDto detailDto) {
-                if (StringUtils.isEmpty(detailDto.getTitle())) {
-                    detailDto.setNotComplete(true);
-                    return;
-                }
-
-                if (StringUtils.isEmpty(detailDto.getLink())
-                 || detailDto.getWxImageTextId() == null) {
-                    detailDto.setNotComplete(true);
-                    return;
-                }
-
-                if (StringUtils.isEmpty(detailDto.getCoverPicUrl())) {
-                    detailDto.setNotComplete(true);
-                    return;
-                }
-    }
 
     @Override
     public void previewMaterial(DcrmImageTextDetailDto detailDto) {
