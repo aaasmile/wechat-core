@@ -103,7 +103,7 @@
         <result column="material_cover_url" jdbcType="VARCHAR" property="materialCoverUrl"/>
         <result column="content_source_url" jdbcType="VARCHAR" property="contentSourceUrl"/>
         <result column="remarks" jdbcType="VARCHAR" property="remarks"/>
-        <result column="deleted" jdbcType="TINYINT" property="deleted"/>
+        <result column="available" jdbcType="TINYINT" property="available"/>
     </resultMap>
 
 
@@ -131,7 +131,7 @@
         SELECT mt.id as id, mt.wechat_id as wechatId, mt.title as title, mt.author as author, mt.content as content,
         mt.content_source_url as content_source_url, mt.content_source_checked as content_source_checked,
         mt.show_cover as show_cover, mt.summary as summary, m.id as material_cover_id, m.pic_url as material_cover_url,
-        m.media_id as material_cover_media_id ,mt.comment , mt.remarks as remarks, mt.status as deleted, mt.url
+        m.media_id as material_cover_media_id ,mt.comment , mt.remarks as remarks, mt.status as available, mt.url
         FROM material_image_text_detail mt LEFT JOIN material m ON mt.material_cover_id = m.id
         <where>
             <!--<if test="status!=null">-->
@@ -159,7 +159,7 @@
         <result column="content_source_checked" jdbcType="BIT" property="contentSourceChecked"/>
         <result column="material_cover_media_id" jdbcType="VARCHAR" property="materialCoverMediaId"/>
         <result column="remarks" jdbcType="VARCHAR" property="remarks"/>
-        <result column="deleted" jdbcType="TINYINT" property="deleted"/>
+        <result column="available" jdbcType="TINYINT" property="available"/>
         <result column="url" jdbcType="VARCHAR" property="url"/>
     </resultMap>
 
