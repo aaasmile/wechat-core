@@ -136,14 +136,14 @@ public class DcrmImageTextDetailDto implements Serializable {
     /**
      * 是否不完整图文
      */
-    private Boolean isNotComplete;
+    private Boolean notComplete;
 
     public Boolean getNotComplete() {
-        return isNotComplete;
+        return notComplete;
     }
 
     public void setNotComplete(Boolean notComplete) {
-        isNotComplete = notComplete;
+        this.notComplete = notComplete;
     }
 
     public String getUrl() {

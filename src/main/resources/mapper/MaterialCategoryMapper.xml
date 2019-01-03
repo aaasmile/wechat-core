@@ -58,6 +58,7 @@
         <if test="name != null">
             AND m.name = #{name}
         </if>
+        GROUP BY m.id
         <choose>
             <when test="sidx != null">
                 order by m.${sidx} ${order}
@@ -66,7 +67,6 @@
                 order by m.created_at desc
             </otherwise>
         </choose>
-        GROUP BY m.id
         <if test="offset != null and limit != null">
             limit #{offset}, #{limit}
         </if>
