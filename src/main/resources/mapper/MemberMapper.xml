@@ -281,12 +281,6 @@
                     desc
                 </if>
             </if>
-            <if test="sortName == 'unsubscribeAtDesc'.toString()">
-                order by m.unsubscribe_at desc
-            </if>
-            <if test="sortName == 'unsubscribeAtAsc'.toString()">
-                order by m.unsubscribe_at asc
-            </if>
         </if>
         <if test="sortName == null">
             order by m.id desc
