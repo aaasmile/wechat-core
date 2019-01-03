@@ -27,6 +27,8 @@ public class MenuModel {
 	private String pagePath;
 
 	private String appUrl;
+
+	private String apiClass;
 	
 	public List<MenuModel> getChildren() {
 		return children;
@@ -124,4 +126,11 @@ public class MenuModel {
 		this.appUrl = appUrl;
 	}
 
+	public String getApiClass() {
+		return apiClass;
+	}
+
+	public void setApiClass(String apiClass) {
+		this.apiClass = apiClass;
+	}
 }

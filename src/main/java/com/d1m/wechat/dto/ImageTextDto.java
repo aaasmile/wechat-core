@@ -36,6 +36,8 @@ public class ImageTextDto {
 
     private Boolean deleted;
 
+    private String url;
+
     public String getRemarks() {
         return remarks;
     }
@@ -162,5 +164,13 @@ public class ImageTextDto {
 
     public void setDeleted(Boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

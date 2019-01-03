@@ -15,16 +15,18 @@ import com.d1m.wechat.wechatclient.CustomService;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
@@ -80,7 +82,14 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
 
     @Override
     public DcrmImageTextDetailDto queryObject(Integer id) {
-        return dcrmImageTextDetailMapper.queryObject(id);
+        List<DcrmImageTextDetailDto> list = new ArrayList<>();
+        DcrmImageTextDetailDto detailDto = dcrmImageTextDetailMapper.queryObject(id);
+        if (detailDto != null) {
+            list.add(detailDto);
+            //检验是否不完整非群发单图文
+            checkIsNotComplete(list);
+        }
+        return detailDto;
     }
 
 
@@ -99,10 +108,62 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
         Map<String, Object> query = MapUtils.beanToMap(dto);
         List<DcrmImageTextDetailDto> list = dcrmImageTextDetailMapper.queryList(query);
+        //检验是否不完整非群发单图文
+        checkIsNotComplete(list);
         PageInfo<DcrmImageTextDetailDto> pageInfo = new PageInfo<>(list);
         return pageInfo;
     }
 
+    /**
+     * 检验是否不完整非群发单图文
+     *
+     * @param list
+     * @return
+     */
+    private void checkIsNotComplete(List<DcrmImageTextDetailDto> list) {
+        if (CollectionUtils.isNotEmpty(list))
+            for (DcrmImageTextDetailDto detailDto : list) {
+                if (StringUtils.isEmpty(detailDto.getTitle())) {
+                    detailDto.setNotComplete(true);
+                    break;
+                }
+
+                if (StringUtils.isEmpty(detailDto.getLink())
+                 || detailDto.getWxImageTextId() == null) {
+                    detailDto.setNotComplete(true);
+                    break;
+                }
+
+                if (StringUtils.isEmpty(detailDto.getCoverPicUrl())) {
+                    detailDto.setNotComplete(true);
+                    break;
+                }
+            }
+    }
+
+    /**
+     * 检验是否不完整非群发单图文
+     *
+     * @param detailDto
+     * @return
+     */
+    private void checkIsNotComplete(DcrmImageTextDetailDto detailDto) {
+                if (StringUtils.isEmpty(detailDto.getTitle())) {
+                    detailDto.setNotComplete(true);
+                    return;
+                }
+
+                if (StringUtils.isEmpty(detailDto.getLink())
+                 || detailDto.getWxImageTextId() == null) {
+                    detailDto.setNotComplete(true);
+                    return;
+                }
+
+                if (StringUtils.isEmpty(detailDto.getCoverPicUrl())) {
+                    detailDto.setNotComplete(true);
+                    return;
+                }
+    }
 
     @Override
     public void previewMaterial(DcrmImageTextDetailDto detailDto) {
@@ -286,9 +347,15 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
     private void saveEngine(DcrmImageTextDetailDto dto, Qrcode qrcode) {
         ActionEngine actionEngine = new ActionEngine();
         String effect = "[{\"code\":301,\"value\":[" + dto.getId() + "]}]";
+
+        LocalDateTime localDateTimeToday = LocalDateTime.now();
+        LocalDateTime endTime = localDateTimeToday.plusDays(3);
+        Date endDate = Date.from(endTime.atZone(ZoneId.systemDefault()).toInstant());
+        Date startDate = Date.from(localDateTimeToday.atZone(ZoneId.systemDefault()).toInstant());
+
         actionEngine.setEffect(effect);
-        actionEngine.setEndAt(new Date());
-        actionEngine.setStartAt(new Date());
+        actionEngine.setEndAt(endDate);
+        actionEngine.setStartAt(startDate);
         actionEngine.setRunType((byte) 1);
         actionEngine.setStatus(MaterialStatus.INUSED.getValue());
         actionEngine.setName(dto.getTitle());
