@@ -388,8 +388,8 @@ public class ConversationController extends BaseController {
 					continue;
 				}
 				List<ImageTextDto> items = new ArrayList<ImageTextDto>();
-				itemJson = JSONArray.parseArray(conversationDto.getContent()).getJSONObject(0);
-				if(itemJson.containsKey("summary")) {
+				itemJson = JSONObject.parseObject(conversationDto.getContent());
+				if(!itemJson.containsKey("summary")) {
 					continue;
 				}
 				item = new ImageTextDto();
