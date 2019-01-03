@@ -267,7 +267,7 @@ public class ConversationController extends BaseController {
 			conversationModel.setUpdateRead(true);
 			Page<ConversationDto> page = conversationService.search(getWechatId(session), conversationModel, true);
 			List<ConversationDto> result = convert(page);
-			return representation(Message.CONVERSATION_LIST_SUCCESS, page.getResult(), conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
+			return representation(Message.CONVERSATION_LIST_SUCCESS, result, conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			return wrapException(e);
@@ -388,8 +388,8 @@ public class ConversationController extends BaseController {
 					continue;
 				}
 				List<ImageTextDto> items = new ArrayList<ImageTextDto>();
-				itemJson = JSONArray.parseArray(conversationDto.getContent()).getJSONObject(0);
-				if(itemJson.containsKey("summary")) {
+				itemJson = JSONObject.parseObject(conversationDto.getContent());
+				if(!itemJson.containsKey("summary")) {
 					continue;
 				}
 				item = new ImageTextDto();
