@@ -34,7 +34,7 @@ public class ImageTextDto {
 
     private String remarks;
 
-    private Boolean deleted;
+    private Boolean available;
 
     private String url;
 
@@ -158,12 +158,12 @@ public class ImageTextDto {
         this.comment = comment;
     }
 
-    public Boolean getDeleted() {
-        return deleted;
+    public Boolean getAvailable() {
+        return available;
     }
 
-    public void setDeleted(Boolean deleted) {
-        this.deleted = deleted;
+    public void setAvailable(Boolean available) {
+        this.available = available;
     }
 
     public String getUrl() {

@@ -14,7 +14,7 @@
         `created_at`,
         `created_by`,
         `laste_updated_at`,
-        `laste_updated_by`        )
+        `laste_updated_by` )
         values(
         #{id},
         #{name},
@@ -23,7 +23,7 @@
         #{createdAt},
         #{createdBy},
         #{lasteUpdatedAt},
-        #{lasteUpdatedBy}         )
+        #{lasteUpdatedBy} )
     </insert>
 
     <select id="queryObject" resultType="com.d1m.wechat.model.MaterialCategory">
@@ -40,7 +40,7 @@
 		where id = #{id}
 	</select>
 
-    <select id="queryList" resultType="com.d1m.wechat.model.MaterialCategory">
+    <select id="queryList" resultType="com.d1m.wechat.dto.MaterialCategoryDto">
         SELECT
         `id`,
         `name`,
@@ -51,10 +51,13 @@
         `laste_updated_at`,
         `laste_updated_by`,
         SUM(
-        ( SELECT count( t.material_category_id ) FROM material t WHERE m.id = t.material_category_id and t.status=1) + ( SELECT count( d.material_category_id ) FROM dcrm_image_text_detail d WHERE m.id = d.material_category_id and d.status=1)
+        ( SELECT count( b.material_category_id ) FROM material_image_text_detail a
+        INNER JOIN material b on a.material_id=b.id and a.`status`=1 and b.status=1 where m.id=b.material_category_id) + (
+        SELECT count( d.material_category_id ) FROM dcrm_image_text_detail d WHERE m.id = d.material_category_id and
+        d.status=1)
         ) newsCount
         FROM material_category m
-        WHERE 1=1
+        WHERE m.deleted=0
         <if test="name != null">
             AND m.name = #{name}
         </if>
