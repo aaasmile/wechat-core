@@ -402,6 +402,7 @@ public class ConversationController extends BaseController {
 				}
 				conversationDto.setItems(items);
 				conversationDto.setContent(null);
+				conversationDto.setMsgType(Byte.valueOf("1"));
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
