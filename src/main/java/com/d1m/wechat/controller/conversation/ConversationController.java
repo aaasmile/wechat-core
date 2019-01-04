@@ -404,6 +404,7 @@ public class ConversationController extends BaseController {
 				item.setTitle(itemJson.getString("title"));
 				item.setSummary(itemJson.getString("summary"));
 				item.setMaterialCoverUrl(itemJson.getString("picurl"));
+				item.setId(itemJson.getInteger("id"));
 				items.add(item);
 				if (conversationDto.getMaterialId() == null) {
 					conversationDto.setMaterialId(itemJson.getInteger("materialId"));
