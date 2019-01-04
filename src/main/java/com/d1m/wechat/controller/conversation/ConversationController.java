@@ -390,7 +390,13 @@ public class ConversationController extends BaseController {
 					continue;
 				}
 				List<ImageTextDto> items = new ArrayList<ImageTextDto>();
-				itemJson = JSONObject.parseObject(conversationDto.getContent());
+				//尝试解码
+				try {
+					itemJson = JSONArray.parseArray(conversationDto.getContent()).getJSONObject(0);
+				} catch (Exception e) {
+					itemJson = JSONObject.parseObject(conversationDto.getContent());
+				}
+
 				if(!itemJson.containsKey("title")) {
 					continue;
 				}
