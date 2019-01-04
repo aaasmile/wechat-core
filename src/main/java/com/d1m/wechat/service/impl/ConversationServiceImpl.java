@@ -510,7 +510,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
                 materialService.checkMaterialInvalidInWeiXin(wechatId, material.getMediaId());
             }
         }
-// send redirect
+
         if (runAt == null) {
             String message = "";
             MsgType msgType = null;
@@ -904,9 +904,18 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
     }
 
     private List<String> getOpenIds(List<MemberDto> members) {
+        List<Integer> idList = new ArrayList<Integer>();
         List<String> openIdList = new LinkedList<>();
         for (MemberDto member : members) {
             openIdList.add(member.getOpenId());
+            idList.add(member.getId());
+        }
+        try {
+            if(!idList.isEmpty()){
+                memberMapper.updateBatchSendMonth(idList);
+            }
+        } catch(Exception e) {
+            log.error(e.getMessage(), e);
         }
         return openIdList;
     }
