@@ -4,6 +4,7 @@ ALTER TABLE material ADD COLUMN `material_category_id` varchar(50) DEFAULT NULL 
 
 alter TABLE material_image_text_detail add COLUMN `url` varchar(200)  DEFAULT NULL COMMENT '图文页的URL';
 
+update material set material_category_id=material_type;
 -- 素材分类表 --
 CREATE TABLE `material_category` (
   `id` varchar(50) NOT NULL DEFAULT '0' COMMENT '主键ID',
@@ -16,6 +17,7 @@ CREATE TABLE `material_category` (
   `laste_updated_by` varchar(32) DEFAULT NULL COMMENT '最后更新人',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='素材分类表';
+
 
 -- 非群发单图文表 --
 CREATE TABLE `dcrm_image_text_detail` (
@@ -42,7 +44,7 @@ CREATE TABLE `dcrm_image_text_detail` (
   `qrcode_id` int(11) DEFAULT NULL COMMENT '二维码id',
   `url` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '图文页的URL',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='非群发单图文表';
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8  COMMENT='非群发单图文表';
 
 INSERT INTO `material_category` VALUES ('1', '图文', '0', 3, '2018-12-09 09:18:16', '1', NULL, NULL);
 INSERT INTO `material_category` VALUES ('2', '图片', '0', 3, '2018-12-09 09:19:49', '1', '2018-12-09 11:14:10', '1');
