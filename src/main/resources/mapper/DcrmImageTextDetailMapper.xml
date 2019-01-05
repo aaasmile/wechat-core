@@ -105,7 +105,7 @@
             <if test="title != null">title = #{title},</if>
             <if test="content != null">content = #{content},</if>
             link = #{link},
-            <if test="materialCategoryId != null">material_cover_id = #{materialCategoryId},</if>
+            <if test="materialCoverId != null">material_cover_id = #{materialCoverId},</if>
             <if test="summary != null">summary = #{summary},</if>
             <if test="materialId != null">material_id = #{materialId},</if>
             <if test="wechatId != null">wechat_id = #{wechatId},</if>
