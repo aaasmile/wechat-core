@@ -566,7 +566,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
 
     @Override
     public void updateMaterialAndImageText(Material material, List<MaterialImageTextDetail> imageTextDetail) {
-        materialMapper.update(material);
+        materialMapper.updateByPrimaryKey(material);
         if (CollectionUtils.isNotEmpty(imageTextDetail)) {
             imageTextDetail.stream().mapToInt(materialImageTextDetailMapper::updateByPrimaryKeySelective).sum();
         }
