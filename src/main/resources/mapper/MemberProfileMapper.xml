@@ -117,6 +117,7 @@
         <result property="unionId" jdbcType="VARCHAR" column="union_id"/>
         <result property="unsubscribeAt" jdbcType="TIMESTAMP" column="unsubscribe_at"/>
         <result property="bindName" jdbcType="TIMESTAMP" column="bind_name"/>
+        <result property="bindAddress" jdbcType="TIMESTAMP" column="bind_address"/>
     </resultMap>
 
 
@@ -138,11 +139,12 @@
         m.unsubscribe_at as unsubscribe_at,
         m.union_id as union_id,
         mp.province as bind_province,
-        mp.mobile as bind_mobile,
+        m.mobile as bind_mobile,
         mp.city as bind_city,
         mp.county as bind_county,
         mp.sex as bind_gender,
         mp.birth_date as bind_birthday,
+        mp.address as bind_address,
         m.remark as remarks,
         m.language as lang,
         m.subscribe_scene as subscribe_scene,
