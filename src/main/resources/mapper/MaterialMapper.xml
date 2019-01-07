@@ -93,7 +93,7 @@
     <select id="selectImageTextDetail" parameterType="hashmap" resultMap="ImageTextDetailResultMap">
         SELECT mt.id as id, mt.wechat_id as wechatId, mt.title as title, mt.summary as summary, m.pic_url as
         material_cover_url, mt.content_source_url as contentSourceUrl, mt.remarks as remarks, mt.status as available
-        ,mt.content as content
+        ,mt.content as content, m.media_id media_id
         FROM material_image_text_detail mt LEFT JOIN material m ON mt.material_cover_id = m.id
         <where>
             mt.material_id = #{materialId} and mt.status = 1
@@ -109,6 +109,7 @@
         <result column="remarks" jdbcType="VARCHAR" property="remarks"/>
         <result column="available" jdbcType="TINYINT" property="available"/>
         <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="media_id" jdbcType="VARCHAR" property="mediaId"/>
     </resultMap>
 
 
