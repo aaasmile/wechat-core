@@ -56,7 +56,7 @@ public class DcrmImageTextDetailController extends BaseController {
     @ResponseBody
     public JSONObject save(@RequestBody DcrmImageTextDetailDto dto) {
         try {
-            log.info("添加非群发单图文接口入参：{}", JSON.toJSON(dto));
+            //log.info("添加非群发单图文接口入参：{}", JSON.toJSON(dto));
             Preconditions.checkArgument(StringUtils.isNotBlank(dto.getTitle()), Message.DcrmImageTextDetail_NOT_NULL);
             Preconditions.checkArgument(dto.getMaterialCoverId() != null, Message.DcrmImageTextDetail_IAMGE_NOT_NULL);
             dto.setCreatedBy(getUser().getId());
@@ -79,7 +79,7 @@ public class DcrmImageTextDetailController extends BaseController {
     @ResponseBody
     public JSONObject update(@RequestBody DcrmImageTextDetailDto dto) {
         try {
-            log.info("更新非群发单图文接口入参：{}", JSON.toJSON(dto));
+            //log.info("更新非群发单图文接口入参：{}", JSON.toJSON(dto));
             Preconditions.checkArgument(StringUtils.isNotBlank(dto.getTitle()), Message.DcrmImageTextDetail_NOT_NULL);
             Preconditions.checkArgument(dto.getMaterialCoverId() != null, Message.DcrmImageTextDetail_IAMGE_NOT_NULL);
             dto.setLasteUpdatedBy(getUser().getId());
