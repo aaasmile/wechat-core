@@ -264,7 +264,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
             conversationModel = new ConversationModel();
         }
         Page<ConversationDto> conversationDtos = new Page<ConversationDto>(conversationModel.getPageNum(), conversationModel.getPageSize());
-        if (conversationModel.pagable()) {
+        if (conversationModel.pagable() && conversationModel.getPageNum() != null && conversationModel.getPageSize() != null) {
             PageHelper.startPage(conversationModel.getPageNum(), conversationModel.getPageSize(), queryCount);
         }
         Date lastConversationAt = DateUtil.parseDate(conversationModel.getTime());
