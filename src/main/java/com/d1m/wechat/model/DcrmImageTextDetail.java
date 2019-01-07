@@ -115,6 +115,19 @@ public class DcrmImageTextDetail {
      */
     private String url;
 
+    /**
+     * 微信图文URL链接sn参数(与material_image_text_detail表sn字段关联)
+     */
+    private String sn;
+
+    public String getSn() {
+        return sn;
+    }
+
+    public void setSn(String sn) {
+        this.sn = sn;
+    }
+
     public String getUrl() {
         return url;
     }
