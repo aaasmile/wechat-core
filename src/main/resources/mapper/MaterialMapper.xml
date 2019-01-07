@@ -92,7 +92,8 @@
     </resultMap>
     <select id="selectImageTextDetail" parameterType="hashmap" resultMap="ImageTextDetailResultMap">
         SELECT mt.id as id, mt.wechat_id as wechatId, mt.title as title, mt.summary as summary, m.pic_url as
-        material_cover_url, mt.content_source_url as contentSourceUrl, mt.remarks as remarks, mt.status as deleted
+        material_cover_url, mt.content_source_url as contentSourceUrl, mt.remarks as remarks, mt.status as available
+        ,mt.content as content, m.media_id media_id
         FROM material_image_text_detail mt LEFT JOIN material m ON mt.material_cover_id = m.id
         <where>
             mt.material_id = #{materialId} and mt.status = 1
@@ -106,7 +107,9 @@
         <result column="material_cover_url" jdbcType="VARCHAR" property="materialCoverUrl"/>
         <result column="content_source_url" jdbcType="VARCHAR" property="contentSourceUrl"/>
         <result column="remarks" jdbcType="VARCHAR" property="remarks"/>
-        <result column="deleted" jdbcType="TINYINT" property="deleted"/>
+        <result column="available" jdbcType="TINYINT" property="available"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="media_id" jdbcType="VARCHAR" property="mediaId"/>
     </resultMap>
 
 
@@ -134,7 +137,8 @@
         SELECT mt.id as id, mt.wechat_id as wechatId, mt.title as title, mt.author as author, mt.content as content,
         mt.content_source_url as content_source_url, mt.content_source_checked as content_source_checked,
         mt.show_cover as show_cover, mt.summary as summary, m.id as material_cover_id, m.pic_url as material_cover_url,
-        m.media_id as material_cover_media_id ,mt.comment , mt.remarks as remarks, mt.status as deleted, mt.url
+        m.media_id as material_cover_media_id ,mt.comment , mt.remarks as remarks, mt.status as available,
+        mt.url, mt.content as content
         FROM material_image_text_detail mt LEFT JOIN material m ON mt.material_cover_id = m.id
         <where>
             <!--<if test="status!=null">-->
@@ -162,7 +166,8 @@
         <result column="content_source_checked" jdbcType="BIT" property="contentSourceChecked"/>
         <result column="material_cover_media_id" jdbcType="VARCHAR" property="materialCoverMediaId"/>
         <result column="remarks" jdbcType="VARCHAR" property="remarks"/>
-        <result column="deleted" jdbcType="TINYINT" property="deleted"/>
+        <result column="available" jdbcType="TINYINT" property="available"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
         <result column="url" jdbcType="VARCHAR" property="url"/>
     </resultMap>
 
@@ -262,14 +267,18 @@
 
     <select id="selectExistName" resultType="java.util.Map">
 
-        select t.id,t.`NAME` from (
-        select  a.id , a.title AS NAME, c.id as material_category_id,c.wechat_id from material_image_text_detail a
-        INNER JOIN material b on a.material_id=b.id and a.`status`=1 and b.status=1
-        INNER JOIN material_category c on c.id=b.material_category_id and  c.deleted=0
-        UNION
-        select  a.id, a.title AS NAME,b.id as material_category_id,b.wechat_id from dcrm_image_text_detail a
-        INNER JOIN material_category b on a.material_category_id=b.id and b.deleted=0 and a.status=1
-        ) t where t.material_category_id=#{id} and t.wechat_id=#{wechatId}
+        select t.id, t.`NAME`
+        from (select a.id, a.title AS NAME, c.id as material_category_id, c.wechat_id
+              from material_image_text_detail a
+                       INNER JOIN material b on a.material_id = b.id and a.`status` = 1 and b.status = 1
+                       INNER JOIN material_category c on c.id = b.material_category_id and c.deleted = 0
+              UNION
+              select a.id, a.title AS NAME, b.id as material_category_id, b.wechat_id
+              from dcrm_image_text_detail a
+                       INNER JOIN material_category b
+                           on a.material_category_id = b.id and b.deleted = 0 and a.status = 1) t
+        where t.material_category_id = #{id}
+          and t.wechat_id = #{wechatId}
     </select>
 
 </mapper>

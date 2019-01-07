@@ -38,6 +38,8 @@ public class ImageTextDto {
 
     private String url;
 
+    private String mediaId;
+
     public String getRemarks() {
         return remarks;
     }
@@ -172,5 +174,13 @@ public class ImageTextDto {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getMediaId() {
+        return mediaId;
+    }
+
+    public void setMediaId(String mediaId) {
+        this.mediaId = mediaId;
     }
 }

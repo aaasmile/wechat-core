@@ -264,7 +264,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
             conversationModel = new ConversationModel();
         }
         Page<ConversationDto> conversationDtos = new Page<ConversationDto>(conversationModel.getPageNum(), conversationModel.getPageSize());
-        if (conversationModel.pagable()) {
+        if (conversationModel.pagable() && conversationModel.getPageNum() != null && conversationModel.getPageSize() != null) {
             PageHelper.startPage(conversationModel.getPageNum(), conversationModel.getPageSize(), queryCount);
         }
         Date lastConversationAt = DateUtil.parseDate(conversationModel.getTime());
@@ -511,7 +511,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
             }
         }
 
-        if (runAt == null) {// send redirect
+        if (runAt == null) {
             String message = "";
             MsgType msgType = null;
             List<ConversationImageTextDetail> conversationImageTextDetails = new ArrayList<ConversationImageTextDetail>();
@@ -570,13 +570,15 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
                         .summary(dto.getSummary()).showCover(false).contentSourceChecked(false).author("").wechatId(wechatId).build();
                 Material materialR = materialService.getMaterial(wechatId, dto.getMaterialCoverId());
                 material = materialR;
+                JSONArray itemArray = new JSONArray();
                 JSONObject itemJson = new JSONObject();
                 itemJson.put("id", dto.getId());
                 itemJson.put("materialId", dto.getId());
                 itemJson.put("title", dto.getTitle());
                 itemJson.put("summary", dto.getSummary());
                 itemJson.put("materialCoverUrl", dto.getCoverPicUrl());
-                massConversationModel.setContent(itemJson.toJSONString());
+                itemArray.add(itemJson);
+                massConversationModel.setContent(itemArray.toJSONString());
                 msgType = MsgType.DCRMNEWS;
                 conversationImageTextDetails.add(details);
             } else if (materialType == MaterialType.WECHATNEWS.getValue()) {
@@ -589,13 +591,15 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
                         .title(dto.getTitle()).content(dto.getContent()).contentSourceUrl(dto.getContentSourceUrl()).materialCoverUrl(materialR.getPicUrl())
                         .summary(dto.getSummary()).showCover(dto.getShowCover()).contentSourceChecked(dto.getContentSourceChecked()).author("").wechatId(wechatId).build();
 
+                JSONArray itemArray = new JSONArray();
                 JSONObject itemJson = new JSONObject();
                 itemJson.put("id", dto.getId());
                 itemJson.put("materialId", dto.getId());
                 itemJson.put("title", dto.getTitle());
                 itemJson.put("summary", dto.getSummary());
                 itemJson.put("materialCoverUrl", materialR.getPicUrl());
-                massConversationModel.setContent(itemJson.toJSONString());
+                itemArray.add(itemJson);
+                massConversationModel.setContent(itemArray.toJSONString());
                 msgType = MsgType.WECHATNEWS;
                 conversationImageTextDetails.add(details);
             } else {
@@ -900,9 +904,18 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
     }
 
     private List<String> getOpenIds(List<MemberDto> members) {
+        List<Integer> idList = new ArrayList<Integer>();
         List<String> openIdList = new LinkedList<>();
         for (MemberDto member : members) {
             openIdList.add(member.getOpenId());
+            idList.add(member.getId());
+        }
+        try {
+            if(!idList.isEmpty()){
+                memberMapper.updateBatchSendMonth(idList);
+            }
+        } catch(Exception e) {
+            log.error(e.getMessage(), e);
         }
         return openIdList;
     }

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
@@ -252,8 +253,8 @@ public class ConversationController extends BaseController {
 		msgTypes.add(MsgType.VOICE.getValue());
 		conversationModel.setMsgTypes(msgTypes);
 		Page<ConversationDto> page = conversationService.searchUnread(getWechatId(session), conversationModel, true);
-//		List<ConversationDto> result = convert(page);
-		return representation(Message.CONVERSATION_LIST_SUCCESS, page.getResult(), conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
+		List<ConversationDto> result = convert(page);
+		return representation(Message.CONVERSATION_LIST_SUCCESS, result, conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
 	}
 
 	@ApiOperation(value = "获取会话列表", tags = "会话接口")
@@ -267,7 +268,7 @@ public class ConversationController extends BaseController {
 			conversationModel.setUpdateRead(true);
 			Page<ConversationDto> page = conversationService.search(getWechatId(session), conversationModel, true);
 			List<ConversationDto> result = convert(page);
-			return representation(Message.CONVERSATION_LIST_SUCCESS, page.getResult(), conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
+			return representation(Message.CONVERSATION_LIST_SUCCESS, result, conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			return wrapException(e);
@@ -378,6 +379,7 @@ public class ConversationController extends BaseController {
 		return result;
 	}
 
+	private static ObjectMapper om = new ObjectMapper();
 	private List<ConversationDto> convert(Page<ConversationDto> page) {
 		List<ConversationDto> result = page.getResult();
 		ImageTextDto item = null;
@@ -388,22 +390,30 @@ public class ConversationController extends BaseController {
 					continue;
 				}
 				List<ImageTextDto> items = new ArrayList<ImageTextDto>();
-				itemJson = JSONArray.parseArray(conversationDto.getContent()).getJSONObject(0);
-				if(itemJson.containsKey("summary")) {
+				//尝试解码
+				try {
+					itemJson = JSONArray.parseArray(conversationDto.getContent()).getJSONObject(0);
+				} catch (Exception e) {
+					itemJson = JSONObject.parseObject(conversationDto.getContent());
+				}
+
+				if(!itemJson.containsKey("title")) {
 					continue;
 				}
 				item = new ImageTextDto();
 				item.setTitle(itemJson.getString("title"));
 				item.setSummary(itemJson.getString("summary"));
 				item.setMaterialCoverUrl(itemJson.getString("picurl"));
+				item.setId(itemJson.getInteger("id"));
 				items.add(item);
 				if (conversationDto.getMaterialId() == null) {
 					conversationDto.setMaterialId(itemJson.getInteger("materialId"));
 				}
 				conversationDto.setItems(items);
-				conversationDto.setContent(null);
+				conversationDto.setContent(om.writeValueAsString(items));
+				conversationDto.setMsgType(Byte.valueOf("1"));
 			} catch (Exception e) {
-				log.error(e.getMessage(), e);
+				log.error(e.getMessage());
 			}
 		}
 		return result;
