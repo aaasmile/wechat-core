@@ -51,6 +51,7 @@ import tk.mybatis.mapper.common.Mapper;
 import javax.annotation.Resource;
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
@@ -903,6 +904,24 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
     @Override
     public MiniProgramDto getMiniProgramByMaterialId(Integer wechatId, Integer materialId) {
         return materialMapper.getMiniProgramByMaterialId(wechatId, materialId);
+    }
+
+    /**
+     * 根据sn获取微信图文详情
+     *
+     * @param sn
+     * @return
+     */
+    public MaterialDto getInfoBySn(String sn) {
+        MaterialDto materialDto = new MaterialDto();
+        Map<String, Object> params = new ConcurrentHashMap<>();
+        params.put("sn", sn);
+        final List<ImageTextDto> imageTextDtos = materialMapper.getImageTextDetail(params);
+        if (CollectionUtils.isNotEmpty(imageTextDtos)) {
+            BeanUtils.copyProperties(imageTextDtos.get(0), materialDto);
+            materialDto.setItems(imageTextDtos);
+        }
+        return materialDto;
     }
 
 }
