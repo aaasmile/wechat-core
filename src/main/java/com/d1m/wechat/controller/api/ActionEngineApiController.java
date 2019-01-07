@@ -41,7 +41,7 @@ public class ActionEngineApiController extends BaseController {
             final Example example = new Example(ActionEngine.class);
             JSONObject removeJsonObj = new JSONObject();
             removeJsonObj.put("code",301);
-            removeJsonObj.put("value",value);
+            removeJsonObj.put("value","[" + value + "]");
             example.createCriteria().andLike("effect", removeJsonObj.toJSONString());
             updateByValue(example, removeJsonObj);
             return representation(Message.SUCCESS);
@@ -62,7 +62,7 @@ public class ActionEngineApiController extends BaseController {
             final Example example = new Example(ActionEngine.class);
             JSONObject removeJsonObj = new JSONObject();
             removeJsonObj.put("code",301);
-            removeJsonObj.put("value",value);
+            removeJsonObj.put("value","[" + value + "]");
             example.createCriteria().andLike("effect", removeJsonObj.toJSONString());
             updateByValue(example, removeJsonObj);
             return representation(Message.SUCCESS);

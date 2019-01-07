@@ -238,13 +238,16 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
                 QrcodeActionEngine qrcodeActionEngineR = qrcodeActionEngineList.get(i);
                 ActionEngine actionEngineR = actionEngineMapper.selectByPrimaryKey(qrcodeActionEngineR.getActionEngineId());
                 if(actionEngineR == null || StringUtils.isEmpty(actionEngineR.getEffect())) {
+                    qrcodeActionEngineMapper.delete(qrcodeActionEngineR);
                     continue;
                 }
                 JSONArray jsonArray = JSONArray.parseArray(actionEngineR.getEffect());
                 for(int j = 0; j < jsonArray.size(); j++) {
                     JSONObject dcrmObj = jsonArray.getJSONObject(j);
                     if(dcrmObj.containsKey("value")) {
-                        DcrmImageTextDetail dcrmImageTextDetail = dcrmImageTextDetailMapper.selectByPrimaryKey(dcrmObj.getInteger("value"));
+                        String dcrmImageTextDetailIdS = dcrmObj.getString("value").replace("[","").replace("]","");
+                        Integer dcrmImageTextDetailId = Integer.valueOf(dcrmImageTextDetailIdS);
+                        DcrmImageTextDetail dcrmImageTextDetail = dcrmImageTextDetailMapper.selectByPrimaryKey(dcrmImageTextDetailId);
                         if(dcrmImageTextDetail == null || isAfter) {
                             actionEngineMapper.delete(actionEngineR);
                             qrcodeActionEngineMapper.delete(qrcodeActionEngineR);
@@ -358,6 +361,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         Integer expire_scends = 259200;//有效期为3天
         WxQRCode wxQrcode = WechatClientDelegate.createQRCode(dto.getWechatId(), expire_scends, sceneStr);
         Qrcode qr = new Qrcode();
+        qr.setId(dto.getQrcodeId());
         qr.setStatus((byte) 1);
         qr.setWechatId(dto.getWechatId());
         qr.setTicket(wxQrcode.getTicket());
