@@ -110,4 +110,11 @@ public interface MaterialService extends IService<Material> {
 	List<ImageTextModel> imageTexts, Date current)
 	throws WechatException;
 
+
+	/**
+	 * 根据sn获取微信图文详情
+	 * @param sn
+	 * @return
+	 */
+	MaterialDto getInfoBySn(String sn);
 }

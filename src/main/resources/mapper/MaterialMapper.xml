@@ -93,7 +93,7 @@
     <select id="selectImageTextDetail" parameterType="hashmap" resultMap="ImageTextDetailResultMap">
         SELECT mt.id as id, mt.wechat_id as wechatId, mt.title as title, mt.summary as summary, m.pic_url as
         material_cover_url, mt.content_source_url as contentSourceUrl, mt.remarks as remarks, mt.status as available
-        ,mt.content as content, m.media_id media_id
+        ,mt.content as content, m.media_id media_id,mt.sn
         FROM material_image_text_detail mt LEFT JOIN material m ON mt.material_cover_id = m.id
         <where>
             mt.material_id = #{materialId} and mt.status = 1
@@ -149,6 +149,9 @@
             </if>
             <if test="id!=null">
                 and mt.id = #{id}
+            </if>
+            <if test="sn!=null">
+                and mt.sn = #{sn}
             </if>
         </where>
         order by mt.sequence asc
