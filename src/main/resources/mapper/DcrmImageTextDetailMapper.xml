@@ -25,8 +25,7 @@
         d.send_times,
         d.read_times,
         d.qrcode_id,
-        d.url,
-        d.sn
+        d.url
         from dcrm_image_text_detail d
         WHERE 1=1
         <if test="search != null">
@@ -87,8 +86,7 @@
         d.send_times,
         d.read_times,
         d.qrcode_id,
-        d.url,
-        d.sn
+        d.url
         from dcrm_image_text_detail d
 		where id = #{id}
 	</select>
@@ -131,7 +129,6 @@
             <if test="readTimes != null">read_times = #{readTimes},</if>
             <if test="qrcodeId != null">qrcode_id = #{qrcodeId},</if>
             <if test="url != null">url = #{url},</if>
-            <if test="sn != null">sn = #{sn},</if>
         </set>
         WHERE id = #{id}
     </update>
