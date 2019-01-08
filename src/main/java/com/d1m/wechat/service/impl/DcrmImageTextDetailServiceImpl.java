@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import sun.rmi.runtime.Log;
 import tk.mybatis.mapper.entity.Example;
 
 import java.io.File;
@@ -211,7 +212,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
     }
 
 
-    @Override
+    /*@Override
     public Map<String, Object> createQrcode(DcrmImageTextDetailDto dto) {
         Map<String, Object> map = new HashMap<>();
         String qrcodeImgUrl = null;
@@ -278,9 +279,33 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         map.put("id", dto.getId());//非群发单图文id
         logger.info("wxQrcode二维码：" + JSON.toJSON(map));
         return map;
+    }*/
+
+    @Override
+    public Map<String, Object> createQrcode(DcrmImageTextDetailDto dto) {
+        Map<String, Object> map = new HashMap<>();
+        String qrcodeImgUrl = null;
+        Qrcode qrcode = new Qrcode();
+        qrcode.setId(dto.getQrcodeId());
+        qrcode = qrcodeMapper.selectByPrimaryKey(qrcode);
+        if (qrcode != null) {
+            //如果超过有效三天，则重新生成图文
+            if (isLate(DateUtils.addDay(qrcode.getCreatedAt(), 3))) {
+                //生成二维码并更新二维码表
+                qrcodeImgUrl = updateQrcode(dto);
+            } else {
+                qrcodeImgUrl = qrcode.getQrcodeImgUrl();
+            }
+        } else {
+            //生成二维码并插入数据库
+            qrcodeImgUrl = addQrcode(dto);
+
+        }
+        map.put("qrcodeImgUrl", qrcodeImgUrl);
+        map.put("id", dto.getId());//非群发单图文id
+        logger.info("wxQrcode二维码：" + JSON.toJSON(map));
+        return map;
     }
-
-
     /**
      * 有效期判断
      *
