@@ -40,7 +40,8 @@
 	<select id="list" resultMap="QrcodeResultMap">
 		select q.id, q.summary, DATE_FORMAT(q.created_at,'%Y-%m-%d %T') as created_at, qt.name as qrcode_type_name,  qt.id as qrcodeTypeId, q.name, q.qrcode_img_url, q.scene, q.sopport_subscribe_reply from qrcode q left join qrcode_type qt on q.qrcode_type_id = qt.id
 		<where>
-			q.wechat_id = #{wechatId ,jdbcType=INTEGER}
+			q.qrcode_type_id is not null
+			and q.wechat_id = #{wechatId ,jdbcType=INTEGER}
 			<if test="query !=null">
 			    and (q.name like CONCAT('%','${query}','%' ) or q.summary like CONCAT('%','${query}','%' ))
 			</if>
