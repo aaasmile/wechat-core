@@ -79,6 +79,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         DcrmImageTextDetail detail = new DcrmImageTextDetail();
         BeanUtils.copyProperties(dto, detail);
         detail.setCreatedAt(new Date());
+        detail.setLasteUpdatedAt(new Date());
         detail.setStatus(MaterialStatus.INUSED.getValue());
         return dcrmImageTextDetailMapper.insert(detail);
     }
@@ -445,6 +446,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         qrcodeActionEngineMapper.insert(qrcodeActionEngine);
 
     }
+
 
     /**
      * 更新发送数量

@@ -54,7 +54,7 @@
                 order by d.${sidx} ${order}
             </when>
             <otherwise>
-                order by d.created_at desc
+                order by d.laste_updated_at desc
             </otherwise>
         </choose>
         <if test="offset != null and limit != null">
