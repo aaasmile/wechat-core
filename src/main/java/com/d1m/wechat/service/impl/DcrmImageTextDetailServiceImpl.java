@@ -3,6 +3,8 @@ package com.d1m.wechat.service.impl;
 import cn.d1m.wechat.client.model.WxQRCode;
 import cn.d1m.wechat.client.model.common.WxFile;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.dto.DcrmImageTextDetailDto;
 import com.d1m.wechat.dto.QueryDto;
 import com.d1m.wechat.mapper.*;
@@ -22,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import sun.rmi.runtime.Log;
+import tk.mybatis.mapper.entity.Example;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -208,6 +212,75 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
     }
 
 
+    /*@Override
+    public Map<String, Object> createQrcode(DcrmImageTextDetailDto dto) {
+        Map<String, Object> map = new HashMap<>();
+        String qrcodeImgUrl = null;
+        Qrcode qrcode = new Qrcode();
+        qrcode.setId(dto.getQrcodeId());
+        qrcode = qrcodeMapper.selectByPrimaryKey(qrcode);
+
+        //创建时间比当前时间大 ，删除该qrcode的关联图文数据，重新创建Qrcode关联数据
+        boolean isAfter = false;
+        if(qrcode.getCreatedAt() != null) {
+            LocalDateTime localDateTimeToday = LocalDateTime.now();
+            LocalDateTime createDateTimeToday = LocalDateTime.ofInstant(qrcode.getCreatedAt().toInstant(), ZoneId.systemDefault());
+            LocalDateTime endTime = createDateTimeToday.plusDays(3);
+            //创建时间比当前时间大
+            isAfter = endTime.isAfter(localDateTimeToday);
+        }
+        //检查是否有ActionEngine以及里面的图文是否还存在，否则删除
+        final Example qrcodeActionEngineExample = new Example(QrcodeActionEngine.class);
+        qrcodeActionEngineExample.createCriteria().andEqualTo("qrcodeId",qrcode.getId());
+        List<QrcodeActionEngine> qrcodeActionEngineList = qrcodeActionEngineMapper.selectByExample(qrcodeActionEngineExample);
+
+        for(int i = 0; i < qrcodeActionEngineList.size(); i++) {
+            try {
+                QrcodeActionEngine qrcodeActionEngineR = qrcodeActionEngineList.get(i);
+                ActionEngine actionEngineR = actionEngineMapper.selectByPrimaryKey(qrcodeActionEngineR.getActionEngineId());
+                if(actionEngineR == null || StringUtils.isEmpty(actionEngineR.getEffect())) {
+                    qrcodeActionEngineMapper.delete(qrcodeActionEngineR);
+                    continue;
+                }
+                JSONArray jsonArray = JSONArray.parseArray(actionEngineR.getEffect());
+                for(int j = 0; j < jsonArray.size(); j++) {
+                    JSONObject dcrmObj = jsonArray.getJSONObject(j);
+                    if(dcrmObj.containsKey("value")) {
+                        String dcrmImageTextDetailIdS = dcrmObj.getString("value").replace("[","").replace("]","");
+                        Integer dcrmImageTextDetailId = Integer.valueOf(dcrmImageTextDetailIdS);
+                        DcrmImageTextDetail dcrmImageTextDetail = dcrmImageTextDetailMapper.selectByPrimaryKey(dcrmImageTextDetailId);
+                        if(dcrmImageTextDetail == null || isAfter) {
+                            actionEngineMapper.delete(actionEngineR);
+                            qrcodeActionEngineMapper.delete(qrcodeActionEngineR);
+                        }
+                    } else {
+                        actionEngineMapper.delete(actionEngineR);
+                        qrcodeActionEngineMapper.delete(qrcodeActionEngineR);
+                    }
+                }
+            } catch(Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+
+        if (qrcode != null) {
+            //如果超过有效三天，则重新生成图文
+            if (isAfter) {
+                //生成二维码并更新二维码表
+                qrcodeImgUrl = updateQrcode(dto);
+            } else {
+                qrcodeImgUrl = qrcode.getQrcodeImgUrl();
+            }
+        } else {
+            //生成二维码并插入数据库
+            qrcodeImgUrl = addQrcode(dto);
+        }
+        map.put("qrcodeImgUrl", qrcodeImgUrl);
+        map.put("id", dto.getId());//非群发单图文id
+        logger.info("wxQrcode二维码：" + JSON.toJSON(map));
+        return map;
+    }*/
+
     @Override
     public Map<String, Object> createQrcode(DcrmImageTextDetailDto dto) {
         Map<String, Object> map = new HashMap<>();
@@ -217,7 +290,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         qrcode = qrcodeMapper.selectByPrimaryKey(qrcode);
         if (qrcode != null) {
             //如果超过有效三天，则重新生成图文
-            if (isLate(DateUtils.plusDay2(qrcode.getCreatedAt(), 3))) {
+            if (isLate(DateUtils.addDay(qrcode.getCreatedAt(), 3))) {
                 //生成二维码并更新二维码表
                 qrcodeImgUrl = updateQrcode(dto);
             } else {
@@ -233,8 +306,6 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         logger.info("wxQrcode二维码：" + JSON.toJSON(map));
         return map;
     }
-
-
     /**
      * 有效期判断
      *
@@ -315,6 +386,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         Integer expire_scends = 259200;//有效期为3天
         WxQRCode wxQrcode = WechatClientDelegate.createQRCode(dto.getWechatId(), expire_scends, sceneStr);
         Qrcode qr = new Qrcode();
+        qr.setId(dto.getQrcodeId());
         qr.setStatus((byte) 1);
         qr.setWechatId(dto.getWechatId());
         qr.setTicket(wxQrcode.getTicket());

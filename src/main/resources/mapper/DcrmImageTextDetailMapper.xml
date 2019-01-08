@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.d1m.wechat.mapper.DcrmImageTextDetailMapper">
-
     <select id="queryList" resultType="com.d1m.wechat.dto.DcrmImageTextDetailDto">
         select
         d.`id`,
@@ -40,7 +39,14 @@
         </if>
 
         <if test="materialCategoryId !=null">
-            and d.`material_category_id`=#{materialCategoryId}
+            <choose>
+                <when test='materialCategoryId =="other"'>
+                    and d.`material_category_id` is null
+                </when>
+                <otherwise>
+                    and d.`material_category_id`=#{materialCategoryId}
+                </otherwise>
+            </choose>
         </if>
 
         <choose>

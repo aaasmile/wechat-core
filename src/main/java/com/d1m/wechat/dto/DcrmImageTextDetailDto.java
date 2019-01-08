@@ -143,6 +143,7 @@ public class DcrmImageTextDetailDto implements Serializable {
      */
     private Boolean wxImageTextExist;
 
+
     public Boolean getWxImageTextExist() {
         return wxImageTextExist;
     }
