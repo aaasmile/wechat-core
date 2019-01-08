@@ -138,7 +138,7 @@
         mt.content_source_url as content_source_url, mt.content_source_checked as content_source_checked,
         mt.show_cover as show_cover, mt.summary as summary, m.id as material_cover_id, m.pic_url as material_cover_url,
         m.media_id as material_cover_media_id ,mt.comment , mt.remarks as remarks, mt.status as available,
-        mt.url, mt.content as content
+        mt.url, mt.content as content,m.media_id media_id
         FROM material_image_text_detail mt LEFT JOIN material m ON mt.material_cover_id = m.id
         <where>
             <!--<if test="status!=null">-->
@@ -172,6 +172,7 @@
         <result column="available" jdbcType="TINYINT" property="available"/>
         <result column="content" jdbcType="VARCHAR" property="content"/>
         <result column="url" jdbcType="VARCHAR" property="url"/>
+        <result column="media_id" jdbcType="VARCHAR" property="mediaId"/>
     </resultMap>
 
     <select id="searchMiniProgram" parameterType="com.d1m.wechat.pamametermodel.MiniProgramModel"
@@ -250,7 +251,8 @@
         m.pic_url AS material_cover_url,
         m.media_id AS material_cover_media_id,
         mt.COMMENT,
-        mt.remarks as remarks
+        mt.remarks as remarks,
+        m.media_id as media_id
         FROM
         material_image_text_detail mt
         LEFT JOIN material m ON mt.material_cover_id = m.id

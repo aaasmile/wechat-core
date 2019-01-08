@@ -19,7 +19,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/menu")
+@RequestMapping("/menu")
 public class MenuApiController extends BaseController {
 
     private Logger log = LoggerFactory.getLogger(MenuApiController.class);
