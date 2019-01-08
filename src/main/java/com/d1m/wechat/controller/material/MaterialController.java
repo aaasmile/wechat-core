@@ -1,33 +1,5 @@
 package com.d1m.wechat.controller.material;
 
-import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
-import org.apache.shiro.authz.annotation.Logical;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.controller.file.Upload;
@@ -50,11 +22,31 @@ import com.d1m.wechat.util.Message;
 import com.d1m.wechat.util.StringUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.StringUtil;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
 @Controller
 @RequestMapping("/material")
@@ -69,11 +61,11 @@ public class MaterialController extends BaseController {
     @Autowired
     private MaterialImageTextDetailService materialImageTextDetailService;
     @Autowired
-	private ConversationService conversationService;
+    private ConversationService conversationService;
 
-	@Autowired
-	private MemberService memberService;
-    
+    @Autowired
+    private MemberService memberService;
+
     /**
      * 图片素材推送到微信
      *
@@ -126,17 +118,17 @@ public class MaterialController extends BaseController {
             HttpSession session, HttpServletRequest request,
             HttpServletResponse response) {
         try {
-        	//如果是预览单图文，无materialId，则走客服预览接口
-        	if(materialModel.getId() == null && materialModel.getNewid() != null) {
-        		MemberDto member = memberService.getMemberDto(getWechatId(), materialModel.getMemberId());
-    			notBlank(member, Message.MEMBER_NOT_EXIST);
-    			CommonUtils.send2SocialWechatCoreApi(getWechatId(), member, materialModel.getNewid(), materialModel.getNewtype(), conversationService);
-        	} 
-        	//有materialId走原有接口
-        	else {
-        		materialService.previewMaterial(getWechatId(), materialModel);
-        	}
-        	return representation(Message.MATERIAL_IMAGE_TEXT_PUSH_WX_SUCCESS);
+            //如果是预览单图文，无materialId，则走客服预览接口
+            if (materialModel.getId() == null && materialModel.getNewid() != null) {
+                MemberDto member = memberService.getMemberDto(getWechatId(), materialModel.getMemberId());
+                notBlank(member, Message.MEMBER_NOT_EXIST);
+                CommonUtils.send2SocialWechatCoreApi(getWechatId(), member, materialModel.getNewid(), materialModel.getNewtype(), conversationService);
+            }
+            //有materialId走原有接口
+            else {
+                materialService.previewMaterial(getWechatId(), materialModel);
+            }
+            return representation(Message.MATERIAL_IMAGE_TEXT_PUSH_WX_SUCCESS);
         } catch (Exception e) {
             log.error(e.getMessage());
             return wrapException(e);
@@ -370,10 +362,16 @@ public class MaterialController extends BaseController {
             @Validated @RequestBody MaterialUpdateReq updateReq) {
         try {
 
-            final Material material = new Material();
+            final Material material = materialService.selectByKey(materialId);
+
+            if (Objects.isNull(material)) {
+                return representation(Message.MATERIAL_NOT_EXIST);
+            }
+
             material.setId(materialId);
             material.setWechatId(getWechatId());
             material.setMaterialCategoryId(updateReq.getMaterialCategoryId());
+
 
             final List<MaterialImageTextDetail> imageTextDetails = updateReq.getImageTextUpdateReqs().stream()
                     .filter(i -> Objects.nonNull(i.getId()))
@@ -629,7 +627,7 @@ public class MaterialController extends BaseController {
         try {
             notBlank(materialId, Message.MATERIAL_ID_NOT_BLANK);
             JSONObject jsonObject = materialService.deleteImage(getWechatId(session), materialId);
-            log.info("删除图片返回：{}",jsonObject);
+            log.info("删除图片返回：{}", jsonObject);
             return jsonObject;
         } catch (Exception e) {
             log.error(e.getMessage());

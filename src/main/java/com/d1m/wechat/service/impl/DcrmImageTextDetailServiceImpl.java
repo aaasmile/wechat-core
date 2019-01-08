@@ -101,7 +101,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         BeanUtils.copyProperties(dto, detail);
         detail.setLasteUpdatedAt(new Date());
         detail.setStatus(MaterialStatus.INUSED.getValue());
-        return dcrmImageTextDetailMapper.updateByPrimaryKeySelective(detail);
+        return dcrmImageTextDetailMapper.update(detail);
     }
 
 

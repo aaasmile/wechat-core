@@ -160,7 +160,7 @@
     <task:executor id="callerRunsExecutor" pool-size="10-500" queue-capacity="20" keep-alive="60" rejection-policy="CALLER_RUNS"/>
 
     <import resource="classpath:applicationContext-shiro.xml"/>
-    <!--<import resource="classpath:applicationContext-job.xml"/>-->
+    <import resource="classpath:applicationContext-job.xml"/>
 
     <!--国际化-->
     <bean id="messageSource"

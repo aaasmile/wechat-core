@@ -77,6 +77,9 @@ public class MemberExcel {
     @Excel(name = "bind.county")
     private String bindCounty;
 
+    @Excel(name = "bind.address")
+    private String bindAddress;
+
     @Excel(name = "bind.mobile")
     private String bindMobile;
 
@@ -281,6 +284,14 @@ public class MemberExcel {
 
     public void setBindGender(Sex bindGender) {
         this.bindGender = bindGender;
+    }
+
+    public String getBindAddress() {
+        return bindAddress;
+    }
+
+    public void setBindAddress(String bindAddress) {
+        this.bindAddress = bindAddress;
     }
 
     public String getBindName() {

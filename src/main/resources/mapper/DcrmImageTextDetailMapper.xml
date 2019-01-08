@@ -98,4 +98,32 @@
     <select id="selectSendTimesById" resultType="java.lang.Integer">
         select send_times from dcrm_image_text_detail where id=#{id}
     </select>
+
+    <update id="update" parameterType="com.d1m.wechat.model.DcrmImageTextDetail">
+        UPDATE dcrm_image_text_detail
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            link = #{link},
+            <if test="materialCoverId != null">material_cover_id = #{materialCoverId},</if>
+            <if test="summary != null">summary = #{summary},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="wechatId != null">wechat_id = #{wechatId},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="sequence != null">sequence = #{sequence},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="materialCategoryId != null">material_category_id = #{materialCategoryId},</if>
+            wx_image_text_id = #{wxImageTextId},
+            <if test="tagId != null">tag_id = #{tagId},</if>
+            <if test="createdAt != null">created_at = #{createdAt},</if>
+            <if test="createdBy != null">created_by = #{createdBy},</if>
+            <if test="lasteUpdatedAt != null">laste_updated_at = #{lasteUpdatedAt},</if>
+            <if test="lasteUpdatedBy != null">laste_updated_by = #{lasteUpdatedBy},</if>
+            <if test="sendTimes != null">send_times = #{sendTimes},</if>
+            <if test="readTimes != null">read_times = #{readTimes},</if>
+            <if test="qrcodeId != null">qrcode_id = #{qrcodeId},</if>
+            <if test="url != null">url = #{url},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
 </mapper>
