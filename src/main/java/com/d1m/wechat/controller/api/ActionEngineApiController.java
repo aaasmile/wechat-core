@@ -20,7 +20,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/actionEngine")
+@RequestMapping("/actionEngine")
 public class ActionEngineApiController extends BaseController {
 
     private Logger log = LoggerFactory.getLogger(ActionEngineApiController.class);
