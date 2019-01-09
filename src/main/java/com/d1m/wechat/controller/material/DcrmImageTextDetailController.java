@@ -159,8 +159,8 @@ public class DcrmImageTextDetailController extends BaseController {
             notBlank(member, Message.MEMBER_NOT_EXIST);
             CommonUtils.send2SocialWechatCoreApi(getWechatId(), member, detailDto.getNewid(), detailDto.getNewtype(), conversationService);
             //更新发送数量
-            int t = dcrmImageTextDetailService.updateSendTimes(detailDto.getId());
-            log.debug("发送次数更新状态：{}", t);
+            /*int t = dcrmImageTextDetailService.updateSendTimes(detailDto.getId());
+            log.debug("发送次数更新状态：{}", t);*/
             return representation(Message.MATERIAL_IMAGE_TEXT_PUSH_WX_SUCCESS);
         } catch (Exception e) {
             log.error(e.getMessage());
