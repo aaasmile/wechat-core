@@ -27,7 +27,7 @@ public class ActionEngineHandler {
     @Autowired
     private ActionEngineService actionEngineService;
 
-    @RabbitListener(queues = "${dcrm.wechat-core.actionEngine.deleteWechatByValue}")
+//    @RabbitListener(queues = "${dcrm.wechat-core.actionEngine.deleteWechatByValue}")
     public void deleteWechatByValue(Map<String,Object> message) {
         try {
             Integer value = (Integer) message.get("value");
@@ -46,7 +46,8 @@ public class ActionEngineHandler {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-    } @RabbitListener(queues = "${dcrm.wechat-core.actionEngine.deleteDcrmByValue}")
+    }
+//    @RabbitListener(queues = "${dcrm.wechat-core.actionEngine.deleteDcrmByValue}")
     public void deleteDcrmByValue(Map<String,Object> message) {
         try {
             Integer value = (Integer) message.get("value");
