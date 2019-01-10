@@ -36,8 +36,7 @@
             and status = 1
             and `name`!='CropImage'
             <if test="materialType != null">
-                and (material_type = #{materialType}
-                or material_type = 11)
+                and material_type = #{materialType}
             </if>
             <if test="materialImageTypeId != null">
                 and material_image_type_id = #{materialImageTypeId}
