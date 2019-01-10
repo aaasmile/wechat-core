@@ -74,9 +74,18 @@
                     and m.modify_at = m.last_push_at
                 </if>
             </if>
-            <if test="materialCategoryId!=null">
-                and m.material_category_id = #{materialCategoryId}
+
+            <if test="materialCategoryId !=null">
+                <choose>
+                    <when test='materialCategoryId =="other"'>
+                        and m.`material_category_id` is null
+                    </when>
+                    <otherwise>
+                        and m.`material_category_id`=#{materialCategoryId}
+                    </otherwise>
+                </choose>
             </if>
+
             order by m.last_push_at desc
         </where>
     </select>
