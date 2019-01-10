@@ -23,7 +23,7 @@ public class MemberExcel {
     @Excel(name = "gender")
     private Sex gender;
 
-    @Excel(name = "mobile", width = 12)
+    @Excel(name = "bind.mobile", width = 12, orderNum = "22")
     private String mobile;
 
     @Excel(name = "province")
@@ -80,7 +80,7 @@ public class MemberExcel {
     @Excel(name = "bind.address")
     private String bindAddress;
 
-    @Excel(name = "bind.mobile")
+    @Excel(name = "mobile", orderNum = "3")
     private String bindMobile;
 
     @Excel(name = "bind.gender")
