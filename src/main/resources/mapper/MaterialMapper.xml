@@ -36,8 +36,7 @@
             and status = 1
             and `name`!='CropImage'
             <if test="materialType != null">
-                and (material_type = #{materialType}
-                or material_type = 11)
+                and material_type = #{materialType}
             </if>
             <if test="materialImageTypeId != null">
                 and material_image_type_id = #{materialImageTypeId}
@@ -74,9 +73,18 @@
                     and m.modify_at = m.last_push_at
                 </if>
             </if>
-            <if test="materialCategoryId!=null">
-                and m.material_category_id = #{materialCategoryId}
+
+            <if test="materialCategoryId !=null">
+                <choose>
+                    <when test='materialCategoryId =="other"'>
+                        and m.`material_category_id` is null
+                    </when>
+                    <otherwise>
+                        and m.`material_category_id`=#{materialCategoryId}
+                    </otherwise>
+                </choose>
             </if>
+
             order by m.last_push_at desc
         </where>
     </select>

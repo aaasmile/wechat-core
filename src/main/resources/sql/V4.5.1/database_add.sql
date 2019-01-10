@@ -4,7 +4,8 @@ ALTER TABLE material ADD COLUMN `material_category_id` varchar(50) DEFAULT NULL 
 
 alter TABLE material_image_text_detail add COLUMN `url` varchar(200)  DEFAULT NULL COMMENT '图文页的URL';
 
-update material set material_category_id=material_type;
+alter TABLE material_image_text_detail add COLUMN `sn` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '微信图文URL链接sn参数';
+
 -- 素材分类表 --
 CREATE TABLE `material_category` (
   `id` varchar(50) NOT NULL DEFAULT '0' COMMENT '主键ID',
@@ -35,7 +36,7 @@ CREATE TABLE `dcrm_image_text_detail` (
   `material_category_id` varchar(50) CHARACTER SET utf8 DEFAULT NULL COMMENT '图文分类id',
   `wx_image_text_id` int(50) DEFAULT NULL COMMENT '关联微信图文id',
   `tag_id` varchar(100) CHARACTER SET utf8 DEFAULT NULL COMMENT '阅读标签id',
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `created_by` varchar(32) CHARACTER SET utf8 DEFAULT NULL COMMENT '创建人',
   `laste_updated_at` timestamp NULL DEFAULT NULL COMMENT '最后更新时间',
   `laste_updated_by` varchar(32) CHARACTER SET utf8 DEFAULT NULL COMMENT '最后更新人',
@@ -44,10 +45,4 @@ CREATE TABLE `dcrm_image_text_detail` (
   `qrcode_id` int(11) DEFAULT NULL COMMENT '二维码id',
   `url` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '图文页的URL',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8  COMMENT='非群发单图文表';
-
-INSERT INTO `material_category` VALUES ('1', '图文', '0', 3, '2018-12-09 09:18:16', '1', NULL, NULL);
-INSERT INTO `material_category` VALUES ('2', '图片', '0', 3, '2018-12-09 09:19:49', '1', '2018-12-09 11:14:10', '1');
-INSERT INTO `material_category` VALUES ('4', '视频', '0', 3, '2018-12-10 15:10:56', '1', NULL, NULL);
-INSERT INTO `material_category` VALUES ('5', '小视频', '0', 3, '2018-12-10 15:11:13', '1', NULL, NULL);
-INSERT INTO `material_category` VALUES ('6', '文字', '0', 3, '2018-12-10 15:12:00', '1', NULL, NULL);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8  COMMENT='非群发单图文表';
