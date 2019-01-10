@@ -26,7 +26,7 @@ public class MenuHandler {
     @Autowired
     private MenuService menuService;
 
-    @RabbitListener(queues = "${dcrm.wechat-core.menu.deleteWechatByMenuKey}")
+//    @RabbitListener(queues = "${dcrm.wechat-core.menu.deleteWechatByMenuKey}")
     public void deleteWechatByMenuKey(Map<String,Object> message) {
         try {
             Integer menuKey = (Integer) message.get("menuKey");
@@ -46,7 +46,7 @@ public class MenuHandler {
         }
     }
 
-    @RabbitListener(queues = "${dcrm.wechat-core.menu.deleteDcrmByMenuKey}")
+//    @RabbitListener(queues = "${dcrm.wechat-core.menu.deleteDcrmByMenuKey}")
     public void deleteDcrmByMenuKey(Map<String,Object> message) {
         try {
             Integer menuKey = (Integer) message.get("menuKey");
