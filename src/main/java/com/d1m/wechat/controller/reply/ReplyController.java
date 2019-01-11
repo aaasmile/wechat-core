@@ -38,6 +38,7 @@ import com.d1m.wechat.service.MemberTagService;
 import com.d1m.wechat.service.ReplyService;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
+import tk.mybatis.mapper.entity.Example;
 
 @Api(value = "自动回复API", tags = "自动回复接口")
 @Controller
@@ -204,10 +205,13 @@ public class ReplyController extends BaseController {
 						valueArray = new JSONArray();
 						for (Integer id : value) {
 							try {
-								MaterialImageTextDetail detailDto = materialImageTextDetailService.selectByKey(id);
-								if(detailDto == null) {
+								final Example example = new Example(MaterialImageTextDetail.class);
+								example.createCriteria().andEqualTo("id", id).andEqualTo("status",(byte) 1);
+								List<MaterialImageTextDetail> materialImageTextDetailList = materialImageTextDetailService.selectByExample(example);
+								if(materialImageTextDetailList == null || materialImageTextDetailList.isEmpty()) {
 									continue;
 								}
+								MaterialImageTextDetail detailDto = materialImageTextDetailList.get(0);
 								Material material = materialService.selectByKey(detailDto.getMaterialCoverId());
 								MaterialDto materialDto = new MaterialDto();
 								ImageTextDto imageTextDto = new ImageTextDto();

@@ -47,6 +47,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
+import tk.mybatis.mapper.entity.Example;
 
 @Api(value = "二维码行为API", tags = "二维码行为接口")
 @Controller
@@ -192,10 +193,13 @@ public class QrcodeActionEngineController extends BaseController {
 						valueArray = new JSONArray();
 						for (Integer id : value) {
 							try {
-								MaterialImageTextDetail detailDto = materialImageTextDetailService.selectByKey(id);
-								if(detailDto == null) {
+								final Example example = new Example(MaterialImageTextDetail.class);
+								example.createCriteria().andEqualTo("id", id).andEqualTo("status",(byte) 1);
+								List<MaterialImageTextDetail> materialImageTextDetailList = materialImageTextDetailService.selectByExample(example);
+								if(materialImageTextDetailList == null || materialImageTextDetailList.isEmpty()) {
 									continue;
 								}
+								MaterialImageTextDetail detailDto = materialImageTextDetailList.get(0);
 								Material material = materialService.selectByKey(detailDto.getMaterialCoverId());
 								MaterialDto materialDto = new MaterialDto();
 								ImageTextDto imageTextDto = new ImageTextDto();
