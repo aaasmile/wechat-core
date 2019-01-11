@@ -114,7 +114,7 @@
 			FROM
 				material_image_text_detail mt
 			LEFT JOIN material m ON mt.material_cover_id = m.id
-			WHERE and mt.id =  #{materialId} and mt.status = 1
+			WHERE 1=1 and mt.id =  #{materialId} and mt.status = 1
 		</if>
 		<if test="materialType == 22">
 			select d.`id`, d.`title`, d.`summary`,
