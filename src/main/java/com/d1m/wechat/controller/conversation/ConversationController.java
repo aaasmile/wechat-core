@@ -407,7 +407,12 @@ public class ConversationController extends BaseController {
 				item = new ImageTextDto();
 				item.setTitle(itemJson.getString("title"));
 				item.setSummary(itemJson.getString("summary"));
-				item.setMaterialCoverUrl(itemJson.getString("picurl"));
+				if(itemJson.containsKey("picurl")) {
+					item.setMaterialCoverUrl(itemJson.getString("picurl"));
+				}
+				if(itemJson.containsKey("materialCoverUrl")) {
+					item.setMaterialCoverUrl(itemJson.getString("materialCoverUrl"));
+				}
 				item.setId(itemJson.getInteger("id"));
 				items.add(item);
 				if (conversationDto.getMaterialId() == null) {
