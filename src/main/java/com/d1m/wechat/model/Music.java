@@ -105,7 +105,7 @@ public class Music {
 		this.hqmusicurl = hqmusicurl;
 		this.thumb_media_id = thumb_media_id;
 	}
-
+	
 	public Music() {
 		super();
 	}

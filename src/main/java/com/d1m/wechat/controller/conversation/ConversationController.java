@@ -321,19 +321,23 @@ public class ConversationController extends BaseController {
 				item = new ImageTextDto();
 				if("dcrm".equals(condition.getNewtype())) {
 					DcrmImageTextDetailDto imageTextDto = dcrmImageTextDetailService.queryObject(condition.getNewid());
-					item.setTitle(imageTextDto.getTitle());
-					item.setSummary(imageTextDto.getSummary());
-					item.setMaterialCoverUrl(imageTextDto.getCoverPicUrl());
-					item.setId(imageTextDto.getId());
-					conversationDto.setNewtype("dcrm");
+					if(imageTextDto != null) {
+						item.setTitle(imageTextDto.getTitle());
+						item.setSummary(imageTextDto.getSummary());
+						item.setMaterialCoverUrl(imageTextDto.getCoverPicUrl());
+						item.setId(imageTextDto.getId());
+						conversationDto.setNewtype("dcrm");
+					}
 				} else {
 					MaterialImageTextDetail imageTextDto = materialImageTextDetailService.selectByKey(condition.getNewid());
-					Material material = materialService.selectByKey(imageTextDto.getMaterialCoverId());
-					item.setTitle(imageTextDto.getTitle());
-					item.setSummary(imageTextDto.getSummary());
-					item.setMaterialCoverUrl(material.getPicUrl());
-					item.setId(imageTextDto.getId());
-					conversationDto.setNewtype("wechat");
+					if(imageTextDto != null) {
+						Material material = materialService.selectByKey(imageTextDto.getMaterialCoverId());
+						item.setTitle(imageTextDto.getTitle());
+						item.setSummary(imageTextDto.getSummary());
+						item.setMaterialCoverUrl(material.getPicUrl());
+						item.setId(imageTextDto.getId());
+						conversationDto.setNewtype("wechat");
+					}
 				}
 				itemDtos.add(item);
 				conversationDto.setItems(itemDtos);
