@@ -6,6 +6,7 @@ alter TABLE material_image_text_detail add COLUMN `url` varchar(200)  DEFAULT NU
 
 alter TABLE material_image_text_detail add COLUMN `sn` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '微信图文URL链接sn参数';
 
+alter TABLE material add COLUMN `sn` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '微信图文URL链接sn参数';
 -- 素材分类表 --
 CREATE TABLE `material_category` (
   `id` varchar(50) NOT NULL DEFAULT '0' COMMENT '主键ID',
