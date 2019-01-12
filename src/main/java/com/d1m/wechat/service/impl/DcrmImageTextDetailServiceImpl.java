@@ -289,11 +289,12 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         Qrcode qrcode = new Qrcode();
         qrcode.setId(dto.getQrcodeId());
         qrcode = qrcodeMapper.selectByPrimaryKey(qrcode);
-        if (qrcode != null) {
+        ActionEngine actionEngine = actionEngineMapper.queryByQrcodeId(dto.getQrcodeId());
+        if (actionEngine != null) {
             //如果超过有效三天，则重新生成图文
-            if (isLate(DateUtils.addDay(qrcode.getCreatedAt(), 3))) {
+            if (isLate(actionEngine.getEndAt())) {
                 //生成二维码并更新二维码表
-                qrcodeImgUrl = updateQrcode(dto);
+                qrcodeImgUrl = updateQrcode(dto, actionEngine);
             } else {
                 qrcodeImgUrl = qrcode.getQrcodeImgUrl();
             }
@@ -307,14 +308,16 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         logger.info("wxQrcode二维码：" + JSON.toJSON(map));
         return map;
     }
+
+
     /**
      * 有效期判断
      *
-     * @param createTime
+     * @param dateTime
      * @return
      */
-    private static boolean isLate(Date createTime) {
-        if (createTime.compareTo(new Date()) < 0) {
+    private static boolean isLate(Date dateTime) {
+        if (dateTime.compareTo(new Date()) < 0) {
             return true;
         } else {
             return false;
@@ -378,7 +381,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
      * @param dto
      * @return
      */
-    private String updateQrcode(DcrmImageTextDetailDto dto) {
+    private String updateQrcode(DcrmImageTextDetailDto dto, ActionEngine actionEngine) {
         String format = DateUtil.yyyyMMddHHmmss.format(new Date());
         String type = Constants.IMAGE + File.separator + Constants.QRCODE;
         File root = FileUtils.getUploadPathRoot(dto.getWechatId(), type);
@@ -410,11 +413,23 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
          + File.separator + wxFile.getFilename());
         int t = qrcodeMapper.updateByPrimaryKeySelective(qr);
         logger.info("【更新二维码】二维码图片表结果：" + t);
-        //插入effect和关系表
-        saveEngine(dto, qr);
+        //更新effect和关系表
+        updateEngine(actionEngine);
         String qrcodeImgUrl = qr.getQrcodeImgUrl();
         logger.info("【更新二维码】二维码图片地址：" + qrcodeImgUrl);
         return qrcodeImgUrl;
+    }
+
+    private void updateEngine(ActionEngine actionEngine) {
+        LocalDateTime localDateTimeToday = LocalDateTime.now();
+        LocalDateTime endTime = localDateTimeToday.plusDays(3);
+        Date endDate = Date.from(endTime.atZone(ZoneId.systemDefault()).toInstant());
+        Date startDate = Date.from(localDateTimeToday.atZone(ZoneId.systemDefault()).toInstant());
+        actionEngine.setEndAt(endDate);
+        actionEngine.setStartAt(startDate);
+        int t = actionEngineMapper.updateByPrimaryKeySelective(actionEngine);
+        logger.info("更新updateEngine状态："+t);
+
     }
 
     private void saveEngine(DcrmImageTextDetailDto dto, Qrcode qrcode) {
