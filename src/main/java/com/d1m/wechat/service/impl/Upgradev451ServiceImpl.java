@@ -6,6 +6,8 @@ import com.d1m.wechat.mapper.*;
 import com.d1m.wechat.model.*;
 import com.d1m.wechat.service.Upgradev451Service;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
@@ -16,6 +18,7 @@ import java.util.List;
 @Service
 public class Upgradev451ServiceImpl implements Upgradev451Service {
 
+    private Logger log = LoggerFactory.getLogger(Upgradev451ServiceImpl.class);
     @Autowired
     private MaterialMapper materialMapper;
     @Autowired
@@ -34,6 +37,9 @@ public class Upgradev451ServiceImpl implements Upgradev451Service {
         List<Material> materialList = materialMapper.selectByExample(materialExample);
         for(int i = 0; i < materialList.size(); i++) {
             Material materialR = materialList.get(i);
+            if(materialR == null) {
+                log.error("materialR..." + materialR);
+            }
             final Example materialImageTextDetailExample = new Example(MaterialImageTextDetail.class);
             materialImageTextDetailExample.createCriteria().andEqualTo("materialId",materialR.getId());
             List<MaterialImageTextDetail> materialImageTextDetailList = materialImageTextDetailMapper.selectByExample(materialImageTextDetailExample);
@@ -68,7 +74,9 @@ public class Upgradev451ServiceImpl implements Upgradev451Service {
         for( int i = 0; i < menuList.size(); i++) {
             Menu menuQ = menuList.get(i);
             Material materialR = materialMapper.selectByPrimaryKey(menuQ.getMenuKey());
-
+            if(materialR == null) {
+                log.error("materialR..." + materialR);
+            }
             final Example materialImageTextDetailExample = new Example(Material.class);
             materialImageTextDetailExample.createCriteria().andEqualTo("materialId", materialR.getId()).andEqualTo("status",(byte) 1);
             List<MaterialImageTextDetail> materialImageTextDetailList = materialImageTextDetailMapper.selectByExample(materialImageTextDetailExample);
@@ -105,6 +113,7 @@ public class Upgradev451ServiceImpl implements Upgradev451Service {
         for(int i = 0; i < actionEngineList.size(); i++) {
             ActionEngine actionEngineR = actionEngineList.get(i);
             if(actionEngineR == null || StringUtils.isEmpty(actionEngineR.getEffect())) {
+                log.error("actionEngineR..." + actionEngineR);
                 continue;
             }
             JSONArray jsonArray = JSONArray.parseArray(actionEngineR.getEffect());
