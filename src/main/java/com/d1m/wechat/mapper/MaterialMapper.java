@@ -49,5 +49,7 @@ public interface MaterialMapper extends MyMapper<Material> {
 
     List<ImageTextDto> getImageTextDetail(Map<String, Object> params);
 
+    Material queryMtByDetailId(@Param("id") Integer id);
+
 
 }
