@@ -33,7 +33,7 @@ public class Upgradev451ServiceImpl implements Upgradev451Service {
     @Override
     public void move2dcrm() {
         final Example materialExample = new Example(Material.class);
-        materialExample.createCriteria().andCondition("modify_at != ifnull(last_push_at, now())");
+        materialExample.createCriteria().andCondition("modify_at != ifnull(last_push_at, now())").andEqualTo("status",(byte) 1);
         List<Material> materialList = materialMapper.selectByExample(materialExample);
         for(int i = 0; i < materialList.size(); i++) {
             Material materialR = materialList.get(i);
