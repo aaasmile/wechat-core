@@ -292,4 +292,9 @@
           and t.wechat_id = #{wechatId}
     </select>
 
+    <select id="queryMtByDetailId" resultType="com.d1m.wechat.model.Material">
+        select t.* from material t
+        INNER JOIN material_image_text_detail f on t.id=f.material_id
+        where f.id=#{id}
+    </select>
 </mapper>

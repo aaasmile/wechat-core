@@ -120,8 +120,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         checkIsWxImageTextExist(list);
         //检查关联微信图文是否已更新
         checkIsWx(list);
-        PageInfo<DcrmImageTextDetailDto> pageInfo = new PageInfo<>(list);
-        return pageInfo;
+        return new PageInfo<>(list);
     }
 
 
@@ -133,9 +132,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
             for (DcrmImageTextDetailDto detailDto : list) {
                 detailDto.setWxImageTextUpdate(false);
                 if (detailDto.getMaterialCoverId() != null) {
-                    Material material = new Material();
-                    material.setId(detailDto.getMaterialCoverId());
-                    material = materialMapper.selectByPrimaryKey(material);
+                    Material material = materialMapper.queryMtByDetailId(detailDto.getWxImageTextId());
                     logger.debug("已经更新material.getLastPushAt():{}" + material.getLastPushAt());
                     logger.debug("已经更新detailDto.getWxLastPushTime():" + detailDto.getWxLastPushTime());
                     if (detailDto.getWxLastPushTime() != null && material.getLastPushAt().compareTo(detailDto.getWxLastPushTime()) > 0) {
