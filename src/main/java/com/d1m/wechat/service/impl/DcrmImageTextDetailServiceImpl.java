@@ -92,6 +92,8 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
             list.add(detailDto);
             //检验是否不完整非群发单图文
             checkIsNotComplete(list);
+            //检查关联微信图文是否已更新
+            checkIsWx(list);
         }
         return detailDto;
     }
@@ -116,8 +118,32 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         checkIsNotComplete(list);
         //检查微信图文是否存在
         checkIsWxImageTextExist(list);
+        //检查关联微信图文是否已更新
+        checkIsWx(list);
         PageInfo<DcrmImageTextDetailDto> pageInfo = new PageInfo<>(list);
         return pageInfo;
+    }
+
+
+    /**
+     * 检查关联微信图文是否已更新
+     */
+    private void checkIsWx(List<DcrmImageTextDetailDto> list) {
+        if (CollectionUtils.isNotEmpty(list))
+            for (DcrmImageTextDetailDto detailDto : list) {
+                detailDto.setWxImageTextUpdate(false);
+                if (detailDto.getMaterialCoverId() != null) {
+                    Material material = new Material();
+                    material.setId(detailDto.getMaterialCoverId());
+                    material = materialMapper.selectByPrimaryKey(material);
+                    logger.debug("已经更新material.getLastPushAt():{}" + material.getLastPushAt());
+                    logger.debug("已经更新detailDto.getWxLastPushTime():" + detailDto.getWxLastPushTime());
+                    if (detailDto.getWxLastPushTime() != null && material.getLastPushAt().compareTo(detailDto.getWxLastPushTime()) > 0) {
+                        detailDto.setWxImageTextUpdate(true);
+                    }
+                }
+            }
+
     }
 
     /**
@@ -428,7 +454,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         actionEngine.setEndAt(endDate);
         actionEngine.setStartAt(startDate);
         int t = actionEngineMapper.updateByPrimaryKeySelective(actionEngine);
-        logger.info("更新updateEngine状态："+t);
+        logger.info("更新updateEngine状态：" + t);
 
     }
 
