@@ -45,5 +45,7 @@ CREATE TABLE `dcrm_image_text_detail` (
   `read_times` int(11) DEFAULT '0' COMMENT '阅读次数',
   `qrcode_id` int(11) DEFAULT NULL COMMENT '二维码id',
   `url` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '图文页的URL',
+  `pic_url` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '微信封面url',
+  `wx_last_pust_time` datetime DEFAULT NULL COMMENT '微信图文最后更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8  COMMENT='非群发单图文表';
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8  COMMENT='非群发单图文表';
