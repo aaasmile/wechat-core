@@ -25,7 +25,9 @@
         d.send_times,
         d.read_times,
         d.qrcode_id,
-        d.url
+        d.url,
+        d.pic_url,
+        d.wx_last_pust_time as wxLastPushTime
         from dcrm_image_text_detail d
         WHERE 1=1
         <if test="search != null">
@@ -86,7 +88,9 @@
         d.send_times,
         d.read_times,
         d.qrcode_id,
-        d.url
+        d.url,
+        d.pic_url,
+        d.wx_last_pust_time as wxLastPushTime
         from dcrm_image_text_detail d
 		where id = #{id}
 	</select>
@@ -129,6 +133,8 @@
             <if test="readTimes != null">read_times = #{readTimes},</if>
             <if test="qrcodeId != null">qrcode_id = #{qrcodeId},</if>
             <if test="url != null">url = #{url},</if>
+            <if test="picUrl != null">pic_url = #{picUrl},</if>
+            <if test="wxLastPushTime != null">wx_last_pust_time=#{wxLastPushTime},</if>
         </set>
         WHERE id = #{id}
     </update>
