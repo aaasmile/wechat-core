@@ -81,16 +81,16 @@ public class MaterialController extends BaseController {
     @ResponseBody
     @RequiresPermissions("app-msg:list")
     public JSONObject pushToWx(
-            @ApiParam(name = "MaterialModel", required = false)
-            @RequestBody(required = false) MaterialModel materialModel,
-            HttpSession session, HttpServletRequest request,
-            HttpServletResponse response) {
+     @ApiParam(name = "MaterialModel", required = false)
+     @RequestBody(required = false) MaterialModel materialModel,
+     HttpSession session, HttpServletRequest request,
+     HttpServletResponse response) {
         try {
             if (materialModel == null) {
                 materialModel = new MaterialModel();
             }
             materialService.pushMaterialImageTextToWx(getWechatId(session),
-                    getUser(session), materialModel.getId());
+             getUser(session), materialModel.getId());
             return representation(Message.MATERIAL_IMAGE_TEXT_PUSH_WX_SUCCESS);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -113,10 +113,10 @@ public class MaterialController extends BaseController {
     @ResponseBody
     @RequiresPermissions("app-msg:list")
     public JSONObject previewMaterial(
-            @ApiParam(name = "MaterialModel", required = false)
-            @RequestBody(required = false) MaterialModel materialModel,
-            HttpSession session, HttpServletRequest request,
-            HttpServletResponse response) {
+     @ApiParam(name = "MaterialModel", required = false)
+     @RequestBody(required = false) MaterialModel materialModel,
+     HttpSession session, HttpServletRequest request,
+     HttpServletResponse response) {
         try {
             //如果是预览单图文，无materialId，则走客服预览接口
             if (materialModel.getId() == null && materialModel.getNewid() != null) {
@@ -150,18 +150,18 @@ public class MaterialController extends BaseController {
     @ResponseBody
     @RequiresPermissions(value = {"app-msg:list", "member:list", "message:message-list"}, logical = Logical.OR)
     public JSONObject searchImage(
-            @ApiParam(name = "ImageModel", required = false)
-            @RequestBody(required = false) ImageModel imageModel,
-            HttpSession session, HttpServletRequest request,
-            HttpServletResponse response) {
+     @ApiParam(name = "ImageModel", required = false)
+     @RequestBody(required = false) ImageModel imageModel,
+     HttpSession session, HttpServletRequest request,
+     HttpServletResponse response) {
         if (imageModel == null) {
             imageModel = new ImageModel();
         }
         Page<MaterialDto> materialDtos = materialService.searchImage(
-                getWechatId(session), imageModel, true);
+         getWechatId(session), imageModel, true);
         return representation(Message.MATERIAL_IMAGE_LIST_SUCCESS,
-                materialDtos, imageModel.getPageSize(),
-                imageModel.getPageNum(), materialDtos.getTotal());
+         materialDtos, imageModel.getPageSize(),
+         imageModel.getPageNum(), materialDtos.getTotal());
     }
 
     /**
@@ -180,18 +180,18 @@ public class MaterialController extends BaseController {
     @ResponseBody
     @RequiresPermissions("app-msg:list")
     public JSONObject searchImageText(
-            @ApiParam(name = "ImageTextModel", required = false)
-            @RequestBody(required = false) ImageTextModel imageTextModel,
-            HttpSession session, HttpServletRequest request,
-            HttpServletResponse response) {
+     @ApiParam(name = "ImageTextModel", required = false)
+     @RequestBody(required = false) ImageTextModel imageTextModel,
+     HttpSession session, HttpServletRequest request,
+     HttpServletResponse response) {
         if (imageTextModel == null) {
             imageTextModel = new ImageTextModel();
         }
         Page<MaterialDto> materialDtos = materialService.searchImageText(
-                getWechatId(session), imageTextModel, true);
+         getWechatId(session), imageTextModel, true);
         return representation(Message.MATERIAL_IMAGE_TEXT_LIST_SUCCESS,
-                materialDtos, imageTextModel.getPageSize(),
-                imageTextModel.getPageNum(), materialDtos.getTotal());
+         materialDtos, imageTextModel.getPageSize(),
+         imageTextModel.getPageNum(), materialDtos.getTotal());
     }
 
     /**
@@ -207,15 +207,15 @@ public class MaterialController extends BaseController {
     @ResponseBody
     @RequiresPermissions("app-msg:list")
     public JSONObject uploadImage(
-            @ApiParam(name = "上传文件", required = false)
-            @RequestParam(required = false) MultipartFile file,
-            HttpServletRequest request, HttpServletResponse response,
-            HttpSession session) {
+     @ApiParam(name = "上传文件", required = false)
+     @RequestParam(required = false) MultipartFile file,
+     HttpServletRequest request, HttpServletResponse response,
+     HttpSession session) {
         try {
             Upload upload = UploadController.upload(getWechatId(), file, Constants.IMAGE,
-                    Constants.MATERIAL);
+             Constants.MATERIAL);
             Material material = materialService.createMaterialImage(
-                    getWechatId(session), getUser(session), upload);
+             getWechatId(session), getUser(session), upload);
             MaterialDto materialDto = new MaterialDto();
             materialDto.setId(material.getId());
             materialDto.setTitle(material.getName());
@@ -234,15 +234,15 @@ public class MaterialController extends BaseController {
     @ResponseBody
     @RequiresPermissions("app-msg:list")
     public JSONObject uploadMediaImage(
-            @ApiParam(name = "上传文件", required = false)
-            @RequestParam(required = false) MultipartFile file,
-            HttpServletRequest request, HttpServletResponse response,
-            HttpSession session) {
+     @ApiParam(name = "上传文件", required = false)
+     @RequestParam(required = false) MultipartFile file,
+     HttpServletRequest request, HttpServletResponse response,
+     HttpSession session) {
         try {
             Upload upload = UploadController.upload(getWechatId(), file, Constants.MEDIAIMAGE,
-                    Constants.MATERIAL);
+             Constants.MATERIAL);
             Material material = materialService.createMediaImage(
-                    getWechatId(session), getUser(session), upload);
+             getWechatId(session), getUser(session), upload);
             MaterialDto materialDto = new MaterialDto();
             materialDto.setId(material.getId());
             materialDto.setTitle(material.getName());
@@ -269,14 +269,14 @@ public class MaterialController extends BaseController {
     @ResponseBody
     @RequiresPermissions("app-msg:list")
     public JSONObject uploadXiumiMediaImage(
-            HttpServletRequest request, HttpServletResponse response,
-            HttpSession session) {
+     HttpServletRequest request, HttpServletResponse response,
+     HttpSession session) {
         try {
             String imgUrl = request.getParameter("img");
             Upload upload = UploadController.upload(getWechatId(), imgUrl, Constants.MEDIAIMAGE,
-                    Constants.MATERIAL);
+             Constants.MATERIAL);
             Material material = materialService.createMediaImage(
-                    getWechatId(session), getUser(session), upload);
+             getWechatId(session), getUser(session), upload);
             MaterialDto materialDto = new MaterialDto();
             materialDto.setId(material.getId());
             materialDto.setTitle(material.getName());
@@ -312,21 +312,21 @@ public class MaterialController extends BaseController {
     @ResponseBody
     @RequiresPermissions("app-msg:list")
     public JSONObject createImageText(
-            @ApiParam(name = "MaterialModel", required = false)
-            @RequestBody(required = false) MaterialModel materialModel,
-            HttpSession session, HttpServletRequest request,
-            HttpServletResponse response) {
+     @ApiParam(name = "MaterialModel", required = false)
+     @RequestBody(required = false) MaterialModel materialModel,
+     HttpSession session, HttpServletRequest request,
+     HttpServletResponse response) {
         try {
             Material material = materialService.createImageText(
-                    getWechatId(session), getUser(session), materialModel);
+             getWechatId(session), getUser(session), materialModel);
             if (materialModel.getPush() != null && materialModel.getPush()) {
                 materialService.pushMaterialImageTextToWx(getWechatId(session),
-                        getUser(session), material.getId());
+                 getUser(session), material.getId());
             }
             MaterialDto materialDto = new MaterialDto();
             materialDto.setId(material.getId());
             return representation(Message.MATERIAL_IMAGE_TEXT_CREATE_SUCCESS,
-                    materialDto);
+             materialDto);
         } catch (Exception e) {
             log.error(e.getMessage());
             return wrapException(e);
@@ -356,10 +356,10 @@ public class MaterialController extends BaseController {
     @ResponseBody
     @RequiresPermissions("app-msg:list")
     public JSONObject updateImageText(
-            @ApiParam("素材ID")
-            @PathVariable Integer materialId,
-            @ApiParam(name = "MaterialUpdateReq")
-            @Validated @RequestBody MaterialUpdateReq updateReq) {
+     @ApiParam("素材ID")
+     @PathVariable Integer materialId,
+     @ApiParam(name = "MaterialUpdateReq")
+     @Validated @RequestBody MaterialUpdateReq updateReq) {
         try {
 
             final Material material = materialService.selectByKey(materialId);
@@ -374,21 +374,21 @@ public class MaterialController extends BaseController {
 
 
             final List<MaterialImageTextDetail> imageTextDetails = updateReq.getImageTextUpdateReqs().stream()
-                    .filter(i -> Objects.nonNull(i.getId()))
-                    .filter(i -> StringUtils.isNotEmpty(i.getRemarks()) || Objects.nonNull(i.getShowOriginalLink()))
-                    .map(i -> {
-                        final MaterialImageTextDetail imageTextDetail = new MaterialImageTextDetail();
-                        imageTextDetail.setMaterialId(materialId);
-                        imageTextDetail.setId(i.getId());
-                        if (StringUtil.isNotEmpty(i.getRemarks())) {
-                            imageTextDetail.setRemarks(i.getRemarks());
-                        }
-                        if (Objects.nonNull(i.getShowOriginalLink())) {
-                            imageTextDetail.setContentSourceChecked(i.getShowOriginalLink());
-                        }
-                        return imageTextDetail;
-                    })
-                    .collect(Collectors.toList());
+             .filter(i -> Objects.nonNull(i.getId()))
+             .filter(i -> StringUtils.isNotEmpty(i.getRemarks()) || Objects.nonNull(i.getShowOriginalLink()))
+             .map(i -> {
+                 final MaterialImageTextDetail imageTextDetail = new MaterialImageTextDetail();
+                 imageTextDetail.setMaterialId(materialId);
+                 imageTextDetail.setId(i.getId());
+                 if (StringUtil.isNotEmpty(i.getRemarks())) {
+                     imageTextDetail.setRemarks(i.getRemarks());
+                 }
+                 if (Objects.nonNull(i.getShowOriginalLink())) {
+                     imageTextDetail.setContentSourceChecked(i.getShowOriginalLink());
+                 }
+                 return imageTextDetail;
+             })
+             .collect(Collectors.toList());
 
             materialService.updateMaterialAndImageText(material, imageTextDetails);
 
@@ -475,13 +475,13 @@ public class MaterialController extends BaseController {
     @ResponseBody
     @RequiresPermissions("app-msg:list")
     public JSONObject deleteImageText(
-            @ApiParam("素材ID")
-            @PathVariable Integer materialId,
-            HttpSession session, HttpServletRequest request,
-            HttpServletResponse response) {
+     @ApiParam("素材ID")
+     @PathVariable Integer materialId,
+     HttpSession session, HttpServletRequest request,
+     HttpServletResponse response) {
         try {
             materialService.deleteImageText(getWechatId(session),
-                    getUser(session), materialId);
+             getUser(session), materialId);
             return representation(Message.MATERIAL_IMAGE_TEXT_DELETE_SUCCESS);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -504,13 +504,13 @@ public class MaterialController extends BaseController {
     @Deprecated
     @RequiresPermissions("app-msg:list")
     public JSONObject deleteImageTextDetail(
-            @ApiParam("素材图文ID")
-            @PathVariable Integer materialImageTextDetailId,
-            HttpSession session, HttpServletRequest request,
-            HttpServletResponse response) {
+     @ApiParam("素材图文ID")
+     @PathVariable Integer materialImageTextDetailId,
+     HttpSession session, HttpServletRequest request,
+     HttpServletResponse response) {
         try {
             materialService.deleteImageTextDetail(getWechatId(session),
-                    getUser(session), materialImageTextDetailId);
+             getUser(session), materialImageTextDetailId);
             return representation(Message.MATERIAL_IMAGE_TEXT_DETAIL_DELETE_SUCCESS);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -535,10 +535,10 @@ public class MaterialController extends BaseController {
     @ResponseBody
     @RequiresPermissions("app-msg:list")
     public JSONObject getImageText(
-            @ApiParam("图文ID")
-            @PathVariable Integer id,
-            HttpSession session, HttpServletRequest request,
-            HttpServletResponse response) {
+     @ApiParam("图文ID")
+     @PathVariable Integer id,
+     HttpSession session, HttpServletRequest request,
+     HttpServletResponse response) {
         MaterialDto materialDto = materialService.getImageText(getWechatId(), id);
         return representation(Message.MATERIAL_IMAGE_TEXT_GET_SUCCESS, materialDto);
     }
@@ -565,26 +565,26 @@ public class MaterialController extends BaseController {
     @ResponseBody
     @RequiresPermissions("app-msg:list")
     public JSONObject listImageTextDetail(
-            @ApiParam(name = "素材ID", required = false)
-            @RequestParam(required = false) Integer materialId,
-            @ApiParam(name = "查询条件", required = false)
-            @RequestParam(required = false) String query,
-            @ApiParam(name = "排序名", required = false)
-            @RequestParam(required = false) String sortName,
-            @ApiParam(name = "排序顺序", required = false)
-            @RequestParam(required = false) String sortDir,
-            @ApiParam(name = "当前页数", defaultValue = "1", required = false)
-            @RequestParam(required = false, defaultValue = "1") Integer pageNum,
-            @ApiParam(name = "分页大小", defaultValue = "10", required = false)
-            @RequestParam(required = false, defaultValue = "10") Integer pageSize,
-            HttpSession session, HttpServletRequest request,
-            HttpServletResponse response) {
+     @ApiParam(name = "素材ID", required = false)
+     @RequestParam(required = false) Integer materialId,
+     @ApiParam(name = "查询条件", required = false)
+     @RequestParam(required = false) String query,
+     @ApiParam(name = "排序名", required = false)
+     @RequestParam(required = false) String sortName,
+     @ApiParam(name = "排序顺序", required = false)
+     @RequestParam(required = false) String sortDir,
+     @ApiParam(name = "当前页数", defaultValue = "1", required = false)
+     @RequestParam(required = false, defaultValue = "1") Integer pageNum,
+     @ApiParam(name = "分页大小", defaultValue = "10", required = false)
+     @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+     HttpSession session, HttpServletRequest request,
+     HttpServletResponse response) {
         Page<MaterialImageTextDetailDto> materialImageTextDetails = materialImageTextDetailService
-                .search(getWechatId(session), materialId, query, sortName,
-                        sortDir, pageNum, pageSize, true);
+         .search(getWechatId(session), materialId, query, sortName,
+          sortDir, pageNum, pageSize, true);
         return representation(Message.MATERIAL_IMAGE_TEXT_DETAIL_LIST_SUCCESS,
-                materialImageTextDetails, pageSize, pageNum,
-                materialImageTextDetails.getTotal());
+         materialImageTextDetails, pageSize, pageNum,
+         materialImageTextDetails.getTotal());
     }
 
     /**
@@ -596,14 +596,14 @@ public class MaterialController extends BaseController {
     @ResponseBody
     @RequiresPermissions("app-msg:list")
     public JSONObject updateImageName(
-            @ApiParam("素材ID")
-            @PathVariable Integer materialId,
-            @ApiParam(name = "素材名称", required = false)
-            @RequestParam(required = false) String name, HttpSession session,
-            HttpServletRequest request, HttpServletResponse response) {
+     @ApiParam("素材ID")
+     @PathVariable Integer materialId,
+     @ApiParam(name = "素材名称", required = false)
+     @RequestParam(required = false) String name, HttpSession session,
+     HttpServletRequest request, HttpServletResponse response) {
         try {
             materialService.renameImage(getWechatId(session), getUser(session),
-                    materialId, name);
+             materialId, name);
             return representation(Message.MATERIAL_IMAGE_RENAME_SUCCESS);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -620,10 +620,10 @@ public class MaterialController extends BaseController {
     @ResponseBody
     @RequiresPermissions("app-msg:list")
     public JSONObject deleteImage(
-            @ApiParam("素材ID")
-            @PathVariable Integer materialId,
-            HttpSession session, HttpServletRequest request,
-            HttpServletResponse response) {
+     @ApiParam("素材ID")
+     @PathVariable Integer materialId,
+     HttpSession session, HttpServletRequest request,
+     HttpServletResponse response) {
         try {
             notBlank(materialId, Message.MATERIAL_ID_NOT_BLANK);
             JSONObject jsonObject = materialService.deleteImage(getWechatId(session), materialId);
@@ -633,5 +633,21 @@ public class MaterialController extends BaseController {
             log.error(e.getMessage());
             return wrapException(e);
         }
+    }
+
+    /**
+     * 根据sn查看图文详情
+     *
+     * @param sn
+     * @return
+     */
+    @ApiOperation(value = "根据sn查看图文详情", tags = "素材接口")
+    @ApiResponse(code = 200, message = "1-获取图文详情成功")
+    @RequestMapping(value = "imagetextdetail/{sn}/getInfoBySn.json", method = RequestMethod.GET)
+    @ResponseBody
+    @RequiresPermissions("app-msg:list")
+    public JSONObject getInfoBySn(@ApiParam("sn") @PathVariable String sn) {
+        MaterialDto materialDto = materialService.getInfoBySn(sn);
+        return representation(Message.MATERIAL_IMAGE_TEXT_GET_SUCCESS, materialDto);
     }
 }

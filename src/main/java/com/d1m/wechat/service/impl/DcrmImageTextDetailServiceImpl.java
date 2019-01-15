@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import sun.rmi.runtime.Log;
 import tk.mybatis.mapper.entity.Example;
 
 import java.io.File;
@@ -78,6 +79,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         DcrmImageTextDetail detail = new DcrmImageTextDetail();
         BeanUtils.copyProperties(dto, detail);
         detail.setCreatedAt(new Date());
+        detail.setLasteUpdatedAt(new Date());
         detail.setStatus(MaterialStatus.INUSED.getValue());
         return dcrmImageTextDetailMapper.insert(detail);
     }
@@ -211,7 +213,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
     }
 
 
-    @Override
+    /*@Override
     public Map<String, Object> createQrcode(DcrmImageTextDetailDto dto) {
         Map<String, Object> map = new HashMap<>();
         String qrcodeImgUrl = null;
@@ -278,17 +280,44 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         map.put("id", dto.getId());//非群发单图文id
         logger.info("wxQrcode二维码：" + JSON.toJSON(map));
         return map;
+    }*/
+
+    @Override
+    public Map<String, Object> createQrcode(DcrmImageTextDetailDto dto) {
+        Map<String, Object> map = new HashMap<>();
+        String qrcodeImgUrl = null;
+        Qrcode qrcode = new Qrcode();
+        qrcode.setId(dto.getQrcodeId());
+        qrcode = qrcodeMapper.selectByPrimaryKey(qrcode);
+        ActionEngine actionEngine = actionEngineMapper.queryByQrcodeId(dto.getQrcodeId());
+        if (actionEngine != null) {
+            //如果超过有效三天，则重新生成图文
+            if (isLate(actionEngine.getEndAt())) {
+                //生成二维码并更新二维码表
+                qrcodeImgUrl = updateQrcode(dto, actionEngine);
+            } else {
+                qrcodeImgUrl = qrcode.getQrcodeImgUrl();
+            }
+        } else {
+            //生成二维码并插入数据库
+            qrcodeImgUrl = addQrcode(dto);
+
+        }
+        map.put("qrcodeImgUrl", qrcodeImgUrl);
+        map.put("id", dto.getId());//非群发单图文id
+        logger.info("wxQrcode二维码：" + JSON.toJSON(map));
+        return map;
     }
 
 
     /**
      * 有效期判断
      *
-     * @param createTime
+     * @param dateTime
      * @return
      */
-    private static boolean isLate(Date createTime) {
-        if (createTime.compareTo(new Date()) < 0) {
+    private static boolean isLate(Date dateTime) {
+        if (dateTime.compareTo(new Date()) < 0) {
             return true;
         } else {
             return false;
@@ -352,7 +381,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
      * @param dto
      * @return
      */
-    private String updateQrcode(DcrmImageTextDetailDto dto) {
+    private String updateQrcode(DcrmImageTextDetailDto dto, ActionEngine actionEngine) {
         String format = DateUtil.yyyyMMddHHmmss.format(new Date());
         String type = Constants.IMAGE + File.separator + Constants.QRCODE;
         File root = FileUtils.getUploadPathRoot(dto.getWechatId(), type);
@@ -384,11 +413,23 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
          + File.separator + wxFile.getFilename());
         int t = qrcodeMapper.updateByPrimaryKeySelective(qr);
         logger.info("【更新二维码】二维码图片表结果：" + t);
-        //插入effect和关系表
-        saveEngine(dto, qr);
+        //更新effect和关系表
+        updateEngine(actionEngine);
         String qrcodeImgUrl = qr.getQrcodeImgUrl();
         logger.info("【更新二维码】二维码图片地址：" + qrcodeImgUrl);
         return qrcodeImgUrl;
+    }
+
+    private void updateEngine(ActionEngine actionEngine) {
+        LocalDateTime localDateTimeToday = LocalDateTime.now();
+        LocalDateTime endTime = localDateTimeToday.plusDays(3);
+        Date endDate = Date.from(endTime.atZone(ZoneId.systemDefault()).toInstant());
+        Date startDate = Date.from(localDateTimeToday.atZone(ZoneId.systemDefault()).toInstant());
+        actionEngine.setEndAt(endDate);
+        actionEngine.setStartAt(startDate);
+        int t = actionEngineMapper.updateByPrimaryKeySelective(actionEngine);
+        logger.info("更新updateEngine状态："+t);
+
     }
 
     private void saveEngine(DcrmImageTextDetailDto dto, Qrcode qrcode) {
@@ -420,6 +461,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         qrcodeActionEngineMapper.insert(qrcodeActionEngine);
 
     }
+
 
     /**
      * 更新发送数量

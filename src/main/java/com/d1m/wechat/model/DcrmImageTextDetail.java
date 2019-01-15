@@ -115,6 +115,7 @@ public class DcrmImageTextDetail {
      */
     private String url;
 
+
     public String getUrl() {
         return url;
     }
