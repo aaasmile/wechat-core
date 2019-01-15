@@ -115,6 +115,33 @@ public class DcrmImageTextDetail {
      */
     private String url;
 
+    /**
+     * 封面图url
+     */
+    private String picUrl;
+
+    /**
+     * 微信最后更新时间
+     */
+    @Column(name = "wx_last_pust_time")
+    private Date wxLastPushTime;
+
+
+    public String getPicUrl() {
+        return picUrl;
+    }
+
+    public void setPicUrl(String picUrl) {
+        this.picUrl = picUrl;
+    }
+
+    public Date getWxLastPushTime() {
+        return wxLastPushTime;
+    }
+
+    public void setWxLastPushTime(Date wxLastPushTime) {
+        this.wxLastPushTime = wxLastPushTime;
+    }
 
     public String getUrl() {
         return url;
