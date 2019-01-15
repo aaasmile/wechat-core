@@ -1,6 +1,8 @@
 package com.d1m.wechat.dto;
 
 import java.io.Serializable;
+import java.util.Date;
+
 public class DcrmImageTextDetailDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -143,6 +145,44 @@ public class DcrmImageTextDetailDto implements Serializable {
      */
     private Boolean wxImageTextExist;
 
+    /**
+     * 微信图文是否更新
+     */
+    private Boolean wxImageTextUpdate;
+    /**
+     * 封面图url
+     */
+    private String picUrl;
+
+    /**
+     * 微信最后更新时间
+     */
+    private Date wxLastPushTime;
+
+
+    public Boolean getWxImageTextUpdate() {
+        return wxImageTextUpdate;
+    }
+
+    public void setWxImageTextUpdate(Boolean wxImageTextUpdate) {
+        this.wxImageTextUpdate = wxImageTextUpdate;
+    }
+
+    public String getPicUrl() {
+        return picUrl;
+    }
+
+    public void setPicUrl(String picUrl) {
+        this.picUrl = picUrl;
+    }
+
+    public Date getWxLastPushTime() {
+        return wxLastPushTime;
+    }
+
+    public void setWxLastPushTime(Date wxLastPushTime) {
+        this.wxLastPushTime = wxLastPushTime;
+    }
 
     public Boolean getWxImageTextExist() {
         return wxImageTextExist;
