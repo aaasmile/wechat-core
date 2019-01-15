@@ -60,6 +60,7 @@ public class Upgradev451ServiceImpl implements Upgradev451Service {
                        dcrmImageTextDetail.setPicUrl(coverMaterial.getPicUrl());
                        dcrmImageTextDetail.setMaterialCoverId(coverMaterial.getId());
                        dcrmImageTextDetail.setUrl(materialImageTextDetailR.getUrl());
+                       dcrmImageTextDetail.setWxImageTextId(materialImageTextDetailR.getId());
                        dcrmImageTextDetailMapper.insert(dcrmImageTextDetail);
                        //逻辑删除数据
                        materialImageTextDetailR.setStatus((byte) 0);
