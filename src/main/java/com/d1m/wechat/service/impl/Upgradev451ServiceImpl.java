@@ -57,6 +57,7 @@ public class Upgradev451ServiceImpl implements Upgradev451Service {
                        dcrmImageTextDetail.setCreatedAt(new Date());
                        dcrmImageTextDetail.setCreatedBy(1);
                        dcrmImageTextDetail.setStatus((byte) 1);
+                       dcrmImageTextDetail.setPicUrl(coverMaterial.getPicUrl());
                        dcrmImageTextDetail.setMaterialCoverId(coverMaterial.getId());
                        dcrmImageTextDetail.setUrl(materialImageTextDetailR.getUrl());
                        dcrmImageTextDetailMapper.insert(dcrmImageTextDetail);
@@ -90,7 +91,7 @@ public class Upgradev451ServiceImpl implements Upgradev451Service {
                 log.error("materialR..." + materialR);
                 continue;
             }
-            final Example materialImageTextDetailExample = new Example(Material.class);
+            final Example materialImageTextDetailExample = new Example(MaterialImageTextDetail.class);
             materialImageTextDetailExample.createCriteria().andEqualTo("materialId", materialR.getId()).andEqualTo("status",(byte) 1);
             List<MaterialImageTextDetail> materialImageTextDetailList = materialImageTextDetailMapper.selectByExample(materialImageTextDetailExample);
             if(materialImageTextDetailList == null || materialImageTextDetailList.isEmpty()) {
@@ -114,7 +115,7 @@ public class Upgradev451ServiceImpl implements Upgradev451Service {
                 log.error("materialR..." + materialR);
                 continue;
             }
-            final Example dcrmImageTextDetailExample = new Example(Material.class);
+            final Example dcrmImageTextDetailExample = new Example(MaterialImageTextDetail.class);
             dcrmImageTextDetailExample.createCriteria().andEqualTo("materialId", materialR.getId());
             List<DcrmImageTextDetail> dcrmImageTextDetailList = dcrmImageTextDetailMapper.selectByExample(dcrmImageTextDetailExample);
             if(dcrmImageTextDetailList == null || dcrmImageTextDetailList.isEmpty()) {
@@ -146,7 +147,7 @@ public class Upgradev451ServiceImpl implements Upgradev451Service {
                             Integer materialId = Integer.valueOf(materialIdS);
                             Material materialR = materialMapper.selectByPrimaryKey(materialId);
 
-                            final Example dcrmImageTextDetailExample = new Example(Material.class);
+                            final Example dcrmImageTextDetailExample = new Example(DcrmImageTextDetail.class);
                             dcrmImageTextDetailExample.createCriteria().andEqualTo("materialId", materialR.getId());
                             List<DcrmImageTextDetail> dcrmImageTextDetailList = dcrmImageTextDetailMapper.selectByExample(dcrmImageTextDetailExample);
                             if(dcrmImageTextDetailList != null && !dcrmImageTextDetailList.isEmpty()) {
@@ -154,7 +155,7 @@ public class Upgradev451ServiceImpl implements Upgradev451Service {
 
                                 dcrmObj.put("value","[" + dcrmImageTextDetailR.getId() + "]");
                             } else {
-                                final Example materialImageTextDetailExample = new Example(Material.class);
+                                final Example materialImageTextDetailExample = new Example(DcrmImageTextDetail.class);
                                 materialImageTextDetailExample.createCriteria().andEqualTo("materialId", materialR.getId()).andEqualTo("status",(byte) 1);
                                 List<MaterialImageTextDetail> materialImageTextDetailList = materialImageTextDetailMapper.selectByExample(materialImageTextDetailExample);
                                 if(materialImageTextDetailList == null || materialImageTextDetailList.isEmpty()) {
