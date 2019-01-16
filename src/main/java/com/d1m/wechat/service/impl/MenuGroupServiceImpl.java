@@ -515,12 +515,13 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 		Menu menu = null;
 		MaterialDto material = m.getMaterial();
 
-		if(StringUtils.isNotEmpty(m.getApiClass())) {
-			menu.setApiClass(m.getApiClass());
-		}
+
 		if (m.getId() != null) {
 			/** update */
 			menu = menuMapper.selectByPrimaryKey(m.getId());
+			if(StringUtils.isNotEmpty(m.getApiClass())) {
+				menu.setApiClass(m.getApiClass());
+			}
 			if(MenuType.CLICK.getValue() == m.getType()) {
 				menu.setMenuKey(material.getId());
 				//201  微信图文，301非微信图文
@@ -576,6 +577,9 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 		} else {
 			/** create */
 			menu = new Menu();
+			if(StringUtils.isNotEmpty(m.getApiClass())) {
+				menu.setApiClass(m.getApiClass());
+			}
 			menu.setCreatedAt(current);
 			menu.setCreatorId(user.getId());
 			menu.setMenuGroupId(menuGroup.getId());
