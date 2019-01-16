@@ -39,7 +39,7 @@ public enum MenuType {
     MEDIA_ID((byte) 9),
     VIEW_LIMITED((byte) 10),
 	MINIPROGRAM((byte) 11),
-
+	INTERFACE((byte) 41),
     UNSUPPORTED((byte) -1);
 
 	private final byte value;
