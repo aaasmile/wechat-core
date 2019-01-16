@@ -149,7 +149,11 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 		menu.setCreatedAt(current);
 		menu.setCreatorId(user.getId());
 		MaterialDto materialDto = menuDto.getMaterial();
-		
+
+		if(StringUtils.isNotEmpty(menuDto.getApiClass())) {
+			menu.setApiClass(menuDto.getApiClass());
+		}
+
 		if(MenuType.CLICK.getValue() == menuDto.getType()) {
 			menu.setMenuKey(materialDto.getId());
 			//click 201  微信图文，301非微信图文
@@ -159,9 +163,6 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 			//第三方接口401
 			else if(StringUtils.isNotEmpty(menuDto.getUrl())) {
 				menu.setUrl(menuDto.getUrl());
-			}
-			if(StringUtils.isNotEmpty(menuDto.getApiClass())) {
-				menu.setApiClass(menuDto.getApiClass());
 			}
 		} else if (materialDto != null) {
 			menu.setMenuKey(materialDto.getId());
@@ -513,10 +514,13 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 		log.info("createdOrUpdated...menuGroup..." + gson.toJson(m));
 		Menu menu = null;
 		MaterialDto material = m.getMaterial();
+
+		if(StringUtils.isNotEmpty(m.getApiClass())) {
+			menu.setApiClass(m.getApiClass());
+		}
 		if (m.getId() != null) {
 			/** update */
 			menu = menuMapper.selectByPrimaryKey(m.getId());
-			
 			if(MenuType.CLICK.getValue() == m.getType()) {
 				menu.setMenuKey(material.getId());
 				//201  微信图文，301非微信图文
@@ -529,9 +533,6 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 				} 
 				if(material.getMaterialType() == null) {
 					menu.setUrl(null);
-				}
-				if(StringUtils.isNotEmpty(m.getApiClass())) {
-					menu.setApiClass(m.getApiClass());
 				}
 			} else if (material != null) {
 				menu.setMenuKey(material.getId());
@@ -791,6 +792,10 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 			} else if (menuType == MenuType.LOCATION_SELECT) {
 				weixinButton.setKey(menuDto.getId() + "_SEND_LOCATION");
 			}
+			//新增第三方接口，事件类型为CLICK
+			else if (menuType == MenuType.INTERFACE) {
+				weixinButton.setKey(menuDto.getId().toString());
+			}
 			weixinButton.setName(menuDto.getName());
 			menuDtos = menuDto.getChildren();
 			if (menuDtos != null && !menuDtos.isEmpty()) {
@@ -809,6 +814,10 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 						subWxMenu.setUrl(child.getAppUrl());
 					} else if (menuType == MenuType.LOCATION_SELECT) {
 						subWxMenu.setKey(child.getId() + "_SEND_LOCATION");
+					}
+					//新增第三方接口，事件类型为CLICK
+					else if (menuType == MenuType.INTERFACE) {
+						weixinButton.setKey(menuDto.getId().toString());
 					}
 					subWxMenu.setName(child.getName());
 					subWxMenus.add(subWxMenu);
