@@ -30,4 +30,6 @@ public interface InterfaceConfigService {
 	int deleteBrand(String id) throws WechatException;
 
 	InterfaceConfigDto getSecret(String id);
+    //檢查name是否重復
+	int checkRepeat(InterfaceConfig ifcf);
 }

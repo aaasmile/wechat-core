@@ -68,6 +68,13 @@ public class InterfaceConfigController extends BaseController {
 	@RequestMapping(value = "newItem.json", method = RequestMethod.PUT)
 	public JSONObject createItems(@RequestBody InterfaceConfig interfaceConfig) {
 		try {
+			final InterfaceConfig ifcf = new InterfaceConfig();
+			ifcf.setName(interfaceConfig.getName());
+			ifcf.setBrand(interfaceConfig.getBrand());
+			int count =interfaceConfigService.checkRepeat(ifcf);
+            if(count>0){
+				return representation(Message.INTERFACECONFIG_EXIST);
+			}
 			interfaceConfig.setCreatedBy(String.valueOf(getUser().getId()));
 			interfaceConfig.setCreatedAt(DateUtil.formatYYYYMMDDHHMMSS(new Date()));
 			return representation(Message.SUCCESS, interfaceConfigService.create(interfaceConfig));
@@ -82,6 +89,13 @@ public class InterfaceConfigController extends BaseController {
 	@RequestMapping(value = "updateItem.json", method = RequestMethod.POST)
 	public JSONObject updateItems(@RequestBody InterfaceConfig interfaceConfig) {
 		try {
+			final InterfaceConfig ifcf = new InterfaceConfig();
+			ifcf.setName(interfaceConfig.getName());
+			ifcf.setBrand(interfaceConfig.getBrand());
+			int count =interfaceConfigService.checkRepeat(ifcf);
+			if(count>0){
+				return representation(Message.INTERFACECONFIG_EXIST);
+			}
 			interfaceConfig.setUpdatedBy(String.valueOf(getUser().getId()));
 			interfaceConfig.setUpdatedAt(DateUtil.formatYYYYMMDDHHMMSS(new Date()));
 			return representation(Message.SUCCESS, interfaceConfigService.update(interfaceConfig));
