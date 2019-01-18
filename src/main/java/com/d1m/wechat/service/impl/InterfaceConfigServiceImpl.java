@@ -35,6 +35,7 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 	@Override
 	public Page<InterfaceConfigDto> selectItems(Map<String, String> query) {
 		return interfaceConfigMapper.selectItems(query);
+
 	}
 
 	@Override
