@@ -30,7 +30,7 @@
 		WHERE ic.is_deleted = 0
 		<if test="id != null and id!=0  "> AND  ic.id = #{id} </if>
 		<if test="brand != null and brand!=0"> AND ic.brand =#{brand} </if>
-		<if test="name != null and name!=''"> AND ic.name LIKE "%"#{name}"%" </if>
+		<if test="name != null and name!=''"> AND ic.name LIKE '%${name}%' </if>
 		<if test="method_type != null"> AND ic.method_type = #{method_type} </if>
 		<if test="type != null"> AND ic.type = #{type} </if>
 		<if test="create_from != null"> AND ic.created_at <![CDATA[ >= ]]> #{create_from} </if>
