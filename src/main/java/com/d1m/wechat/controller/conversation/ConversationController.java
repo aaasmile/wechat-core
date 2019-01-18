@@ -1,6 +1,9 @@
 package com.d1m.wechat.controller.conversation;
 
+import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -8,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
@@ -23,19 +27,27 @@ import com.alibaba.fastjson.JSONObject;
 import com.d1m.common.ds.TenantHelper;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.dto.ConversationDto;
+import com.d1m.wechat.dto.DcrmImageTextDetailDto;
 import com.d1m.wechat.dto.ImageTextDto;
 import com.d1m.wechat.dto.MaterialDto;
 import com.d1m.wechat.dto.MemberDto;
+import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.model.Conversation;
+import com.d1m.wechat.model.Material;
+import com.d1m.wechat.model.MaterialImageTextDetail;
 import com.d1m.wechat.model.UserBehavior;
 import com.d1m.wechat.model.UserLocation;
+import com.d1m.wechat.model.enums.ConversationStatus;
 import com.d1m.wechat.model.enums.MassConversationResultStatus;
 import com.d1m.wechat.model.enums.MsgType;
 import com.d1m.wechat.pamametermodel.ConversationModel;
 import com.d1m.wechat.pamametermodel.MassConversationModel;
 import com.d1m.wechat.service.ConversationService;
+import com.d1m.wechat.service.DcrmImageTextDetailService;
+import com.d1m.wechat.service.MaterialImageTextDetailService;
 import com.d1m.wechat.service.MaterialService;
 import com.d1m.wechat.service.MemberService;
+import com.d1m.wechat.util.CommonUtils;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
@@ -64,6 +76,10 @@ public class ConversationController extends BaseController {
 	
 	@Resource
     TenantHelper tenantHelper;
+	@Autowired
+	private MaterialImageTextDetailService materialImageTextDetailService;
+	@Autowired
+	private DcrmImageTextDetailService dcrmImageTextDetailService;
 
 	@ApiOperation(value = "创建群发会话", tags = "会话接口")
 	@ApiResponse(code = 200, message = "1-创建群发会话成功")
@@ -71,7 +87,7 @@ public class ConversationController extends BaseController {
 	@RequiresPermissions("member:list")
 	public JSONObject createMass(@ApiParam(name = "MassConversationModel", required = false) @RequestBody(required = false) MassConversationModel massConversationModel, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		try {
-			conversationService.preMassConversation(getWechatId(session), getUser(session), massConversationModel);
+			conversationService.preMassConversation(getWechatId(), getUser(), massConversationModel);
 			return representation(Message.CONVERSATION_MASS_CREATE_SUCCESS);
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -98,7 +114,7 @@ public class ConversationController extends BaseController {
 	public JSONObject sendMass(@ApiParam(name = "MassConversationModel", required = false) @RequestBody(required = false) MassConversationModel massConversationModel, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			massConversationModel.setStatus(MassConversationResultStatus.AUDIT_PASS.name());
-			conversationService.sendMassConversation(getWechatId(session), getUser(session), massConversationModel);
+			conversationService.sendMassConversation(getWechatId(), getUser(), massConversationModel);
 			return representation(Message.CONVERSATION_MASS_SEND_SUCCESS);
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -111,18 +127,67 @@ public class ConversationController extends BaseController {
 	@RequestMapping(value = "kfmember.json", method = RequestMethod.POST)
 	public JSONObject create(@ApiParam(name = "ConversationModel", required = false) @RequestBody(required = false) ConversationModel conversationModel, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		try {
-			Conversation conversation = conversationService.wechatToMember(getWechatId(session), getUser(session), conversationModel);
-			MemberDto member = memberService.getMemberDto(getWechatId(session), conversation.getMemberId());
+			if (conversationModel == null) {
+				conversationModel = new ConversationModel();
+			}
+			notBlank(conversationModel.getMemberId(), Message.MEMBER_ID_NOT_EMPTY);
+			MemberDto member = memberService.getMemberDto(getWechatId(), conversationModel.getMemberId());
+			notBlank(member, Message.MEMBER_NOT_EXIST);
+			Conversation conversation = null;
+			//转发至social-wechat-core-api
+			if(conversationModel.getNewid() != null) {   
+				CommonUtils.send2SocialWechatCoreApi(getWechatId(), member, conversationModel.getNewid(), conversationModel.getNewtype(), conversationService);
+				conversation = new Conversation();
+				conversation.setMsgType(MsgType.NEWS.getValue());
+				conversation.setDirection(true);
+				conversation.setWechatId(getWechatId());
+				conversation.setUserId(getUser().getId());
+				conversation.setMemberId(member.getId());
+				conversation.setOpenId(member.getOpenId());
+				conversation.setUnionId(member.getUnionId());
+				conversation.setStatus(ConversationStatus.READ.getValue());
+				conversation.setIsMass(false);
+				if("dcrm".equals(conversationModel.getNewtype())) {
+					DcrmImageTextDetailDto imageTextDto = dcrmImageTextDetailService.queryObject(conversationModel.getNewid());
+					JSONArray itemArray = new JSONArray();
+					JSONObject itemJson = new JSONObject();
+					itemJson.put("title", imageTextDto.getTitle());
+					itemJson.put("summary", imageTextDto.getSummary());
+					itemJson.put("materialCoverUrl", imageTextDto.getCoverPicUrl());
+					itemArray.add(itemJson);
+					conversation.setContent(itemArray.toJSONString());
+					conversation.setMaterialId(imageTextDto.getMaterialId());
+				} else if("wechat".equals(conversationModel.getNewtype())) {
+					MaterialImageTextDetail imageTextDto = materialImageTextDetailService.selectByKey(conversationModel.getNewid());
+					Material material = materialService.selectByKey(imageTextDto.getMaterialCoverId());
+					JSONArray itemArray = new JSONArray();
+					JSONObject itemJson = new JSONObject();
+					itemJson.put("title", imageTextDto.getTitle());
+					itemJson.put("summary", imageTextDto.getSummary());
+					itemJson.put("materialCoverUrl", material.getPicUrl());
+					itemArray.add(itemJson);
+					conversation.setContent(itemArray.toJSONString());
+					conversation.setMaterialId(imageTextDto.getMaterialId());
+				} 
+			}
+			else if (conversationModel.getNewid() == null && conversationModel.getMaterialId() == null && StringUtils.isBlank(conversationModel.getContent())) {
+				throw new WechatException(Message.CONVERSATION_CONTENT_NOT_BLANK);
+			}
+			if(conversationModel.getNewid() == null) {
+				conversation = conversationService.wechatToMember(getWechatId(), getUser(), conversationModel, member);
+			}
 			ConversationDto dto = new ConversationDto();
-			dto.setId(conversation.getId());
-			dto.setCreatedAt(DateUtil.formatYYYYMMDDHHMMSS(conversation.getCreatedAt()));
+			if(conversation != null && conversation.getId() != null) {
+				dto.setId(conversation.getId());
+			}
+			dto.setCreatedAt(DateUtil.formatYYYYMMDDHHMMSS(new Date()));
 			dto.setContent(conversation.getContent());
-			dto.setCurrent(DateUtil.formatYYYYMMDDHHMMSS(conversation.getCreatedAt()));
+			dto.setCurrent(DateUtil.formatYYYYMMDDHHMMSS(new Date()));
 			dto.setDir(conversation.getDirection() ? 1 : 0);
 			dto.setIsMass(conversation.getIsMass() ? 1 : 0);
-			dto.setMemberId(conversation.getMemberId() + "");
+			dto.setMemberId(member.getId() + "");
 			dto.setMemberNickname(member.getNickname());
-			dto.setMemberPhoto(conversation.getMemberPhoto());
+			dto.setMemberPhoto(member.getLocalHeadImgUrl());
 			dto.setMsgType(conversation.getMsgType());
 			dto.setEvent(conversation.getEvent());
 			dto.setStatus(conversation.getStatus());
@@ -142,7 +207,7 @@ public class ConversationController extends BaseController {
 		if (conversationModel == null) {
 			conversationModel = new ConversationModel();
 		}
-		Integer wechatId = getWechatId(session);
+		Integer wechatId = getWechatId();
 		Page<ConversationDto> page = conversationService.searchMass(wechatId, conversationModel, true);
 		List<ConversationDto> result = convertMass(page, wechatId);
 		return representation(Message.CONVERSATION_MASS_LIST_SUCCESS, result, conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
@@ -158,8 +223,8 @@ public class ConversationController extends BaseController {
 		}
 		// conversationModel.setStatus(MassConversationResultStatus.WAIT_AUDIT
 		// .getValue());
-		Integer wechatId = getWechatId(session);
-		Page<ConversationDto> page = conversationService.searchMass(getWechatId(session), conversationModel, true);
+		Integer wechatId = getWechatId();
+		Page<ConversationDto> page = conversationService.searchMass(getWechatId(), conversationModel, true);
 		List<ConversationDto> result = convertMass(page, wechatId);
 		return representation(Message.CONVERSATION_MASS_LIST_SUCCESS, result, conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
 	}
@@ -188,8 +253,8 @@ public class ConversationController extends BaseController {
 		msgTypes.add(MsgType.VOICE.getValue());
 		conversationModel.setMsgTypes(msgTypes);
 		Page<ConversationDto> page = conversationService.searchUnread(getWechatId(session), conversationModel, true);
-//		List<ConversationDto> result = convert(page);
-		return representation(Message.CONVERSATION_LIST_SUCCESS, page.getResult(), conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
+		List<ConversationDto> result = convert(page);
+		return representation(Message.CONVERSATION_LIST_SUCCESS, result, conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
 	}
 
 	@ApiOperation(value = "获取会话列表", tags = "会话接口")
@@ -202,8 +267,8 @@ public class ConversationController extends BaseController {
 			}
 			conversationModel.setUpdateRead(true);
 			Page<ConversationDto> page = conversationService.search(getWechatId(session), conversationModel, true);
-//			List<ConversationDto> result = convert(page);
-			return representation(Message.CONVERSATION_LIST_SUCCESS, page.getResult(), conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
+			List<ConversationDto> result = convert(page);
+			return representation(Message.CONVERSATION_LIST_SUCCESS, result, conversationModel.getPageSize(), conversationModel.getPageNum(), page.getTotal());
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			return wrapException(e);
@@ -250,6 +315,36 @@ public class ConversationController extends BaseController {
 		ImageTextDto item = null;
 		JSONObject itemJson = null;
 		for (ConversationDto conversationDto : result) {
+			MassConversationModel condition = JSONObject.parseObject(conversationDto.getConditions(), MassConversationModel.class);
+			if(condition != null && condition.getNewid() != null) {
+				List<ImageTextDto> itemDtos = new ArrayList<ImageTextDto>();
+				item = new ImageTextDto();
+				if("dcrm".equals(condition.getNewtype())) {
+					DcrmImageTextDetailDto imageTextDto = dcrmImageTextDetailService.queryObject(condition.getNewid());
+					if(imageTextDto != null) {
+						item.setTitle(imageTextDto.getTitle());
+						item.setSummary(imageTextDto.getSummary());
+						item.setMaterialCoverUrl(imageTextDto.getCoverPicUrl());
+						item.setId(imageTextDto.getId());
+						conversationDto.setNewtype("dcrm");
+					}
+				} else {
+					MaterialImageTextDetail imageTextDto = materialImageTextDetailService.selectByKey(condition.getNewid());
+					if(imageTextDto != null) {
+						Material material = materialService.selectByKey(imageTextDto.getMaterialCoverId());
+						item.setTitle(imageTextDto.getTitle());
+						item.setSummary(imageTextDto.getSummary());
+						item.setMaterialCoverUrl(material.getPicUrl());
+						item.setId(imageTextDto.getId());
+						conversationDto.setNewtype("wechat");
+					}
+				}
+				itemDtos.add(item);
+				conversationDto.setItems(itemDtos);
+				conversationDto.setContent(null);
+				conversationDto.setMsgType(MsgType.MPNEWS.getValue());
+				continue;
+			}
 			if (conversationDto.getMsgType() != MsgType.MPNEWS.getValue()) {
 				continue;
 			}
@@ -288,29 +383,47 @@ public class ConversationController extends BaseController {
 		return result;
 	}
 
+	private static ObjectMapper om = new ObjectMapper();
 	private List<ConversationDto> convert(Page<ConversationDto> page) {
 		List<ConversationDto> result = page.getResult();
 		ImageTextDto item = null;
 		JSONObject itemJson = null;
 		for (ConversationDto conversationDto : result) {
-			if (conversationDto.getMsgType() != MsgType.MPNEWS.getValue()) {
-				continue;
+			try {
+				if (StringUtils.isBlank(conversationDto.getContent())) {
+					continue;
+				}
+				List<ImageTextDto> items = new ArrayList<ImageTextDto>();
+				//尝试解码
+				try {
+					itemJson = JSONArray.parseArray(conversationDto.getContent()).getJSONObject(0);
+				} catch (Exception e) {
+					itemJson = JSONObject.parseObject(conversationDto.getContent());
+				}
+
+				if(!itemJson.containsKey("title")) {
+					continue;
+				}
+				item = new ImageTextDto();
+				item.setTitle(itemJson.getString("title"));
+				item.setSummary(itemJson.getString("summary"));
+				if(itemJson.containsKey("picurl")) {
+					item.setMaterialCoverUrl(itemJson.getString("picurl"));
+				}
+				if(itemJson.containsKey("materialCoverUrl")) {
+					item.setMaterialCoverUrl(itemJson.getString("materialCoverUrl"));
+				}
+				item.setId(itemJson.getInteger("id"));
+				items.add(item);
+				if (conversationDto.getMaterialId() == null) {
+					conversationDto.setMaterialId(itemJson.getInteger("materialId"));
+				}
+				conversationDto.setItems(items);
+				conversationDto.setContent(om.writeValueAsString(items));
+				conversationDto.setMsgType(Byte.valueOf("1"));
+			} catch (Exception e) {
+				log.error(e.getMessage());
 			}
-			if (StringUtils.isBlank(conversationDto.getContent())) {
-				continue;
-			}
-			List<ImageTextDto> items = new ArrayList<ImageTextDto>();
-			itemJson = JSONArray.parseArray(conversationDto.getContent()).getJSONObject(0);
-			item = new ImageTextDto();
-			item.setTitle(itemJson.getString("title"));
-			item.setSummary(itemJson.getString("summary"));
-			item.setMaterialCoverUrl(itemJson.getString("materialCoverUrl"));
-			items.add(item);
-			if (conversationDto.getMaterialId() == null) {
-				conversationDto.setMaterialId(itemJson.getInteger("materialId"));
-			}
-			conversationDto.setItems(items);
-			conversationDto.setContent(null);
 		}
 		return result;
 	}

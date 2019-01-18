@@ -96,11 +96,12 @@ public class MaterialCategoryServiceImpl implements MaterialCategoryService {
     }
 
     @Override
-    public PageInfo<MaterialCategory> queryList(QueryDto dto) {
+    public PageInfo<MaterialCategoryDto> queryList(QueryDto dto) {
+        if(dto.getPageNum()>0)
         PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
         Map<String, Object> query = MapUtils.beanToMap(dto);
-        List<MaterialCategory> list = materialCategoryMapper.queryList(query);
-        PageInfo<MaterialCategory> pageInfo = new PageInfo<>(list);
+        List<MaterialCategoryDto> list = materialCategoryMapper.queryList(query);
+        PageInfo<MaterialCategoryDto> pageInfo = new PageInfo<>(list);
         return pageInfo;
     }
 

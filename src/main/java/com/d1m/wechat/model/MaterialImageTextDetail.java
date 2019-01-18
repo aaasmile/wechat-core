@@ -82,6 +82,36 @@ public class MaterialImageTextDetail {
      */
     private Integer comment;
 
+
+    @Column(name = "remarks")
+    private String remarks;
+
+    /**
+     * 图文页的URL
+     */
+    private String url;
+
+    /**
+     * 微信图文URL链接sn参数
+     */
+    private String sn;
+
+    public String getSn() {
+        return sn;
+    }
+
+    public void setSn(String sn) {
+        this.sn = sn;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     /**
      * 获取主键ID
      *
@@ -322,5 +352,13 @@ public class MaterialImageTextDetail {
     }
     public void setComment(Integer comment) {
         this.comment = comment;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 }

@@ -128,28 +128,20 @@ public class Material {
     private Byte status;
 
     @Column(name="is_scrm")
-    private int isScrm;
+    private Integer isScrm;
 
     /**
      * 素材分类id
      * @return
      */
-    @Column(name = "material_type_id")
-    private String materialTypeId;
+    @Column(name = "material_category_id")
+    private String materialCategoryId;
 
-    public String getMaterialTypeId() {
-        return materialTypeId;
-    }
-
-    public void setMaterialTypeId(String materialTypeId) {
-        this.materialTypeId = materialTypeId;
-    }
-
-    public int getIsScrm() {
+    public Integer getIsScrm() {
         return isScrm;
     }
 
-    public void setIsScrm(int isScrm) {
+    public void setIsScrm(Integer isScrm) {
         this.isScrm = isScrm;
     }
 
@@ -537,7 +529,15 @@ public class Material {
         this.status = status;
     }
 
-//    public Integer getComment() {
+    public String getMaterialCategoryId() {
+        return materialCategoryId;
+    }
+
+    public void setMaterialCategoryId(String materialCategoryId) {
+        this.materialCategoryId = materialCategoryId;
+    }
+
+    //    public Integer getComment() {
 //        return comment;
 //    }
 //    public void setComment(Integer comment) {

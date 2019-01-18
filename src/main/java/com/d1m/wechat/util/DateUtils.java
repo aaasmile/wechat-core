@@ -5,6 +5,7 @@ import org.springframework.util.StringUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -163,10 +164,44 @@ public class DateUtils {
     }
 
 
+    /**
+     * 当前日期加上天数后的日期
+     * @param num
+     * @return
+     */
+     public static String plusDay(Date date,int num){
+       SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+       String currdate = format.format(date);
+       System.out.println("现在的日期是：" + currdate);
+       Calendar ca = Calendar.getInstance();
+       ca.add(Calendar.DATE, num);// num为增加的天数，可以改变的
+       date = ca.getTime();
+       String enddate = format.format(date);
+       System.out.println("增加天数以后的日期：" + enddate);
+       return enddate;
+       }
+
+
+    /**
+     * 在日期上增加天数
+     *
+     * @param date
+     *            日期
+     * @param n
+     *            要增加的天数
+     * @return
+     */
+    public static Date addDay(Date date, int n) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, n);
+        Date addDate = cal.getTime();
+        System.out.println("增加"+n+"天数以后的日期：" + addDate);
+        return addDate;
+    }
 
     public static void main(String[] args) {
-        Date date = new Date();
-        String str = "20170818223629599";
-        System.out.println(DateUtils.getDateFormat(str));
+
+        System.out.println(DateUtils.addDay(new Date(),3));
     }
 }

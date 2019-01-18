@@ -16,13 +16,13 @@ public class QueryDto implements Serializable {
 
     private String name;
 
-    private String materialTypeId;
+    private String materialCategoryId;
 
     //每页记录数
-    private int pageSize;
+    private int pageSize = 10;
 
     //当前页数
-    private int pageNum;
+    private int pageNum = 1;
 
 
     public int getPageSize() {
@@ -49,12 +49,12 @@ public class QueryDto implements Serializable {
         this.name = name;
     }
 
-    public String getMaterialTypeId() {
-        return materialTypeId;
+    public String getMaterialCategoryId() {
+        return materialCategoryId;
     }
 
-    public void setMaterialTypeId(String materialTypeId) {
-        this.materialTypeId = materialTypeId;
+    public void setMaterialCategoryId(String materialCategoryId) {
+        this.materialCategoryId = materialCategoryId;
     }
 
     public String getSearch() {

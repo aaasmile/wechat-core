@@ -94,6 +94,70 @@ public class DcrmImageTextDetail {
     private Date lasteUpdatedAt;
     //最后更新人
     private Integer lasteUpdatedBy;
+    /**
+     * 发送次数
+     */
+    @Column(name="send_times")
+    private Integer sendTimes;
+    /**
+     * 阅读次数
+     */
+    @Column(name="read_times")
+    private Integer readTimes;
+
+    /**
+     * 二维码id
+     */
+    private Integer qrcodeId;
+
+    /**
+     * 图文页的URL
+     */
+    private String url;
+
+    /**
+     * 封面图url
+     */
+    private String picUrl;
+
+    /**
+     * 微信最后更新时间
+     */
+    @Column(name = "wx_last_pust_time")
+    private Date wxLastPushTime;
+
+
+    public String getPicUrl() {
+        return picUrl;
+    }
+
+    public void setPicUrl(String picUrl) {
+        this.picUrl = picUrl;
+    }
+
+    public Date getWxLastPushTime() {
+        return wxLastPushTime;
+    }
+
+    public void setWxLastPushTime(Date wxLastPushTime) {
+        this.wxLastPushTime = wxLastPushTime;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public Integer getQrcodeId() {
+        return qrcodeId;
+    }
+
+    public void setQrcodeId(Integer qrcodeId) {
+        this.qrcodeId = qrcodeId;
+    }
 
     public Integer getId() {
         return id;
@@ -237,5 +301,21 @@ public class DcrmImageTextDetail {
 
     public void setLasteUpdatedBy(Integer lasteUpdatedBy) {
         this.lasteUpdatedBy = lasteUpdatedBy;
+    }
+
+    public Integer getSendTimes() {
+        return sendTimes;
+    }
+
+    public void setSendTimes(Integer sendTimes) {
+        this.sendTimes = sendTimes;
+    }
+
+    public Integer getReadTimes() {
+        return readTimes;
+    }
+
+    public void setReadTimes(Integer readTimes) {
+        this.readTimes = readTimes;
     }
 }

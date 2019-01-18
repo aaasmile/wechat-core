@@ -14,7 +14,7 @@
         `created_at`,
         `created_by`,
         `laste_updated_at`,
-        `laste_updated_by`        )
+        `laste_updated_by` )
         values(
         #{id},
         #{name},
@@ -23,7 +23,7 @@
         #{createdAt},
         #{createdBy},
         #{lasteUpdatedAt},
-        #{lasteUpdatedBy}         )
+        #{lasteUpdatedBy} )
     </insert>
 
     <select id="queryObject" resultType="com.d1m.wechat.model.MaterialCategory">
@@ -40,8 +40,8 @@
 		where id = #{id}
 	</select>
 
-    <select id="queryList" resultType="com.d1m.wechat.model.MaterialCategory">
-        select
+    <select id="queryList" resultType="com.d1m.wechat.dto.MaterialCategoryDto">
+        SELECT
         `id`,
         `name`,
         `deleted`,
@@ -49,18 +49,25 @@
         `created_at`,
         `created_by`,
         `laste_updated_at`,
-        `laste_updated_by`
-        from material_category
-        WHERE 1=1
+        `laste_updated_by`,
+        SUM(
+        ( SELECT count( b.material_category_id ) FROM material_image_text_detail a
+        INNER JOIN material b on a.material_id=b.id and a.`status`=1 and b.status=1 where m.id=b.material_category_id) + (
+        SELECT count( d.material_category_id ) FROM dcrm_image_text_detail d WHERE m.id = d.material_category_id and
+        d.status=1)
+        ) newsCount
+        FROM material_category m
+        WHERE m.deleted=0
         <if test="name != null">
-            AND name = #{name}
+            AND m.name = #{name}
         </if>
+        GROUP BY m.id
         <choose>
             <when test="sidx != null">
-                order by ${sidx} ${order}
+                order by m.${sidx} ${order}
             </when>
             <otherwise>
-                order by created_at desc
+                order by m.created_at desc
             </otherwise>
         </choose>
         <if test="offset != null and limit != null">

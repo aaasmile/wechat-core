@@ -1,0 +1,1 @@
+ALTER TABLE material_image_text_detail ADD remarks varchar(200) NULL COMMENT '备注';

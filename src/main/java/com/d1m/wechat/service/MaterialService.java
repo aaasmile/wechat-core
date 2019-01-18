@@ -39,6 +39,8 @@ public interface MaterialService extends IService<Material> {
 	Material updateImageText(Integer wechatId, User user, Integer id,
 							 MaterialModel materialModel) throws WechatException;
 
+	void updateMaterialAndImageText(Material material, List<MaterialImageTextDetail> imageTextDetail);
+
 	@Deprecated
 	MaterialImageTextDetail updateImageTextDetail(Integer wechatId, User user,
 												  Integer imageTextDetailId,
@@ -108,4 +110,11 @@ public interface MaterialService extends IService<Material> {
 	List<ImageTextModel> imageTexts, Date current)
 	throws WechatException;
 
+
+	/**
+	 * 根据sn获取微信图文详情
+	 * @param sn
+	 * @return
+	 */
+	MaterialDto getInfoBySn(String sn);
 }

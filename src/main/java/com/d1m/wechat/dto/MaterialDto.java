@@ -1,158 +1,179 @@
 package com.d1m.wechat.dto;
 
-import java.util.List;
-
+import com.d1m.wechat.util.DateUtil;
 import org.apache.commons.lang.StringUtils;
 
-import com.d1m.wechat.util.DateUtil;
+import java.util.List;
 
 public class MaterialDto {
 
-	private Integer id;
+    private Integer id;
 
-	private List<ImageTextDto> items;
+    private List<ImageTextDto> items;
 
-	private String url;
+    private String url;
 
-	private MaterialTextDetailDto text;
+    private MaterialTextDetailDto text;
 
-	private String title;
+    private String title;
 
-	private String createdAt;
+    private String createdAt;
 
-	private Byte materialType;
+    private Byte materialType;
 
-	private String lastPushAt;
+    private String lastPushAt;
 
-	private boolean isPushed;
+    private boolean isPushed;
 
-	private String modifyAt;
-	
-	private String wxPicUrl;
+    private String modifyAt;
 
-	private String mediaId;
+    private String wxPicUrl;
 
-	private String name;
+    private String mediaId;
 
-	private String materialTypeId;
+    private String name;
 
-	public String getMaterialTypeId() {
-		return materialTypeId;
-	}
+    private String materialCategoryId;
 
-	public void setMaterialTypeId(String materialTypeId) {
-		this.materialTypeId = materialTypeId;
-	}
+    private String typeName;
 
-	//	private Integer comment;
+    private String sn;
 
-	public String getCreatedAt() {
-		return DateUtil.formatYYYYMMDDHHMMSS(DateUtil.parse(createdAt));
-	}
+    public String getSn() {
+        return sn;
+    }
 
-	public Integer getId() {
-		return id;
-	}
+    public void setSn(String sn) {
+        this.sn = sn;
+    }
 
-	public List<ImageTextDto> getItems() {
-		return items;
-	}
+    public String getTypeName() {
+        return typeName;
+    }
 
-	public String getLastPushAt() {
-		return DateUtil.formatYYYYMMDDHHMMSS(DateUtil.parse(lastPushAt));
-	}
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
+    }
 
-	public Byte getMaterialType() {
-		return materialType;
-	}
+    //	private Integer comment;
 
-	public String getModifyAt() {
-		return DateUtil.formatYYYYMMDDHHMMSS(DateUtil.parse(modifyAt));
-	}
+    public String getCreatedAt() {
+        return DateUtil.formatYYYYMMDDHHMMSS(DateUtil.parse(createdAt));
+    }
 
-	public MaterialTextDetailDto getText() {
-		return text;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    public List<ImageTextDto> getItems() {
+        return items;
+    }
 
-	public String getUrl() {
-		return url;
-	}
+    public String getLastPushAt() {
+        return DateUtil.formatYYYYMMDDHHMMSS(DateUtil.parse(lastPushAt));
+    }
 
-	public boolean isPushed() {
-		return StringUtils.isNotBlank(getLastPushAt())
-				&& StringUtils.isNotBlank(getModifyAt())
-				&& StringUtils.equals(getLastPushAt(), getModifyAt());
-	}
+    public Byte getMaterialType() {
+        return materialType;
+    }
 
-	public void setCreatedAt(String createdAt) {
-		this.createdAt = createdAt;
-	}
+    public String getModifyAt() {
+        return DateUtil.formatYYYYMMDDHHMMSS(DateUtil.parse(modifyAt));
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public MaterialTextDetailDto getText() {
+        return text;
+    }
 
-	public void setItems(List<ImageTextDto> items) {
-		this.items = items;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public void setLastPushAt(String lastPushAt) {
-		this.lastPushAt = lastPushAt;
-	}
+    public String getUrl() {
+        return url;
+    }
 
-	public void setMaterialType(Byte materialType) {
-		this.materialType = materialType;
-	}
+    public boolean isPushed() {
+        return StringUtils.isNotBlank(getLastPushAt())
+                && StringUtils.isNotBlank(getModifyAt())
+                && StringUtils.equals(getLastPushAt(), getModifyAt());
+    }
 
-	public void setModifyAt(String modifyAt) {
-		this.modifyAt = modifyAt;
-	}
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
 
-	public void setPushed(boolean isPushed) {
-		this.isPushed = isPushed;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public void setText(MaterialTextDetailDto text) {
-		this.text = text;
-	}
+    public void setItems(List<ImageTextDto> items) {
+        this.items = items;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public void setLastPushAt(String lastPushAt) {
+        this.lastPushAt = lastPushAt;
+    }
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
+    public void setMaterialType(Byte materialType) {
+        this.materialType = materialType;
+    }
 
-	public String getWxPicUrl() {
-		return wxPicUrl;
-	}
+    public void setModifyAt(String modifyAt) {
+        this.modifyAt = modifyAt;
+    }
 
-	public void setWxPicUrl(String wxPicUrl) {
-		this.wxPicUrl = wxPicUrl;
-	}
+    public void setPushed(boolean isPushed) {
+        this.isPushed = isPushed;
+    }
 
-	public String getMediaId() {
-		return mediaId;
-	}
+    public void setText(MaterialTextDetailDto text) {
+        this.text = text;
+    }
 
-	public void setMediaId(String mediaId) {
-		this.mediaId = mediaId;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getWxPicUrl() {
+        return wxPicUrl;
+    }
 
-	//	public Integer getComment() {
+    public void setWxPicUrl(String wxPicUrl) {
+        this.wxPicUrl = wxPicUrl;
+    }
+
+    public String getMediaId() {
+        return mediaId;
+    }
+
+    public void setMediaId(String mediaId) {
+        this.mediaId = mediaId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getMaterialCategoryId() {
+        return materialCategoryId;
+    }
+
+    public void setMaterialCategoryId(String materialCategoryId) {
+        this.materialCategoryId = materialCategoryId;
+    }
+
+
+
+    //	public Integer getComment() {
 //		return comment;
 //	}
 //	public void setComment(Integer comment) {

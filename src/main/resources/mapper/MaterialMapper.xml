@@ -26,13 +26,15 @@
         <result column="wechat_id" jdbcType="INTEGER" property="wechatId"/>
         <result column="media_id" jdbcType="VARCHAR" property="mediaId"/>
         <result column="status" jdbcType="TINYINT" property="status"/>
-        <result column="material_type_id" jdbcType="VARCHAR" property="materialTypeId"/>
+        <result column="material_category_id" jdbcType="VARCHAR" property="materialCategoryId"/>
     </resultMap>
 
     <select id="searchImage" parameterType="hashmap" resultMap="ImageResultMap">
         SELECT * FROM material
         <where>
-            wechat_id = #{wechatId} and status = 1
+            wechat_id = #{wechatId}
+            and status = 1
+            and `name`!='CropImage'
             <if test="materialType != null">
                 and material_type = #{materialType}
             </if>
@@ -48,13 +50,14 @@
                 </if>
             </if>
         </where>
-        order by id desc
+        order by last_push_at desc
     </select>
     <resultMap id="ImageResultMap" type="com.d1m.wechat.dto.MaterialDto">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="pic_url" jdbcType="VARCHAR" property="url"/>
         <result column="name" jdbcType="VARCHAR" property="title"/>
         <result column="wx_pic_url" jdbcType="VARCHAR" property="wxPicUrl"/>
+        <result column="material_category_id" jdbcType="VARCHAR" property="materialCategoryId"/>
     </resultMap>
 
     <select id="searchImageText" parameterType="hashmap" resultMap="ImageTextResultMap">
@@ -70,7 +73,19 @@
                     and m.modify_at = m.last_push_at
                 </if>
             </if>
-            order by m.id desc
+
+            <if test="materialCategoryId !=null">
+                <choose>
+                    <when test='materialCategoryId =="other"'>
+                        and m.`material_category_id` is null
+                    </when>
+                    <otherwise>
+                        and m.`material_category_id`=#{materialCategoryId}
+                    </otherwise>
+                </choose>
+            </if>
+
+            order by m.last_push_at desc
         </where>
     </select>
     <resultMap id="ImageTextResultMap" type="com.d1m.wechat.dto.MaterialDto">
@@ -78,13 +93,15 @@
         <result column="created_at" jdbcType="TIMESTAMP" property="createdAt"/>
         <result column="last_push_at" jdbcType="TIMESTAMP" property="lastPushAt"/>
         <result column="modify_at" jdbcType="TIMESTAMP" property="modifyAt"/>
+        <result column="material_category_id" jdbcType="VARCHAR" property="materialCategoryId"/>
         <!--<result column="comment" jdbcType="TINYINT" property="comment" />-->
         <collection column="{materialId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.ImageTextDto"
                     property="items" select="selectImageTextDetail"/>
     </resultMap>
     <select id="selectImageTextDetail" parameterType="hashmap" resultMap="ImageTextDetailResultMap">
         SELECT mt.id as id, mt.wechat_id as wechatId, mt.title as title, mt.summary as summary, m.pic_url as
-        material_cover_url, mt.content_source_url as contentSourceUrl
+        material_cover_url, mt.content_source_url as contentSourceUrl, mt.remarks as remarks, mt.status as available
+        ,mt.content as content, m.media_id media_id,mt.sn
         FROM material_image_text_detail mt LEFT JOIN material m ON mt.material_cover_id = m.id
         <where>
             mt.material_id = #{materialId} and mt.status = 1
@@ -97,11 +114,18 @@
         <result column="summary" jdbcType="VARCHAR" property="summary"/>
         <result column="material_cover_url" jdbcType="VARCHAR" property="materialCoverUrl"/>
         <result column="content_source_url" jdbcType="VARCHAR" property="contentSourceUrl"/>
+        <result column="remarks" jdbcType="VARCHAR" property="remarks"/>
+        <result column="available" jdbcType="TINYINT" property="available"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="media_id" jdbcType="VARCHAR" property="mediaId"/>
     </resultMap>
 
 
     <select id="getImageText" parameterType="hashmap" resultMap="GetImageTextResultMap">
-        SELECT id, created_at, last_push_at, modify_at FROM material m
+        SELECT m.id as id, m.created_at as created_at, m.last_push_at as last_push_at,
+        m.modify_at as modify_at, mc.name as type_name,m.material_category_id as material_category_id
+        FROM material m
+        left join material_category mc on m.material_category_id = mc.id
         <where>
             m.wechat_id=#{wechatId} and m.id=#{id} and m.status = 1
         </where>
@@ -111,6 +135,8 @@
         <result column="created_at" jdbcType="TIMESTAMP" property="createdAt"/>
         <result column="last_push_at" jdbcType="TIMESTAMP" property="lastPushAt"/>
         <result column="modify_at" jdbcType="TIMESTAMP" property="modifyAt"/>
+        <result column="type_name" jdbcType="VARCHAR" property="typeName"/>
+        <result column="material_category_id" jdbcType="VARCHAR" property="materialCategoryId"/>
         <!--<result column="comment" jdbcType="TINYINT" property="comment" />-->
         <collection column="{materialId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.ImageTextDto"
                     property="items" select="getImageTextDetail"/>
@@ -119,10 +145,22 @@
         SELECT mt.id as id, mt.wechat_id as wechatId, mt.title as title, mt.author as author, mt.content as content,
         mt.content_source_url as content_source_url, mt.content_source_checked as content_source_checked,
         mt.show_cover as show_cover, mt.summary as summary, m.id as material_cover_id, m.pic_url as material_cover_url,
-        m.media_id as material_cover_media_id ,mt.comment
+        m.media_id as material_cover_media_id ,mt.comment , mt.remarks as remarks, mt.status as available,
+        mt.url, mt.content as content,m.media_id media_id
         FROM material_image_text_detail mt LEFT JOIN material m ON mt.material_cover_id = m.id
         <where>
-            mt.material_id = #{materialId} and mt.status = 1
+            <!--<if test="status!=null">-->
+            mt.status = 1
+            <!--</if>-->
+            <if test="materialId!=null">
+                and mt.material_id = #{materialId}
+            </if>
+            <if test="id!=null">
+                and mt.id = #{id}
+            </if>
+            <if test="sn!=null">
+                and mt.sn = #{sn}
+            </if>
         </where>
         order by mt.sequence asc
     </select>
@@ -138,6 +176,11 @@
         <result column="material_cover_url" jdbcType="VARCHAR" property="materialCoverUrl"/>
         <result column="content_source_checked" jdbcType="BIT" property="contentSourceChecked"/>
         <result column="material_cover_media_id" jdbcType="VARCHAR" property="materialCoverMediaId"/>
+        <result column="remarks" jdbcType="VARCHAR" property="remarks"/>
+        <result column="available" jdbcType="TINYINT" property="available"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="url" jdbcType="VARCHAR" property="url"/>
+        <result column="media_id" jdbcType="VARCHAR" property="mediaId"/>
     </resultMap>
 
     <select id="searchMiniProgram" parameterType="com.d1m.wechat.pamametermodel.MiniProgramModel"
@@ -179,7 +222,8 @@
         last_push_at,
         modify_at,
         media_id,
-        name
+        name,
+        material_category_id
         FROM
         material m
         <where>
@@ -196,6 +240,7 @@
         <result column="modify_at" jdbcType="TIMESTAMP" property="modifyAt"/>
         <result column="media_id" property="mediaId"/>
         <result column="name" property="name"/>
+        <result column="material_category_id" jdbcType="VARCHAR" property="materialCategoryId"/>
         <collection column="{materialId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.ImageTextDto"
                     property="items" select="getUsedImageTextDetail"/>
     </resultMap>
@@ -213,7 +258,9 @@
         m.id AS material_cover_id,
         m.pic_url AS material_cover_url,
         m.media_id AS material_cover_media_id,
-        mt.COMMENT
+        mt.COMMENT,
+        mt.remarks as remarks,
+        m.media_id as media_id
         FROM
         material_image_text_detail mt
         LEFT JOIN material m ON mt.material_cover_id = m.id
@@ -232,11 +279,24 @@
     </update>
 
     <select id="selectExistName" resultType="java.util.Map">
-    SELECT DISTINCT a.id,IFNULL( a.`name`, c.title ) AS NAME
-    FROM material a
-	LEFT JOIN material_category b ON cast( a.material_type AS CHAR ( 8 ) ) = b.id
-	LEFT JOIN material_image_text_detail c ON a.id = c.material_id
-    WHERE b.wechat_id = #{wechatId} and b.id=#{id}
+
+        select t.id, t.`NAME`
+        from (select a.id, a.title AS NAME, c.id as material_category_id, c.wechat_id
+              from material_image_text_detail a
+                       INNER JOIN material b on a.material_id = b.id and a.`status` = 1 and b.status = 1
+                       INNER JOIN material_category c on c.id = b.material_category_id and c.deleted = 0
+              UNION
+              select a.id, a.title AS NAME, b.id as material_category_id, b.wechat_id
+              from dcrm_image_text_detail a
+                       INNER JOIN material_category b
+                           on a.material_category_id = b.id and b.deleted = 0 and a.status = 1) t
+        where t.material_category_id = #{id}
+          and t.wechat_id = #{wechatId}
     </select>
 
+    <select id="queryMtByDetailId" resultType="com.d1m.wechat.model.Material">
+        select t.* from material t
+        INNER JOIN material_image_text_detail f on t.id=f.material_id
+        where f.id=#{id}
+    </select>
 </mapper>
