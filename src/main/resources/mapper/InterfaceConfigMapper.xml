@@ -7,8 +7,8 @@
     	<result column="app_key" property="key" />
     	<result column="app_secret" property="secret" />
     	<result column="name" property="name" />
-    	<result column="method_type" property="methodType" />
-    	<result column="type" property="type" />
+    	<result column="method_type" jdbcType="TINYINT" property="methodType" />
+    	<result column="type"  jdbcType="TINYINT" property="type" />
     	<result column="event" property="event" />
     	<result column="parameter" property="parameter" />
     	<result column="description" property="description" />
@@ -19,6 +19,8 @@
     	<result column="created_by" property="createdBy" />
     	<result column="updated_at" property="updatedAt" />
     	<result column="updated_by" property="updatedBy" />
+		<result column="status" jdbcType="TINYINT" property="status"/>
+
 	</resultMap>
 
 	<select id="selectItems" resultMap="interfaceConfigResultMap" parameterType="java.util.HashMap">

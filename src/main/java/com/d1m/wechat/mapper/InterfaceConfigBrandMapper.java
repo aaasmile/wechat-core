@@ -3,6 +3,7 @@ package com.d1m.wechat.mapper;
 import com.d1m.wechat.dto.InterfaceConfigBrandDto;
 import com.d1m.wechat.model.InterfaceConfigBrand;
 import com.d1m.wechat.util.MyMapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 

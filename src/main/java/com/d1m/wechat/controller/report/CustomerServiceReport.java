@@ -44,32 +44,32 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/report")
-@Api(value="客服报表 API", tags="客服报表接口")
+@Api(value = "客服报表 API", tags = "客服报表接口")
 public class CustomerServiceReport extends BaseController {
     private Logger log = LoggerFactory.getLogger(CustomerServiceReport.class);
 
     @Autowired
     private ConversationService conversationService;
-    
-	@ApiOperation(value="导出客服报表", tags="客服报表接口")
-	@ApiResponses({
-		@ApiResponse(code=200, message="导出用户分析"),
-		@ApiResponse(code=21008, message="导出客户服务报表开始或结束时间不能为空")
-	})
+
+    @ApiOperation(value = "导出客服报表", tags = "客服报表接口")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "导出用户分析"),
+            @ApiResponse(code = 21008, message = "导出客户服务报表开始或结束时间不能为空")
+    })
     @RequestMapping(value = "exportCustomerService.json", method = RequestMethod.POST)
     @ResponseBody
     @RequiresPermissions("system-setting:customer-service-config-list")
     public ModelAndView activity(HttpSession session, HttpServletRequest request,
-                               HttpServletResponse response){
+                                 HttpServletResponse response) {
         SourceUserModel model = null;
         String data = request.getParameter("data");
-        if(StringUtils.isNotBlank(data)){
-            model = (SourceUserModel)JSON.parseObject(data, SourceUserModel.class);
+        if (StringUtils.isNotBlank(data)) {
+            model = (SourceUserModel) JSON.parseObject(data, SourceUserModel.class);
         }
-        if(model == null){
+        if (model == null) {
             model = new SourceUserModel();
         }
-        if (model.getStart() == null || model.getEnd() == null){
+        if (model.getStart() == null || model.getEnd() == null) {
             throw new WechatException(Message.REPORT_CUSTOMER_SERVICE_START_OR_END_NOT_BLANK);
         }
         DateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd");

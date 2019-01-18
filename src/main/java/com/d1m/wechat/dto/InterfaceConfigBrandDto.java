@@ -1,9 +1,12 @@
 package com.d1m.wechat.dto;
 
+import lombok.Data;
+
 /**
  * Auth: Jo.Ho
  * Date: 2018/12/9
  */
+@Data
 public class InterfaceConfigBrandDto {
 	private Long id;
 	private String name;
