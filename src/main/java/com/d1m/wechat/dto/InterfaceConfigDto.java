@@ -1,12 +1,16 @@
 package com.d1m.wechat.dto;
 
+import com.d1m.wechat.model.enums.InterfaceMethodType;
+import com.d1m.wechat.model.enums.InterfaceStatus;
+import com.d1m.wechat.model.enums.InterfaceType;
+
 public class InterfaceConfigDto {
 
 	private String id;
 	private String brand;
 	private String name;
-	private String methodType;
-	private String type;
+	private InterfaceMethodType methodType;  //修改
+	private InterfaceType type;              //修改
 	private String event;
 	private String interfaceName;
 	private String parameter;
@@ -20,6 +24,7 @@ public class InterfaceConfigDto {
 	private String createdBy;
 	private String updatedAt;
 	private String updatedBy;
+	private InterfaceStatus status;        //修改
 
 	public String getId() {
 		return id;
@@ -45,21 +50,21 @@ public class InterfaceConfigDto {
 		this.name = name;
 	}
 
-	public String getMethodType() {
+	public InterfaceMethodType getMethodType() {                  //修改
 		return methodType;
 	}
 
-	public void setMethodType(String methodType) {
-		this.methodType = methodType;
+	public void setMethodType(InterfaceMethodType methodType) {    //修改
+		this.methodType = methodType;                              //修改
 	}
 
-	public String getType() {
+	public InterfaceType getType() {
 		return type;
-	}
+	}                 //修改
 
-	public void setType(String type) {
+	public void setType(InterfaceType type) {
 		this.type = type;
-	}
+	}    //修改
 
 	public String getEvent() {
 		return event;
@@ -165,7 +170,16 @@ public class InterfaceConfigDto {
 		this.updatedBy = updatedBy;
 	}
 
-	public InterfaceConfigDto(String id, String brand, String name, String methodType, String type, String event, String interfaceName, String parameter, String description, String url, String key, String secret, String sequence, String deleted, String createdAt, String createdBy, String updatedAt, String updatedBy) {
+
+	public InterfaceStatus getStatus() {
+		return status;
+	}                      //修改
+
+	public void setType(InterfaceStatus status) {
+		this.status = status;
+	}       //修改
+
+	public InterfaceConfigDto(String id, String brand, String name, InterfaceMethodType methodType, InterfaceType type, String event, String interfaceName, String parameter, String description, String url, String key, String secret, String sequence, String deleted, String createdAt, String createdBy, String updatedAt, String updatedBy ,InterfaceStatus status) {
 		super();
 		this.id = id;
 		this.brand = brand;
@@ -185,6 +199,7 @@ public class InterfaceConfigDto {
 		this.createdBy = createdBy;
 		this.updatedAt = updatedAt;
 		this.updatedBy = updatedBy;
+		this.status=status;
 	}
 
 	public InterfaceConfigDto() {
@@ -195,8 +210,8 @@ public class InterfaceConfigDto {
 		private String id;
 		private String brand;
 		private String name;
-		private String methodType;
-		private String type;
+		private InterfaceMethodType methodType;
+		private InterfaceType type;
 		private String event;
 		private String interfaceName;
 		private String parameter;
@@ -210,6 +225,7 @@ public class InterfaceConfigDto {
 		private String createdBy;
 		private String lasteUpdatedAt;
 		private String lasteUpdatedBy;
+		private InterfaceStatus status;
 
 		public Builder id(String id) {
 			this.id = id;
@@ -226,12 +242,12 @@ public class InterfaceConfigDto {
 			return this;
 		}
 
-		public Builder methodType(String methodType) {
+		public Builder methodType(InterfaceMethodType methodType) {
 			this.methodType = methodType;
 			return this;
 		}
 
-		public Builder type(String type) {
+		public Builder type(InterfaceType type) {
 			this.type = type;
 			return this;
 		}
@@ -300,6 +316,10 @@ public class InterfaceConfigDto {
 			this.lasteUpdatedBy = lasteUpdatedBy;
 			return this;
 		}
+		public Builder status(InterfaceStatus status) {
+			this.status = status;
+			return this;
+		}
 
 		public InterfaceConfigDto build() {
 			return new InterfaceConfigDto(this);
@@ -326,4 +346,7 @@ public class InterfaceConfigDto {
 		this.updatedAt = builder.lasteUpdatedAt;
 		this.updatedBy = builder.lasteUpdatedBy;
 	}
+
+
+
 }

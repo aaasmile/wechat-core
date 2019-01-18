@@ -1,7 +1,12 @@
 package com.d1m.wechat.model;
 
-import javax.persistence.*;
+import com.d1m.wechat.model.enums.InterfaceMethodType;
+import com.d1m.wechat.model.enums.InterfaceStatus;
+import com.d1m.wechat.model.enums.InterfaceType;
+import lombok.Data;
 
+import javax.persistence.*;
+@Data
 @Table(name = "interface_config")
 public class InterfaceConfig {
 
@@ -16,10 +21,17 @@ public class InterfaceConfig {
 
 	private String name;
 
-	@Column(name = "method_type")
-	private String methodType;
 
-	private String type;
+	/**
+	 * 请求方式； 0 POST，1 GET
+	 */
+	@Column(name = "method_type")
+	private InterfaceMethodType methodType;
+
+	/**
+	 * 接口类型； 0 DCRM主动推送，1 第三方拉取
+	 */
+   	private InterfaceType type;
 
 	private String event;
 
@@ -46,123 +58,11 @@ public class InterfaceConfig {
 	@Column(name = "updated_by")
 	private String updatedBy;
 
-	public String getId() {
-		return id;
-	}
+	/**
+	 * 接口状态； 0 生效中，1 未使用
+	 * 第一期不做处理
+	 */
+	private InterfaceStatus status;
 
-	public void setId(String id) {
-		this.id = id;
-	}
 
-	public String getBrand() {
-		return brand;
-	}
-
-	public void setBrand(String brand) {
-		this.brand = brand;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getMethodType() {
-		return methodType;
-	}
-
-	public void setMethodType(String methodType) {
-		this.methodType = methodType;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public String getEvent() {
-		return event;
-	}
-
-	public void setEvent(String event) {
-		this.event = event;
-	}
-
-	public String getParameter() {
-		return parameter;
-	}
-
-	public void setParameter(String parameter) {
-		this.parameter = parameter;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
-	public int getSequence() {
-		return sequence;
-	}
-
-	public void setSequence(int sequence) {
-		this.sequence = sequence;
-	}
-
-	public boolean getDeleted() {
-		return deleted;
-	}
-
-	public void setDeleted(boolean deleted) {
-		this.deleted = deleted;
-	}
-
-	public String getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(String createdAt) {
-		this.createdAt = createdAt;
-	}
-
-	public String getCreatedBy() {
-		return createdBy;
-	}
-
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
-
-	public String getUpdatedAt() {
-		return updatedAt;
-	}
-
-	public void setUpdatedAt(String updatedAt) {
-		this.updatedAt = updatedAt;
-	}
-
-	public String getUpdatedBy() {
-		return updatedBy;
-	}
-
-	public void setUpdatedBy(String updatedBy) {
-		this.updatedBy = updatedBy;
-	}
 }

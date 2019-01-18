@@ -1,8 +1,10 @@
 package com.d1m.wechat.controller.interfaces;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
+import com.d1m.wechat.dto.InterfaceConfigBrandDto;
 import com.d1m.wechat.dto.InterfaceConfigDto;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.model.InterfaceConfig;
@@ -10,6 +12,7 @@ import com.d1m.wechat.model.InterfaceConfigBrand;
 import com.d1m.wechat.util.DateUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +58,9 @@ public class InterfaceConfigController extends BaseController {
 			log.error(e.getMessage(), e);
 			return representation(Message.INTERFACECONFIG_SELECT_FAIL, e.getMessage());
 		}
+
+
+
 	}
 
 	@ApiOperation(value = "创建第三方接口", tags = "第三方接口列表")
@@ -117,7 +123,14 @@ public class InterfaceConfigController extends BaseController {
 	@RequestMapping(value = "listBrand.json", method = RequestMethod.GET)
 	public JSONObject listBrand() {
 		try {
-			return representation(Message.SUCCESS, interfaceConfigService.listBrand());
+			/* @RequestParam(required = false) String name,
+			                    @RequestParam(required = false, defaultValue = "1") Integer pageNum,
+								@RequestParam(required = false, defaultValue = "1") Integer pageSize
+			PageHelper.startPage(pageNum, pageSize);
+			final List<InterfaceConfigBrandDto> icbds = interfaceConfigService.listBrand(name);
+			final PageInfo<InterfaceConfigBrandDto> pageInfo = new PageInfo<>(icbds);
+			log.info("获取第三方列表：{} 总数：{}",pageInfo.getList().toArray(),pageInfo.getTotal());*/
+			return representation(Message.SUCCESS,interfaceConfigService.listBrand());
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			return representation(Message.INTERFACECONFIG_BRAND_LIST_FAIL, e.getMessage());
