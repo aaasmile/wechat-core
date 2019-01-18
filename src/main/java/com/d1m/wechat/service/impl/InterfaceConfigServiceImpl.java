@@ -40,6 +40,7 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 
 	@Override
 	public String create(InterfaceConfig interfaceConfig) {
+
 		String id = UUID.randomUUID().toString().replaceAll("-", "");
 		interfaceConfig.setId(id);
 		interfaceConfigMapper.insertSelective(interfaceConfig);
@@ -108,4 +109,9 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 	public InterfaceConfigDto getSecret(String id) {
 		return interfaceConfigMapper.getSecret(id);
 	}
+    //檢查name重復
+    @Override
+    public int checkRepeat(InterfaceConfig ifcf) {
+        return interfaceConfigMapper.selectCount(ifcf);
+    }
 }
