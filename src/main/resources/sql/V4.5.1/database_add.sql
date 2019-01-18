@@ -49,3 +49,5 @@ CREATE TABLE `dcrm_image_text_detail` (
   `wx_last_pust_time` datetime DEFAULT NULL COMMENT '微信图文最后更新时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8  COMMENT='非群发单图文表';
+
+update dcrm_image_text_detail set laste_updated_at=created_at where laste_updated_at is null;
