@@ -9,8 +9,8 @@ public class InterfaceConfigDto {
 	private String id;
 	private String brand;
 	private String name;
-	private InterfaceMethodType methodType;  //修改
-	private InterfaceType type;              //修改
+	private int methodType;  //修改
+	private int type;              //修改
 	private String event;
 	private String interfaceName;
 	private String parameter;
@@ -50,19 +50,19 @@ public class InterfaceConfigDto {
 		this.name = name;
 	}
 
-	public InterfaceMethodType getMethodType() {                  //修改
+	public int getMethodType() {                  //修改
 		return methodType;
 	}
 
-	public void setMethodType(InterfaceMethodType methodType) {    //修改
+	public void setMethodType(int methodType) {    //修改
 		this.methodType = methodType;                              //修改
 	}
 
-	public InterfaceType getType() {
+	public int getType() {
 		return type;
 	}                 //修改
 
-	public void setType(InterfaceType type) {
+	public void setType(int type) {
 		this.type = type;
 	}    //修改
 
@@ -179,7 +179,7 @@ public class InterfaceConfigDto {
 		this.status = status;
 	}       //修改
 
-	public InterfaceConfigDto(String id, String brand, String name, InterfaceMethodType methodType, InterfaceType type, String event, String interfaceName, String parameter, String description, String url, String key, String secret, String sequence, String deleted, String createdAt, String createdBy, String updatedAt, String updatedBy ,InterfaceStatus status) {
+	public InterfaceConfigDto(String id, String brand, String name, int methodType, int type, String event, String interfaceName, String parameter, String description, String url, String key, String secret, String sequence, String deleted, String createdAt, String createdBy, String updatedAt, String updatedBy ,InterfaceStatus status) {
 		super();
 		this.id = id;
 		this.brand = brand;
@@ -210,8 +210,8 @@ public class InterfaceConfigDto {
 		private String id;
 		private String brand;
 		private String name;
-		private InterfaceMethodType methodType;
-		private InterfaceType type;
+		private int methodType;
+		private int type;
 		private String event;
 		private String interfaceName;
 		private String parameter;
@@ -242,12 +242,12 @@ public class InterfaceConfigDto {
 			return this;
 		}
 
-		public Builder methodType(InterfaceMethodType methodType) {
+		public Builder methodType(int methodType) {
 			this.methodType = methodType;
 			return this;
 		}
 
-		public Builder type(InterfaceType type) {
+		public Builder type(int type) {
 			this.type = type;
 			return this;
 		}
