@@ -1,12 +1,10 @@
 package com.d1m.wechat.configure;
 
-import com.d1m.wechat.web.AnnotationMappingJackson2HttpMessageConverter;
+import com.d1m.wechat.web.JsonHttpMessageConverterStrategy;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -78,10 +76,8 @@ public class WebMvcConfigure extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public AnnotationMappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter(
+    public JsonHttpMessageConverterStrategy jsonHttpMessageConverterStrategy(
             ObjectMapper objectMapper) {
-        final AnnotationMappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new AnnotationMappingJackson2HttpMessageConverter(objectMapper);
-        mappingJackson2HttpMessageConverter.setSupportedMediaTypes(Lists.newArrayList(new MediaType("application", "*+json")));
-        return mappingJackson2HttpMessageConverter;
+        return new JsonHttpMessageConverterStrategy(objectMapper);
     }
 }
