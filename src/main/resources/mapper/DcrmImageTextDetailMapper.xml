@@ -8,7 +8,7 @@
         d.`content`,
         d.`link`,
         d.`material_cover_id`,
-        (select m.pic_url from material m where d.material_cover_id=m.id) as coverPicUrl,
+        d.pic_url as coverPicUrl,
         d.`summary`,
         d.`material_id`,
         d.`wechat_id`,
@@ -25,7 +25,9 @@
         d.send_times,
         d.read_times,
         d.qrcode_id,
-        d.url
+        d.url,
+        d.pic_url,
+        d.wx_last_pust_time as wxLastPushTime
         from dcrm_image_text_detail d
         WHERE 1=1
         <if test="search != null">
@@ -69,7 +71,7 @@
         d.`content`,
         d.`link`,
         d.`material_cover_id`,
-        (select m.pic_url from material m where d.material_cover_id=m.id) as coverPicUrl,
+        d.pic_url as coverPicUrl,
         d.`summary`,
         d.`material_id`,
         d.`wechat_id`,
@@ -86,7 +88,9 @@
         d.send_times,
         d.read_times,
         d.qrcode_id,
-        d.url
+        d.url,
+        d.pic_url,
+        d.wx_last_pust_time as wxLastPushTime
         from dcrm_image_text_detail d
 		where id = #{id}
 	</select>
@@ -108,19 +112,20 @@
     <update id="update" parameterType="com.d1m.wechat.model.DcrmImageTextDetail">
         UPDATE dcrm_image_text_detail
         <set>
-            <if test="title != null">title = #{title},</if>
-            <if test="content != null">content = #{content},</if>
+            title = #{title},
+            content = #{content},
             link = #{link},
-            <if test="materialCoverId != null">material_cover_id = #{materialCoverId},</if>
-            <if test="summary != null">summary = #{summary},</if>
-            <if test="materialId != null">material_id = #{materialId},</if>
-            <if test="wechatId != null">wechat_id = #{wechatId},</if>
-            <if test="status != null">status = #{status},</if>
-            <if test="sequence != null">sequence = #{sequence},</if>
-            <if test="remark != null">remark = #{remark},</if>
-            <if test="materialCategoryId != null">material_category_id = #{materialCategoryId},</if>
+            material_cover_id = #{materialCoverId},
+            summary = #{summary},
+            wechat_id = #{wechatId},
+            status = #{status},
+            remark = #{remark},
+            material_category_id = #{materialCategoryId},
             wx_image_text_id = #{wxImageTextId},
-            <if test="tagId != null">tag_id = #{tagId},</if>
+            tag_id = #{tagId},
+            pic_url = #{picUrl},
+            <if test="sequence != null">sequence = #{sequence},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
             <if test="createdAt != null">created_at = #{createdAt},</if>
             <if test="createdBy != null">created_by = #{createdBy},</if>
             <if test="lasteUpdatedAt != null">laste_updated_at = #{lasteUpdatedAt},</if>
@@ -129,6 +134,7 @@
             <if test="readTimes != null">read_times = #{readTimes},</if>
             <if test="qrcodeId != null">qrcode_id = #{qrcodeId},</if>
             <if test="url != null">url = #{url},</if>
+            <if test="wxLastPushTime != null">wx_last_pust_time=#{wxLastPushTime},</if>
         </set>
         WHERE id = #{id}
     </update>

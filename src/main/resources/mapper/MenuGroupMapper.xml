@@ -66,6 +66,7 @@
 		<result column="app_url" jdbcType="VARCHAR" property="appUrl" />
 		<result column="api_class" jdbcType="VARCHAR" property="apiClass" />
 		<association column="{materialId=menu_key,url=url,type=type}" javaType="com.d1m.wechat.dto.MaterialDto" property="material" select="getMaterial" />
+		<association column="{id=menu_key,url=url,type=type}" javaType="com.d1m.wechat.model.InterfaceConfig" property="interface" select="getInterface" />
 	    <collection column="{parentId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.MenuDto" property="children" select="getChildrenMenus" />
 	</resultMap>
 	
@@ -86,7 +87,29 @@
 			SELECT * FROM material WHERE id = #{materialId} and status = 1
 		</if>
 	</select>
-	
+
+	<select id="getInterface" parameterType="HashMap" resultType="com.d1m.wechat.model.InterfaceConfig">
+		<if test="type == 41">
+			SELECT
+			ic.id,
+			ic.brand,
+			ic.`name`,
+			ic.type,
+			ic.method_type,
+			ic.`event`,
+			ic.url,
+			ib.app_key,
+			ib.app_secret
+			FROM
+			interface_config ic
+			LEFT JOIN interface_brand ib ON ic.brand = ib.id
+			WHERE
+			ic.is_deleted = 0
+			AND ic.is_deleted = 0
+			AND ic.id = #{id}
+		</if>
+	</select>
+
 	<resultMap id="MaterialResultMap" type="com.d1m.wechat.dto.MaterialDto">
 		<id column="id" jdbcType="INTEGER" property="id" />
 		<result column="material_type" jdbcType="TINYINT" property="materialType" />

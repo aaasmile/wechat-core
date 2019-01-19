@@ -3,8 +3,6 @@ package com.d1m.wechat.service.impl;
 import cn.d1m.wechat.client.model.WxQRCode;
 import cn.d1m.wechat.client.model.common.WxFile;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.dto.DcrmImageTextDetailDto;
 import com.d1m.wechat.dto.QueryDto;
 import com.d1m.wechat.mapper.*;
@@ -12,7 +10,6 @@ import com.d1m.wechat.model.*;
 import com.d1m.wechat.model.enums.MaterialStatus;
 import com.d1m.wechat.service.*;
 import com.d1m.wechat.util.*;
-import com.d1m.wechat.wechatclient.CustomService;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -24,8 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import sun.rmi.runtime.Log;
-import tk.mybatis.mapper.entity.Example;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -92,6 +87,8 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
             list.add(detailDto);
             //检验是否不完整非群发单图文
             checkIsNotComplete(list);
+            //检查关联微信图文是否已更新
+            checkIsWx(list);
         }
         return detailDto;
     }
@@ -116,8 +113,28 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         checkIsNotComplete(list);
         //检查微信图文是否存在
         checkIsWxImageTextExist(list);
-        PageInfo<DcrmImageTextDetailDto> pageInfo = new PageInfo<>(list);
-        return pageInfo;
+        //检查关联微信图文是否已更新
+        checkIsWx(list);
+        return new PageInfo<>(list);
+    }
+
+
+    /**
+     * 检查关联微信图文是否已更新
+     */
+    private void checkIsWx(List<DcrmImageTextDetailDto> list) {
+        if (CollectionUtils.isNotEmpty(list))
+            for (DcrmImageTextDetailDto detailDto : list) {
+                detailDto.setWxImageTextUpdate(false);
+                if (detailDto.getMaterialCoverId() != null) {
+                    Material material = materialMapper.queryMtByDetailId(detailDto.getWxImageTextId());
+                    if (material!=null)
+                    if (detailDto.getWxLastPushTime() != null && material.getLastPushAt().compareTo(detailDto.getWxLastPushTime()) > 0) {
+                        detailDto.setWxImageTextUpdate(true);
+                    }
+                }
+            }
+
     }
 
     /**
@@ -428,7 +445,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
         actionEngine.setEndAt(endDate);
         actionEngine.setStartAt(startDate);
         int t = actionEngineMapper.updateByPrimaryKeySelective(actionEngine);
-        logger.info("更新updateEngine状态："+t);
+        logger.info("更新updateEngine状态：" + t);
 
     }
 
