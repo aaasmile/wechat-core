@@ -47,9 +47,9 @@
     <!--RequestMappingHandlerAdapter-->
     <mvc:annotation-driven>
         <mvc:message-converters>
-            <ref bean="mappingJackson2HttpMessageConverter"/>
+            <ref bean="jsonHttpMessageConverterStrategy"/>
             <ref bean="stringHttpMessageConverter"/>
-            <ref bean="fastJsonHttpMessageConverter"/>
+            <!--<ref bean="fastJsonHttpMessageConverter"/>-->
             <ref bean="marshallingHttpMessageConverter"/>
         </mvc:message-converters>
     </mvc:annotation-driven>
@@ -73,23 +73,23 @@
         <property name="marshaller" ref="castorMarshaller"/>
         <property name="unmarshaller" ref="castorMarshaller"/>
     </bean>
-    <bean id="fastJsonHttpMessageConverter"
-          class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+    <!--<bean id="fastJsonHttpMessageConverter"-->
+    <!--class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">-->
 
-        <property name="supportedMediaTypes">
-            <list>
-                <value>application/json;charset=UTF-8</value>
-                <value>text/html;charset=UTF-8</value><!-- 避免IE出现下载JSON文件的情况 -->
-            </list>
-        </property>
-        <property name="features">
-            <list>
-                <!-- <value>WriteMapNullValue</value> -->
-                <value>QuoteFieldNames</value>
-                <value>WriteDateUseDateFormat</value>
-            </list>
-        </property>
-    </bean>
+    <!--<property name="supportedMediaTypes">-->
+    <!--<list>-->
+    <!--<value>application/json;charset=UTF-8</value>-->
+    <!--<value>text/html;charset=UTF-8</value>&lt;!&ndash; 避免IE出现下载JSON文件的情况 &ndash;&gt;-->
+    <!--</list>-->
+    <!--</property>-->
+    <!--<property name="features">-->
+    <!--<list>-->
+    <!--&lt;!&ndash; <value>WriteMapNullValue</value> &ndash;&gt;-->
+    <!--<value>QuoteFieldNames</value>-->
+    <!--<value>WriteDateUseDateFormat</value>-->
+    <!--</list>-->
+    <!--</property>-->
+    <!--</bean>-->
 
     <bean id="castorMarshaller" class="org.springframework.oxm.castor.CastorMarshaller"/>
     <!--信息转换 - 结束-->
