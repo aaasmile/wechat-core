@@ -1,7 +1,12 @@
 package com.d1m.wechat.configure;
 
+import com.d1m.wechat.web.AnnotationMappingJackson2HttpMessageConverter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -41,6 +46,7 @@ public class WebMvcConfigure extends WebMvcConfigurerAdapter {
 
     /**
      * 请求拦截器配置
+     *
      * @param registry
      */
     @Override
@@ -55,18 +61,27 @@ public class WebMvcConfigure extends WebMvcConfigurerAdapter {
 
     /**
      * 资源文件服务
-     * @author Owen Jia
+     *
      * @param registry
+     * @author Owen Jia
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
-        
-        
+
+
         registry.addResourceHandler("swagger-ui.html")
-        	.addResourceLocations("classpath:/META-INF/resources/");
+                .addResourceLocations("classpath:/META-INF/resources/");
 
         registry.addResourceHandler("/webjars/**")
-        	.addResourceLocations("classpath:/META-INF/resources/webjars/");
+                .addResourceLocations("classpath:/META-INF/resources/webjars/");
+    }
+
+    @Bean
+    public AnnotationMappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter(
+            ObjectMapper objectMapper) {
+        final AnnotationMappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new AnnotationMappingJackson2HttpMessageConverter(objectMapper);
+        mappingJackson2HttpMessageConverter.setSupportedMediaTypes(Lists.newArrayList(new MediaType("application", "*+json")));
+        return mappingJackson2HttpMessageConverter;
     }
 }

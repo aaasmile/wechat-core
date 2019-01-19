@@ -1,11 +1,13 @@
 package com.d1m.wechat.domain.web;
 
+import com.d1m.wechat.anno.Jackson;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
  * Created by jone.wang on 2018/11/6.
  * Description:
  */
+//@Jackson
 public class BaseResponse<T> {
     @ApiModelProperty(value = "状态码", required = true)
     private Integer resultCode;
