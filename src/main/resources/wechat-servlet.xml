@@ -25,124 +25,122 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/mvc
-       http://www.springframework.org/schema/mvc/spring-mvc.xsd
-       http://www.springframework.org/schema/context
-       http://www.springframework.org/schema/context/spring-context.xsd">
-  <mvc:interceptors>  
-	 <mvc:interceptor>  
-	     <mvc:mapping path="/**/*.json"/>
-	     <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
-	     	<property name="paramName" value="locate" />
-	     </bean>
-	 </mvc:interceptor>
-    <mvc:interceptor>
-      <mvc:mapping path="/**"/>
-      <bean class="com.d1m.common.ds.MultiTenancyInterceptor" />
-    </mvc:interceptor>
-  </mvc:interceptors>
-  <mvc:default-servlet-handler/> 
-  
-  <!--RequestMappingHandlerAdapter-->
-  <mvc:annotation-driven>
-    <mvc:message-converters>
-      <ref bean="stringHttpMessageConverter"/>
-      <ref bean="fastJsonHttpMessageConverter"/>
-      <ref bean="marshallingHttpMessageConverter"/>
-    </mvc:message-converters>
-  </mvc:annotation-driven>
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**/*.json"/>
+            <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+                <property name="paramName" value="locate"/>
+            </bean>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="com.d1m.common.ds.MultiTenancyInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+    <mvc:default-servlet-handler/>
 
-  <mvc:resources location="/attached/" mapping="/attached/**"/> 
+    <!--RequestMappingHandlerAdapter-->
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <ref bean="mappingJackson2HttpMessageConverter"/>
+            <ref bean="stringHttpMessageConverter"/>
+            <ref bean="fastJsonHttpMessageConverter"/>
+            <ref bean="marshallingHttpMessageConverter"/>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
 
-  <!--<context:component-scan base-package="com.d1m.wechat.controller"/>-->
+    <mvc:resources location="/attached/" mapping="/attached/**"/>
 
-  <bean id="stringHttpMessageConverter"
-        class="org.springframework.http.converter.StringHttpMessageConverter">
-      <constructor-arg value="UTF-8" index="0"/><!--避免出现乱码 -->
-    <property name="supportedMediaTypes">
-      <list>
-        <value>text/plain;charset=UTF-8</value>
-      </list>
-    </property>
-  </bean>
+    <!--<context:component-scan base-package="com.d1m.wechat.controller"/>-->
 
-  <bean id="marshallingHttpMessageConverter"
-        class="org.springframework.http.converter.xml.MarshallingHttpMessageConverter">
-    <property name="marshaller" ref="castorMarshaller"/>
-    <property name="unmarshaller" ref="castorMarshaller"/>
-  </bean>
-  <bean id="fastJsonHttpMessageConverter"
-        class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+    <bean id="stringHttpMessageConverter"
+          class="org.springframework.http.converter.StringHttpMessageConverter">
+        <constructor-arg value="UTF-8" index="0"/><!--避免出现乱码 -->
+        <property name="supportedMediaTypes">
+            <list>
+                <value>text/plain;charset=UTF-8</value>
+            </list>
+        </property>
+    </bean>
 
-    <property name="supportedMediaTypes">
-      <list>
-        <value>application/json;charset=UTF-8</value>
-        <value>text/html;charset=UTF-8</value><!-- 避免IE出现下载JSON文件的情况 -->
-      </list>
-    </property>
-    <property name="features">
-      <list>
-        <!-- <value>WriteMapNullValue</value> -->
-        <value>QuoteFieldNames</value>
-        <value>WriteDateUseDateFormat</value>
-      </list>
-    </property>
-  </bean>
+    <bean id="marshallingHttpMessageConverter"
+          class="org.springframework.http.converter.xml.MarshallingHttpMessageConverter">
+        <property name="marshaller" ref="castorMarshaller"/>
+        <property name="unmarshaller" ref="castorMarshaller"/>
+    </bean>
+    <bean id="fastJsonHttpMessageConverter"
+          class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
 
-  <bean id="castorMarshaller" class="org.springframework.oxm.castor.CastorMarshaller"/>
-  <!--信息转换 - 结束-->
+        <property name="supportedMediaTypes">
+            <list>
+                <value>application/json;charset=UTF-8</value>
+                <value>text/html;charset=UTF-8</value><!-- 避免IE出现下载JSON文件的情况 -->
+            </list>
+        </property>
+        <property name="features">
+            <list>
+                <!-- <value>WriteMapNullValue</value> -->
+                <value>QuoteFieldNames</value>
+                <value>WriteDateUseDateFormat</value>
+            </list>
+        </property>
+    </bean>
 
-  <bean id="contentNegotiationManagerFactoryBean"
-        class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
-    <property name="defaultContentType" value="text/html"/>
-    <property name="ignoreAcceptHeader" value="true"/>
-    <property name="favorPathExtension" value="true"/>
-    <property name="favorParameter" value="false"/>
-    <property name="mediaTypes">
-      <map>
-        <entry key="xml" value="application/xml"/>
-        <entry key="atom" value="application/atom+xml"/>
-        <entry key="json" value="application/json"/>
-        <entry key="html" value="text/html"/>
-      </map>
-    </property>
-  </bean>
+    <bean id="castorMarshaller" class="org.springframework.oxm.castor.CastorMarshaller"/>
+    <!--信息转换 - 结束-->
 
-  <!--内容协商-->
-  <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
-    <property name="contentNegotiationManager" ref="contentNegotiationManagerFactoryBean"/>
-    <property name="viewResolvers">
-      <list>
-          <bean class="org.springframework.web.servlet.view.BeanNameViewResolver"/>
-          <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-          <property name="prefix" value="/WEB-INF/jsp/"/>
-          <property name="suffix" value=".jsp"/>
-        </bean>
-      </list>
-    </property>
-    <property name="defaultViews">
-      <list>
-        <bean class="com.alibaba.fastjson.support.spring.FastJsonJsonView"/>
-        <bean class="org.springframework.web.servlet.view.xml.MarshallingView">
-          <property name="marshaller" ref="castorMarshaller"/>
-        </bean>
-      </list>
-    </property>
-  </bean>
+    <bean id="contentNegotiationManagerFactoryBean"
+          class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+        <property name="defaultContentType" value="text/html"/>
+        <property name="ignoreAcceptHeader" value="true"/>
+        <property name="favorPathExtension" value="true"/>
+        <property name="favorParameter" value="false"/>
+        <property name="mediaTypes">
+            <map>
+                <entry key="xml" value="application/xml"/>
+                <entry key="atom" value="application/atom+xml"/>
+                <entry key="json" value="application/json"/>
+                <entry key="html" value="text/html"/>
+            </map>
+        </property>
+    </bean>
+
+    <!--内容协商-->
+    <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <property name="contentNegotiationManager" ref="contentNegotiationManagerFactoryBean"/>
+        <property name="viewResolvers">
+            <list>
+                <bean class="org.springframework.web.servlet.view.BeanNameViewResolver"/>
+                <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+                    <property name="prefix" value="/WEB-INF/jsp/"/>
+                    <property name="suffix" value=".jsp"/>
+                </bean>
+            </list>
+        </property>
+        <property name="defaultViews">
+            <list>
+                <bean class="com.alibaba.fastjson.support.spring.FastJsonJsonView"/>
+                <bean class="org.springframework.web.servlet.view.xml.MarshallingView">
+                    <property name="marshaller" ref="castorMarshaller"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
 
     <bean id="report_xls" class="com.d1m.wechat.controller.report.ReportXlsView"/>
 
-  <!--文件上传-->
-  <!--<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-    <property name="maxUploadSize" value="1000000000"/>
-  </bean>-->
+    <!--文件上传-->
+    <!--<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+      <property name="maxUploadSize" value="1000000000"/>
+    </bean>-->
 
-  <!--<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor"/>-->
-  <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
-    <property name="securityManager" ref="securityManager"/>
-  </bean>
+    <!--<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor"/>-->
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
 </beans>
