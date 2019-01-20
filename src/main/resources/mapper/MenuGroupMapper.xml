@@ -108,6 +108,26 @@
 			AND ic.is_deleted = 0
 			AND ic.id = #{id}
 		</if>
+
+		<if test="type != 41">
+			SELECT
+			ic.id,
+			ic.brand,
+			ic.`name`,
+			ic.type,
+			ic.method_type,
+			ic.`event`,
+			ic.url,
+			ib.app_key,
+			ib.app_secret
+			FROM
+			interface_config ic
+			LEFT JOIN interface_brand ib ON ic.brand = ib.id
+			WHERE
+			ic.is_deleted = 0
+			AND ic.is_deleted = 0
+			AND ic.id = -1
+		</if>
 	</select>
 
 	<resultMap id="MaterialResultMap" type="com.d1m.wechat.dto.MaterialDto">
