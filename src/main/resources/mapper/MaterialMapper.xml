@@ -66,7 +66,7 @@
             m.status = 1 and mt.status = 1 and m.wechat_id = #{wechatId} and m.material_type = 1
             <if test="query != null">
                 and (mt.title like CONCAT('%','${query}','%' ) or mt.author like CONCAT('%','${query}','%' ) or
-                mt.summary like CONCAT('%','${query}','%' ))
+                mt.summary like CONCAT('%','${query}','%' ) or mt.remarks like CONCAT('%','${query}','%' ))
             </if>
             <if test="pushed != null">
                 <if test="pushed == true">
@@ -295,8 +295,9 @@
     </select>
 
     <select id="queryMtByDetailId" resultType="com.d1m.wechat.model.Material">
-        select t.* from material t
-        INNER JOIN material_image_text_detail f on t.id=f.material_id
-        where f.id=#{id}
+        select t.*
+        from material t
+                 INNER JOIN material_image_text_detail f on t.id = f.material_id
+        where f.id = #{id}
     </select>
 </mapper>
