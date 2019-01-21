@@ -205,7 +205,7 @@ public class QrcodeActionEngineController extends BaseController {
 								ImageTextDto imageTextDto = new ImageTextDto();
 								List<ImageTextDto> items = new ArrayList<ImageTextDto>();
 								if(detailDto != null) {
-									materialDto.setId(material.getId());
+									materialDto.setId(detailDto.getId());
 									materialDto.setTitle(material.getTitle());
 									
 									imageTextDto.setAuthor("");
