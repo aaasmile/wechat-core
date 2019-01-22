@@ -23,6 +23,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.gson.Gson;
 import com.xxl.job.core.biz.model.ReturnT;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
@@ -37,6 +38,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
@@ -808,6 +810,14 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
             if (wxMessage.fail()) {
                 throw new WechatException(Message.SYSTEM_ERROR);
             }
+            try {
+                List<Integer> ids = list.stream().map(MemberDto::getId).collect(Collectors.toList());
+                if (!CollectionUtils.isEmpty(ids)) {
+                    memberMapper.updateBatchSendMonth(ids);
+                }
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            }
         } else {
             log.debug("start sendMassMessage by Query");
             String batchSizeStr = configService.getConfigValue(wechatId, "MASS_CONVERSATION", "BATCH_SIZE");
@@ -904,18 +914,9 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
     }
 
     private List<String> getOpenIds(List<MemberDto> members) {
-        List<Integer> idList = new ArrayList<Integer>();
         List<String> openIdList = new LinkedList<>();
         for (MemberDto member : members) {
             openIdList.add(member.getOpenId());
-            idList.add(member.getId());
-        }
-        try {
-            if(!idList.isEmpty()){
-                memberMapper.updateBatchSendMonth(idList);
-            }
-        } catch(Exception e) {
-            log.error(e.getMessage(), e);
         }
         return openIdList;
     }
