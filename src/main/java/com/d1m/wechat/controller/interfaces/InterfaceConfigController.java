@@ -90,9 +90,10 @@ public class InterfaceConfigController extends BaseController {
 	public JSONObject updateItems(@RequestBody InterfaceConfig interfaceConfig) {
 		try {
 			final InterfaceConfig ifcf = new InterfaceConfig();
+			ifcf.setId(interfaceConfig.getId());
 			ifcf.setName(interfaceConfig.getName());
 			ifcf.setBrand(interfaceConfig.getBrand());
-			int count =interfaceConfigService.checkRepeat(ifcf);
+			int count =interfaceConfigService.checkRepeatById(ifcf.getId(),ifcf.getBrand(),ifcf.getName());
 			if(count>0){
 				return representation(Message.INTERFACECONFIG_EXIST);
 			}
@@ -137,13 +138,6 @@ public class InterfaceConfigController extends BaseController {
 	@RequestMapping(value = "listBrand.json", method = RequestMethod.GET)
 	public JSONObject listBrand() {
 		try {
-			/* @RequestParam(required = false) String name,
-			                    @RequestParam(required = false, defaultValue = "1") Integer pageNum,
-								@RequestParam(required = false, defaultValue = "1") Integer pageSize
-			PageHelper.startPage(pageNum, pageSize);
-			final List<InterfaceConfigBrandDto> icbds = interfaceConfigService.listBrand(name);
-			final PageInfo<InterfaceConfigBrandDto> pageInfo = new PageInfo<>(icbds);
-			log.info("获取第三方列表：{} 总数：{}",pageInfo.getList().toArray(),pageInfo.getTotal());*/
 			return representation(Message.SUCCESS,interfaceConfigService.listBrand());
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);

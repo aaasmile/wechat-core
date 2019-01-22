@@ -32,4 +32,8 @@ public interface InterfaceConfigService {
 	InterfaceConfigDto getSecret(String id);
     //檢查name是否重復
 	int checkRepeat(InterfaceConfig ifcf);
+
+	int checkRepeatById(String id, String brand, String name);
+
+
 }

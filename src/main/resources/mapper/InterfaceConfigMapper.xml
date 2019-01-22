@@ -53,4 +53,11 @@
 		WHERE ic.id = #{0}
 	</select>
 
+	<select id="checkRepeatById" resultType="int">
+		SELECT COUNT(*)
+		FROM interface_config ic
+		WHERE  ic.id != #{id}
+		 AND  ic.brand = #{brand} AND ic.name =#{name}
+	</select>
+
 </mapper>

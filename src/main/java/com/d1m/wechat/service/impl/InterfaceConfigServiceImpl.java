@@ -114,4 +114,12 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
     public int checkRepeat(InterfaceConfig ifcf) {
         return interfaceConfigMapper.selectCount(ifcf);
     }
+
+	@Override
+	public int checkRepeatById(String id, String brand, String name) {
+
+		return interfaceConfigMapper.checkRepeatById(id,brand,name);
+	}
+
+
 }
