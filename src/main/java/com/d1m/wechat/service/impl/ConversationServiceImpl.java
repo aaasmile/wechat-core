@@ -23,6 +23,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.gson.Gson;
 import com.xxl.job.core.biz.model.ReturnT;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
@@ -37,6 +38,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
@@ -803,21 +805,17 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
             // batch insert into DB
             insertConversationListToDB(massConversations);
 
-            List<String> idList = getOpenIds(list);
             wxMessage = WechatClientDelegate.sendMessage(wechatId, getOpenIds(list), msgType.toString().toLowerCase(), wxMassMessage);
             log.info("sendMessageResponse : {}", wxMessage);
             if (wxMessage.fail()) {
                 throw new WechatException(Message.SYSTEM_ERROR);
             }
             try {
-                List<Integer> ids = new ArrayList<>();
-                for(String id : idList) {
-                    ids.add(Integer.valueOf(id));
-                }
-                if(!idList.isEmpty()){
+                List<Integer> ids = list.stream().map(MemberDto::getId).collect(Collectors.toList());
+                if (!CollectionUtils.isEmpty(ids)) {
                     memberMapper.updateBatchSendMonth(ids);
                 }
-            } catch(Exception e) {
+            } catch (Exception e) {
                 log.error(e.getMessage(), e);
             }
         } else {
