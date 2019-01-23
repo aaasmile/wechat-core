@@ -101,7 +101,7 @@
     <select id="selectImageTextDetail" parameterType="hashmap" resultMap="ImageTextDetailResultMap">
         SELECT mt.id as id, mt.wechat_id as wechatId, mt.title as title, mt.summary as summary, m.pic_url as
         material_cover_url, mt.content_source_url as contentSourceUrl, mt.remarks as remarks, mt.status as available
-        ,mt.content as content, m.media_id media_id,mt.sn
+        ,mt.content as content, m.media_id media_id,mt.sn, mt.material_cover_id as material_cover_id
         FROM material_image_text_detail mt LEFT JOIN material m ON mt.material_cover_id = m.id
         <where>
             mt.material_id = #{materialId} and mt.status = 1
@@ -117,6 +117,7 @@
         <result column="remarks" jdbcType="VARCHAR" property="remarks"/>
         <result column="available" jdbcType="TINYINT" property="available"/>
         <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="material_cover_id" jdbcType="INTEGER" property="materialCoverId"/>
         <result column="media_id" jdbcType="VARCHAR" property="mediaId"/>
     </resultMap>
 
@@ -146,7 +147,7 @@
         mt.content_source_url as content_source_url, mt.content_source_checked as content_source_checked,
         mt.show_cover as show_cover, mt.summary as summary, m.id as material_cover_id, m.pic_url as material_cover_url,
         m.media_id as material_cover_media_id ,mt.comment , mt.remarks as remarks, mt.status as available,
-        mt.url, mt.content as content,m.media_id media_id
+        mt.url, mt.content as content,m.media_id media_id,mt.material_cover_id as material_cover_id
         FROM material_image_text_detail mt LEFT JOIN material m ON mt.material_cover_id = m.id
         <where>
             <!--<if test="status!=null">-->
@@ -177,6 +178,7 @@
         <result column="content_source_checked" jdbcType="BIT" property="contentSourceChecked"/>
         <result column="material_cover_media_id" jdbcType="VARCHAR" property="materialCoverMediaId"/>
         <result column="remarks" jdbcType="VARCHAR" property="remarks"/>
+        <result column="material_cover_id" jdbcType="INTEGER" property="materialCoverId"/>
         <result column="available" jdbcType="TINYINT" property="available"/>
         <result column="content" jdbcType="VARCHAR" property="content"/>
         <result column="url" jdbcType="VARCHAR" property="url"/>
@@ -260,7 +262,8 @@
         m.media_id AS material_cover_media_id,
         mt.COMMENT,
         mt.remarks as remarks,
-        m.media_id as media_id
+        m.media_id as media_id,
+        mt.material_cover_id as material_cover_id
         FROM
         material_image_text_detail mt
         LEFT JOIN material m ON mt.material_cover_id = m.id
