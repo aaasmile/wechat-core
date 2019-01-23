@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -60,6 +61,8 @@ public class Upgradev451ServiceImpl implements Upgradev451Service {
                        dcrmImageTextDetail.setPicUrl(coverMaterial.getPicUrl());
                        dcrmImageTextDetail.setMaterialCoverId(coverMaterial.getId());
                        dcrmImageTextDetail.setUrl(materialImageTextDetailR.getUrl());
+                       dcrmImageTextDetail.setLink(materialImageTextDetailR.getContentSourceUrl());
+                       dcrmImageTextDetail.setMaterialId(materialImageTextDetailR.getMaterialId());
 //                       dcrmImageTextDetail.setWxImageTextId(materialImageTextDetailR.getId());
                        dcrmImageTextDetailMapper.insert(dcrmImageTextDetail);
                        //逻辑删除数据
@@ -153,8 +156,9 @@ public class Upgradev451ServiceImpl implements Upgradev451Service {
                             List<DcrmImageTextDetail> dcrmImageTextDetailList = dcrmImageTextDetailMapper.selectByExample(dcrmImageTextDetailExample);
                             if(dcrmImageTextDetailList != null && !dcrmImageTextDetailList.isEmpty()) {
                                 DcrmImageTextDetail dcrmImageTextDetailR = dcrmImageTextDetailList.get(0);
-
-                                dcrmObj.put("value","[" + dcrmImageTextDetailR.getId() + "]");
+                                List<Integer> list = new ArrayList<>();
+                                list.add(dcrmImageTextDetailR.getId());
+                                dcrmObj.put("value", list);
                             } else {
                                 final Example materialImageTextDetailExample = new Example(DcrmImageTextDetail.class);
                                 materialImageTextDetailExample.createCriteria().andEqualTo("materialId", materialR.getId()).andEqualTo("status",(byte) 1);
@@ -163,7 +167,9 @@ public class Upgradev451ServiceImpl implements Upgradev451Service {
                                     continue;
                                 }
                                 MaterialImageTextDetail materialImageTextDetailR = materialImageTextDetailList.get(0);
-                                dcrmObj.put("value","[" + materialImageTextDetailR.getId() + "]");
+                                List<Integer> list = new ArrayList<>();
+                                list.add(materialImageTextDetailR.getId());
+                                dcrmObj.put("value", list);
                             }
                         }
                     } catch(Exception e) {
