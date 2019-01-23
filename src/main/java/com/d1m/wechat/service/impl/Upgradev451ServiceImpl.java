@@ -158,6 +158,7 @@ public class Upgradev451ServiceImpl implements Upgradev451Service {
                                 DcrmImageTextDetail dcrmImageTextDetailR = dcrmImageTextDetailList.get(0);
                                 List<Integer> list = new ArrayList<>();
                                 list.add(dcrmImageTextDetailR.getId());
+                                dcrmObj.put("code"  , 301);
                                 dcrmObj.put("value", list);
                             } else {
                                 final Example materialImageTextDetailExample = new Example(DcrmImageTextDetail.class);
