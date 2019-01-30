@@ -1,6 +1,7 @@
 package com.d1m.wechat.domain.web;
 
 import com.d1m.wechat.anno.Jackson;
+import com.d1m.wechat.util.Message;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
@@ -78,6 +79,13 @@ public class BaseResponse<T> {
         public BaseResponse build() {
             return new BaseResponse<>(this);
         }
+    }
+
+    public static BaseResponse create(Message message) {
+        final BaseResponse<String> baseResponse = new BaseResponse<>();
+        baseResponse.setMsg(message.getName());
+        baseResponse.setResultCode(message.getCode());
+        return baseResponse;
     }
 
     private BaseResponse(Builder<T> builder) {
