@@ -26,7 +26,7 @@ CREATE TABLE `dcrm_image_text_detail` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `title` varchar(255) CHARACTER SET utf8 DEFAULT NULL COMMENT '标题',
   `content` longtext CHARACTER SET utf8 COMMENT '正文',
-  `link` varchar(100) CHARACTER SET utf8 DEFAULT NULL COMMENT '地址',
+  `link` varchar(512) CHARACTER SET utf8 DEFAULT NULL COMMENT '地址',
   `material_cover_id` int(11) DEFAULT NULL COMMENT '封面图片素材ID',
   `summary` varchar(120) CHARACTER SET utf8 DEFAULT NULL COMMENT '摘要',
   `material_id` int(11) DEFAULT NULL COMMENT '素材ID',
