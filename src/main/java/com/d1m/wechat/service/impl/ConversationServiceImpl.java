@@ -118,7 +118,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
             notBlank(material, Message.MATERIAL_NOT_EXIST);
             log.info("material mediaId : {}", material.getMediaId());
             if (material.getMaterialType() == MaterialType.IMAGE_TEXT.getValue()) {
-                MaterialDto materialDto = materialService.getImageText(wechatId, conversationModel.getMaterialId());
+                MaterialDto materialDto = materialService.getImageText(wechatId, conversationModel.getMaterialId(), true);
                 log.info("items : {}", materialDto.getItems() != null ? materialDto.getItems().size() : "");
                 List<ImageTextDto> items = materialDto.getItems();
                 if (items != null && !items.isEmpty()) {
@@ -520,7 +520,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
             ConversationImageTextDetail conversationImageTextDetail = null;
             if (materialType == MaterialType.IMAGE_TEXT.getValue()) {
                 log.info("materialType..." + MaterialType.IMAGE_TEXT.toString());
-                MaterialDto materialDto = materialService.getImageText(wechatId, massConversationResult.getMaterialId());
+                MaterialDto materialDto = materialService.getImageText(wechatId, massConversationResult.getMaterialId(), true);
                 List<ImageTextDto> items = materialDto.getItems();
                 JSONArray itemArray = new JSONArray();
                 JSONObject itemJson = null;
