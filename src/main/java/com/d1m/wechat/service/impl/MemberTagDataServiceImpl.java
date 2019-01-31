@@ -219,8 +219,10 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             log.info("taskName:{}", memberTagCsv.getTask());
             log.info("runTask:{}", runTask);
             log.info("memberTagCsv:{}", JSON.toJSON(memberTagCsv));
+            log.info("batchInsertFromCsv,获取当前租户: " + TenantContext.getCurrentTenant());
+            String tenent =TenantContext.getCurrentTenant();
             //发起任务调度
-            schedulerTask(memberTagCsv.getTask(), runTask, memberTagCsv);
+            schedulerTask(memberTagCsv.getTask(), runTask, memberTagCsv,tenent);
             log.info("Batch schedulerTask finish!");
         } catch (IOException e) {
             log.error("Csv to pojo error", e);
@@ -260,16 +262,16 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
      * @param runTask
      * @param record
      */
-    public void schedulerTask(String taskName, Date runTask, MemberTagCsv record) {
+    public void schedulerTask(String taskName, Date runTask, MemberTagCsv record,String tenent) {
         try {
             // 1、获取数据源
-            String domain = tenantHelper.getTenantByWechatId(record.getWechatId());
+            /*String domain = tenantHelper.getTenantByWechatId(record.getWechatId());
             if (StringUtils.isNotBlank(domain)) {
                 TenantContext.setCurrentTenant(domain);
                 log.info("This domain: " + domain);
             }
             TenantContext.setCurrentTenant(domain);
-            log.info("获取当前租户: " + TenantContext.getCurrentTenant());
+            log.info("获取当前租户: " + TenantContext.getCurrentTenant());*/
 
             //5、准备发起异步任务调度
             Map<String, Object> jobMap = new HashMap<>();
@@ -277,7 +279,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
             jobMap.put("jobDesc", taskName);
             jobMap.put("jobCron", DateUtil.cron.format(runTask));
             jobMap.put("executorHandler", "memberTagCsvJob");
-            jobMap.put("executorParam", "-d" + TenantContext.getCurrentTenant() + "," + record.getFileId() + "," + record.getWechatId());
+            jobMap.put("executorParam", "-d" + tenent + "," + record.getFileId() + "," + record.getWechatId());
 
             ReturnT<String> returnT = schedulerRestService.addJob(jobMap);
             log.info("jobMap:" + JSON.toJSON(jobMap));
