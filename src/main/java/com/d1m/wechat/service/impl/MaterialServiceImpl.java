@@ -97,17 +97,29 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
     }
 
     @Override
-    public MaterialDto getImageText(Integer wechatId, Integer id) {
-        MaterialDto materialDto = materialMapper.getImageText(wechatId, id);
-        if (Objects.nonNull(materialDto)) {
-            return materialDto;
+    public MaterialDto getImageText(Integer wechatId, Integer id, Boolean isSub) {
+        MaterialDto materialDto = null;
+        if (Boolean.TRUE.equals(isSub)) {
+            final List<ImageTextDto> imageTextDtos = materialMapper.getImageTextDetail(ImmutableMap.of("id", id));
+            if (CollectionUtils.isNotEmpty(imageTextDtos)) {
+                materialDto = new MaterialDto();
+                BeanUtils.copyProperties(imageTextDtos.get(0), materialDto);
+                materialDto.setItems(imageTextDtos);
+            }
+        } else {
+            materialDto = materialMapper.getImageText(wechatId, id);
         }
-        final List<ImageTextDto> imageTextDtos = materialMapper.getImageTextDetail(ImmutableMap.of("id", id));
-        if (CollectionUtils.isNotEmpty(imageTextDtos)) {
-            materialDto = new MaterialDto();
-            BeanUtils.copyProperties(imageTextDtos.get(0), materialDto);
-            materialDto.setItems(imageTextDtos);
-        }
+
+//        MaterialDto materialDto = materialMapper.getImageText(wechatId, id);
+//        if (Objects.nonNull(materialDto)) {
+//            return materialDto;
+//        }
+//        final List<ImageTextDto> imageTextDtos = materialMapper.getImageTextDetail(ImmutableMap.of("id", id));
+//        if (CollectionUtils.isNotEmpty(imageTextDtos)) {
+//            materialDto = new MaterialDto();
+//            BeanUtils.copyProperties(imageTextDtos.get(0), materialDto);
+//            materialDto.setItems(imageTextDtos);
+//        }
         return materialDto;
     }
 
@@ -734,7 +746,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
     @Override
     public synchronized void pushMaterialImageTextToWx(Integer wechatId,
                                                        User user, Integer materialId) {
-        MaterialDto imageText = getImageText(wechatId, materialId);
+        MaterialDto imageText = getImageText(wechatId, materialId, true);
         notBlank(imageText, Message.MATERIAL_NOT_EXIST);
         if (imageText.getItems() == null || imageText.getItems().isEmpty()) {
             throw new WechatException(Message.MATERIAL_IMAGE_TEXT_NOT_BLANK);
