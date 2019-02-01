@@ -38,6 +38,7 @@ import com.d1m.wechat.service.MemberTagService;
 import com.d1m.wechat.service.ReplyService;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
+import tk.mybatis.mapper.entity.Example;
 
 @Api(value = "自动回复API", tags = "自动回复接口")
 @Controller
@@ -178,126 +179,134 @@ public class ReplyController extends BaseController {
 			}
 			json.put("condition", parseObject);
 		}
+		log.info("..." + dto.getEffect());
 		if (StringUtils.isNotBlank(dto.getEffect())) {
-			List<ActionEngineEffect> qrcodeActionEngineEffects = JSONObject.parseArray(dto.getEffect(), ActionEngineEffect.class);
-			JSONArray codeArray = new JSONArray();
-			JSONObject codeJson = null;
-			if (qrcodeActionEngineEffects != null) {
-				JSONArray valueArray = null;
-				JSONObject valueJson = null;
-				for (ActionEngineEffect qae : qrcodeActionEngineEffects) {
-					Integer[] value = qae.getValue();
-					if (qae.getCode().byteValue() == Effect.ADD_MEMBER_TAG.getValue()) {
-						valueArray = new JSONArray();
-						MemberTag memberTag = null;
-						for (Integer id : value) {
-							memberTag = memberTagService.get(wechatId, id);
-							if (memberTag != null) {
-								valueJson = new JSONObject();
-								valueJson.put("id", memberTag.getId());
-								valueJson.put("name", memberTag.getName());
-								valueArray.add(valueJson);
-							}
-						}
-					} else if (qae.getCode().byteValue() == Effect.SEND_IMAGE_TEXT.getValue()) {
-						log.info("convert...effect..." + Effect.SEND_IMAGE_TEXT.toString());
-						valueArray = new JSONArray();
-						for (Integer id : value) {
-							try {
-								MaterialImageTextDetail detailDto = materialImageTextDetailService.selectByKey(id);
-								if(detailDto == null) {
-									continue;
-								}
-								Material material = materialService.selectByKey(detailDto.getMaterialCoverId());
-								MaterialDto materialDto = new MaterialDto();
-								ImageTextDto imageTextDto = new ImageTextDto();
-								List<ImageTextDto> items = new ArrayList<ImageTextDto>();
-								if(detailDto != null) {
-									materialDto.setId(material.getId());
-									materialDto.setTitle(material.getTitle());
-									
-									imageTextDto.setAuthor("");
-									imageTextDto.setContent(detailDto.getContent());
-									imageTextDto.setSummary(detailDto.getSummary());
-									imageTextDto.setTitle(detailDto.getTitle());
-									imageTextDto.setMaterialCoverUrl(material.getPicUrl());
-									imageTextDto.setContentSourceUrl(detailDto.getContentSourceUrl());
-									items.add(imageTextDto);
-									
-									materialDto.setItems(items);
-									valueArray.add(materialDto);
-								}
-							} catch (Exception e) {
-								log.error(e.getMessage(), e);
-							}
-						}
-					} else if (qae.getCode().byteValue() == Effect.SEND_IMAGE.getValue()) {
-						Material material = null;
-						for (Integer id : value) {
+			try {
+				List<ActionEngineEffect> qrcodeActionEngineEffects = JSONObject.parseArray(dto.getEffect(), ActionEngineEffect.class);
+				JSONArray codeArray = new JSONArray();
+				JSONObject codeJson = null;
+				if (qrcodeActionEngineEffects != null) {
+					JSONArray valueArray = null;
+					JSONObject valueJson = null;
+					for (ActionEngineEffect qae : qrcodeActionEngineEffects) {
+						Integer[] value = qae.getValue();
+						if (qae.getCode().byteValue() == Effect.ADD_MEMBER_TAG.getValue()) {
 							valueArray = new JSONArray();
-							material = materialService.getMaterial(wechatId, id);
-							if (material != null) {
-								valueJson = new JSONObject();
-								valueJson.put("id", material.getId());
-								valueJson.put("url", material.getPicUrl());
-								valueArray.add(valueJson);
+							MemberTag memberTag = null;
+							for (Integer id : value) {
+								memberTag = memberTagService.get(wechatId, id);
+								if (memberTag != null) {
+									valueJson = new JSONObject();
+									valueJson.put("id", memberTag.getId());
+									valueJson.put("name", memberTag.getName());
+									valueArray.add(valueJson);
+								}
 							}
-						}
-					} else if (qae.getCode().byteValue() == Effect.SEND_MINI_PROGRAM.getValue()) {
-						MiniProgramDto miniProgramDto;
-						for (Integer id : value) {
+						} else if (qae.getCode().byteValue() == Effect.SEND_IMAGE_TEXT.getValue()) {
+							log.info("convert...effect..." + Effect.SEND_IMAGE_TEXT.toString());
 							valueArray = new JSONArray();
-							miniProgramDto = materialService.getMiniProgramByMaterialId(wechatId, id);
-							if (miniProgramDto != null) {
-								valueJson = new JSONObject();
-								valueJson.put("id", miniProgramDto.getId());
-								valueJson.put("thumbUrl", miniProgramDto.getThumbUrl());
-								valueArray.add(valueJson);
-							}
-						}
-					} else if (qae.getCode().byteValue() == Effect.SEND_TEXT.getValue()) {
-						valueArray = new JSONArray();
-					} else if(qae.getCode().byteValue() == Effect.SEND_DCRM_IMAGE_TEXT.getValue()) {
-						log.info("convert...effect..." + Effect.SEND_DCRM_IMAGE_TEXT.toString());
-						valueArray = new JSONArray();
-						for (Integer id : value) {
-							try {
-								DcrmImageTextDetailDto detailDto = DcrmImageTextDetailService.queryObject(id);
-								if(detailDto == null) {
-									continue;
+							for (Integer id : value) {
+								try {
+									final Example example = new Example(MaterialImageTextDetail.class);
+									example.createCriteria().andEqualTo("id", id).andEqualTo("status",(byte) 1);
+									List<MaterialImageTextDetail> materialImageTextDetailList = materialImageTextDetailService.selectByExample(example);
+									if(materialImageTextDetailList == null || materialImageTextDetailList.isEmpty()) {
+										continue;
+									}
+									MaterialImageTextDetail detailDto = materialImageTextDetailList.get(0);
+									Material material = materialService.selectByKey(detailDto.getMaterialCoverId());
+									MaterialDto materialDto = new MaterialDto();
+									ImageTextDto imageTextDto = new ImageTextDto();
+									List<ImageTextDto> items = new ArrayList<ImageTextDto>();
+									if(detailDto != null) {
+										materialDto.setId(material.getId());
+										materialDto.setTitle(material.getTitle());
+
+										imageTextDto.setAuthor("");
+										imageTextDto.setContent(detailDto.getContent());
+										imageTextDto.setSummary(detailDto.getSummary());
+										imageTextDto.setTitle(detailDto.getTitle());
+										imageTextDto.setMaterialCoverUrl(material.getPicUrl());
+										imageTextDto.setContentSourceUrl(detailDto.getContentSourceUrl());
+										items.add(imageTextDto);
+
+										materialDto.setItems(items);
+										valueArray.add(materialDto);
+									}
+								} catch (Exception e) {
+									log.error(e.getMessage(), e);
 								}
-								MaterialDto materialDto = new MaterialDto();
-								ImageTextDto imageTextDto = new ImageTextDto();
-								List<ImageTextDto> items = new ArrayList<ImageTextDto>();
-								if(detailDto != null) {
-									materialDto.setId(detailDto.getMaterialCoverId());
-									materialDto.setTitle(detailDto.getTitle());
-									
-									imageTextDto.setAuthor("");
-									imageTextDto.setContent(detailDto.getContent());
-									imageTextDto.setSummary(detailDto.getSummary());
-									imageTextDto.setTitle(detailDto.getTitle());
-									imageTextDto.setMaterialCoverUrl(detailDto.getCoverPicUrl());
-									imageTextDto.setContentSourceUrl(detailDto.getLink());
-									items.add(imageTextDto);
-									
-									materialDto.setItems(items);
-									valueArray.add(materialDto);
-								}
-							} catch (Exception e) {
-								log.error(e.getMessage(), e);
 							}
+						} else if (qae.getCode().byteValue() == Effect.SEND_IMAGE.getValue()) {
+							Material material = null;
+							for (Integer id : value) {
+								valueArray = new JSONArray();
+								material = materialService.getMaterial(wechatId, id);
+								if (material != null) {
+									valueJson = new JSONObject();
+									valueJson.put("id", material.getId());
+									valueJson.put("url", material.getPicUrl());
+									valueArray.add(valueJson);
+								}
+							}
+						} else if (qae.getCode().byteValue() == Effect.SEND_MINI_PROGRAM.getValue()) {
+							MiniProgramDto miniProgramDto;
+							for (Integer id : value) {
+								valueArray = new JSONArray();
+								miniProgramDto = materialService.getMiniProgramByMaterialId(wechatId, id);
+								if (miniProgramDto != null) {
+									valueJson = new JSONObject();
+									valueJson.put("id", miniProgramDto.getId());
+									valueJson.put("thumbUrl", miniProgramDto.getThumbUrl());
+									valueArray.add(valueJson);
+								}
+							}
+						} else if (qae.getCode().byteValue() == Effect.SEND_TEXT.getValue()) {
+							valueArray = new JSONArray();
+						} else if(qae.getCode().byteValue() == Effect.SEND_DCRM_IMAGE_TEXT.getValue()) {
+							log.info("convert...effect..." + Effect.SEND_DCRM_IMAGE_TEXT.toString());
+							valueArray = new JSONArray();
+							for (Integer id : value) {
+								try {
+									DcrmImageTextDetailDto detailDto = DcrmImageTextDetailService.queryObject(id);
+									if(detailDto == null) {
+										continue;
+									}
+									MaterialDto materialDto = new MaterialDto();
+									ImageTextDto imageTextDto = new ImageTextDto();
+									List<ImageTextDto> items = new ArrayList<ImageTextDto>();
+									if(detailDto != null) {
+										materialDto.setId(detailDto.getMaterialCoverId());
+										materialDto.setTitle(detailDto.getTitle());
+
+										imageTextDto.setAuthor("");
+										imageTextDto.setContent(detailDto.getContent());
+										imageTextDto.setSummary(detailDto.getSummary());
+										imageTextDto.setTitle(detailDto.getTitle());
+										imageTextDto.setMaterialCoverUrl(detailDto.getCoverPicUrl());
+										imageTextDto.setContentSourceUrl(detailDto.getLink());
+										items.add(imageTextDto);
+
+										materialDto.setItems(items);
+										valueArray.add(materialDto);
+									}
+								} catch (Exception e) {
+									log.error(e.getMessage(), e);
+								}
+							}
+						} else {
+							continue;
 						}
-					} else {
-						continue;
+						codeJson = new JSONObject();
+						codeJson.put("code", qae.getCode());
+						codeJson.put("value", valueArray);
+						codeJson.put("content", qae.getContent());
+						codeArray.add(codeJson);
 					}
-					codeJson = new JSONObject();
-					codeJson.put("code", qae.getCode());
-					codeJson.put("value", valueArray);
-					codeJson.put("content", qae.getContent());
-					codeArray.add(codeJson);
+					json.put("effect", codeArray);
 				}
-				json.put("effect", codeArray);
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
 			}
 		}
 		return json;

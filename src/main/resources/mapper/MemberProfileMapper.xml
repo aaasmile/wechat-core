@@ -139,7 +139,7 @@
         m.unsubscribe_at as unsubscribe_at,
         m.union_id as union_id,
         mp.province as bind_province,
-        m.mobile as bind_mobile,
+        mp.mobile as bind_mobile,
         mp.city as bind_city,
         mp.county as bind_county,
         mp.sex as bind_gender,

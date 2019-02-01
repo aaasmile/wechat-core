@@ -1,33 +1,10 @@
 stages:
-- stop
-- cleanup
 - build
 - push
 - deploy
 - release
 
 #开发环境打包发布
-#清理    
-stop-dev:
-  only:
-  - dev
-  tags:
-  - shell-deploy-dev
-  stage: stop
-  script:
-  - docker service scale wechat1_core=0
-  when: always
-  allow_failure: true
-rmi-dev:
-  only:
-  - dev
-  tags:
-  - shell-build-dev
-  stage: cleanup
-  script:
-  - docker rmi docker.d1m.cn/wechat-core:latest
-  when: always
-  allow_failure: true
 build-dev:
   stage: build
   only:

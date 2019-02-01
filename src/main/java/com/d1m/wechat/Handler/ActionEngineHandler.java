@@ -1,38 +1,37 @@
-package com.d1m.wechat.controller.api;
+package com.d1m.wechat.Handler;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.common.ds.TenantContext;
 import com.d1m.common.ds.TenantHelper;
-import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.model.ActionEngine;
 import com.d1m.wechat.service.ActionEngineService;
-import com.d1m.wechat.util.Message;
 import com.esotericsoftware.minlog.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Component;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
-@RestController
-@RequestMapping("/actionEngine")
-public class ActionEngineApiController extends BaseController {
+@Component
+public class ActionEngineHandler {
 
-    private Logger log = LoggerFactory.getLogger(ActionEngineApiController.class);
-    @Autowired
-    private ActionEngineService actionEngineService;
+    private Logger log = LoggerFactory.getLogger(ActionEngineHandler.class);
     @Resource
     TenantHelper tenantHelper;
+    @Autowired
+    private ActionEngineService actionEngineService;
 
-    @RequestMapping("deleteWechatByValue")
-    public JSONObject deleteWechatByValue(Integer value, Integer wechatId) {
-
+//    @RabbitListener(queues = "${dcrm.wechat-core.actionEngine.deleteWechatByValue}")
+    public void deleteWechatByValue(Map<String,Object> message) {
         try {
+            Integer value = (Integer) message.get("value");
+            Integer wechatId = (Integer) message.get("wechatId");
             String domain = tenantHelper.getTenantByWechatId(wechatId);
             if (domain != null){
                 TenantContext.setCurrentTenant(domain);
@@ -44,16 +43,15 @@ public class ActionEngineApiController extends BaseController {
             removeJsonObj.put("value","[" + value + "]");
             example.createCriteria().andLike("effect", removeJsonObj.toJSONString());
             updateByValue(example, removeJsonObj);
-            return representation(Message.SUCCESS);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            return representation(Message.SYSTEM_ERROR, e.getMessage());
         }
     }
-
-    @RequestMapping("deleteDcrmByValue")
-    public JSONObject deleteDcrmByValue(Integer value, Integer wechatId) {
+//    @RabbitListener(queues = "${dcrm.wechat-core.actionEngine.deleteDcrmByValue}")
+    public void deleteDcrmByValue(Map<String,Object> message) {
         try {
+            Integer value = (Integer) message.get("value");
+            Integer wechatId = (Integer) message.get("wechatId");
             String domain = tenantHelper.getTenantByWechatId(wechatId);
             if (domain != null){
                 TenantContext.setCurrentTenant(domain);
@@ -65,15 +63,12 @@ public class ActionEngineApiController extends BaseController {
             removeJsonObj.put("value","[" + value + "]");
             example.createCriteria().andLike("effect", removeJsonObj.toJSONString());
             updateByValue(example, removeJsonObj);
-            return representation(Message.SUCCESS);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            return representation(Message.SYSTEM_ERROR, e.getMessage());
         }
     }
 
     private void updateByValue(Example example, JSONObject removeJsonObj) throws Exception {
-
         List<ActionEngine> actionEngineList = actionEngineService.selectByExample(example);
         if(actionEngineList == null || actionEngineList.isEmpty()) {
             throw  new Exception("menuKey can not find from menu");

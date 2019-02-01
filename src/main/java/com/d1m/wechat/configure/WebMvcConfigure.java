@@ -1,5 +1,8 @@
 package com.d1m.wechat.configure;
 
+import com.d1m.wechat.web.JsonHttpMessageConverterStrategy;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -41,6 +44,7 @@ public class WebMvcConfigure extends WebMvcConfigurerAdapter {
 
     /**
      * 请求拦截器配置
+     *
      * @param registry
      */
     @Override
@@ -55,18 +59,25 @@ public class WebMvcConfigure extends WebMvcConfigurerAdapter {
 
     /**
      * 资源文件服务
-     * @author Owen Jia
+     *
      * @param registry
+     * @author Owen Jia
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
-        
-        
+
+
         registry.addResourceHandler("swagger-ui.html")
-        	.addResourceLocations("classpath:/META-INF/resources/");
+                .addResourceLocations("classpath:/META-INF/resources/");
 
         registry.addResourceHandler("/webjars/**")
-        	.addResourceLocations("classpath:/META-INF/resources/webjars/");
+                .addResourceLocations("classpath:/META-INF/resources/webjars/");
+    }
+
+    @Bean
+    public JsonHttpMessageConverterStrategy jsonHttpMessageConverterStrategy(
+            ObjectMapper objectMapper) {
+        return new JsonHttpMessageConverterStrategy(objectMapper);
     }
 }
