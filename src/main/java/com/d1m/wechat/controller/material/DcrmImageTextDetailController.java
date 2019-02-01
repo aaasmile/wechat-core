@@ -8,6 +8,7 @@ import com.d1m.wechat.dto.MemberDto;
 import com.d1m.wechat.dto.QueryDto;
 import com.d1m.wechat.service.ConversationService;
 import com.d1m.wechat.service.DcrmImageTextDetailService;
+import com.d1m.wechat.service.MaterialService;
 import com.d1m.wechat.service.MemberService;
 import com.d1m.wechat.util.CommonUtils;
 import com.d1m.wechat.util.Message;
@@ -47,6 +48,9 @@ public class DcrmImageTextDetailController extends BaseController {
     @Autowired
     private MemberService memberService;
 
+    @Autowired
+    private MaterialService materialService;
+
     /**
      * 保存
      */
@@ -59,6 +63,7 @@ public class DcrmImageTextDetailController extends BaseController {
             //log.info("添加非群发单图文接口入参：{}", JSON.toJSON(dto));
             Preconditions.checkArgument(StringUtils.isNotBlank(dto.getTitle()), Message.DcrmImageTextDetail_NOT_NULL);
             Preconditions.checkArgument(dto.getMaterialCoverId() != null, Message.DcrmImageTextDetail_IAMGE_NOT_NULL);
+            Preconditions.checkArgument(materialService.checkMaterialExist(dto.getMaterialCoverId())!=null,Message.Dcrm_MATRIAl_NOT_EXIST);
             dto.setCreatedBy(getUser().getId());
             dto.setWechatId(getUser().getWechatId());
             dcrmImageTextDetailService.save(dto);
@@ -82,6 +87,7 @@ public class DcrmImageTextDetailController extends BaseController {
             //log.info("更新非群发单图文接口入参：{}", JSON.toJSON(dto));
             Preconditions.checkArgument(StringUtils.isNotBlank(dto.getTitle()), Message.DcrmImageTextDetail_NOT_NULL);
             Preconditions.checkArgument(dto.getMaterialCoverId() != null, Message.DcrmImageTextDetail_IAMGE_NOT_NULL);
+            Preconditions.checkArgument(materialService.checkMaterialExist(dto.getMaterialCoverId())!=null,Message.Dcrm_MATRIAl_NOT_EXIST);
             dto.setLasteUpdatedBy(getUser().getId());
             dto.setWechatId(getUser().getWechatId());
             dcrmImageTextDetailService.update(dto);

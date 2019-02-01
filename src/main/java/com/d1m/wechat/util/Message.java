@@ -988,6 +988,7 @@ public enum Message {
     DcrmImageTextDetail_NOT_NULL(60000,"标题不能为空"),
     DcrmImageTextDetail_IAMGE_NOT_NULL(60001,"封面图不能为空"),
     DCRM_IMAGE_TEXT_DETAIL_ID_NOT(60002,"id不能为空"),
+    Dcrm_MATRIAl_NOT_EXIST(60003,"封面图id不存在"),
     
     /**
      * InterfaceConfig

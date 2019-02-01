@@ -165,6 +165,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
             }
     }
 
+
     /**
      * 检查微信图文是否存在
      *
