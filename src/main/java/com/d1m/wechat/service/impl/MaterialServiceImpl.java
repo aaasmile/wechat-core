@@ -936,4 +936,13 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
         return materialDto;
     }
 
+    /**
+     * 检查素材是否存在
+     * @param id
+     * @return
+     */
+    public Material checkMaterialExist(Integer id){
+
+        return materialMapper.selectByPrimaryKey(id);
+    }
 }
