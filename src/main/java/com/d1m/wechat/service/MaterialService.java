@@ -117,4 +117,11 @@ public interface MaterialService extends IService<Material> {
 	 * @return
 	 */
 	MaterialDto getInfoBySn(String sn);
+
+	/**
+	 * 检查素材是否存在
+	 * @param id
+	 * @return
+	 */
+	 Material checkMaterialExist(Integer id);
 }
