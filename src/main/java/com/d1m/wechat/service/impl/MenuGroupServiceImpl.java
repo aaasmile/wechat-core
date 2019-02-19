@@ -1,27 +1,11 @@
 package com.d1m.wechat.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
-import com.google.gson.Gson;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import tk.mybatis.mapper.common.Mapper;
-
 import cn.d1m.wechat.client.core.WxResponse;
 import cn.d1m.wechat.client.model.WxMenu;
 import cn.d1m.wechat.client.model.WxMenuGroup;
 import cn.d1m.wechat.client.model.WxMenuMatchrule;
-import com.d1m.wechat.wechatclient.WechatClientDelegate;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.dto.MaterialDto;
 import com.d1m.wechat.dto.MenuDto;
 import com.d1m.wechat.dto.MenuGroupDto;
@@ -33,6 +17,20 @@ import com.d1m.wechat.model.enums.*;
 import com.d1m.wechat.pamametermodel.*;
 import com.d1m.wechat.service.MenuGroupService;
 import com.d1m.wechat.util.Message;
+import com.d1m.wechat.wechatclient.WechatClientDelegate;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.google.gson.Gson;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.common.Mapper;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
@@ -814,7 +812,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 						subWxMenu.setUrl(child.getUrl());
 					} else if (menuType == MenuType.MINIPROGRAM) {
 						subWxMenu.setAppid(child.getAppId());
-						subWxMenu.setPagepath(child.getPagePath());
+						subWxMenu.setPagepath(child.getPagePath() + "?menuid=" + child.getId());
 						subWxMenu.setUrl(child.getAppUrl());
 					} else if (menuType == MenuType.LOCATION_SELECT) {
 						subWxMenu.setKey(child.getId() + "_SEND_LOCATION");
