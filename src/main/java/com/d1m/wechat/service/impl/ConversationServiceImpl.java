@@ -520,7 +520,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
             ConversationImageTextDetail conversationImageTextDetail = null;
             if (materialType == MaterialType.IMAGE_TEXT.getValue()) {
                 log.info("materialType..." + MaterialType.IMAGE_TEXT.toString());
-                MaterialDto materialDto = materialService.getImageText(wechatId, massConversationResult.getMaterialId(), true);
+                MaterialDto materialDto = materialService.getImageText(wechatId, massConversationResult.getMaterialId(), false);
                 List<ImageTextDto> items = materialDto.getItems();
                 JSONArray itemArray = new JSONArray();
                 JSONObject itemJson = null;
