@@ -42,6 +42,8 @@ public enum Message {
 
     MEMBER_SELECTED_ALL_OFFLINE(10005, "强推消息所选会员都不在线"),
 
+    MEMBER_ADD_TAG_OPERATOR_ONLY(10005, "添加会员标签正在执行中"),
+
     /**
      * member_tag_type
      */
