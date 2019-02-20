@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.pamametermodel.AddEventForwardModel;
+import com.d1m.wechat.pamametermodel.EditEventForwardModel;
 import com.d1m.wechat.service.EventService;
 import com.d1m.wechat.util.Message;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,19 @@ public class EventController extends BaseController {
     public JSONObject add(@RequestBody AddEventForwardModel model) {
         try {
             eventService.addEventForward(model);
+            return representation(Message.SUCCESS);
+        } catch (WechatException e) {
+            return wrapException(e);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return wrapException(e);
+        }
+    }
+
+    @PostMapping("/edit")
+    public JSONObject edit(@RequestBody EditEventForwardModel model) {
+        try {
+            eventService.editEventForward(model);
             return representation(Message.SUCCESS);
         } catch (WechatException e) {
             return wrapException(e);

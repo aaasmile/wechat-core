@@ -26,4 +26,8 @@ public class EventForwardDetails {
         this.eventForwardId = eventForwardId;
         this.eventId = eventId;
     }
+
+    public EventForwardDetails(Integer eventForwardId) {
+        this.eventForwardId = eventForwardId;
+    }
 }

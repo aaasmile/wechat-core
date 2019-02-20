@@ -4,10 +4,11 @@ import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.EventForwardDetailsMapper;
 import com.d1m.wechat.mapper.EventForwardMapper;
 import com.d1m.wechat.mapper.WXEventMapper;
-import com.d1m.wechat.model.WXEvent;
 import com.d1m.wechat.model.EventForward;
 import com.d1m.wechat.model.EventForwardDetails;
+import com.d1m.wechat.model.WXEvent;
 import com.d1m.wechat.pamametermodel.AddEventForwardModel;
+import com.d1m.wechat.pamametermodel.EditEventForwardModel;
 import com.d1m.wechat.service.EventService;
 import com.d1m.wechat.util.Message;
 import lombok.extern.slf4j.Slf4j;
@@ -45,16 +46,39 @@ public class EventServiceImpl implements EventService {
             throw new WechatException(Message.EVENT_FORWARD_ADD_FAIL);
         }
 
+        addEventForwardDetails(model.getEventIds(), eventForward.getId());
+        return true;
+    }
+
+    private boolean addEventForwardDetails(List<Integer> eventIds, final Integer eventForwardId) {
         List<EventForwardDetails> eventForwardDetails = new ArrayList<>();
-        model.getEventIds().forEach(eventId -> {
-            eventForwardDetails.add(new EventForwardDetails(eventForward.getId(), eventId));
+        eventIds.forEach(eventId -> {
+            eventForwardDetails.add(new EventForwardDetails(eventForwardId, eventId));
         });
-        eventForwardDetailsMapper.insertList(eventForwardDetails);
         return true;
     }
 
     @Override
     public List<EventForward> getForwardByThirdPartyId(Integer thirdPartyId) {
         return eventForwardMapper.select(new EventForward(thirdPartyId));
+    }
+
+    @Override
+    public boolean editEventForward(EditEventForwardModel model) {
+        EventForward eventForward = eventForwardMapper.selectByPrimaryKey(model.getId());
+        if(eventForward == null) {
+            throw new WechatException(Message.ILLEGAL_REQUEST);
+        }
+
+        if(model.getEventIds() == null || model.getEventIds().size() == 0) {
+            throw new WechatException(Message.MISSING_PARAMTERS);
+        }
+
+        eventForward.setUserUuid(model.getUserUuid());
+        eventForwardMapper.updateByPrimaryKey(eventForward);
+
+        eventForwardDetailsMapper.delete(new EventForwardDetails(model.getId()));
+        addEventForwardDetails(model.getEventIds(), model.getId());
+        return true;
     }
 }
