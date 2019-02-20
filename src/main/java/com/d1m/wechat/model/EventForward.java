@@ -32,4 +32,12 @@ public class EventForward {
 
     @Column(name = "update_at")
     private Date updateAt;
+
+    public EventForward() {}
+
+    public EventForward(Integer thirdPartyId, Integer interfaceId, String userUuid) {
+        this.thirdPartyId = thirdPartyId;
+        this.interfaceId = interfaceId;
+        this.userUuid = userUuid;
+    }
 }

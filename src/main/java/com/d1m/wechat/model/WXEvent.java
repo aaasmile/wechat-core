@@ -7,8 +7,8 @@ import javax.persistence.*;
 
 @Getter
 @Setter
-@Table(name = "event")
-public class Event {
+@Table(name = "wx_event")
+public class WXEvent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

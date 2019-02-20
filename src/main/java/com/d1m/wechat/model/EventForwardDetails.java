@@ -19,4 +19,11 @@ public class EventForwardDetails {
 
     @Column(name = "event_id")
     private Integer eventId;
+
+    public EventForwardDetails() {}
+
+    public EventForwardDetails(Integer eventForwardId, Integer eventId) {
+        this.eventForwardId = eventForwardId;
+        this.eventId = eventId;
+    }
 }
