@@ -1,5 +1,6 @@
 package com.d1m.wechat.controller.interfaces;
 
+import com.d1m.wechat.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
@@ -19,10 +20,9 @@ import java.util.Map;
 @Component
 public class InterfaceRabbitMQListener {
     private static final Logger logger = LoggerFactory.getLogger(InterfaceRabbitMQListener.class);
-    private static final String INTERFACE_QUEUE_V1 = "INTERFACE_QUEUE_V1";
 
     //@RabbitHandler
-    @RabbitListener(queues = INTERFACE_QUEUE_V1)
+    @RabbitListener(queues = Constants.INTERFACE_QUEUE)
     public void process(@Payload Map<String, String> message, @Headers Map receivedRoutingKey) {
         try {
             logger.info("message:{}", message);

@@ -1,5 +1,6 @@
 package com.d1m.wechat.controller.interfaces;
 
+import com.d1m.wechat.util.Constants;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
@@ -15,8 +16,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class CreateRabbitMQInterFaceConfig {
-    private static final String INTERFACE_QUEUE ="INTERFACE_QUEUE_V1";
-    private static final String INTERFACE_EXCHANGE ="INTERFACE_EXCHANGE";
 
     /**
      * 创建队列
@@ -24,7 +23,7 @@ public class CreateRabbitMQInterFaceConfig {
      */
     @Bean
     public Queue queueMessage1() {
-        return new Queue(INTERFACE_QUEUE);
+        return new Queue(Constants.INTERFACE_QUEUE);
     }
 
     /**
@@ -33,7 +32,7 @@ public class CreateRabbitMQInterFaceConfig {
      */
     @Bean
     public TopicExchange exchange() {
-        return new TopicExchange(INTERFACE_EXCHANGE);
+        return new TopicExchange(Constants.INTERFACE_EXCHANGE);
     }
 
     /**
