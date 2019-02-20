@@ -1020,7 +1020,13 @@ public enum Message {
 
     INTERFACECONFIG_BRAND_IN_USED(42082, "第三方类别在使用中"),
 
-    INTERFACECONFIG_SECRET_GET_FAIL(42091, "获取秘钥失败")
+    INTERFACECONFIG_SECRET_GET_FAIL(42091, "获取秘钥失败"),
+
+    /**
+     * event forward
+     */
+
+    EVENT_FORWARD_ADD_FAIL(50000, "添加事件转发失败"),
 
     ;
 
