@@ -52,4 +52,9 @@ public class EventServiceImpl implements EventService {
         eventForwardDetailsMapper.insertList(eventForwardDetails);
         return true;
     }
+
+    @Override
+    public List<EventForward> getForwardByThirdPartyId(Integer thirdPartyId) {
+        return eventForwardMapper.select(new EventForward(thirdPartyId));
+    }
 }

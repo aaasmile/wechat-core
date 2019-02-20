@@ -1,7 +1,7 @@
 CREATE TABLE `event_forward` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `third_party_id` int(11) NOT NULL,
-  `interface_id` int(11) NOT NULL,
+  `interface_id` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_uuid` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` tinyint NOT NULL DEFAULT '1',
   `create_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

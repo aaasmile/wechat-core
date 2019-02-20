@@ -11,7 +11,7 @@ public class AddEventForwardModel {
 
     private Integer thirdPartyId;
 
-    private Integer interfaceId;
+    private String interfaceId;
 
     private String userUuid;
 
