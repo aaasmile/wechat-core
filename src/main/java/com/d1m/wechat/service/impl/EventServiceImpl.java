@@ -55,6 +55,7 @@ public class EventServiceImpl implements EventService {
         eventIds.forEach(eventId -> {
             eventForwardDetails.add(new EventForwardDetails(eventForwardId, eventId));
         });
+        eventForwardDetailsMapper.insertList(eventForwardDetails);
         return true;
     }
 
