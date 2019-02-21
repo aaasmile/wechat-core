@@ -1,6 +1,8 @@
 package com.d1m.wechat.mapper;
 
+
 import com.d1m.wechat.dto.InterfaceConfigDto;
+
 import com.d1m.wechat.model.InterfaceConfig;
 import com.d1m.wechat.util.MyMapper;
 import com.github.pagehelper.Page;
@@ -22,4 +24,5 @@ public interface InterfaceConfigMapper extends MyMapper<InterfaceConfig>{
             @Param("brand")String brand,
             @Param("name")String name
             );
+
 }

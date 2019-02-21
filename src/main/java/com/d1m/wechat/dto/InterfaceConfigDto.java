@@ -22,7 +22,7 @@ public class InterfaceConfigDto {
 	private String createdBy;
 	private String updatedAt;
 	private String updatedBy;
-	private InterfaceStatus status;        //修改
+	private int status;        //修改
 
 	public String getId() {
 		return id;
@@ -169,15 +169,15 @@ public class InterfaceConfigDto {
 	}
 
 
-	public InterfaceStatus getStatus() {
+	public int getStatus() {
 		return status;
 	}                      //修改
 
-	public void setType(InterfaceStatus status) {
+	public void setStatus(int status) {
 		this.status = status;
 	}       //修改
 
-	public InterfaceConfigDto(String id, String brand, String name, int methodType, int type, String event, String interfaceName, String parameter, String description, String url, String key, String secret, String sequence, String deleted, String createdAt, String createdBy, String updatedAt, String updatedBy ,InterfaceStatus status) {
+	public InterfaceConfigDto(String id, String brand, String name, int methodType, int type, String event, String interfaceName, String parameter, String description, String url, String key, String secret, String sequence, String deleted, String createdAt, String createdBy, String updatedAt, String updatedBy ,int status) {
 		super();
 		this.id = id;
 		this.brand = brand;
@@ -223,7 +223,7 @@ public class InterfaceConfigDto {
 		private String createdBy;
 		private String lasteUpdatedAt;
 		private String lasteUpdatedBy;
-		private InterfaceStatus status;
+		private int status;
 
 		public Builder id(String id) {
 			this.id = id;
@@ -314,7 +314,7 @@ public class InterfaceConfigDto {
 			this.lasteUpdatedBy = lasteUpdatedBy;
 			return this;
 		}
-		public Builder status(InterfaceStatus status) {
+		public Builder status(int status) {
 			this.status = status;
 			return this;
 		}
@@ -343,6 +343,7 @@ public class InterfaceConfigDto {
 		this.createdBy = builder.createdBy;
 		this.updatedAt = builder.lasteUpdatedAt;
 		this.updatedBy = builder.lasteUpdatedBy;
+		this.status = builder.status;
 	}
 
 
