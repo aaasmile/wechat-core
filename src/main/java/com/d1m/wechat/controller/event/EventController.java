@@ -7,6 +7,7 @@ import com.d1m.wechat.pamametermodel.AddEventForwardModel;
 import com.d1m.wechat.pamametermodel.EditEventForwardModel;
 import com.d1m.wechat.service.EventService;
 import com.d1m.wechat.util.Message;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Api(value = "事件转发接口API EventController", tags = "事件转发接口API EventController")
 @Slf4j
 @RestController
 @RequestMapping("/event")
