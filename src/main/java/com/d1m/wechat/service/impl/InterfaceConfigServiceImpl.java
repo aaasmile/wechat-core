@@ -8,9 +8,11 @@ import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.InterfaceConfigBrandMapper;
 import com.d1m.wechat.mapper.InterfaceConfigMapper;
 import com.d1m.wechat.mapper.MenuMapper;
+import com.d1m.wechat.model.EventForward;
 import com.d1m.wechat.model.InterfaceConfig;
 import com.d1m.wechat.model.InterfaceConfigBrand;
 import com.d1m.wechat.model.Menu;
+import com.d1m.wechat.service.EventService;
 import com.d1m.wechat.service.InterfaceConfigService;
 import com.d1m.wechat.util.MD5;
 import com.d1m.wechat.util.Message;
@@ -22,6 +24,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class InterfaceConfigServiceImpl implements InterfaceConfigService {
@@ -35,9 +38,12 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
     @Autowired
     private MenuMapper menuMapper;
 
-    @Override
-    public Page<InterfaceConfigDto> selectItems(Map<String, String> query) {
-        return interfaceConfigMapper.selectItems(query);
+	@Autowired
+	private EventService eventService;
+
+	@Override
+	public Page<InterfaceConfigDto> selectItems(Map<String, String> query) {
+		return interfaceConfigMapper.selectItems(query);
 
     }
 
@@ -140,6 +146,31 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
                 .map(interfaceConfigMapper::findInterfaceConfigDtoByWxEventCode)
                 .orElseThrow(() -> new BusinessException(Message.INTERFACECONFIG_GET_FAIL));
     }
+
+	@Override
+	public List<InterfaceConfigDto> getByEventForward(String id) {
+		List<InterfaceConfig> interfaceConfigs = interfaceConfigMapper.select(new InterfaceConfig(id));
+		if(interfaceConfigs == null || interfaceConfigs.size() == 0) {
+			return null;
+		}
+
+		List<InterfaceConfigDto> interfaceConfigDtos = new ArrayList<>();
+
+		List<EventForward> eventForwards = eventService.getForwardByThirdPartyId(Integer.parseInt(id));
+		if(eventForwards == null || eventForwards.size() == 0) {
+			interfaceConfigs.forEach( interfaceConfig -> {
+				interfaceConfigDtos.add(new InterfaceConfigDto(interfaceConfig.getId(), interfaceConfig.getName(), interfaceConfig.getName()));
+			});
+			return interfaceConfigDtos;
+		}
+
+		List<String> interfaceIds = eventForwards.stream().map(EventForward::getInterfaceId).collect(Collectors.toList());
+		List<InterfaceConfig> newInterfaceConfigs = interfaceConfigs.stream().filter((InterfaceConfig i) -> !interfaceIds.contains(i.getId())).collect(Collectors.toList());
+		newInterfaceConfigs.forEach( interfaceConfig -> {
+			interfaceConfigDtos.add(new InterfaceConfigDto(interfaceConfig.getId(), interfaceConfig.getName(), interfaceConfig.getName()));
+		});
+		return interfaceConfigDtos;
+	}
 
 
 }

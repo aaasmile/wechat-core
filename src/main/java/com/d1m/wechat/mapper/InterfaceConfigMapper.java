@@ -18,10 +18,10 @@ public interface InterfaceConfigMapper extends MyMapper<InterfaceConfig> {
     InterfaceConfigDto getSecret(String id);
 
     int checkRepeatById(
-            @Param("id") String id,
-            @Param("brand") String brand,
-            @Param("name") String name
-    );
+            @Param("id")String id,
+            @Param("brand")String brand,
+            @Param("name")String name
+            );
 
     List<InterfaceConfigDto> findInterfaceConfigDtoByWxEventCode(String eventCode);
 }
