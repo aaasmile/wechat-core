@@ -1,21 +1,19 @@
 package com.d1m.wechat.controller.interfaces;
 
-import java.sql.Timestamp;
-import java.util.*;
-import java.util.stream.Collectors;
-
+import com.alibaba.fastjson.JSONObject;
+import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.dto.EventForwardDto;
-import com.d1m.wechat.dto.InterfaceConfigBrandDto;
 import com.d1m.wechat.dto.InterfaceConfigDto;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.model.InterfaceConfig;
 import com.d1m.wechat.model.InterfaceConfigBrand;
+import com.d1m.wechat.model.enums.InterfaceStatus;
 import com.d1m.wechat.service.EventForwardService;
+import com.d1m.wechat.service.InterfaceConfigService;
 import com.d1m.wechat.util.DateUtil;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.*;
 import lombok.Data;
 import org.apache.commons.collections.CollectionUtils;
@@ -25,16 +23,18 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.alibaba.fastjson.JSONObject;
-import com.d1m.wechat.controller.BaseController;
-import com.d1m.wechat.service.InterfaceConfigService;
-import com.d1m.wechat.util.Message;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
 @Api(value = "第三方接口API InterfaceConfigController", tags = "第三方接口API InterfaceConfigController")
 @RestController
 @RequestMapping("interfaceConfig")
 public class InterfaceConfigController extends BaseController {
-
+	
 	private Logger log = LoggerFactory.getLogger(InterfaceConfigController.class);
 
 	@Autowired
@@ -49,12 +49,11 @@ public class InterfaceConfigController extends BaseController {
 		@ApiImplicitParam(name = "brand", value = "品牌类别ID"),
 		@ApiImplicitParam(name = "name", value = "接口名称"),
 		@ApiImplicitParam(name = "method_type", value = "方法类型 POST/GET"),
-			@ApiImplicitParam(name = "type", value = "类型DCRM主动推送/第三方拉取 "),
+		@ApiImplicitParam(name = "type", value = "类型"),
 		@ApiImplicitParam(name = "created_from", value = "创建时间从-"),
 		@ApiImplicitParam(name = "created_to", value = "创建时间至-"),
 		@ApiImplicitParam(name = "updated_from", value = "编辑时间从-"),
 		@ApiImplicitParam(name = "updated_to", value = "编辑时间至-"),
-            @ApiImplicitParam(name ="status" ,value = "接口状态 0 启用 1 停用"),
 		@ApiImplicitParam(name = "pageNum", value = "页码", required = true),
 		@ApiImplicitParam(name = "pageSize", value = "每页数量", required = true)
 	})
@@ -206,6 +205,20 @@ public class InterfaceConfigController extends BaseController {
 		}
 	}
 
+	@ApiOperation(value = "根据第三方找出未绑定事件转发的接口方法", tags = "第三方接口列表")
+	@ApiResponse(code = 200, message = "成功")
+	@GetMapping("/getByEventForward/{id}")
+	public JSONObject getByEventForward(@PathVariable("id") String id) {
+		try {
+			return representation(Message.SUCCESS, interfaceConfigService.getByEventForward(id));
+		} catch (WechatException e) {
+			return wrapException(e);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			return wrapException(e);
+		}
+	}
+
 	@ApiOperation(value = "查询第三方接口转发事件", tags = "第三方接口转发列表")
 	@ApiResponse(code = 200, message = "获取第三方接口转发事件信息成功")
 	@ApiImplicitParams({
@@ -222,7 +235,7 @@ public class InterfaceConfigController extends BaseController {
 			Page<EventForwardDto> EventForwardDtos  = eventForwardService.selectForwardItems(query);
 			if(CollectionUtils.isEmpty(EventForwardDtos)){
 				return representation(Message.SUCCESS, EventForwardDtos, Integer.parseInt(query.get("pageSize")), Integer.parseInt(query.get("pageNum")), EventForwardDtos.getTotal());
-				}
+			}
 			final List<EventForwardResp> collect = EventForwardDtos.stream().map(cs -> {
 				final EventForwardResp senderHistoryResp = new EventForwardResp();
 				BeanUtils.copyProperties(cs, senderHistoryResp);
@@ -256,11 +269,44 @@ public class InterfaceConfigController extends BaseController {
 		private int status;
 		//更新时间
 		private String  updateAt;
-        //事件列表
+		//事件列表
 		private List<String> events ;
 
 	}
 
+	/**
+	 * 接口启用和停用
+	 *
+	 * @param status 状态 0 停用，1 启用
+	 * @return
+	 */
+	@ApiOperation(value = "接口启用和停用", tags = "第三方接口列表")
+	@ApiResponse(code = 200, message = "操作成功")
+	@RequestMapping(value = "{id}/enableOrDisable.json", method = RequestMethod.PUT)
+	public JSONObject enableOrDisable(@RequestBody EnableInterface status, @PathVariable("id") String id) {
+		try {
+			notBlank(id, Message.INTERFACECONFIG_ID_NOT_EXIST);
+			notBlank(status.getStatus(), Message.INTERFACECONFIG_STATUS_NOT_EXIST);
+			InterfaceConfig interfaceConfig = interfaceConfigService.checkIsExist(id);
+			notBlank(interfaceConfig, Message.INTERFACECONFIG_EXIST);
+			interfaceConfigService.enableOrDisable(status.getStatus(), id);
+			return representation(Message.SUCCESS, null);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			return wrapException(e);
+		}
+	}
 
 
+	static class EnableInterface{
+		InterfaceStatus status;
+
+		public InterfaceStatus getStatus() {
+			return status;
+		}
+
+		public void setStatus(InterfaceStatus status) {
+			this.status = status;
+		}
+	}
 }

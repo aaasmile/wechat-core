@@ -12,12 +12,15 @@ import com.d1m.wechat.model.EventForward;
 import com.d1m.wechat.model.InterfaceConfig;
 import com.d1m.wechat.model.InterfaceConfigBrand;
 import com.d1m.wechat.model.Menu;
+import com.d1m.wechat.model.enums.InterfaceStatus;
+import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.service.EventService;
 import com.d1m.wechat.service.InterfaceConfigService;
 import com.d1m.wechat.util.MD5;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -28,6 +31,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class InterfaceConfigServiceImpl implements InterfaceConfigService {
+    private Logger logger = Logger.getLogger(getClass());
 
     @Autowired
     private InterfaceConfigMapper interfaceConfigMapper;
@@ -172,5 +176,32 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 		return interfaceConfigDtos;
 	}
 
+
+    /**
+     * 接口启用和停用接口
+     *  @param status 状态 0 停用，1 启用
+     * @param id
+     */
+    public void enableOrDisable(InterfaceStatus status, String id) {
+        try {
+            int t = interfaceConfigMapper.updateStatusById(id, status, DateUtil.formatYYYYMMDDHHMM(new Date()));
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+
+    }
+
+
+    /**
+     * 检查第三方接口是否存在
+     *
+     * @param id
+     * @return
+     */
+    public InterfaceConfig checkIsExist(String id) {
+        InterfaceConfig interfaceConfig = new InterfaceConfig();
+        interfaceConfig.setId(id);
+        return interfaceConfigMapper.selectByPrimaryKey(id);
+    }
 
 }

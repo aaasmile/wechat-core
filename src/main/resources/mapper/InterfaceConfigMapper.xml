@@ -108,9 +108,10 @@
           and we.code = #{eventCode}
     </select>
 
-
-
-  </mapper>
+    <update id="updateStatusById">
+		UPDATE interface_config SET updated_at =#{updatedAt},status =#{status} WHERE id =#{id}
+	</update>
+</mapper>
 
 
 
