@@ -1,6 +1,5 @@
-logging.config: classpath:logback-spring.xml
-logging.path: /data/log/wechat-core
-log4j.logger.com.d1m.wechat.mapper: INFO
+logging:
+  config: classpath:log4j2.xml
 logging.level.com.d1m.wechat: INFO
 spring:
   aop:

@@ -8,17 +8,19 @@ import com.d1m.wechat.dto.QueryDto;
 import com.d1m.wechat.mapper.*;
 import com.d1m.wechat.model.*;
 import com.d1m.wechat.model.enums.MaterialStatus;
-import com.d1m.wechat.service.*;
+import com.d1m.wechat.service.DcrmImageTextDetailService;
+import com.d1m.wechat.service.MaterialService;
+import com.d1m.wechat.service.MemberService;
 import com.d1m.wechat.util.*;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -38,7 +40,7 @@ import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
 @Service
 public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailService {
-    private Logger logger = Logger.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
     private static final String SOCIAL_WECHAT_API = "http://social-wechat-api:10011/custom/sender/";
     @Autowired
     private MaterialMapper materialMapper;
@@ -128,10 +130,10 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
                 detailDto.setWxImageTextUpdate(false);
                 if (detailDto.getMaterialCoverId() != null) {
                     Material material = materialMapper.queryMtByDetailId(detailDto.getWxImageTextId());
-                    if (material!=null)
-                    if (detailDto.getWxLastPushTime() != null && material.getLastPushAt().compareTo(detailDto.getWxLastPushTime()) > 0) {
-                        detailDto.setWxImageTextUpdate(true);
-                    }
+                    if (material != null)
+                        if (detailDto.getWxLastPushTime() != null && material.getLastPushAt().compareTo(detailDto.getWxLastPushTime()) > 0) {
+                            detailDto.setWxImageTextUpdate(true);
+                        }
                 }
             }
 
@@ -153,7 +155,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
                 }
 
                 if (StringUtils.isEmpty(detailDto.getLink())
-                 && detailDto.getWxImageTextId() == null) {
+                        && detailDto.getWxImageTextId() == null) {
                     detailDto.setNotComplete(true);
                     continue;
                 }
@@ -196,7 +198,7 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
             notBlank(id, Message.MATERIAL_ID_NOT_BLANK);
             notBlank(detailDto.getMemberId(), Message.MEMBER_ID_NOT_EMPTY);
             Member member = memberService.getMember(detailDto.getWechatId(),
-             detailDto.getMemberId());
+                    detailDto.getMemberId());
             notBlank(member, Message.MEMBER_NOT_EXIST);
             DcrmImageTextDetailDto dto = queryObject(id);
             logger.info("查询非群发图文结果：" + JSON.toJSON(dto));
@@ -206,17 +208,17 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
                 logger.info("查询素材信息：" + JSON.toJSON(material));
                 //发送图文
                 Articles articles = new Articles.Builder()
-                 .picurl(material.getPicUrl())
-                 .url(dto.getLink())
-                 .description(dto.getContent())
-                 .title(dto.getTitle()).build();
+                        .picurl(material.getPicUrl())
+                        .url(dto.getLink())
+                        .description(dto.getContent())
+                        .title(dto.getTitle()).build();
                 articlesList.add(articles);
                 News news = new News.Builder().articles(articlesList).build();
                 CustomRequestBody customRequestBody = new CustomRequestBody.Builder()
-                 .touser(member.getOpenId())
-                 .msgtype("news")
-                 .news(news)
-                 .build();
+                        .touser(member.getOpenId())
+                        .msgtype("news")
+                        .news(news)
+                        .build();
                 logger.info("请求发送非群发图文消息入参：" + JSON.toJSON(customRequestBody));
                 String socialWechatApi = System.getProperty("social.wechat.api") == null ? SOCIAL_WECHAT_API : System.getProperty("social.wechat.api");
                 String customUrl = socialWechatApi + detailDto.getWechatId();
@@ -374,11 +376,11 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
             logger.error("文件移动失败! ticket =" + wxQrcode.getTicket());
         }
         qr.setQrcodeImgUrl(FileUploadConfigUtil.getInstance().getValue(dto.getWechatId(), "upload_url_base")
-         + File.separator
-         + type
-         + File.separator
-         + dir.getName()
-         + File.separator + wxFile.getFilename());
+                + File.separator
+                + type
+                + File.separator
+                + dir.getName()
+                + File.separator + wxFile.getFilename());
         int t = qrcodeMapper.insert(qr);
         logger.info("【插入二维码】二维码图片表结果：" + t + "二维码编号：" + qr.getId());
         //更新非群发单图文表中二维码id
@@ -424,11 +426,11 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
             logger.error("【更新二维码】文件移动失败! ticket =" + wxQrcode.getTicket());
         }
         qr.setQrcodeImgUrl(FileUploadConfigUtil.getInstance().getValue(dto.getWechatId(), "upload_url_base")
-         + File.separator
-         + type
-         + File.separator
-         + dir.getName()
-         + File.separator + wxFile.getFilename());
+                + File.separator
+                + type
+                + File.separator
+                + dir.getName()
+                + File.separator + wxFile.getFilename());
         int t = qrcodeMapper.updateByPrimaryKeySelective(qr);
         logger.info("【更新二维码】二维码图片表结果：" + t);
         //更新effect和关系表

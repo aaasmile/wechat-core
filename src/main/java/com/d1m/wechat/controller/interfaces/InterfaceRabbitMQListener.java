@@ -103,7 +103,9 @@ public class InterfaceRabbitMQListener {
     @RabbitListener(queues = Constants.INTERFACE_QUEUE)
     public void process(@Payload Map<String, String> payload, @Headers Map<String, String> headers) {
         try {
-            log.info("payload:{} headers:{}", payload, headers);
+            if (log.isDebugEnabled()) {
+                log.debug("payload:{} headers:{}", payload, headers);
+            }
             final String receivedRoutingKey = headers.get("amqp_receivedRoutingKey");
             String eventCode = receivedRoutingKey.replace("event.", "");
             if ("subscribe".equals(receivedRoutingKey)) {
@@ -128,6 +130,7 @@ public class InterfaceRabbitMQListener {
                         .forEach(interfaceConfigDto -> {
                             try {
                                 this.retryer.call(() -> {
+                                    log.info("事件转发给第三方：{}", interfaceConfigDto);
                                     final HttpHeaders httpHeaders = new HttpHeaders();
                                     httpHeaders.set(SECRET, interfaceConfigDto.getSecret());
                                     httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
