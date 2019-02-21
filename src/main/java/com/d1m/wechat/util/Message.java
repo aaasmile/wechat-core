@@ -1022,11 +1022,17 @@ public enum Message {
 
     INTERFACECONFIG_SECRET_GET_FAIL(42091, "获取秘钥失败"),
 
+    INTERFACECONFIG_ID_NOT_EXIST(42500,"id不能为空"),
+
+    INTERFACECONFIG_STATUS_NOT_EXIST(42501,"status不能为空"),
+
+
     /**
      * event forward
      */
 
     EVENT_FORWARD_ADD_FAIL(50000, "添加事件转发失败"),
+
 
     ;
 

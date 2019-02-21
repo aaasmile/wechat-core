@@ -10,10 +10,13 @@ import com.d1m.wechat.mapper.MenuMapper;
 import com.d1m.wechat.model.InterfaceConfig;
 import com.d1m.wechat.model.InterfaceConfigBrand;
 import com.d1m.wechat.model.Menu;
+import com.d1m.wechat.model.enums.InterfaceStatus;
+import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.MD5;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,104 +25,136 @@ import com.d1m.wechat.service.InterfaceConfigService;
 
 @Service
 public class InterfaceConfigServiceImpl implements InterfaceConfigService {
+    private Logger logger = Logger.getLogger(getClass());
 
-	@Autowired
-	private InterfaceConfigMapper interfaceConfigMapper;
+    @Autowired
+    private InterfaceConfigMapper interfaceConfigMapper;
 
-	@Autowired
-	private InterfaceConfigBrandMapper interfaceConfigBrandMapper;
+    @Autowired
+    private InterfaceConfigBrandMapper interfaceConfigBrandMapper;
 
-	@Autowired
-	private MenuMapper menuMapper;
+    @Autowired
+    private MenuMapper menuMapper;
 
-	@Override
-	public Page<InterfaceConfigDto> selectItems(Map<String, String> query) {
-		return interfaceConfigMapper.selectItems(query);
+    @Override
+    public Page<InterfaceConfigDto> selectItems(Map<String, String> query) {
+        return interfaceConfigMapper.selectItems(query);
 
-	}
+    }
 
-	@Override
-	public String create(InterfaceConfig interfaceConfig) {
+    @Override
+    public String create(InterfaceConfig interfaceConfig) {
 
-		String id = UUID.randomUUID().toString().replaceAll("-", "");
-		interfaceConfig.setId(id);
-		interfaceConfigMapper.insertSelective(interfaceConfig);
-		return id;
+        String id = UUID.randomUUID().toString().replaceAll("-", "");
+        interfaceConfig.setId(id);
+        interfaceConfigMapper.insertSelective(interfaceConfig);
+        return id;
 
-	}
+    }
 
-	@Override
-	public int update(InterfaceConfig interfaceConfig) {
-		return interfaceConfigMapper.updateByPrimaryKeySelective(interfaceConfig);
-	}
+    @Override
+    public int update(InterfaceConfig interfaceConfig) {
+        return interfaceConfigMapper.updateByPrimaryKeySelective(interfaceConfig);
+    }
 
-	@Override
-	public int delete(String id) throws WechatException {
-		Menu menu = new Menu();
-		menu.setMenuKey(Integer.valueOf(id));
-		if (menuMapper.selectCount(menu) > 0) throw new WechatException(Message.INTERFACECONFIG_IN_USED, Message.INTERFACECONFIG_IN_USED.getName());
-		InterfaceConfig interfaceConfig = new InterfaceConfig();
-		interfaceConfig.setId(id);
-		interfaceConfig.setDeleted(true);
-		return interfaceConfigMapper.updateByPrimaryKeySelective(interfaceConfig);
-	}
+    @Override
+    public int delete(String id) throws WechatException {
+        Menu menu = new Menu();
+        menu.setMenuKey(Integer.valueOf(id));
+        if (menuMapper.selectCount(menu) > 0)
+            throw new WechatException(Message.INTERFACECONFIG_IN_USED, Message.INTERFACECONFIG_IN_USED.getName());
+        InterfaceConfig interfaceConfig = new InterfaceConfig();
+        interfaceConfig.setId(id);
+        interfaceConfig.setDeleted(true);
+        return interfaceConfigMapper.updateByPrimaryKeySelective(interfaceConfig);
+    }
 
-	@Override
-	public InterfaceConfigDto get(String id) {
-		return interfaceConfigMapper.get(id);
-	}
+    @Override
+    public InterfaceConfigDto get(String id) {
+        return interfaceConfigMapper.get(id);
+    }
 
-	@Override
-	public List<InterfaceConfigBrandDto> listBrand() {
-		return interfaceConfigBrandMapper.listBrand();
-	}
+    @Override
+    public List<InterfaceConfigBrandDto> listBrand() {
+        return interfaceConfigBrandMapper.listBrand();
+    }
 
-	@Override
-	public Map<String, String> createBrand(InterfaceConfigBrand interfaceConfigBrand) throws WechatException{
-		List<InterfaceConfigBrand> select = interfaceConfigBrandMapper.select(interfaceConfigBrand);
-		if (CollectionUtils.isNotEmpty(select)) throw new WechatException(Message.INTERFACECONFIG_BRAND_EXIST, Message.INTERFACECONFIG_BRAND_EXIST.getName());
-		String key = UUID.randomUUID().toString().replaceAll("-", "");
-		String secret = MD5.MD5Encode(key + interfaceConfigBrand.getName());
-		interfaceConfigBrand.setKey(key);
-		interfaceConfigBrand.setSecret(secret);
-		interfaceConfigBrandMapper.insertSelective(interfaceConfigBrand);
-		Map<String, String> result = new HashMap<>();
-		result.put("key", key);
-		result.put("secret", secret);
-		return result;
-	}
+    @Override
+    public Map<String, String> createBrand(InterfaceConfigBrand interfaceConfigBrand) throws WechatException {
+        List<InterfaceConfigBrand> select = interfaceConfigBrandMapper.select(interfaceConfigBrand);
+        if (CollectionUtils.isNotEmpty(select))
+            throw new WechatException(Message.INTERFACECONFIG_BRAND_EXIST, Message.INTERFACECONFIG_BRAND_EXIST.getName());
+        String key = UUID.randomUUID().toString().replaceAll("-", "");
+        String secret = MD5.MD5Encode(key + interfaceConfigBrand.getName());
+        interfaceConfigBrand.setKey(key);
+        interfaceConfigBrand.setSecret(secret);
+        interfaceConfigBrandMapper.insertSelective(interfaceConfigBrand);
+        Map<String, String> result = new HashMap<>();
+        result.put("key", key);
+        result.put("secret", secret);
+        return result;
+    }
 
-	@Override
-	public int updateBrand(InterfaceConfigBrand interfaceConfigBrand) {
-		return interfaceConfigBrandMapper.updateByPrimaryKeySelective(interfaceConfigBrand);
-	}
+    @Override
+    public int updateBrand(InterfaceConfigBrand interfaceConfigBrand) {
+        return interfaceConfigBrandMapper.updateByPrimaryKeySelective(interfaceConfigBrand);
+    }
 
-	@Override
-	public int deleteBrand(String id) throws WechatException{
-		InterfaceConfig interfaceConfig = new InterfaceConfig();
-		interfaceConfig.setBrand(id);
-		if (interfaceConfigMapper.selectCount(interfaceConfig) > 0) throw new WechatException(Message.INTERFACECONFIG_BRAND_IN_USED, Message.INTERFACECONFIG_BRAND_IN_USED.getName());
-		InterfaceConfigBrand interfaceConfigBrand = new InterfaceConfigBrand();
-		interfaceConfigBrand.setId(Long.valueOf(id));
-		interfaceConfigBrand.setDeleted(true);
-		return interfaceConfigBrandMapper.updateByPrimaryKeySelective(interfaceConfigBrand);
-	}
+    @Override
+    public int deleteBrand(String id) throws WechatException {
+        InterfaceConfig interfaceConfig = new InterfaceConfig();
+        interfaceConfig.setBrand(id);
+        if (interfaceConfigMapper.selectCount(interfaceConfig) > 0)
+            throw new WechatException(Message.INTERFACECONFIG_BRAND_IN_USED, Message.INTERFACECONFIG_BRAND_IN_USED.getName());
+        InterfaceConfigBrand interfaceConfigBrand = new InterfaceConfigBrand();
+        interfaceConfigBrand.setId(Long.valueOf(id));
+        interfaceConfigBrand.setDeleted(true);
+        return interfaceConfigBrandMapper.updateByPrimaryKeySelective(interfaceConfigBrand);
+    }
 
-	@Override
-	public InterfaceConfigDto getSecret(String id) {
-		return interfaceConfigMapper.getSecret(id);
-	}
+    @Override
+    public InterfaceConfigDto getSecret(String id) {
+        return interfaceConfigMapper.getSecret(id);
+    }
+
     //檢查name重復
     @Override
     public int checkRepeat(InterfaceConfig ifcf) {
         return interfaceConfigMapper.selectCount(ifcf);
     }
 
-	@Override
-	public int checkRepeatById(String id, String brand, String name) {
+    @Override
+    public int checkRepeatById(String id, String brand, String name) {
 
-		return interfaceConfigMapper.checkRepeatById(id,brand,name);
-	}
+        return interfaceConfigMapper.checkRepeatById(id, brand, name);
+    }
 
+
+    /**
+     * 接口启用和停用接口
+     *  @param status 状态 0 停用，1 启用
+     * @param id
+     */
+    public void enableOrDisable(InterfaceStatus status, String id) {
+        try {
+            int t = interfaceConfigMapper.updateStatusById(id, status, DateUtil.formatYYYYMMDDHHMM(new Date()));
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+
+    }
+
+
+    /**
+     * 检查第三方接口是否存在
+     *
+     * @param id
+     * @return
+     */
+    public InterfaceConfig checkIsExist(String id) {
+        InterfaceConfig interfaceConfig = new InterfaceConfig();
+        interfaceConfig.setId(id);
+        return interfaceConfigMapper.selectByPrimaryKey(id);
+    }
 
 }
