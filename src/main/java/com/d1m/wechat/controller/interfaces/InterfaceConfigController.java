@@ -194,7 +194,7 @@ public class InterfaceConfigController extends BaseController {
 
 	@ApiOperation(value = "根据第三方找出未绑定事件转发的接口方法", tags = "第三方接口列表")
 	@ApiResponse(code = 200, message = "成功")
-	@GetMapping(value = "getByEventForward.json/{id}")
+	@GetMapping(value = "getByEventForward/{id}")
 	public JSONObject getByEventForward(@PathVariable("id") String id) {
 		try {
 			return representation(Message.SUCCESS, interfaceConfigService.getByEventForward(id));
