@@ -21,6 +21,8 @@ public enum Message {
 
     ILLEGAL_REQUEST(105, "非法请求"),
 
+    MISSING_PARAMTERS(106, "缺少参数"),
+
     /**
      * member
      */
