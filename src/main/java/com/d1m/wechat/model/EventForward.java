@@ -19,7 +19,7 @@ public class EventForward {
     private Integer thirdPartyId;
 
     @Column(name = "interface_id")
-    private Integer interfaceId;
+    private String interfaceId;
 
     @Column(name = "user_uuid")
     private String userUuid;
@@ -35,9 +35,13 @@ public class EventForward {
 
     public EventForward() {}
 
-    public EventForward(Integer thirdPartyId, Integer interfaceId, String userUuid) {
+    public EventForward(Integer thirdPartyId, String interfaceId, String userUuid) {
         this.thirdPartyId = thirdPartyId;
         this.interfaceId = interfaceId;
         this.userUuid = userUuid;
+    }
+
+    public EventForward(Integer thirdPartyId) {
+        this.thirdPartyId = thirdPartyId;
     }
 }

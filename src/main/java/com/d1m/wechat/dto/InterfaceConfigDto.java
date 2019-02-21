@@ -1,8 +1,6 @@
 package com.d1m.wechat.dto;
 
-import com.d1m.wechat.model.enums.InterfaceMethodType;
 import com.d1m.wechat.model.enums.InterfaceStatus;
-import com.d1m.wechat.model.enums.InterfaceType;
 
 public class InterfaceConfigDto {
 
@@ -346,6 +344,13 @@ public class InterfaceConfigDto {
 		this.updatedAt = builder.lasteUpdatedAt;
 		this.updatedBy = builder.lasteUpdatedBy;
 		this.status = builder.status;
+	}
+
+
+	public InterfaceConfigDto(String id, String name, String interfaceName) {
+		this.id = id;
+		this.name = name;
+		this.interfaceName = interfaceName;
 	}
 
 

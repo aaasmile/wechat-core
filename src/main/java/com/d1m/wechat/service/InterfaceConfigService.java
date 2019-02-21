@@ -37,5 +37,5 @@ public interface InterfaceConfigService {
 
 	int checkRepeatById(String id, String brand, String name);
 
-
+	List<InterfaceConfigDto> getByEventForward(String id);
 }

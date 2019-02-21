@@ -64,5 +64,9 @@ public class InterfaceConfig {
 	 */
 	private InterfaceStatus status;
 
+	public InterfaceConfig() {}
 
+	public InterfaceConfig(String brand) {
+		this.brand = brand;
+	}
 }
