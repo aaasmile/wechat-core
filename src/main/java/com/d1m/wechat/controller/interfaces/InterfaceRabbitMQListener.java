@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -47,6 +48,14 @@ public class InterfaceRabbitMQListener {
     private static final String SECRET = "secret";
 
     private RestTemplate restTemplate;
+
+    private final Retryer<Boolean> retryer = RetryerBuilder
+            .<Boolean>newBuilder()
+            .retryIfException() //异常重试
+            .retryIfResult(result -> Objects.equals(result, Boolean.FALSE)) //返回结果部位true重试
+            .withWaitStrategy(WaitStrategies.fixedWait(1, TimeUnit.MINUTES)) //重试策略：间隔1分钟
+            .withStopStrategy(StopStrategies.stopAfterAttempt(3)) //重试策略: 共重试三次
+            .build();
 
     @Autowired
     private InterfaceConfigService interfaceConfigService;
@@ -117,19 +126,11 @@ public class InterfaceRabbitMQListener {
             if (CollectionUtils.isNotEmpty(interfaceConfigDtos)) {
                 interfaceConfigDtos.parallelStream()
                         .forEach(interfaceConfigDto -> {
-
-                            final Retryer<Boolean> retryer = RetryerBuilder
-                                    .<Boolean>newBuilder()
-                                    .retryIfException() //异常重试
-                                    .retryIfResult(result -> Objects.equals(result, Boolean.FALSE)) //返回结果部位true重试
-                                    .withWaitStrategy(WaitStrategies.fixedWait(1, TimeUnit.MINUTES)) //重试策略：间隔1分钟
-                                    .withStopStrategy(StopStrategies.stopAfterAttempt(3)) //重试策略: 共重试三次
-                                    .build();
-
                             try {
-                                retryer.call(() -> {
+                                this.retryer.call(() -> {
                                     final HttpHeaders httpHeaders = new HttpHeaders();
                                     httpHeaders.set(SECRET, interfaceConfigDto.getSecret());
+                                    httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
                                     this.addKeyValue(payload);
                                     payload.remove("wechatId");
                                     HttpEntity<Object> requestEntity = new HttpEntity<>(payload, httpHeaders);

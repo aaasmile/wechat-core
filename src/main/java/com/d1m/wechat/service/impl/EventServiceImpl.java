@@ -68,11 +68,11 @@ public class EventServiceImpl implements EventService {
     @Override
     public boolean editEventForward(EditEventForwardModel model) {
         EventForward eventForward = eventForwardMapper.selectByPrimaryKey(model.getId());
-        if(eventForward == null) {
+        if (eventForward == null) {
             throw new WechatException(Message.ILLEGAL_REQUEST);
         }
 
-        if(model.getEventIds() == null || model.getEventIds().size() == 0) {
+        if (model.getEventIds() == null || model.getEventIds().size() == 0) {
             throw new WechatException(Message.MISSING_PARAMTERS);
         }
 

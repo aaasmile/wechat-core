@@ -2,7 +2,7 @@ package com.d1m.wechat.service.impl;
 
 import com.d1m.wechat.dto.EventForwardDto;
 import com.d1m.wechat.mapper.EventForwardMapper;
-import com.d1m.wechat.mapper.WXEventMapper;
+import com.d1m.wechat.mapper.WxEventMapper;
 import com.d1m.wechat.service.EventForwardService;
 import com.github.pagehelper.Page;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ public class EventForwardServiceImpl implements EventForwardService {
     @Autowired
    private EventForwardMapper eventForwardMapper;
     @Autowired
-    private WXEventMapper wxEventMapper;
+    private WxEventMapper wxEventMapper;
     @Override
     public Page<EventForwardDto> selectForwardItems(Map<String, String> query) {
 
