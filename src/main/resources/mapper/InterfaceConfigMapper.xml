@@ -61,9 +61,10 @@
 		 AND  ic.brand = #{brand} AND ic.name =#{name}
 	</select>
 
-
-
-  </mapper>
+    <update id="updateStatusById">
+		UPDATE interface_config SET updated_at =#{updatedAt},status =#{status} WHERE id =#{id}
+	</update>
+</mapper>
 
 
 

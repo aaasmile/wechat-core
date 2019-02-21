@@ -5,6 +5,7 @@ import com.d1m.wechat.dto.InterfaceConfigDto;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.model.InterfaceConfig;
 import com.d1m.wechat.model.InterfaceConfigBrand;
+import com.d1m.wechat.model.enums.InterfaceStatus;
 import com.github.pagehelper.Page;
 
 import java.util.List;
@@ -36,4 +37,18 @@ public interface InterfaceConfigService {
 	int checkRepeatById(String id, String brand, String name);
 
 	List<InterfaceConfigDto> getByEventForward(String id);
+
+	/**
+	 * 接口启用和停用接口
+     * @param status
+     * @param id
+     */
+    void enableOrDisable(InterfaceStatus status, String id);
+
+	/**
+	 * 检查第三方接口是否存在
+	 * @param id
+	 * @return
+	 */
+	InterfaceConfig checkIsExist(String id);
 }
