@@ -4,13 +4,14 @@ import com.d1m.wechat.domain.web.BaseResponse;
 import com.d1m.wechat.dto.MemberDto;
 import com.d1m.wechat.mapper.MemberMapper;
 import com.d1m.wechat.model.Member;
-import com.d1m.wechat.util.WXPayUtil;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +22,7 @@ import java.util.Map;
  */
 @RestController
 @Profile({"dev", "uat"})
+@Api(value = "测试接口", tags = "只存在dev和qa上")
 @RequestMapping("/test")
 public class TestController {
 
@@ -47,9 +49,10 @@ public class TestController {
 
     @GetMapping("/sendMessage")
     public BaseResponse sendMessage() {
-        Map<String,String> map = new HashMap<>();
-        map.put("name","zhang san");
-       amqpTemplate.convertAndSend("INTERFACE_EXCHANGE","event.message", map);
+        Map<String, String> map = new HashMap<>();
+        map.put("name", "zhang san");
+        map.put("wechatId", "11");
+        amqpTemplate.convertAndSend("INTERFACE_EXCHANGE", "event.message", map);
         return BaseResponse.builder()
                 .data(null)
                 .msg("success")

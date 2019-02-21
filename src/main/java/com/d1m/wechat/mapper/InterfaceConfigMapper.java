@@ -6,20 +6,22 @@ import com.d1m.wechat.util.MyMapper;
 import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
 import java.util.Map;
 
-public interface InterfaceConfigMapper extends MyMapper<InterfaceConfig>{
+public interface InterfaceConfigMapper extends MyMapper<InterfaceConfig> {
 
     Page<InterfaceConfigDto> selectItems(Map<String, String> query);
 
     InterfaceConfigDto get(String id);
 
-	InterfaceConfigDto getSecret(String id);
-
+    InterfaceConfigDto getSecret(String id);
 
     int checkRepeatById(
-            @Param("id")String id,
-            @Param("brand")String brand,
-            @Param("name")String name
-            );
+            @Param("id") String id,
+            @Param("brand") String brand,
+            @Param("name") String name
+    );
+
+    List<InterfaceConfigDto> findInterfaceConfigDtoByWxEventCode(String eventCode);
 }
