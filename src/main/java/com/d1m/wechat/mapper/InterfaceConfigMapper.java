@@ -1,6 +1,8 @@
 package com.d1m.wechat.mapper;
 
+
 import com.d1m.wechat.dto.InterfaceConfigDto;
+
 import com.d1m.wechat.model.InterfaceConfig;
 import com.d1m.wechat.model.enums.InterfaceStatus;
 import com.d1m.wechat.util.MyMapper;
@@ -32,4 +34,5 @@ public interface InterfaceConfigMapper extends MyMapper<InterfaceConfig>{
      * @return
      */
     int updateStatusById(@Param("id") String id, @Param("status") InterfaceStatus status, @Param("updatedAt") String  updatedAt);
+
 }

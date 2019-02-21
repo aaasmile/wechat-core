@@ -36,6 +36,7 @@ public interface InterfaceConfigService {
 
 	int checkRepeatById(String id, String brand, String name);
 
+	List<InterfaceConfigDto> getByEventForward(String id);
 
 	/**
 	 * 接口启用和停用接口
