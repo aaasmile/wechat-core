@@ -2,23 +2,30 @@ package com.d1m.wechat.controller.interfaces;
 
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
+import com.d1m.wechat.dto.EventForwardDto;
 import com.d1m.wechat.dto.InterfaceConfigDto;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.model.InterfaceConfig;
 import com.d1m.wechat.model.InterfaceConfigBrand;
+import com.d1m.wechat.service.EventForwardService;
 import com.d1m.wechat.service.InterfaceConfigService;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.swagger.annotations.*;
+import lombok.Data;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Api(value = "第三方接口API InterfaceConfigController", tags = "第三方接口API InterfaceConfigController")
 @RestController
@@ -29,6 +36,9 @@ public class InterfaceConfigController extends BaseController {
 
 	@Autowired
 	private InterfaceConfigService interfaceConfigService;
+
+	@Autowired
+	private EventForwardService eventForwardService;
 
 	@ApiOperation(value = "查询第三方接口", tags = "第三方接口列表")
 	@ApiResponse(code = 200, message = "获取第三方接口信息成功")
@@ -194,7 +204,7 @@ public class InterfaceConfigController extends BaseController {
 
 	@ApiOperation(value = "根据第三方找出未绑定事件转发的接口方法", tags = "第三方接口列表")
 	@ApiResponse(code = 200, message = "成功")
-	@GetMapping(value = "getByEventForward.json/{id}")
+	@GetMapping("/getByEventForward/{id}")
 	public JSONObject getByEventForward(@PathVariable("id") String id) {
 		try {
 			return representation(Message.SUCCESS, interfaceConfigService.getByEventForward(id));
@@ -204,5 +214,60 @@ public class InterfaceConfigController extends BaseController {
 			log.error(e.getMessage(), e);
 			return wrapException(e);
 		}
+	}
+
+	@ApiOperation(value = "查询第三方接口转发事件", tags = "第三方接口转发列表")
+	@ApiResponse(code = 200, message = "获取第三方接口转发事件信息成功")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "id", value = "第三方接口id"),
+			@ApiImplicitParam(name = "name", value = "接口名称"),
+			@ApiImplicitParam(name ="status" ,value = "接口状态 0 启用 1 停用"),
+			@ApiImplicitParam(name = "pageNum", value = "页码", required = true),
+			@ApiImplicitParam(name = "pageSize", value = "每页数量", required = true)
+	})
+	@RequestMapping(value = "selectForwardItems.json", method = RequestMethod.POST)
+	public JSONObject selectForwardItems(@RequestBody Map<String, String> query) {
+		try {
+			PageHelper.startPage(Integer.parseInt(query.get("pageNum")), Integer.parseInt(query.get("pageSize")), true);
+			Page<EventForwardDto> EventForwardDtos  = eventForwardService.selectForwardItems(query);
+			if(CollectionUtils.isEmpty(EventForwardDtos)){
+				return representation(Message.SUCCESS, EventForwardDtos, Integer.parseInt(query.get("pageSize")), Integer.parseInt(query.get("pageNum")), EventForwardDtos.getTotal());
+			}
+			final List<EventForwardResp> collect = EventForwardDtos.stream().map(cs -> {
+				final EventForwardResp senderHistoryResp = new EventForwardResp();
+				BeanUtils.copyProperties(cs, senderHistoryResp);
+				final String s = cs.getUpdateAt().substring(0,19);
+				senderHistoryResp.setUpdateAt(s);
+				List<String> event = eventForwardService.selectEventItems(cs.getId());
+				senderHistoryResp.setEvents(event);
+				return senderHistoryResp;
+			}).collect(Collectors.toList());
+			return representation(Message.SUCCESS, collect, Integer.parseInt(query.get("pageSize")), Integer.parseInt(query.get("pageNum")), EventForwardDtos.getTotal());
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			return representation(Message.INTERFACECONFIG_SELECT_FAIL, e.getMessage());
+		}
+	}
+
+
+
+
+
+	@Data
+	private static class EventForwardResp {
+
+		private Integer id;        //历史礼券的id
+		private  String name;  //第三方
+		//接口名称
+		private String  brand_name;
+		private int type;
+		private String description;
+		//转发事件状态
+		private int status;
+		//更新时间
+		private String  updateAt;
+		//事件列表
+		private List<String> events ;
+
 	}
 }
