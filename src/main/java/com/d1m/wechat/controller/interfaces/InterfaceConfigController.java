@@ -276,20 +276,18 @@ public class InterfaceConfigController extends BaseController {
 
 	/**
 	 * 接口启用和停用
-	 *
-	 * @param status 状态 0 停用，1 启用
 	 * @return
 	 */
 	@ApiOperation(value = "接口启用和停用", tags = "第三方接口列表")
 	@ApiResponse(code = 200, message = "操作成功")
 	@RequestMapping(value = "{id}/enableOrDisable.json", method = RequestMethod.PUT)
-	public JSONObject enableOrDisable(@RequestBody EnableInterface status, @PathVariable("id") String id) {
+	public JSONObject enableOrDisable(@RequestBody EnableInterface statusBody, @PathVariable("id") String id) {
 		try {
 			notBlank(id, Message.INTERFACECONFIG_ID_NOT_EXIST);
-			notBlank(status.getStatus(), Message.INTERFACECONFIG_STATUS_NOT_EXIST);
+			notBlank(statusBody.getStatus(), Message.INTERFACECONFIG_STATUS_NOT_EXIST);
 			InterfaceConfig interfaceConfig = interfaceConfigService.checkIsExist(id);
 			notBlank(interfaceConfig, Message.INTERFACECONFIG_EXIST);
-			interfaceConfigService.enableOrDisable(status.getStatus(), id);
+			interfaceConfigService.enableOrDisable(statusBody.getStatus(), id);
 			return representation(Message.SUCCESS, null);
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -298,6 +296,9 @@ public class InterfaceConfigController extends BaseController {
 	}
 
 
+	/**
+	 * 创建EnableInterface静态内部类
+	 */
 	static class EnableInterface{
 		InterfaceStatus status;
 
