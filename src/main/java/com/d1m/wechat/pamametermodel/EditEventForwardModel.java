@@ -7,11 +7,11 @@ import java.util.List;
 
 @Getter
 @Setter
-public class AddEventForwardModel {
+public class EditEventForwardModel {
 
-    private Integer thirdPartyId;
+    private Integer id;
 
-    private String interfaceId;
+    private Integer status;
 
     private String userUuid;
 
