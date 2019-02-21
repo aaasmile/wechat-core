@@ -1,7 +1,9 @@
 package com.d1m.wechat.service;
 
+import com.d1m.wechat.dto.EventForwardDto;
 import com.d1m.wechat.dto.InterfaceConfigBrandDto;
 import com.d1m.wechat.dto.InterfaceConfigDto;
+import com.d1m.wechat.dto.InterfaceEventForwardDto;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.model.InterfaceConfig;
 import com.d1m.wechat.model.InterfaceConfigBrand;

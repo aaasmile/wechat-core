@@ -2,6 +2,7 @@ package com.d1m.wechat.service.impl;
 
 import java.util.*;
 
+import com.d1m.wechat.dto.EventForwardDto;
 import com.d1m.wechat.dto.InterfaceConfigBrandDto;
 import com.d1m.wechat.dto.InterfaceConfigDto;
 import com.d1m.wechat.exception.WechatException;
@@ -120,6 +121,8 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 
 		return interfaceConfigMapper.checkRepeatById(id,brand,name);
 	}
+
+
 
 
 }
