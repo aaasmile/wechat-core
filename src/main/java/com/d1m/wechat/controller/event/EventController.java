@@ -37,7 +37,7 @@ public class EventController extends BaseController {
     }
 
     @ApiOperation(value = "添加事件转发接口", tags = "事件转发接口列表")
-    @ApiResponse(code = 200, message = "绑定成功")
+    @ApiResponse(code = 200, message = "添加成功")
     @PostMapping("/add")
     public JSONObject add(@RequestBody AddEventForwardModel model) {
         try {
@@ -52,7 +52,7 @@ public class EventController extends BaseController {
     }
 
     @ApiOperation(value = "修改事件转发接口", tags = "事件转发接口列表")
-    @ApiResponse(code = 200, message = "绑定成功")
+    @ApiResponse(code = 200, message = "修改成功")
     @PostMapping("/edit")
     public JSONObject edit(@RequestBody EditEventForwardModel model) {
         try {
