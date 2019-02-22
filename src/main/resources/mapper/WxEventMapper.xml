@@ -12,7 +12,7 @@
     </sql>
 
     <select id="selectEventItmes" resultMap="BaseResultMap">
-        select we.name
+        select we.id , we.name
         from wx_event as we
                  left join event_forward_details efd on we.id = efd.event_id
         where efd.event_forward_id = #{id}
