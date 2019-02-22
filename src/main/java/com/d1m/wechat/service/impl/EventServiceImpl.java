@@ -1,5 +1,6 @@
 package com.d1m.wechat.service.impl;
 
+import com.d1m.wechat.dto.EventForwardDetailsDto;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.EventForwardDetailsMapper;
 import com.d1m.wechat.mapper.EventForwardMapper;
@@ -82,6 +83,11 @@ public class EventServiceImpl implements EventService {
         eventForwardDetailsMapper.delete(new EventForwardDetails(model.getId()));
         addEventForwardDetails(model.getEventIds(), model.getId());
         return true;
+    }
+
+    @Override
+    public EventForwardDetailsDto queryEventForwardDetails(Integer eventForwardId) {
+        return eventForwardMapper.queryEventForwardDetailsById(eventForwardId);
     }
 
     @Override
