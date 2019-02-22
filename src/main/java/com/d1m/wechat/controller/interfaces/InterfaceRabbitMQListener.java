@@ -52,6 +52,7 @@ public class InterfaceRabbitMQListener {
     private final Retryer<Boolean> retryer = RetryerBuilder
             .<Boolean>newBuilder()
             .retryIfException() //异常重试
+            .retryIfRuntimeException() //运行时异常也重试
             .retryIfResult(result -> Objects.equals(result, Boolean.FALSE)) //返回结果部位true重试
             .withWaitStrategy(WaitStrategies.fixedWait(1, TimeUnit.MINUTES)) //重试策略：间隔1分钟
             .withStopStrategy(StopStrategies.stopAfterAttempt(3)) //重试策略: 共重试三次
