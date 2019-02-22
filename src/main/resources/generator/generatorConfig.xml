@@ -29,39 +29,39 @@
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 
 <generatorConfiguration>
-  <context id="Mysql" targetRuntime="MyBatis3Simple" defaultModelType="flat">
-    <property name="beginningDelimiter" value="`"/>
-    <property name="endingDelimiter" value="`"/>
-    <property name="javaFileEncoding" value="UTF-8"/>
-    <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
-      <property name="mappers" value="com.d1m.wechat.util.MyMapper"/>
-    </plugin>
+    <context id="Mysql" targetRuntime="MyBatis3" defaultModelType="flat">
+        <property name="beginningDelimiter" value="`"/>
+        <property name="endingDelimiter" value="`"/>
+        <property name="javaFileEncoding" value="UTF-8"/>
+        <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
+            <property name="mappers" value="com.d1m.wechat.util.MyMapper"/>
+        </plugin>
 
-	<commentGenerator>
- 		<property name="javaFileEncoding" value="UTF-8"/>
- 		<property name="suppressAllComments" value="false"/>
- 		<property name="suppressDate" value="true"/>
- 	</commentGenerator>
+        <commentGenerator>
+            <property name="javaFileEncoding" value="UTF-8"/>
+            <property name="suppressAllComments" value="false"/>
+            <property name="suppressDate" value="true"/>
+        </commentGenerator>
 
-    <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                    connectionURL="jdbc:mysql://10.60.1.60:3306/d1m_wechat"
-                    userId="root"
-                    password="root">
-    </jdbcConnection>
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://10.60.1.22:3306/d1m_wechat"
+                        userId="root"
+                        password="root">
+        </jdbcConnection>
 
-    <javaModelGenerator targetPackage="${targetModelPackage}" targetProject="${targetJavaProject}">
-    	<property name="trimStrings" value="true"/>
-    </javaModelGenerator>
+        <javaModelGenerator targetPackage="${targetModelPackage}" targetProject="${targetJavaProject}">
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
 
-    <sqlMapGenerator targetPackage="${targetXMLPackage}"  targetProject="${targetResourcesProject}"/>
+        <sqlMapGenerator targetPackage="${targetXMLPackage}" targetProject="${targetResourcesProject}"/>
 
-    <javaClientGenerator targetPackage="${targetMapperPackage}" targetProject="${targetJavaProject}" type="XMLMAPPER" />
+        <javaClientGenerator targetPackage="${targetMapperPackage}" targetProject="${targetJavaProject}"
+                             type="XMLMAPPER"/>
 
-    <table tableName="member_tag_csv" >
-      <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
-    </table>
-    <table tableName="member_tag_data" >
-      <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
-    </table>
-  </context>
+        <table tableName="wx_event" enableCountByExample="false" enableDeleteByExample="false"
+               enableSelectByExample="false"
+               enableUpdateByExample="false">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>
+    </context>
 </generatorConfiguration>

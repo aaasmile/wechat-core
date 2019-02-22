@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.d1m.wechat.mapper.WxEventMapper">
+    <resultMap id="BaseResultMap" type="com.d1m.wechat.model.WxEvent">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="parent_id" property="parentId" jdbcType="INTEGER"/>
+        <result column="code" property="code" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, name, parent_id, code
+    </sql>
+
+    <select id="selectEventItmes" resultMap="BaseResultMap">
+        select we.name
+        from wx_event as we
+                 left join event_forward_details efd on we.id = efd.event_id
+        where efd.event_forward_id = #{id}
+    </select>
+</mapper>

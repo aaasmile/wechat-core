@@ -12,29 +12,32 @@ import java.util.List;
 import java.util.Map;
 
 public interface InterfaceConfigService {
-	Page<InterfaceConfigDto> selectItems(Map<String, String> query);
+    Page<InterfaceConfigDto> selectItems(Map<String, String> query);
 
-	String create(InterfaceConfig interfaceConfig);
+    String create(InterfaceConfig interfaceConfig);
 
-	int update(InterfaceConfig interfaceConfig);
+    int update(InterfaceConfig interfaceConfig);
 
-	int delete(String id) throws WechatException;
+    int delete(String id) throws WechatException;
 
-	InterfaceConfigDto get(String id);
+    InterfaceConfigDto get(String id);
 
-	List<InterfaceConfigBrandDto> listBrand();
+    List<InterfaceConfigBrandDto> listBrand();
 
-	Map<String, String> createBrand(InterfaceConfigBrand interfaceConfigBrand) throws WechatException;
+    Map<String, String> createBrand(InterfaceConfigBrand interfaceConfigBrand) throws WechatException;
 
-	int updateBrand(InterfaceConfigBrand interfaceConfigBrand);
+    int updateBrand(InterfaceConfigBrand interfaceConfigBrand);
 
-	int deleteBrand(String id) throws WechatException;
+    int deleteBrand(String id) throws WechatException;
 
-	InterfaceConfigDto getSecret(String id);
+    InterfaceConfigDto getSecret(String id);
+
     //檢查name是否重復
-	int checkRepeat(InterfaceConfig ifcf);
+    int checkRepeat(InterfaceConfig ifcf);
 
-	int checkRepeatById(String id, String brand, String name);
+    int checkRepeatById(String id, String brand, String name);
+
+    List<InterfaceConfigDto> findInterfaceConfigDtoByWxEventCode(String eventCode);
 
 	List<InterfaceConfigDto> getByEventForward(String id);
 

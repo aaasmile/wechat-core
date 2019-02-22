@@ -22,3 +22,5 @@ INSERT INTO `d1m_wechat`.`wx_event` (`name`, `parent_id`) VALUES ('卡券转赠�
 INSERT INTO `d1m_wechat`.`wx_event` (`name`, `parent_id`) VALUES ('卡券删除事件', 9);
 INSERT INTO `d1m_wechat`.`wx_event` (`name`, `parent_id`) VALUES ('卡券买单事件', 9);
 INSERT INTO `d1m_wechat`.`wx_event` (`name`, `parent_id`) VALUES ('从卡券进入公众号事件', 9);
+
+ALTER TABLE wx_event ADD code varchar(100) NULL;

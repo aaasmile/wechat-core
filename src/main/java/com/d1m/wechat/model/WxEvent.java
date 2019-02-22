@@ -1,16 +1,18 @@
 package com.d1m.wechat.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@Getter
-@Setter
 @Table(name = "wx_event")
-public class WXEvent {
-
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class WxEvent {
     @Id
+    @Column(name = "`id`")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
@@ -20,5 +22,6 @@ public class WXEvent {
     @Column(name = "parent_id")
     private Integer parentId;
 
-
+    @Column(name = "code")
+    private String code;
 }
