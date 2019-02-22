@@ -1,11 +1,13 @@
 package com.d1m.wechat.controller.interfaces;
 
+import cn.d1m.wechat.client.model.WxUser;
 import com.d1m.common.ds.TenantContext;
 import com.d1m.wechat.domain.web.BaseResponse;
 import com.d1m.wechat.dto.InterfaceConfigDto;
 import com.d1m.wechat.service.InterfaceConfigService;
 import com.d1m.wechat.util.Constants;
 import com.d1m.wechat.util.Security;
+import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.github.rholder.retry.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -163,6 +165,13 @@ public class InterfaceRabbitMQListener {
      */
     private void addKeyValue(Map<String, String> body) {
         //todo 增加unionid
+        try{
+            String wechatId =body.get("wechatId");
+            String toUserName=body.get("ToUserName");
+            WxUser wxUser=WechatClientDelegate.getUser(wechatId,toUserName);
+            body.put("unionId",wxUser.getUnionid());
+        }catch (Exception e){
+            log.error("增加unionId 失败", e);
+        }
     }
-
 }
