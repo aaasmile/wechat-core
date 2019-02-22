@@ -1034,6 +1034,7 @@ public enum Message {
      */
 
     EVENT_FORWARD_ADD_FAIL(50000, "添加事件转发失败"),
+    EVENT_FORWARD_EXIST(50001, "事件转发已存在"),
 
 
     ;
