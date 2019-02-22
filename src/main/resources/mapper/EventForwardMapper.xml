@@ -30,7 +30,7 @@
 	</resultMap>
 
 	<sql id="findParams">
-		<if test="id != null and id!=0  "> AND  ic.id = #{id} </if>
+		<if test="id != null and id!='' "> AND  ic.id = #{id} </if>
 		<if test="brand != null and brand!=0"> AND ic.brand =#{brand} </if>
 		<if test="name != null and name!=''"> AND ib.name LIKE '%${name}%' </if>
 		<if test="status != null and status!=-1"> AND ef.status = #{status} </if>
@@ -39,8 +39,8 @@
 
 	<select id="selectEventForwardItems" resultMap="EventForwardMap" parameterType="java.util.HashMap">
 		select ef.id , ic.name ,ib.name as brand_name ,ic.type ,ic.description  ,ef.status ,ef.update_at as update_at   From event_forward ef
-		left JOIN interface_config ic on  ef.third_party_id=ic.id
-		LEFT JOIN interface_brand ib ON ib.id = ef.interface_id
+		left JOIN interface_config ic on  ef.interface_id=ic.id
+		LEFT JOIN interface_brand ib ON ib.id = ef.third_party_id
 		<where>
 			<include refid="findParams"/>
 		</where>
@@ -58,8 +58,8 @@
 	<select id="queryEventForwardDetailsById" resultMap="EventForwardDetailsMap">
 		select ef.*, ic.name as thirdPartyName, ib.name interfaceName
 		from event_forward ef
-		left join interface_config ic on ef.third_party_id = ic.id
-		left join interface_brand ib on ef.interface_id = ib.id
+		left join interface_brand ib on ef.third_party_id = ib.id
+		left join interface_config ic on ef.interface_id = ic.id and ib.id = ic.brand
 		where ef.id = #{id}
 	</select>
 

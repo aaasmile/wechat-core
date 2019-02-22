@@ -695,9 +695,7 @@
                     <!--<run>jar xvf /${project.build.finalName}.jar</run>-->
                     <!--<run>rm -f /${project.build.finalName}.jar</run>-->
                     <!--</runs>-->
-                    <entryPoint>[ "sh", "-c", "java -jar -Duser.timezone=GMT+08 $JAVA_OPTS
-                        -Djava.security.egd=file:/dev/./urandom ${project.build.finalName}.jar"]
-                    </entryPoint>
+                    <entryPoint>[ "sh", "-c", "java -jar -Duser.timezone=GMT+08 $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom ${project.build.finalName}.jar"]</entryPoint>
                     <!-- 解决Windows环境下Connect to localhost:2375的问题 start-->
                     <!--<dockerHost>https://192.168.99.100:2376</dockerHost>-->
                     <!--<dockerCertPath>C:\Users\d1m\.docker\machine\machines\default</dockerCertPath>-->
