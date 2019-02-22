@@ -39,19 +39,23 @@ public interface InterfaceConfigService {
 
     List<InterfaceConfigDto> findInterfaceConfigDtoByWxEventCode(String eventCode);
 
-	List<InterfaceConfigDto> getByEventForward(String id);
+    String currentTenant();
 
-	/**
-	 * 接口启用和停用接口
+    List<InterfaceConfigDto> getByEventForward(String id);
+
+    /**
+     * 接口启用和停用接口
+     *
      * @param status
      * @param id
      */
     void enableOrDisable(InterfaceStatus status, String id);
 
-	/**
-	 * 检查第三方接口是否存在
-	 * @param id
-	 * @return
-	 */
-	InterfaceConfig checkIsExist(String id);
+    /**
+     * 检查第三方接口是否存在
+     *
+     * @param id
+     * @return
+     */
+    InterfaceConfig checkIsExist(String id);
 }
