@@ -256,10 +256,9 @@ public class InterfaceConfigController extends BaseController {
 	@Data
 	private static class EventForwardResp {
 
-		private Integer id;        //历史礼券的id
-		private  String name;  //第三方
-		//接口名称
-		private String  brand_name;
+		private Integer id;
+		private  String name;  //接口名称
+		private String  brand_name;//第三方
 		private int type;
 		private String description;
 		//转发事件状态
