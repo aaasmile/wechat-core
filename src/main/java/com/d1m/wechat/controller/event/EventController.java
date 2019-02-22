@@ -12,10 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Api(value = "事件转发接口API EventController", tags = "事件转发接口API EventController")
 @Slf4j
@@ -62,6 +59,18 @@ public class EventController extends BaseController {
             return representation(Message.SUCCESS);
         } catch (WechatException e) {
             return wrapException(e);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return wrapException(e);
+        }
+    }
+
+    @ApiOperation(value = "查看事件转发接口", tags = "事件转发接口列表")
+    @ApiResponse(code = 200, message = "查看成功")
+    @GetMapping("/query/{eventForwardId}")
+    public JSONObject query(@PathVariable("eventForwardId") Integer eventForwardId) {
+        try {
+            return representation(Message.SUCCESS, eventService.queryEventForwardDetails(eventForwardId));
         } catch (Exception e) {
             log.error(e.getMessage());
             return wrapException(e);
