@@ -27,6 +27,7 @@
 		<result column="status" jdbcType="TINYINT" property="status"/>
 		<result column="description" jdbcType="VARCHAR" property="description"/>
 		<result column="update_at" jdbcType="TIMESTAMP" property="updateAt"/>
+		<result column="is_deleted" jdbcType="TIMESTAMP" property="isDeleted"/>
 	</resultMap>
 
 	<sql id="findParams">
@@ -40,7 +41,7 @@
 
 
 	<select id="selectEventForwardItems" resultMap="EventForwardMap" parameterType="java.util.HashMap">
-		select ef.id , ic.name ,ib.name as brand_name ,ic.type ,ic.description  ,ef.status ,ef.update_at as update_at   From event_forward ef
+		select ef.id , ic.name ,ib.name as brand_name , ib.is_deleted ,ic.type ,ic.description  ,ef.status ,ef.update_at as update_at   From event_forward ef
 		left JOIN interface_config ic on  ef.interface_id=ic.id
 		LEFT JOIN interface_brand ib ON ib.id = ef.third_party_id
 		<where>

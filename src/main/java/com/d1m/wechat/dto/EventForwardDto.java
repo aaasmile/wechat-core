@@ -20,5 +20,6 @@ public class EventForwardDto {
     private int status;
    //更新时间
     private String  updateAt;
+    private int isDeleted;
 
 }
