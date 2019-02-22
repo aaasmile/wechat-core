@@ -85,7 +85,7 @@ public interface Constants {
 	String OFFLINEACTIVITYTOKEN = "offlineactivitytoken";
 
 	 String INTERFACE_QUEUE ="INTERFACE_QUEUE_V1";
-	 String INTERFACE_EXCHANGE ="INTERFACE_EXCHANGE";
+	 String INTERFACE_EXCHANGE ="wechat.notify.event";
 
 	interface Status {
 
