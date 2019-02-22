@@ -1,6 +1,7 @@
 package com.d1m.wechat.util;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import java.text.ParseException;
@@ -17,7 +18,7 @@ import java.util.Date;
  */
 public class DateUtils {
     // 日志
-    private static final Logger logger = Logger.getLogger(DateUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(DateUtils.class);
     public static SimpleDateFormat sdfShort = new SimpleDateFormat("yyyyMMdd");
     public static SimpleDateFormat sdfLong = new SimpleDateFormat("yyyyMMddHHmmss");
     /**
@@ -119,8 +120,7 @@ public class DateUtils {
     /**
      * 将字符串类型的转换成Date类型
      *
-     * @param dateStr
-     *            字符串类型的日期 yyyy-MM-dd
+     * @param dateStr 字符串类型的日期 yyyy-MM-dd
      * @return Date类型的日期
      * @throws ParseException
      */
@@ -139,6 +139,7 @@ public class DateUtils {
 
     /**
      * 取得当前日期,格式为:YYYYMMDD
+     *
      * @return
      * @throws Exception
      */
@@ -152,6 +153,7 @@ public class DateUtils {
 
     /**
      * 取得当前日期,格式为:YYYYMMDDHHmmss
+     *
      * @return
      * @throws Exception
      */
@@ -166,29 +168,28 @@ public class DateUtils {
 
     /**
      * 当前日期加上天数后的日期
+     *
      * @param num
      * @return
      */
-     public static String plusDay(Date date,int num){
-       SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-       String currdate = format.format(date);
-       System.out.println("现在的日期是：" + currdate);
-       Calendar ca = Calendar.getInstance();
-       ca.add(Calendar.DATE, num);// num为增加的天数，可以改变的
-       date = ca.getTime();
-       String enddate = format.format(date);
-       System.out.println("增加天数以后的日期：" + enddate);
-       return enddate;
-       }
+    public static String plusDay(Date date, int num) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String currdate = format.format(date);
+        System.out.println("现在的日期是：" + currdate);
+        Calendar ca = Calendar.getInstance();
+        ca.add(Calendar.DATE, num);// num为增加的天数，可以改变的
+        date = ca.getTime();
+        String enddate = format.format(date);
+        System.out.println("增加天数以后的日期：" + enddate);
+        return enddate;
+    }
 
 
     /**
      * 在日期上增加天数
      *
-     * @param date
-     *            日期
-     * @param n
-     *            要增加的天数
+     * @param date 日期
+     * @param n    要增加的天数
      * @return
      */
     public static Date addDay(Date date, int n) {
@@ -196,12 +197,12 @@ public class DateUtils {
         cal.setTime(date);
         cal.add(Calendar.DATE, n);
         Date addDate = cal.getTime();
-        System.out.println("增加"+n+"天数以后的日期：" + addDate);
+        System.out.println("增加" + n + "天数以后的日期：" + addDate);
         return addDate;
     }
 
     public static void main(String[] args) {
 
-        System.out.println(DateUtils.addDay(new Date(),3));
+        System.out.println(DateUtils.addDay(new Date(), 3));
     }
 }
