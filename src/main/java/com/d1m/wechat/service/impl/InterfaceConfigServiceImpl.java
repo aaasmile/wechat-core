@@ -1,5 +1,6 @@
 package com.d1m.wechat.service.impl;
 
+import com.d1m.common.ds.TenantContext;
 import com.d1m.wechat.common.Constant;
 import com.d1m.wechat.dto.InterfaceConfigBrandDto;
 import com.d1m.wechat.dto.InterfaceConfigDto;
@@ -13,9 +14,9 @@ import com.d1m.wechat.model.InterfaceConfig;
 import com.d1m.wechat.model.InterfaceConfigBrand;
 import com.d1m.wechat.model.Menu;
 import com.d1m.wechat.model.enums.InterfaceStatus;
-import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.service.EventService;
 import com.d1m.wechat.service.InterfaceConfigService;
+import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.MD5;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
@@ -42,12 +43,12 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
     @Autowired
     private MenuMapper menuMapper;
 
-	@Autowired
-	private EventService eventService;
+    @Autowired
+    private EventService eventService;
 
-	@Override
-	public Page<InterfaceConfigDto> selectItems(Map<String, String> query) {
-		return interfaceConfigMapper.selectItems(query);
+    @Override
+    public Page<InterfaceConfigDto> selectItems(Map<String, String> query) {
+        return interfaceConfigMapper.selectItems(query);
 
     }
 
@@ -143,7 +144,7 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
     }
 
     @Override
-    @Cacheable(value = Constant.Cache.THIRD_PARTY_INTERFACE, key = "#eventCode")
+    @Cacheable(value = Constant.Cache.THIRD_PARTY_INTERFACE, key = "#eventCode + '_' + #root.target.currentTenant()")
     public List<InterfaceConfigDto> findInterfaceConfigDtoByWxEventCode(String eventCode) {
         return Optional
                 .ofNullable(eventCode)
@@ -151,35 +152,41 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
                 .orElseThrow(() -> new BusinessException(Message.INTERFACECONFIG_GET_FAIL));
     }
 
-	@Override
-	public List<InterfaceConfigDto> getByEventForward(String id) {
-		List<InterfaceConfig> interfaceConfigs = interfaceConfigMapper.select(new InterfaceConfig(id));
-		if(interfaceConfigs == null || interfaceConfigs.size() == 0) {
-			return null;
-		}
+    @Override
+    public String currentTenant() {
+        return TenantContext.getCurrentTenant();
+    }
 
-		List<InterfaceConfigDto> interfaceConfigDtos = new ArrayList<>();
+    @Override
+    public List<InterfaceConfigDto> getByEventForward(String id) {
+        List<InterfaceConfig> interfaceConfigs = interfaceConfigMapper.select(new InterfaceConfig(id));
+        if (interfaceConfigs == null || interfaceConfigs.size() == 0) {
+            return null;
+        }
 
-		List<EventForward> eventForwards = eventService.getForwardByThirdPartyId(Integer.parseInt(id));
-		if(eventForwards == null || eventForwards.size() == 0) {
-			interfaceConfigs.forEach( interfaceConfig -> {
-				interfaceConfigDtos.add(new InterfaceConfigDto(interfaceConfig.getId(), interfaceConfig.getName(), interfaceConfig.getName()));
-			});
-			return interfaceConfigDtos;
-		}
+        List<InterfaceConfigDto> interfaceConfigDtos = new ArrayList<>();
 
-		List<String> interfaceIds = eventForwards.stream().map(EventForward::getInterfaceId).collect(Collectors.toList());
-		List<InterfaceConfig> newInterfaceConfigs = interfaceConfigs.stream().filter((InterfaceConfig i) -> !interfaceIds.contains(i.getId())).collect(Collectors.toList());
-		newInterfaceConfigs.forEach( interfaceConfig -> {
-			interfaceConfigDtos.add(new InterfaceConfigDto(interfaceConfig.getId(), interfaceConfig.getName(), interfaceConfig.getName()));
-		});
-		return interfaceConfigDtos;
-	}
+        List<EventForward> eventForwards = eventService.getForwardByThirdPartyId(Integer.parseInt(id));
+        if (eventForwards == null || eventForwards.size() == 0) {
+            interfaceConfigs.forEach(interfaceConfig -> {
+                interfaceConfigDtos.add(new InterfaceConfigDto(interfaceConfig.getId(), interfaceConfig.getName(), interfaceConfig.getName()));
+            });
+            return interfaceConfigDtos;
+        }
+
+        List<String> interfaceIds = eventForwards.stream().map(EventForward::getInterfaceId).collect(Collectors.toList());
+        List<InterfaceConfig> newInterfaceConfigs = interfaceConfigs.stream().filter((InterfaceConfig i) -> !interfaceIds.contains(i.getId())).collect(Collectors.toList());
+        newInterfaceConfigs.forEach(interfaceConfig -> {
+            interfaceConfigDtos.add(new InterfaceConfigDto(interfaceConfig.getId(), interfaceConfig.getName(), interfaceConfig.getName()));
+        });
+        return interfaceConfigDtos;
+    }
 
 
     /**
      * 接口启用和停用接口
-     *  @param status 状态 0 停用，1 启用
+     *
+     * @param status 状态 0 停用，1 启用
      * @param id
      */
     public void enableOrDisable(InterfaceStatus status, String id) {
