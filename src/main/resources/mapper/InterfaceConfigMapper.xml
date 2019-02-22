@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.d1m.wechat.mapper.InterfaceConfigMapper">
-	<resultMap type="com.d1m.wechat.dto.InterfaceConfigDto" id="interfaceConfigResultMap">
-		<id column="id" property="id" />
-    	<result column="brand" property="brand" />
-    	<result column="app_key" property="key" />
-    	<result column="app_secret" property="secret" />
-    	<result column="name" property="name" />
-    	<result column="method_type" jdbcType="TINYINT" property="methodType" />
-    	<result column="type"  jdbcType="TINYINT" property="type" />
-    	<result column="event" property="event" />
-    	<result column="parameter" property="parameter" />
-    	<result column="description" property="description" />
-    	<result column="url" property="url" />
-    	<result column="sequence" property="sequence" />
-    	<result column="is_deleted" property="deleted" />
-    	<result column="created_at" property="createdAt" />
-    	<result column="created_by" property="createdBy" />
-    	<result column="updated_at" property="updatedAt" />
-    	<result column="updated_by" property="updatedBy" />
-		<result column="status" jdbcType="TINYINT" property="status"/>
+    <resultMap type="com.d1m.wechat.dto.InterfaceConfigDto" id="interfaceConfigResultMap">
+        <id column="id" property="id"/>
+        <result column="brand" property="brand"/>
+        <result column="app_key" property="key"/>
+        <result column="app_secret" property="secret"/>
+        <result column="name" property="name"/>
+        <result column="method_type" jdbcType="TINYINT" property="methodType"/>
+        <result column="type" jdbcType="TINYINT" property="type"/>
+        <result column="event" property="event"/>
+        <result column="parameter" property="parameter"/>
+        <result column="description" property="description"/>
+        <result column="url" property="url"/>
+        <result column="sequence" property="sequence"/>
+        <result column="is_deleted" property="deleted"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
 
-	</resultMap>
+    </resultMap>
 
 	<select id="selectItems" resultMap="interfaceConfigResultMap" parameterType="java.util.HashMap">
 		SELECT ic.id,ic.name,ic.method_type,ic.type,ic.event,ic.parameter,ic.description,ic.url,ic.sequence,ic.is_deleted,ic.created_at,ic.created_by,ic.updated_at,ic.updated_by,ib.name AS brand,ib.app_key,ic.status
@@ -41,30 +41,81 @@
 		ORDER BY ic.updated_at DESC
 	</select>
 
-	<select id="get" resultMap="interfaceConfigResultMap" parameterType="java.lang.String">
-		SELECT ic.id,ic.name,ic.method_type,ic.type,ic.event,ic.parameter,ic.description,ic.url,ic.sequence,ic.is_deleted,ic.created_at,ic.created_by,ic.updated_at,ic.updated_by,ib.name AS brand,ib.app_key,ib.app_secret
-		FROM interface_config ic
-		LEFT JOIN interface_brand ib ON ib.id = ic.brand
-		WHERE ic.id = #{0}
-	</select>
+    <select id="get" resultMap="interfaceConfigResultMap" parameterType="java.lang.String">
+        SELECT ic.id,
+               ic.name,
+               ic.method_type,
+               ic.type,
+               ic.event,
+               ic.parameter,
+               ic.description,
+               ic.url,
+               ic.sequence,
+               ic.is_deleted,
+               ic.created_at,
+               ic.created_by,
+               ic.updated_at,
+               ic.updated_by,
+               ib.name AS brand,
+               ib.app_key,
+               ib.app_secret
+        FROM interface_config ic
+                 LEFT JOIN interface_brand ib ON ib.id = ic.brand
+        WHERE ic.id = #{0}
+    </select>
 
-	<select id="getSecret" resultMap="interfaceConfigResultMap" parameterType="java.lang.String">
-		SELECT ib.app_key,ib.app_secret
-		FROM interface_config ic
-		LEFT JOIN interface_brand ib ON ib.id = ic.brand
-		WHERE ic.id = #{0}
-	</select>
+    <select id="getSecret" resultMap="interfaceConfigResultMap" parameterType="java.lang.String">
+        SELECT ib.app_key, ib.app_secret
+        FROM interface_config ic
+                 LEFT JOIN interface_brand ib ON ib.id = ic.brand
+        WHERE ic.id = #{0}
+    </select>
 
-	<select id="checkRepeatById" resultType="int">
-		SELECT COUNT(*)
-		FROM interface_config ic
-		WHERE  ic.id != #{id}
-		 AND  ic.brand = #{brand} AND ic.name =#{name}
-	</select>
+    <select id="checkRepeatById" resultType="int">
+        SELECT COUNT(*)
+        FROM interface_config ic
+        WHERE ic.id != #{id}
+          AND ic.brand = #{brand}
+          AND ic.name = #{name}
+    </select>
 
+    <select id="findInterfaceConfigDtoByWxEventCode"
+            resultMap="com.d1m.wechat.mapper.InterfaceConfigMapper.interfaceConfigResultMap">
+        select distinct ic.id,
+                        ic.name,
+                        ic.method_type,
+                        ic.type,
+                        ic.event,
+                        ic.parameter,
+                        ic.description,
+                        ic.url,
+                        ic.sequence,
+                        ic.is_deleted,
+                        ic.created_at,
+                        ic.created_by,
+                        ic.updated_at,
+                        ic.updated_by,
+                        ib.name AS brand,
+                        ib.app_key,
+                        ib.app_secret
+        from interface_config ic
+                 left join event_forward ef on ic.id = ef.interface_id
+                 LEFT JOIN interface_brand ib ON ib.id = ic.brand
+                 left join event_forward_details efd on efd.event_forward_id = ef.id
+                 left join wx_event we on we.id = efd.event_id
+        where ib.is_deleted = 0
+          and ic.is_deleted = 0
+          and ic.status = 0
+          and we.code = #{eventCode}
+    </select>
 
-
-  </mapper>
+    <update id="updateStatusById">
+        UPDATE interface_config
+        SET updated_at = #{updatedAt},
+            status     = #{status}
+        WHERE id = #{id}
+    </update>
+</mapper>
 
 
 

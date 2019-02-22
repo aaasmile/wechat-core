@@ -7,6 +7,7 @@ import com.d1m.wechat.dto.InterfaceConfigDto;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.model.InterfaceConfig;
 import com.d1m.wechat.model.InterfaceConfigBrand;
+import com.d1m.wechat.model.enums.InterfaceStatus;
 import com.d1m.wechat.service.EventForwardService;
 import com.d1m.wechat.service.InterfaceConfigService;
 import com.d1m.wechat.util.DateUtil;
@@ -26,6 +27,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
 @Api(value = "第三方接口API InterfaceConfigController", tags = "第三方接口API InterfaceConfigController")
 @RestController
@@ -268,5 +271,42 @@ public class InterfaceConfigController extends BaseController {
 		//事件列表
 		private List<String> events ;
 
+	}
+
+	/**
+	 * 接口启用和停用
+	 * @return
+	 */
+	@ApiOperation(value = "接口启用和停用", tags = "第三方接口列表")
+	@ApiResponse(code = 200, message = "操作成功")
+	@RequestMapping(value = "{id}/enableOrDisable.json", method = RequestMethod.PUT)
+	public JSONObject enableOrDisable(@RequestBody EnableInterface statusBody, @PathVariable("id") String id) {
+		try {
+			notBlank(id, Message.INTERFACECONFIG_ID_NOT_EXIST);
+			notBlank(statusBody.getStatus(), Message.INTERFACECONFIG_STATUS_NOT_EXIST);
+			InterfaceConfig interfaceConfig = interfaceConfigService.checkIsExist(id);
+			notBlank(interfaceConfig, Message.INTERFACECONFIG_EXIST);
+			interfaceConfigService.enableOrDisable(statusBody.getStatus(), id);
+			return representation(Message.SUCCESS, null);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			return wrapException(e);
+		}
+	}
+
+
+	/**
+	 * 创建EnableInterface静态内部类
+	 */
+	static class EnableInterface{
+		InterfaceStatus status;
+
+		public InterfaceStatus getStatus() {
+			return status;
+		}
+
+		public void setStatus(InterfaceStatus status) {
+			this.status = status;
+		}
 	}
 }
