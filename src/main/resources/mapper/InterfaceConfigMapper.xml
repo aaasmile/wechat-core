@@ -23,22 +23,24 @@
 
     </resultMap>
 
-	<select id="selectItems" resultMap="interfaceConfigResultMap" parameterType="java.util.HashMap">
-		SELECT ic.id,ic.name,ic.method_type,ic.type,ic.event,ic.parameter,ic.description,ic.url,ic.sequence,ic.is_deleted,ic.created_at,ic.created_by,ic.updated_at,ic.updated_by,ib.name AS brand,ib.app_key,ic.status
-		FROM interface_config ic
-		LEFT JOIN interface_brand ib ON ib.id = ic.brand
-		WHERE ic.is_deleted = 0
-		<if test="id != null and id!=0  "> AND  ic.id = #{id} </if>
-		<if test="brand != null and brand!=0"> AND ic.brand =#{brand} </if>
-		<if test="name != null and name!=''"> AND ic.name LIKE '%${name}%' </if>
-		<if test="method_type != null"> AND ic.method_type = #{method_type} </if>
-		<if test="type != null and type!=-1"> AND ic.type = #{type} </if>
-		<if test="create_from != null"> AND ic.created_at <![CDATA[ >= ]]> #{create_from} </if>
-		<if test="create_to != null"> AND ic.create_at <![CDATA[ <= ]]> #{create_to} </if>
-		<if test="update_from != null"> AND ic.updated_at <![CDATA[ >= ]]> #{update_from} </if>
-		<if test="update_to != null"> AND ic.updated_at <![CDATA[ <= ]]> #{update_to} </if>
-		<if test="status != null and status!=-1"> AND ic.status = #{status} </if>
-	</select>
+    <select id="selectItems" resultMap="interfaceConfigResultMap" parameterType="java.util.HashMap">
+        SELECT
+        ic.id,ic.name,ic.method_type,ic.type,ic.event,ic.parameter,ic.description,ic.url,ic.sequence,ic.is_deleted,ic.created_at,ic.created_by,ic.updated_at,ic.updated_by,ib.name
+        AS brand,ib.app_key,ic.status
+        FROM interface_config ic
+        LEFT JOIN interface_brand ib ON ib.id = ic.brand
+        WHERE ic.is_deleted = 0
+        <if test="id != null and id!=0  ">AND ic.id = #{id}</if>
+        <if test="brand != null and brand!=0">AND ic.brand =#{brand}</if>
+        <if test="name != null and name!=''">AND ic.name LIKE '%${name}%'</if>
+        <if test="method_type != null">AND ic.method_type = #{method_type}</if>
+        <if test="type != null and type!=-1">AND ic.type = #{type}</if>
+        <if test="create_from != null">AND ic.created_at <![CDATA[ >= ]]> #{create_from}</if>
+        <if test="create_to != null">AND ic.create_at <![CDATA[ <= ]]> #{create_to}</if>
+        <if test="update_from != null">AND ic.updated_at <![CDATA[ >= ]]> #{update_from}</if>
+        <if test="update_to != null">AND ic.updated_at <![CDATA[ <= ]]> #{update_to}</if>
+        <if test="status != null and status!=-1">AND ic.status = #{status}</if>
+    </select>
 
     <select id="get" resultMap="interfaceConfigResultMap" parameterType="java.lang.String">
         SELECT ic.id,
@@ -80,23 +82,23 @@
 
     <select id="findInterfaceConfigDtoByWxEventCode"
             resultMap="com.d1m.wechat.mapper.InterfaceConfigMapper.interfaceConfigResultMap">
-        select ic.id,
-               ic.name,
-               ic.method_type,
-               ic.type,
-               ic.event,
-               ic.parameter,
-               ic.description,
-               ic.url,
-               ic.sequence,
-               ic.is_deleted,
-               ic.created_at,
-               ic.created_by,
-               ic.updated_at,
-               ic.updated_by,
-               ib.name AS brand,
-               ib.app_key,
-               ib.app_secret
+        select distinct ic.id,
+                        ic.name,
+                        ic.method_type,
+                        ic.type,
+                        ic.event,
+                        ic.parameter,
+                        ic.description,
+                        ic.url,
+                        ic.sequence,
+                        ic.is_deleted,
+                        ic.created_at,
+                        ic.created_by,
+                        ic.updated_at,
+                        ic.updated_by,
+                        ib.name AS brand,
+                        ib.app_key,
+                        ib.app_secret
         from interface_config ic
                  left join event_forward ef on ic.id = ef.interface_id
                  LEFT JOIN interface_brand ib ON ib.id = ic.brand
@@ -109,8 +111,11 @@
     </select>
 
     <update id="updateStatusById">
-		UPDATE interface_config SET updated_at =#{updatedAt},status =#{status} WHERE id =#{id}
-	</update>
+        UPDATE interface_config
+        SET updated_at = #{updatedAt},
+            status     = #{status}
+        WHERE id = #{id}
+    </update>
 </mapper>
 
 
