@@ -157,7 +157,6 @@ QIz95hs/KAF8P7zkidcihrarySoYSUeJNguoRBbmnYVDm52+ucxG5W7p4E7WI5JageDc66tMrZ7Qm81h
 {
     "unionId":"oiliLwdFG7pP92NhEAZKOFpoTopw",
     "ToUserName":"gh_cb4da662addc",
-    "unionId":"oiliLwdFG7pP92NhEAZKOFpoTopw"
     "FromUserName":"oNgDLwdFG7pP92NhEAZKOFpoTGQ8",
     "CreateTime":"1523599704",
     "MsgType":"event",
