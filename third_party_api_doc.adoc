@@ -473,5 +473,5 @@ QIz95hs/KAF8P7zkidcihrarySoYSUeJNguoRBbmnYVDm52+ucxG5W7p4E7WI5JageDc66tMrZ7Qm81h
 
 === 1.3 Response Body
 
-响应值按照rest风格，只接收HttpStatus为200的返回。
+响应值按照rest风格，只接收HttpStatus为2xx的返回。
 
