@@ -32,10 +32,12 @@
 	<sql id="findParams">
 		<if test="id != null and id!='' "> AND  ic.id = #{id} </if>
 		<if test="brand != null and brand!=0"> AND ic.brand =#{brand} </if>
-		<if test="name != null and name!=''"> AND ib.name LIKE '%${name}%' </if>
+		<if test="name != null and name!=''"> AND ic.name LIKE '%${name}%' </if>
 		<if test="status != null and status!=-1"> AND ef.status = #{status} </if>
 
 	</sql>
+
+
 
 	<select id="selectEventForwardItems" resultMap="EventForwardMap" parameterType="java.util.HashMap">
 		select ef.id , ic.name ,ib.name as brand_name ,ic.type ,ic.description  ,ef.status ,ef.update_at as update_at   From event_forward ef
@@ -45,6 +47,22 @@
 			<include refid="findParams"/>
 		</where>
 		ORDER BY update_at DESC
+	</select>
+
+	<resultMap id="EventForwardDetailsMap" type="com.d1m.wechat.dto.EventForwardDetailsDto" extends="BaseResultMap">
+		<result column="thirdPartyName" jdbcType="VARCHAR" property="thirdPartyName"/>
+		<result column="interfaceName" jdbcType="VARCHAR" property="interfaceName"/>
+		<collection property="eventIds" column="id" select="com.d1m.wechat.mapper.EventForwardDetailsMapper.getByEventForwardId"
+					ofType="java.lang.Integer" javaType="ArrayList"/>
+	</resultMap>
+
+
+	<select id="queryEventForwardDetailsById" resultMap="EventForwardDetailsMap">
+		select ef.*, ic.name as thirdPartyName, ib.name interfaceName
+		from event_forward ef
+		left join interface_brand ib on ef.third_party_id = ib.id
+		left join interface_config ic on ef.interface_id = ic.id and ib.id = ic.brand
+		where ef.id = #{id}
 	</select>
 
 

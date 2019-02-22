@@ -1,5 +1,6 @@
 package com.d1m.wechat.service;
 
+import com.d1m.wechat.dto.EventForwardDetailsDto;
 import com.d1m.wechat.model.EventForward;
 import com.d1m.wechat.model.WxEvent;
 import com.d1m.wechat.pamametermodel.AddEventForwardModel;
@@ -16,4 +17,6 @@ public interface EventService extends BaseService<WxEvent> {
     List<EventForward> getForwardByThirdPartyId(Integer thirdPartyId);
 
     boolean editEventForward(EditEventForwardModel model);
+
+    EventForwardDetailsDto queryEventForwardDetails(Integer eventForwardId);
 }
