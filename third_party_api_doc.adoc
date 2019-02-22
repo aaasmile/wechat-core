@@ -217,7 +217,7 @@ QIz95hs/KAF8P7zkidcihrarySoYSUeJNguoRBbmnYVDm52+ucxG5W7p4E7WI5JageDc66tMrZ7Qm81h
     "RefuseReason": "非法代制"
   }
 ----
-<1>不通过为card_not_pass_check
+<1> 不通过为card_not_pass_check
 
 参数说明：
 [options="header,footer"]
