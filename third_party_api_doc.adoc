@@ -43,6 +43,7 @@ QIz95hs/KAF8P7zkidcihrarySoYSUeJNguoRBbmnYVDm52+ucxG5W7p4E7WI5JageDc66tMrZ7Qm81h
 [source, json]
 ----
 {
+    "unionId":"oiliLwdFG7pP92NhEAZKOFpoTopw",
     "ToUserName":"gh_cb4da662addc",
     "FromUserName":"oNgDLwXc9moY-zel0fYuPmWupWM4",
     "CreateTime":"1523359238",
@@ -59,6 +60,8 @@ QIz95hs/KAF8P7zkidcihrarySoYSUeJNguoRBbmnYVDm52+ucxG5W7p4E7WI5JageDc66tMrZ7Qm81h
 |CreateTime	|消息创建时间 （整型）
 |MsgType	|消息类型，event
 |Event|	事件类型，subscribe(订阅)、unsubscribe(取消订阅)
+|unionId|	只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。
+|unionId|	只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。
 |======================
 
 ==== 扫描带参数二维码事件
@@ -67,6 +70,7 @@ QIz95hs/KAF8P7zkidcihrarySoYSUeJNguoRBbmnYVDm52+ucxG5W7p4E7WI5JageDc66tMrZ7Qm81h
 [source, json]
 ----
 {
+    "unionId":"oiliLwdFG7pP92NhEAZKOFpoTopw",
     "ToUserName":"gh_cb4da662addc",
     "FromUserName":"oNgDLwSm9vyDdAhCz-yfyISNwGfM",
     "CreateTime":"1523604189",
@@ -87,11 +91,13 @@ QIz95hs/KAF8P7zkidcihrarySoYSUeJNguoRBbmnYVDm52+ucxG5W7p4E7WI5JageDc66tMrZ7Qm81h
 |Event|	事件类型，SCAN
 |EventKey|	事件KEY值，是一个32位无符号整数，即创建二维码时的二维码scene_id
 |Ticket|	二维码的ticket，可用来换取二维码图片
+|unionId|	只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。
 |======================
 ===== 用户未关注时，进行关注后的事件推送
 [source, json]
 ----
 {
+    "unionId":"oiliLwdFG7pP92NhEAZKOFpoTopw",
     "ToUserName":"gh_cb4da662addc",
     "FromUserName":"oNgDLwdFG7pP92NhEAZKOFpoTGQ8",
     "CreateTime":"1523871798",
@@ -113,12 +119,14 @@ QIz95hs/KAF8P7zkidcihrarySoYSUeJNguoRBbmnYVDm52+ucxG5W7p4E7WI5JageDc66tMrZ7Qm81h
 |Event|	事件类型，subscribe
 |EventKey|	事件KEY值，qrscene_为前缀，后面为二维码的参数值
 |Ticket|	二维码的ticket，可用来换取二维码图片
+|unionId|	只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。
 |======================
 
 ==== 上报地理位置事件
 [source, json]
 ----
 {
+    "unionId":"oiliLwdFG7pP92NhEAZKOFpoTopw",
     "ToUserName":"gh_cb4da662addc",
     "FromUserName":"oNgDLwYYbDLbDBJwImMuhd6RL5AE",
     "CreateTime":"1523422784",
@@ -141,13 +149,16 @@ QIz95hs/KAF8P7zkidcihrarySoYSUeJNguoRBbmnYVDm52+ucxG5W7p4E7WI5JageDc66tMrZ7Qm81h
 |Latitude|	地理位置纬度
 |Longitude|	地理位置经度
 |Precision|	地理位置精度
+|unionId|	只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。
 |======================
 
 ==== 点击菜单拉取消息时的事件推送
 [source, json]
 ----
 {
+    "unionId":"oiliLwdFG7pP92NhEAZKOFpoTopw",
     "ToUserName":"gh_cb4da662addc",
+    "unionId":"oiliLwdFG7pP92NhEAZKOFpoTopw"
     "FromUserName":"oNgDLwdFG7pP92NhEAZKOFpoTGQ8",
     "CreateTime":"1523599704",
     "MsgType":"event",
@@ -165,12 +176,14 @@ QIz95hs/KAF8P7zkidcihrarySoYSUeJNguoRBbmnYVDm52+ucxG5W7p4E7WI5JageDc66tMrZ7Qm81h
 |MsgType	|消息类型，event
 |Event	|事件类型，CLICK
 |EventKey	|事件KEY值，与自定义菜单接口中KEY值对应
+|unionId|	只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。
 |======================
 
 ==== 点击菜单跳转链接时的事件推送
 [source, json]
 ----
 {
+    "unionId":"oiliLwdFG7pP92NhEAZKOFpoTopw",
     "ToUserName":"gh_cb4da662addc",
     "FromUserName":"oNgDLwdFG7pP92NhEAZKOFpoTGQ8",
     "CreateTime":"1523599704",
@@ -189,12 +202,14 @@ QIz95hs/KAF8P7zkidcihrarySoYSUeJNguoRBbmnYVDm52+ucxG5W7p4E7WI5JageDc66tMrZ7Qm81h
 |MsgType	|消息类型，event
 |Event	|事件类型，CLICK
 |EventKey	|事件KEY值，设置的跳转URL
+|unionId|	只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。
 |======================
 
 ==== 卡券审核事件推送
 [source, json]
 ----
 {
+    "unionId":"oiliLwdFG7pP92NhEAZKOFpoTopw",
     "ToUserName": "toUser",
     "FromUserName": "FromUser",
     "CreateTime": "123456789",
@@ -217,12 +232,14 @@ QIz95hs/KAF8P7zkidcihrarySoYSUeJNguoRBbmnYVDm52+ucxG5W7p4E7WI5JageDc66tMrZ7Qm81h
 |Event	|事件类型，card_pass_check(卡券通过审核)、card_not_pass_check（卡券未通过审核）
 |CardId	|卡券ID
 |RefuseReason	|审核不通过原因
+|unionId|	只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。
 |======================
 
 ==== 卡券领取事件推送
 [source, json]
 ----
 {
+    "unionId":"oiliLwdFG7pP92NhEAZKOFpoTopw",
     "ToUserName": " gh_fc0a06a20993 ",
     "FromUserName": " oZI8Fj040-be6rlDohc6gkoPOQTQ ",
     "CreateTime": "1472551036",
@@ -257,12 +274,14 @@ QIz95hs/KAF8P7zkidcihrarySoYSUeJNguoRBbmnYVDm52+ucxG5W7p4E7WI5JageDc66tMrZ7Qm81h
 |OuterStr	|领取场景值，用于领取渠道数据统计。可在生成二维码接口及添加Addcard接口中自定义该字段的字符串值。
 |IsRestoreMemberCard	|用户删除会员卡后可重新找回，当用户本次操作为找回时，该值为1，否则为0
 |UnionId	|领券用户的UnionId
+|unionId|	只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。
 |======================
 
 ==== 卡券转赠事件推送
 [source, json]
 ----
 {
+    "unionId":"oiliLwdFG7pP92NhEAZKOFpoTopw",
     "ToUserName": "gh_3fcea188bf78",
     "FromUserName": "obLatjjwDolFjRRd3doGIdwNqRXw",
     "CreateTime": "1474181868",
@@ -289,12 +308,14 @@ QIz95hs/KAF8P7zkidcihrarySoYSUeJNguoRBbmnYVDm52+ucxG5W7p4E7WI5JageDc66tMrZ7Qm81h
 |UserCardCode	|code序列号。
 |IsReturnBack	|是否转赠退回，0代表不是，1代表是。
 |IsChatRoom	|是否是群转赠
+|unionId|	只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。
 |======================
 
 ==== 卡券删除事件推送
 [source, json]
 ----
 {
+    "unionId":"oiliLwdFG7pP92NhEAZKOFpoTopw",
     "ToUserName":"toUser",
     "FromUserName":"FromUser",
     "CreateTime":"123456789",
@@ -316,11 +337,13 @@ QIz95hs/KAF8P7zkidcihrarySoYSUeJNguoRBbmnYVDm52+ucxG5W7p4E7WI5JageDc66tMrZ7Qm81h
 |Event	|事件类型，user_del_card(用户删除卡券)
 |CardId	|卡券ID。
 |UserCardCode	|code序列号。自定义code及非自定义code的卡券被领取后都支持事件推送。
+|unionId|	只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。
 |======================
 ==== 卡券核销事件推送
 [source, json]
 ----
 {
+    "unionId":"oiliLwdFG7pP92NhEAZKOFpoTopw",
     "ToUserName":" gh_fc0a06a20993 ",
     "FromUserName":" oZI8Fj040-be6rlDohc6gkoPOQTQ ",
     "CreateTime":"1472549042",
@@ -353,12 +376,14 @@ QIz95hs/KAF8P7zkidcihrarySoYSUeJNguoRBbmnYVDm52+ucxG5W7p4E7WI5JageDc66tMrZ7Qm81h
 |VerifyCode	|自助核销时，用户输入的验证码
 |RemarkAmount	|自助核销 时 ，用户输入的备注金额
 |OuterStr	|开发者发起核销时传入的自定义参数，用于进行核销渠道统计
+|unionId|	只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。
 |======================
 
 ==== 卡券买单事件推送
 [source, json]
 ----
 {
+    "unionId":"oiliLwdFG7pP92NhEAZKOFpoTopw",
     "ToUserName":"gh_e2243xxxxxxx",
     "FromUserName":"oo2VNuOUuZGMxxxxxxxx",
     "CreateTime":"1442390947",
@@ -387,12 +412,14 @@ QIz95hs/KAF8P7zkidcihrarySoYSUeJNguoRBbmnYVDm52+ucxG5W7p4E7WI5JageDc66tMrZ7Qm81h
 |LocationId|	门店ID，当前卡券核销的门店ID（只有通过卡券商户助手和买单核销时才会出现）
 |Fee	|实付金额，单位为分
 |OriginalFee	|应付金额，单位为分
+|unionId|	只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。
 |======================
 
 ==== 从卡券进入公众号会话事件推送
 [source, josn]
 ----
 {
+    "unionId":"oiliLwdFG7pP92NhEAZKOFpoTopw",
     "ToUserName":"toUser",
     "FromUserName":"FromUser",
     "CreateTime":"123456789",
@@ -413,12 +440,14 @@ QIz95hs/KAF8P7zkidcihrarySoYSUeJNguoRBbmnYVDm52+ucxG5W7p4E7WI5JageDc66tMrZ7Qm81h
 |Event	|事件类型，user_enter_session_from_card(用户从卡券进入公众号会话)
 |CardId	|卡券ID。
 |UserCardCode	|Code码。
+|unionId|	只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。
 |======================
 
 ==== 自定义菜单跳转小程序事件 
 [source , json]
 ----
 {
+    "unionId":"oiliLwdFG7pP92NhEAZKOFpoTopw",
     "ToUserName":"holacn",
     "FromUserName":"oWuqrjoIfwfTHO7DRRYjEOqksakQ",
     "CreateTime":"1537183824",
@@ -438,6 +467,7 @@ QIz95hs/KAF8P7zkidcihrarySoYSUeJNguoRBbmnYVDm52+ucxG5W7p4E7WI5JageDc66tMrZ7Qm81h
 |MsgType	|消息类型，event
 |Event	|事件类型，view_miniprogram(小程序跳转)
 |MenuId	|菜单值。
+|unionId|	只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。
 |======================
 
 
