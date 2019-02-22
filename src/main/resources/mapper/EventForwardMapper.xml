@@ -32,10 +32,12 @@
 	<sql id="findParams">
 		<if test="id != null and id!='' "> AND  ic.id = #{id} </if>
 		<if test="brand != null and brand!=0"> AND ic.brand =#{brand} </if>
-		<if test="name != null and name!=''"> AND ib.name LIKE '%${name}%' </if>
+		<if test="name != null and name!=''"> AND ic.name LIKE '%${name}%' </if>
 		<if test="status != null and status!=-1"> AND ef.status = #{status} </if>
 
 	</sql>
+
+
 
 	<select id="selectEventForwardItems" resultMap="EventForwardMap" parameterType="java.util.HashMap">
 		select ef.id , ic.name ,ib.name as brand_name ,ic.type ,ic.description  ,ef.status ,ef.update_at as update_at   From event_forward ef
