@@ -266,10 +266,12 @@ public class InterfaceConfigController extends BaseController {
 		private String description;
 		//转发事件状态
 		private int status;
+		private int isDeleted;
 		//更新时间
 		private String  updateAt;
 		//事件列表
 		private List<String> events ;
+
 
 	}
 
