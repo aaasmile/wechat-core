@@ -155,7 +155,7 @@ public class MemberTagTypeController extends BaseController {
 	@ApiResponse(code=200, message="1-获取会员标签类型列表成功")
 	@RequestMapping(value = "listAllTypesTags.json", method = RequestMethod.POST)
 	@ResponseBody
-//	@RequiresPermissions("system-setting:tag-category-management")
+	@RequiresPermissions("system-setting:tag-category-management")
 	public JSONObject getAllTypesTags(HttpSession session) {
 		final Integer wechatId = getWechatId(session);
 		List<MemberTagTypeDto> selectAll = memberTagTypeService.selectAllTagTypes(wechatId);
