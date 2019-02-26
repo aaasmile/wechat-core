@@ -23,7 +23,7 @@ public class MemberExcel {
     @Excel(name = "gender", orderNum = "2")
     private Sex gender;
 
-    @Excel(name = "bind.mobile", width = 12, orderNum = "22")
+    @Excel(name = "bind.mobile", width = 12, orderNum = "23")
     private String mobile;
 
     @Excel(name = "province", orderNum = "4")
@@ -44,52 +44,55 @@ public class MemberExcel {
     @Excel(name = "subscribe.scene", width = 14, orderNum = "9")
     private MemberSubscribeScene subscribeScene;
 
-    @Excel(name = "customer.service.open.id", width = 32, orderNum = "10")
+    @Excel(name = "qrcode.name", width = 32, orderNum = "10")
+    private String qrcodeName;
+
+    @Excel(name = "customer.service.open.id", width = 32, orderNum = "11")
     private String openId;
 
-    @Excel(name = "unionid", width = 32, orderNum = "11")
+    @Excel(name = "unionid", width = 32, orderNum = "12")
     private String unionId;
 
-    @Excel(name = "tag", width = 22, orderNum = "12")
+    @Excel(name = "tag", width = 22, orderNum = "13")
     private String tag;
 
-    @Excel(name = "lang", orderNum = "13")
+    @Excel(name = "lang", orderNum = "14")
     private Byte lang;
 
-    @Excel(name = "group.message.sent", orderNum = "14")
+    @Excel(name = "group.message.sent", orderNum = "15")
     private Integer groupMessageSent;
 
-    @Excel(name = "bind.status", orderNum = "15")
+    @Excel(name = "bind.status", orderNum = "16")
     private MemberProfileStatus bindStatus;
 
-    @Excel(name = "bind.at", width = 20, exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "16")
+    @Excel(name = "bind.at", width = 20, exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "17")
     private Date bindAt;
 
-    @Excel(name = "bind.name", width = 20, orderNum = "17")
+    @Excel(name = "bind.name", width = 20, orderNum = "18")
     private String bindName;
 
-    @Excel(name = "bind.province", orderNum = "18")
+    @Excel(name = "bind.province", orderNum = "19")
     private String bindProvince;
 
-    @Excel(name = "bind.city", orderNum = "19")
+    @Excel(name = "bind.city", orderNum = "20")
     private String bindCity;
 
-    @Excel(name = "bind.county", orderNum = "20")
+    @Excel(name = "bind.county", orderNum = "21")
     private String bindCounty;
 
-    @Excel(name = "bind.address", orderNum = "21")
+    @Excel(name = "bind.address", orderNum = "22")
     private String bindAddress;
 
     @Excel(name = "mobile", orderNum = "3")
     private String bindMobile;
 
-    @Excel(name = "bind.gender", orderNum = "23")
+    @Excel(name = "bind.gender", orderNum = "24")
     private Sex bindGender;
 
-    @Excel(name = "bind.birthday", width = 20, exportFormat = "yyyy-MM-dd", orderNum = "24")
+    @Excel(name = "bind.birthday", width = 20, exportFormat = "yyyy-MM-dd", orderNum = "25")
     private Date bindBirthday;
 
-    @Excel(name = "remarks", orderNum = "25")
+    @Excel(name = "remarks", orderNum = "26")
     private String remarks;
 
 
@@ -300,5 +303,13 @@ public class MemberExcel {
 
     public void setBindName(String bindName) {
         this.bindName = bindName;
+    }
+
+    public String getQrcodeName() {
+        return qrcodeName;
+    }
+
+    public void setQrcodeName(String qrcodeName) {
+        this.qrcodeName = qrcodeName;
     }
 }
