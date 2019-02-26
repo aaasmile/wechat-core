@@ -152,7 +152,7 @@ public class InterfaceRabbitMQListener implements InterfaceRabbit {
     }
 
     /**
-     * 上有捕获异常HttpStatusCodeException({@link org.springframework.web.client.HttpStatusCodeException})，用于判断返回的httpStatueCode
+     * 上游捕获异常HttpStatusCodeException({@link org.springframework.web.client.HttpStatusCodeException})，用于判断返回的httpStatueCode
      *
      * @param interfaceConfigDto 第三方接口配置
      * @param payload            报文
