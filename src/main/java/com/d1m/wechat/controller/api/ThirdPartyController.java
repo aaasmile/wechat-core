@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,8 +26,8 @@ public class ThirdPartyController {
 	@Autowired
 	private ConsulClient consulClient;
 
-	@RequestMapping("/api/menu/callback")
-	public List<CustomRequestBody> callback(String encryptedData) throws Exception {
+	@RequestMapping(value = "/api/menu/callback")
+	public List<CustomRequestBody> callback(@RequestBody String encryptedData) throws Exception {
 		log.info("encryptedData..." + encryptedData);
 		Response<GetValue> response = consulClient.getKVValue("configuration/application/secret");
 		String secret = response.getValue().getDecodedValue();
