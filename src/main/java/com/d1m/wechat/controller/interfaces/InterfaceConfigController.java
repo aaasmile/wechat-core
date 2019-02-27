@@ -2,9 +2,11 @@ package com.d1m.wechat.controller.interfaces;
 
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
+import com.d1m.wechat.domain.web.BaseResponse;
 import com.d1m.wechat.dto.EventForwardDto;
 import com.d1m.wechat.dto.InterfaceConfigDto;
 import com.d1m.wechat.exception.WechatException;
+import com.d1m.wechat.model.EventForward;
 import com.d1m.wechat.model.InterfaceConfig;
 import com.d1m.wechat.model.InterfaceConfigBrand;
 import com.d1m.wechat.model.enums.InterfaceStatus;
@@ -22,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -60,9 +61,22 @@ public class InterfaceConfigController extends BaseController {
 	@RequestMapping(value = "selectItems.json", method = RequestMethod.POST)
 	public JSONObject selectItems(@RequestBody Map<String, String> query) {
 		try {
+			log.info(" 第三方接口查询请求参数{}",query.toString());
 			PageHelper.startPage(Integer.parseInt(query.get("pageNum")), Integer.parseInt(query.get("pageSize")), true);
 			Page<InterfaceConfigDto> interfaceConfigDtos = interfaceConfigService.selectItems(query);
-			return representation(Message.SUCCESS, interfaceConfigDtos, Integer.parseInt(query.get("pageSize")), Integer.parseInt(query.get("pageNum")), interfaceConfigDtos.getTotal());
+			if(CollectionUtils.isEmpty(interfaceConfigDtos)){
+				return representation(Message.SUCCESS, interfaceConfigDtos, Integer.parseInt(query.get("pageSize")), Integer.parseInt(query.get("pageNum")), interfaceConfigDtos.getTotal());
+			}
+			final List<InterfaceConfigDto> collect = interfaceConfigDtos.stream().map(icd -> {
+				final InterfaceConfigDto interfaceConfigDto = new InterfaceConfigDto();
+				BeanUtils.copyProperties(icd, interfaceConfigDto);
+				final String updatedAt= icd.getUpdatedAt().substring(0, 19);
+				final String createdAt = icd.getCreatedAt().substring(0, 19);
+				interfaceConfigDto.setUpdatedAt(updatedAt);
+				interfaceConfigDto.setCreatedAt(createdAt);
+				return interfaceConfigDto;
+			}).collect(Collectors.toList());
+			return representation(Message.SUCCESS, collect, Integer.parseInt(query.get("pageSize")), Integer.parseInt(query.get("pageNum")), interfaceConfigDtos.getTotal());
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			return representation(Message.INTERFACECONFIG_SELECT_FAIL, e.getMessage());
@@ -123,7 +137,7 @@ public class InterfaceConfigController extends BaseController {
 			return representation(Message.SUCCESS, interfaceConfigService.delete(id));
 		}catch (WechatException e) {
 			log.error(e.getMessage(), e);
-			return representation(Message.INTERFACECONFIG_IN_USED, e.getMessageInfo());
+			return representation(Message.INTERFACECONFIG_IN_USED_MENU, e.getMessageInfo());
 		}catch (Exception e) {
 			log.error(e.getMessage(), e);
 			return representation(Message.INTERFACECONFIG_DELETE_FAIL, e.getMessage());
@@ -231,6 +245,7 @@ public class InterfaceConfigController extends BaseController {
 	@RequestMapping(value = "selectForwardItems.json", method = RequestMethod.POST)
 	public JSONObject selectForwardItems(@RequestBody Map<String, String> query) {
 		try {
+			log.info(" 第三方接口转发查询请求参数{}",query.toString());
 			PageHelper.startPage(Integer.parseInt(query.get("pageNum")), Integer.parseInt(query.get("pageSize")), true);
 			Page<EventForwardDto> EventForwardDtos  = eventForwardService.selectForwardItems(query);
 			if(CollectionUtils.isEmpty(EventForwardDtos)){
@@ -295,6 +310,25 @@ public class InterfaceConfigController extends BaseController {
 			return wrapException(e);
 		}
 	}
+	//根据修改转发接口状态
+	@ApiOperation(value = "转发接口启用和停用", tags = "第三方接口转发列表")
+	@ApiResponse(code = 200, message = "操作成功")
+	@PutMapping("eventForwardEnableOrDisable.json/{id}")
+	public JSONObject updateCardStatus(@PathVariable Integer id, @RequestBody updateEventForwardStatusReq urfsr) {
+		final EventForward eventForward = EventForward.builder()
+				.id(id)
+				.status(urfsr.status)
+				.build();
+		eventForwardService.updateStatus(eventForward);
+		return representation(Message.SUCCESS, null);
+
+	}
+	@Data
+	private static class updateEventForwardStatusReq {
+		@ApiModelProperty(value = "转发接口状态", required = true, example = "停用/启用")
+		private Integer status;
+	}
+
 
 
 	/**

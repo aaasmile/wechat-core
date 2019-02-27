@@ -1,9 +1,11 @@
 package com.d1m.wechat.controller.interfaces;
 
 import cn.d1m.wechat.client.model.WxUser;
+import com.alibaba.fastjson.JSONObject;
 import com.d1m.common.ds.TenantContext;
 import com.d1m.wechat.domain.web.BaseResponse;
 import com.d1m.wechat.dto.InterfaceConfigDto;
+import com.d1m.wechat.service.EventForwardService;
 import com.d1m.wechat.service.InterfaceConfigService;
 import com.d1m.wechat.service.InterfaceRabbit;
 import com.d1m.wechat.util.Constants;
@@ -63,6 +65,9 @@ public class InterfaceRabbitMQListener implements InterfaceRabbit {
 
     @Autowired
     private InterfaceConfigService interfaceConfigService;
+
+    @Autowired
+    private EventForwardService eventForwardService;
 
     /**
      * 初始化restTemplate 并配置拦截器，通过拦截器加密body
@@ -164,7 +169,7 @@ public class InterfaceRabbitMQListener implements InterfaceRabbit {
         final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.set(SECRET, interfaceConfigDto.getSecret());
         httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
-        this.addKeyValue(payload);
+        this.addKeyValue(payload,interfaceConfigDto);
         payload.remove("wechatId");
         HttpEntity<Object> requestEntity = new HttpEntity<>(payload, httpHeaders);
         final BaseResponse response = restTemplate.postForObject(interfaceConfigDto.getUrl(), requestEntity, BaseResponse.class);
@@ -178,13 +183,25 @@ public class InterfaceRabbitMQListener implements InterfaceRabbit {
      *
      * @param body 转发给第三方的body
      */
-    private void addKeyValue(Map<String, String> body) {
+    private void addKeyValue(Map<String, String> body,InterfaceConfigDto interfaceConfigDto) {
         //todo 增加unionid
+        log.info("增加unionid ----strat");
         try {
-            String wechatId = body.get("wechatId");
-            String toUserName = body.get("ToUserName");
-            WxUser wxUser = WechatClientDelegate.getUser(wechatId, toUserName);
-            body.put("unionId", wxUser.getUnionid());
+            TenantContext.setCurrentTenant(body.get("wechatId"));
+            List<String> list= eventForwardService.queryEventForwardByInterfaceId(interfaceConfigDto.getId());
+            if(null==list||list.size()<1){
+                log.info("增加unionid------该用户不用附加uuid");
+                return;
+            }
+            if("true".equals(list.get(0))){
+                String wechatId = body.get("wechatId");
+                String toUserName = body.get("ToUserName");
+                WxUser wxUser = WechatClientDelegate.getUser(Integer.parseInt(wechatId), toUserName);
+                log.info("增加unionid----wxUser--- {}", JSONObject.toJSONString(wxUser));
+                body.put("unionId", wxUser.getUnionid());
+            }else{
+                log.info("增加unionid------该用户不用附加uuid");
+            }
         } catch (Exception e) {
             log.error("增加unionId 失败", e);
         }
