@@ -81,9 +81,6 @@ public class InterfaceConfigController extends BaseController {
 			log.error(e.getMessage(), e);
 			return representation(Message.INTERFACECONFIG_SELECT_FAIL, e.getMessage());
 		}
-
-
-
 	}
 
 	@ApiOperation(value = "创建第三方接口", tags = "第三方接口列表")

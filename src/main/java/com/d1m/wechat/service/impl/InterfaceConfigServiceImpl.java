@@ -109,7 +109,8 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
         if (CollectionUtils.isNotEmpty(select))
             throw new WechatException(Message.INTERFACECONFIG_BRAND_EXIST, Message.INTERFACECONFIG_BRAND_EXIST.getName());
         String key = UUID.randomUUID().toString().replaceAll("-", "");
-        String secret = MD5.MD5Encode(key + interfaceConfigBrand.getName());
+        String oldSecret = MD5.MD5Encode(key + interfaceConfigBrand.getName());
+        final String secret = oldSecret.substring(0, 15);
         interfaceConfigBrand.setKey(key);
         interfaceConfigBrand.setSecret(secret);
         interfaceConfigBrandMapper.insertSelective(interfaceConfigBrand);
@@ -122,6 +123,16 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
     @Override
     @CacheEvict(value = Constant.Cache.THIRD_PARTY_INTERFACE, allEntries = true)
     public int updateBrand(InterfaceConfigBrand interfaceConfigBrand) {
+        final InterfaceConfigBrand icb = new InterfaceConfigBrand();
+        icb.setName(interfaceConfigBrand.getName());
+        List<InterfaceConfigBrand> select = interfaceConfigBrandMapper.select(icb);
+        if (CollectionUtils.isNotEmpty(select))
+            throw new WechatException(Message.INTERFACECONFIG_BRAND_EXIST, Message.INTERFACECONFIG_BRAND_EXIST.getName());
+        String key = UUID.randomUUID().toString().replaceAll("-", "");
+        String oldSecret = MD5.MD5Encode(key + interfaceConfigBrand.getName());
+        final String secret = oldSecret.substring(0, 15);
+        interfaceConfigBrand.setKey(key);
+        interfaceConfigBrand.setSecret(secret);
         return interfaceConfigBrandMapper.updateByPrimaryKeySelective(interfaceConfigBrand);
     }
 
