@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.d1m.wechat.configure.FeignClientConfiguration;
 
-@FeignClient(name = "wechat-crm", configuration = FeignClientConfiguration.class)
+@FeignClient(url = "${wechat-crm.url}", name = "wechat-crm", configuration = FeignClientConfiguration.class)
 public interface WechatCrmRestService {
 
 	@RequestMapping(value = "/api/member/{wechatId}/{memberId}/levels", method = RequestMethod.GET)
