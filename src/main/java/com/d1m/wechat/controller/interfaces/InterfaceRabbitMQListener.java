@@ -138,10 +138,14 @@ public class InterfaceRabbitMQListener implements InterfaceRabbit {
                 interfaceConfigDtos.parallelStream()
                         .forEach(interfaceConfigDto -> {
                             try {
-                                this.retryer.call(() -> {
+                                if (Boolean.TRUE.equals(interfaceConfigDto.getRetry())) {
+                                    this.retryer.call(() -> {
+                                        this.sendToThirdPart(interfaceConfigDto, payload);
+                                        return Boolean.TRUE;
+                                    });
+                                } else {
                                     this.sendToThirdPart(interfaceConfigDto, payload);
-                                    return Boolean.TRUE;
-                                });
+                                }
                             } catch (ExecutionException | RetryException e) {
                                 log.error("事件转发失败", e);
                             }
@@ -169,7 +173,7 @@ public class InterfaceRabbitMQListener implements InterfaceRabbit {
         final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.set(SECRET, interfaceConfigDto.getSecret());
         httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
-        this.addKeyValue(payload,interfaceConfigDto);
+        this.addKeyValue(payload, interfaceConfigDto);
         payload.remove("wechatId");
         HttpEntity<Object> requestEntity = new HttpEntity<>(payload, httpHeaders);
         final BaseResponse response = restTemplate.postForObject(interfaceConfigDto.getUrl(), requestEntity, BaseResponse.class);
@@ -183,26 +187,26 @@ public class InterfaceRabbitMQListener implements InterfaceRabbit {
      *
      * @param body 转发给第三方的body
      */
-    private void addKeyValue(Map<String, String> body,InterfaceConfigDto interfaceConfigDto) {
-        //todo 增加unionid
+    private void addKeyValue(Map<String, String> body, InterfaceConfigDto interfaceConfigDto) {
         log.info("增加unionid ----strat");
-        List<String> list= eventForwardService.queryEventForwardByInterfaceId(interfaceConfigDto.getId());
-        if(null==list||list.size()<1){
-            log.info("增加unionid------该用户不用附加uuid");
-            return;
-        }
-        if("true".equals(list.get(0))){
-            try {
+        try {
+            TenantContext.setCurrentTenant(body.get("wechatId"));
+            List<String> list = eventForwardService.queryEventForwardByInterfaceId(interfaceConfigDto.getId());
+            if (null == list || list.size() < 1) {
+                log.info("增加unionid------该用户不用附加uuid");
+                return;
+            }
+            if ("true".equals(list.get(0))) {
                 String wechatId = body.get("wechatId");
-                String toUserName = body.get("ToUserName");
-                WxUser wxUser = WechatClientDelegate.getUser(wechatId, toUserName);
+                String toUserName = body.get("FromUserName");
+                WxUser wxUser = WechatClientDelegate.getUser(Integer.parseInt(wechatId), toUserName);
                 log.info("增加unionid----wxUser--- {}", JSONObject.toJSONString(wxUser));
                 body.put("unionId", wxUser.getUnionid());
-            } catch (Exception e) {
-                log.error("增加unionId 失败", e);
+            } else {
+                log.info("增加unionid------该用户不用附加uuid");
             }
-        }else{
-            log.info("增加unionid------该用户不用附加uuid");
+        } catch (Exception e) {
+            log.error("增加unionId 失败", e);
         }
     }
 }
