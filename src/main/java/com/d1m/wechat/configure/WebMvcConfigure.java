@@ -1,7 +1,9 @@
 package com.d1m.wechat.configure;
 
+import com.d1m.wechat.filter.PayloadLoggingFilter;
 import com.d1m.wechat.web.JsonHttpMessageConverterStrategy;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -41,6 +43,16 @@ public class WebMvcConfigure extends WebMvcConfigurerAdapter {
     //
     //}
     //
+
+    @Bean
+    public FilterRegistrationBean filterRegistrationBean() {
+        final FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+        filterRegistrationBean.setFilter(new PayloadLoggingFilter());
+        filterRegistrationBean.addUrlPatterns("/*");
+        filterRegistrationBean.setName("PayloadLoggingFilter");
+        filterRegistrationBean.setOrder(0);
+        return filterRegistrationBean;
+    }
 
     /**
      * 请求拦截器配置
