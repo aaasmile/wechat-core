@@ -17,6 +17,9 @@ public class InterfaceConfig {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private String id;
 
+	@Column(name = "menu_key")
+	private Integer menuKey;
+
 	private String brand;
 
 	private String name;
@@ -41,6 +44,8 @@ public class InterfaceConfig {
 
 	private String url;
 
+	private String wrongUrl;  //接口格式有误请重新地址
+
 	private int sequence;
 
 	@Column(name = "is_deleted")
@@ -63,6 +68,11 @@ public class InterfaceConfig {
 	 * 第一期不做处理
 	 */
 	private InterfaceStatus status;
+	/**
+	 * 是否需要重试  0否 1是
+	 */
+	@Column(name = "retry")
+	private boolean retry;
 
 	public InterfaceConfig() {}
 

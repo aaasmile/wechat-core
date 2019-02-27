@@ -1,13 +1,14 @@
 package com.d1m.wechat.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@Builder
 @Table(name = "event_forward")
 public class EventForward {
 
