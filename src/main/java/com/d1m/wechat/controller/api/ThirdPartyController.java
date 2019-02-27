@@ -39,10 +39,17 @@ public class ThirdPartyController {
 		String fromUserName = (String) wechatMessage.get("FromUserName");
 
 		Response<GetValue> messageR = consulClient.getKVValue("configuration/application/message");
-		String message = response.getValue().getDecodedValue();
+		String message = messageR.getValue().getDecodedValue();
 		log.info(message);
 		List<CustomRequestBody> callbackList = om.readValue(message, List.class);
 //		customRequestBody.setTouser(fromUserName);
 		return callbackList;
+	}
+
+	public static void main(String[] args) {
+		String encryptedData = "oWjsd+bk5/xTr+tmA4xMtg==";
+		String secret = "aes_key_d1m_2018";
+		String data = Security.decrypt(encryptedData, secret);
+		System.out.println(data);
 	}
 }
