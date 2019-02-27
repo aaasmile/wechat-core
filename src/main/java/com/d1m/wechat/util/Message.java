@@ -1006,7 +1006,8 @@ public enum Message {
 
     INTERFACECONFIG_DELETE_FAIL(42031, "接口删除失败"),
 
-    INTERFACECONFIG_IN_USED(42032, "接口在使用中"),
+    INTERFACECONFIG_IN_USED_MENU(420321, "接口在被menu使用中"),
+    INTERFACECONFIG_IN_USED_EVENT_FORWARD(420322, "接口在被eventForward使用中"),
 
     INTERFACECONFIG_GET_FAIL(42041, "接口获取失败"),
 

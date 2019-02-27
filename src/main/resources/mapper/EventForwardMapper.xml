@@ -50,6 +50,18 @@
 		ORDER BY update_at DESC
 	</select>
 
+	<select id="findByInterfaceId" resultType="int">
+		select count(*) from event_forward where  interface_id = #{interfaceId} and status=1
+	</select>
+
+	<update id="updateStatusById">
+		UPDATE event_forward
+		SET updated_at = #{updatedAt},
+		status = #{status}
+		WHERE id = #{id}
+	</update>
+
+
 
 
   </mapper>

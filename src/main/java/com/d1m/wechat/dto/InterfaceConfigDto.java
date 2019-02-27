@@ -3,6 +3,7 @@ package com.d1m.wechat.dto;
 public class InterfaceConfigDto {
 
     private String id;
+    private int menuKey;
     private String brand;
     private String name;
     private int methodType;  //修改
@@ -12,6 +13,7 @@ public class InterfaceConfigDto {
     private String parameter;
     private String description;
     private String url;
+    private String wrongUrl;
     private String key;
     private String secret;
     private String sequence;
@@ -28,6 +30,14 @@ public class InterfaceConfigDto {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public int getMenuKey() {
+        return menuKey;
+    }
+
+    public void setMenuKey(int menuKey) {
+        this.menuKey=menuKey;
     }
 
     public String getBrand() {
@@ -97,9 +107,16 @@ public class InterfaceConfigDto {
     public String getUrl() {
         return url;
     }
-
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getWrongUrl() {
+        return wrongUrl;
+    }
+
+    public void setWrongUrl(String wrongUrl) {
+        this.wrongUrl = wrongUrl;
     }
 
     public String getKey() {
@@ -175,9 +192,10 @@ public class InterfaceConfigDto {
         this.status = status;
     }       //修改
 
-    public InterfaceConfigDto(String id, String brand, String name, int methodType, int type, String event, String interfaceName, String parameter, String description, String url, String key, String secret, String sequence, String deleted, String createdAt, String createdBy, String updatedAt, String updatedBy, int status) {
+    public InterfaceConfigDto(String id,  int menuKey ,String brand, String name, int methodType, int type, String event, String interfaceName, String parameter, String description, String url,String wrongUrl , String key, String secret, String sequence, String deleted, String createdAt, String createdBy, String updatedAt, String updatedBy, int status) {
         super();
         this.id = id;
+        this.menuKey=menuKey;
         this.brand = brand;
         this.name = name;
         this.methodType = methodType;
@@ -187,6 +205,7 @@ public class InterfaceConfigDto {
         this.parameter = parameter;
         this.description = description;
         this.url = url;
+        this.wrongUrl = wrongUrl;
         this.key = key;
         this.secret = secret;
         this.sequence = sequence;
@@ -204,6 +223,7 @@ public class InterfaceConfigDto {
 
     public static class Builder {
         private String id;
+        private int menuKey;
         private String brand;
         private String name;
         private int methodType;
@@ -213,6 +233,7 @@ public class InterfaceConfigDto {
         private String parameter;
         private String description;
         private String url;
+        private String wrongUrl;
         private String key;
         private String secret;
         private String sequence;
@@ -225,6 +246,10 @@ public class InterfaceConfigDto {
 
         public Builder id(String id) {
             this.id = id;
+            return this;
+        }
+        public Builder menuKey(int  menuKey) {
+            this.menuKey = menuKey;
             return this;
         }
 
@@ -270,6 +295,11 @@ public class InterfaceConfigDto {
 
         public Builder url(String url) {
             this.url = url;
+            return this;
+        }
+
+        public Builder wrongUrl(String wrongUrl) {
+            this.wrongUrl = wrongUrl;
             return this;
         }
 
@@ -325,6 +355,7 @@ public class InterfaceConfigDto {
 
     private InterfaceConfigDto(Builder builder) {
         this.id = builder.id;
+        this.menuKey=builder.menuKey;
         this.brand = builder.brand;
         this.name = builder.name;
         this.methodType = builder.methodType;
@@ -334,6 +365,7 @@ public class InterfaceConfigDto {
         this.parameter = builder.parameter;
         this.description = builder.description;
         this.url = builder.url;
+        this.wrongUrl = builder.wrongUrl;
         this.key = builder.key;
         this.secret = builder.secret;
         this.sequence = builder.sequence;
@@ -357,6 +389,7 @@ public class InterfaceConfigDto {
     public String toString() {
         return "InterfaceConfigDto{" +
                 "id='" + id + '\'' +
+                ",nenuKey'"+ menuKey +'\''+
                 ", brand='" + brand + '\'' +
                 ", name='" + name + '\'' +
                 ", methodType=" + methodType +
@@ -366,6 +399,7 @@ public class InterfaceConfigDto {
                 ", parameter='" + parameter + '\'' +
                 ", description='" + description + '\'' +
                 ", url='" + url + '\'' +
+                ", wrongUrl='" + wrongUrl + '\'' +
                 ", key='" + key + '\'' +
                 ", secret='" + secret + '\'' +
                 ", sequence='" + sequence + '\'' +

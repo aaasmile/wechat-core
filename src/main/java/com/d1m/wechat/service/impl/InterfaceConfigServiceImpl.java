@@ -5,6 +5,7 @@ import com.d1m.wechat.dto.InterfaceConfigBrandDto;
 import com.d1m.wechat.dto.InterfaceConfigDto;
 import com.d1m.wechat.exception.BusinessException;
 import com.d1m.wechat.exception.WechatException;
+import com.d1m.wechat.mapper.EventForwardMapper;
 import com.d1m.wechat.mapper.InterfaceConfigBrandMapper;
 import com.d1m.wechat.mapper.InterfaceConfigMapper;
 import com.d1m.wechat.mapper.MenuMapper;
@@ -13,6 +14,7 @@ import com.d1m.wechat.model.InterfaceConfig;
 import com.d1m.wechat.model.InterfaceConfigBrand;
 import com.d1m.wechat.model.Menu;
 import com.d1m.wechat.model.enums.InterfaceStatus;
+import com.d1m.wechat.service.EventForwardService;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.service.EventService;
 import com.d1m.wechat.service.InterfaceConfigService;
@@ -45,6 +47,8 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 	@Autowired
 	private EventService eventService;
 
+	private EventForwardMapper eventForwardMapper;
+
 	@Override
 	public Page<InterfaceConfigDto> selectItems(Map<String, String> query) {
 		return interfaceConfigMapper.selectItems(query);
@@ -67,13 +71,20 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
         return interfaceConfigMapper.updateByPrimaryKeySelective(interfaceConfig);
     }
 
+    @Autowired
+    private EventForwardService eventForwardService;
+
+
     @Override
     @CacheEvict(value = Constant.Cache.THIRD_PARTY_INTERFACE, allEntries = true)
     public int delete(String id) throws WechatException {
+        InterfaceConfig interfaceConfig1 = interfaceConfigMapper.selectByPrimaryKey(id);
         Menu menu = new Menu();
-        menu.setMenuKey(Integer.valueOf(id));
+        menu.setMenuKey(interfaceConfig1.getMenuKey());
         if (menuMapper.selectCount(menu) > 0)
-            throw new WechatException(Message.INTERFACECONFIG_IN_USED, Message.INTERFACECONFIG_IN_USED.getName());
+            throw new WechatException(Message.INTERFACECONFIG_IN_USED_MENU, Message.INTERFACECONFIG_IN_USED_MENU.getName());
+        if (eventForwardService.findByInterfaceId(id) > 0)
+            throw new WechatException(Message.INTERFACECONFIG_IN_USED_EVENT_FORWARD, Message.INTERFACECONFIG_IN_USED_EVENT_FORWARD.getName());
         InterfaceConfig interfaceConfig = new InterfaceConfig();
         interfaceConfig.setId(id);
         interfaceConfig.setDeleted(true);
