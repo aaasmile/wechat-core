@@ -782,6 +782,9 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 		for (MenuDto menuDto : menus) {
 			weixinButton = new WxMenu();
 			MenuType menuType = MenuType.getByValue(menuDto.getType());
+			if(MenuType.INTERFACE == menuType) {
+				weixinButton.setType(MenuType.CLICK.name().toLowerCase());
+			}
 			weixinButton.setType(menuType != null ? menuType.name().toLowerCase() : null);
 			if (menuType == MenuType.CLICK) {
 				weixinButton.setKey(menuDto.getId().toString());
