@@ -782,9 +782,6 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 		for (MenuDto menuDto : menus) {
 			weixinButton = new WxMenu();
 			MenuType menuType = MenuType.getByValue(menuDto.getType());
-			if(MenuType.INTERFACE == menuType) {
-				weixinButton.setType(MenuType.CLICK.name().toLowerCase());
-			}
 			weixinButton.setType(menuType != null ? menuType.name().toLowerCase() : null);
 			if (menuType == MenuType.CLICK) {
 				weixinButton.setKey(menuDto.getId().toString());
@@ -800,6 +797,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 			//新增第三方接口，事件类型为CLICK
 			else if (menuType == MenuType.INTERFACE) {
 				weixinButton.setKey(menuDto.getId().toString());
+                weixinButton.setType(MenuType.CLICK.name().toLowerCase());
 			}
 			weixinButton.setName(menuDto.getName());
 			menuDtos = menuDto.getChildren();
@@ -823,6 +821,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 					//新增第三方接口，事件类型为CLICK
 					else if (menuType == MenuType.INTERFACE) {
 						weixinButton.setKey(menuDto.getId().toString());
+                        weixinButton.setType(MenuType.CLICK.name().toLowerCase());
 					}
 					subWxMenu.setName(child.getName());
 					subWxMenus.add(subWxMenu);
