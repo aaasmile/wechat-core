@@ -9,8 +9,9 @@
     	<result column="is_deleted" property="deleted" />
 	</resultMap>
 
-	<select id="listBrand" resultMap="interfaceConfigBrandResultMap">
-		SELECT id,name,app_key,app_secret,is_deleted FROM interface_brand WHERE is_deleted = 0
+	<select id="listBrand" resultMap="interfaceConfigBrandResultMap" >
+		SELECT id,name,app_key,app_secret,is_deleted
+		FROM interface_brand where  is_deleted=0
 	</select>
 
 </mapper>

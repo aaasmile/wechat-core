@@ -159,17 +159,17 @@ public class MemberTagTypeController extends BaseController {
 	public JSONObject getAllTypesTags(HttpSession session) {
 		final Integer wechatId = getWechatId(session);
 		List<MemberTagTypeDto> selectAll = memberTagTypeService.selectAllTagTypes(wechatId);
-		List<MemberTagDto> allMemberTags = memberTagService.getAllMemberTags(wechatId, null);
-		
-		for(MemberTagTypeDto memberTagType : selectAll) {
-			List<MemberTagDto> tagList = new ArrayList<>();
-			for(MemberTagDto tagDto : allMemberTags) {
-				if(memberTagType.getId().equals(tagDto.getMemberTagTypeId())) {
-					tagList.add(tagDto);
-				}
-			}
-			memberTagType.setTagList(tagList);
-		}
+//		List<MemberTagDto> allMemberTags = memberTagService.getAllMemberTags(wechatId, null);
+//
+//		for(MemberTagTypeDto memberTagType : selectAll) {
+//			List<MemberTagDto> tagList = new ArrayList<>();
+//			for(MemberTagDto tagDto : allMemberTags) {
+//				if(memberTagType.getId().equals(tagDto.getMemberTagTypeId())) {
+//					tagList.add(tagDto);
+//				}
+//			}
+//			memberTagType.setTagList(tagList);
+//		}
 		return representation(Message.MEMBER_TAG_TYPE_LIST_SUCCESS, selectAll);
 	}
 	
