@@ -61,4 +61,10 @@ public class EventForwardServiceImpl implements EventForwardService {
     }
 
 
+
+    @Override
+    public List<String> queryEventForwardByInterfaceId(String id) {
+        return eventForwardMapper.queryEventForwardByInterfaceId(id);
+    }
+
 }

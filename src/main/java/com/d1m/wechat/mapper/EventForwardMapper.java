@@ -8,6 +8,7 @@ import com.d1m.wechat.util.MyMapper;
 import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
 import java.util.Map;
 
 public interface EventForwardMapper extends MyMapper<EventForward> {
@@ -21,4 +22,6 @@ public interface EventForwardMapper extends MyMapper<EventForward> {
 
 
     EventForwardDetailsDto queryEventForwardDetailsById(Integer id);
+
+    List<String> queryEventForwardByInterfaceId(String id);
 }

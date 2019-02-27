@@ -8,7 +8,6 @@ import com.github.pagehelper.Page;
 import java.util.List;
 import java.util.Map;
 
-
 public interface EventForwardService {
     //查询转发接口列表
     Page<EventForwardDto> selectForwardItems(Map<String, String> query);
@@ -23,4 +22,6 @@ public interface EventForwardService {
     void eventForwardEnableOrDisable(InterfaceStatus status, Integer id);
 
     void updateStatus(EventForward eventForward);
+    //查询是否需要union_id
+    List<String> queryEventForwardByInterfaceId(String id);
 }

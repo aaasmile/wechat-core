@@ -79,6 +79,9 @@
 
 
 
+	<select id="queryEventForwardByInterfaceId" resultType="java.lang.String" >
+		select user_uuid from event_forward where interface_id=#{id}
+	</select>
 
   </mapper>
 
