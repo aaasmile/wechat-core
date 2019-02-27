@@ -1,5 +1,6 @@
 package com.d1m.wechat.mapper;
 
+import com.d1m.wechat.dto.EventForwardDetailsDto;
 import com.d1m.wechat.dto.EventForwardDto;
 import com.d1m.wechat.model.EventForward;
 import com.d1m.wechat.model.enums.InterfaceStatus;
@@ -19,4 +20,5 @@ public interface EventForwardMapper extends MyMapper<EventForward> {
 
 
 
+    EventForwardDetailsDto queryEventForwardDetailsById(Integer id);
 }

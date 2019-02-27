@@ -112,6 +112,7 @@
         <result property="remarks" jdbcType="VARCHAR" column="remarks"/>
         <result property="subscribeAt" jdbcType="TIMESTAMP" column="subscribe_at"/>
         <result property="subscribeScene" jdbcType="TINYINT" column="subscribe_scene"/>
+        <result property="qrcodeName" jdbcType="VARCHAR" column="qrcode_name"/>
         <result property="subscribeStatus" jdbcType="TINYINT" column="status"/>
         <result property="tag" jdbcType="VARCHAR" column="tag"/>
         <result property="unionId" jdbcType="VARCHAR" column="union_id"/>
@@ -148,11 +149,13 @@
         m.remark as remarks,
         m.language as lang,
         m.subscribe_scene as subscribe_scene,
+        qr.`name` as qrcode_name,
         mp.name as bind_name
         from member m
         left join member_profile mp on mp.member_id = m.id
         LEFT JOIN area_info ai on m.province = ai.id
         LEFT JOIN area_info ai1 on m.city = ai1.id
+        LEFT JOIN qrcode qr on m.qr_scene_str=qr.scene
         left join
         (SELECT
         mmt.member_id,

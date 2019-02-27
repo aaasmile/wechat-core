@@ -1,5 +1,6 @@
 package com.d1m.wechat.service.impl;
 
+import com.d1m.wechat.dto.EventForwardDetailsDto;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.EventForwardDetailsMapper;
 import com.d1m.wechat.mapper.EventForwardMapper;
@@ -39,7 +40,13 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public boolean addEventForward(AddEventForwardModel model) {
-        EventForward eventForward = new EventForward(model.getThirdPartyId(), model.getInterfaceId(), model.getUserUuid());
+        EventForward eventForward = new EventForward(model.getThirdPartyId(), model.getInterfaceId());
+        List<EventForward> eventForwards = eventForwardMapper.select(eventForward);
+        if(eventForwards != null && eventForwards.size() > 0) {
+            throw new WechatException(Message.EVENT_FORWARD_EXIST);
+        }
+
+        eventForward.setUserUuid(model.getUserUuid());
         eventForwardMapper.insertSelective(eventForward);
 
         if (eventForward.getId() == null) {
@@ -82,6 +89,11 @@ public class EventServiceImpl implements EventService {
         eventForwardDetailsMapper.delete(new EventForwardDetails(model.getId()));
         addEventForwardDetails(model.getEventIds(), model.getId());
         return true;
+    }
+
+    @Override
+    public EventForwardDetailsDto queryEventForwardDetails(Integer eventForwardId) {
+        return eventForwardMapper.queryEventForwardDetailsById(eventForwardId);
     }
 
     @Override

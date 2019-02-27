@@ -50,6 +50,22 @@
 		ORDER BY update_at DESC
 	</select>
 
+	<resultMap id="EventForwardDetailsMap" type="com.d1m.wechat.dto.EventForwardDetailsDto" extends="BaseResultMap">
+		<result column="thirdPartyName" jdbcType="VARCHAR" property="thirdPartyName"/>
+		<result column="interfaceName" jdbcType="VARCHAR" property="interfaceName"/>
+		<collection property="eventIds" column="id" select="com.d1m.wechat.mapper.EventForwardDetailsMapper.getByEventForwardId"
+					ofType="java.lang.Integer" javaType="ArrayList"/>
+	</resultMap>
+
+
+	<select id="queryEventForwardDetailsById" resultMap="EventForwardDetailsMap">
+		select ef.*, ic.name as thirdPartyName, ib.name interfaceName
+		from event_forward ef
+		left join interface_brand ib on ef.third_party_id = ib.id
+		left join interface_config ic on ef.interface_id = ic.id and ib.id = ic.brand
+		where ef.id = #{id}
+	</select>
+
 	<select id="findByInterfaceId" resultType="int">
 		select count(*) from event_forward where  interface_id = #{interfaceId} and status=1
 	</select>

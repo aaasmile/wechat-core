@@ -1,11 +1,14 @@
 package com.d1m.wechat.controller.interfaces;
 
+import cn.d1m.wechat.client.model.WxUser;
 import com.d1m.common.ds.TenantContext;
 import com.d1m.wechat.domain.web.BaseResponse;
 import com.d1m.wechat.dto.InterfaceConfigDto;
 import com.d1m.wechat.service.InterfaceConfigService;
+import com.d1m.wechat.service.InterfaceRabbit;
 import com.d1m.wechat.util.Constants;
 import com.d1m.wechat.util.Security;
+import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.github.rholder.retry.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -40,9 +43,9 @@ import java.util.concurrent.TimeUnit;
  * @Author: Liu weilin
  * @Description: 监听/接收事件消息
  */
-@Component
+@Component("interfaceRabbit")
 @Slf4j
-public class InterfaceRabbitMQListener {
+public class InterfaceRabbitMQListener implements InterfaceRabbit {
 
 
     private static final String SECRET = "secret";
@@ -52,6 +55,7 @@ public class InterfaceRabbitMQListener {
     private final Retryer<Boolean> retryer = RetryerBuilder
             .<Boolean>newBuilder()
             .retryIfException() //异常重试
+            .retryIfRuntimeException() //运行时异常也重试
             .retryIfResult(result -> Objects.equals(result, Boolean.FALSE)) //返回结果部位true重试
             .withWaitStrategy(WaitStrategies.fixedWait(1, TimeUnit.MINUTES)) //重试策略：间隔1分钟
             .withStopStrategy(StopStrategies.stopAfterAttempt(3)) //重试策略: 共重试三次
@@ -130,15 +134,7 @@ public class InterfaceRabbitMQListener {
                         .forEach(interfaceConfigDto -> {
                             try {
                                 this.retryer.call(() -> {
-                                    log.info("事件转发给第三方：{}", interfaceConfigDto);
-                                    final HttpHeaders httpHeaders = new HttpHeaders();
-                                    httpHeaders.set(SECRET, interfaceConfigDto.getSecret());
-                                    httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
-                                    this.addKeyValue(payload);
-                                    payload.remove("wechatId");
-                                    HttpEntity<Object> requestEntity = new HttpEntity<>(payload, httpHeaders);
-                                    final BaseResponse response = restTemplate.postForObject(interfaceConfigDto.getUrl(), requestEntity, BaseResponse.class);
-                                    log.info("事件转发第三方相应： {}", response);
+                                    this.sendToThirdPart(interfaceConfigDto, payload);
                                     return Boolean.TRUE;
                                 });
                             } catch (ExecutionException | RetryException e) {
@@ -155,6 +151,27 @@ public class InterfaceRabbitMQListener {
 
     }
 
+    /**
+     * 上游捕获异常HttpStatusCodeException({@link org.springframework.web.client.HttpStatusCodeException})，用于判断返回的httpStatueCode
+     *
+     * @param interfaceConfigDto 第三方接口配置
+     * @param payload            报文
+     * @return nullable response
+     */
+    @Override
+    public BaseResponse sendToThirdPart(InterfaceConfigDto interfaceConfigDto, Map<String, String> payload) {
+        log.info("事件转发给第三方：{}", interfaceConfigDto);
+        final HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.set(SECRET, interfaceConfigDto.getSecret());
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
+        this.addKeyValue(payload);
+        payload.remove("wechatId");
+        HttpEntity<Object> requestEntity = new HttpEntity<>(payload, httpHeaders);
+        final BaseResponse response = restTemplate.postForObject(interfaceConfigDto.getUrl(), requestEntity, BaseResponse.class);
+        log.info("事件转发第三方相应： {}", response);
+        return response;
+    }
+
 
     /**
      * 增加内容，例如unionid
@@ -163,6 +180,13 @@ public class InterfaceRabbitMQListener {
      */
     private void addKeyValue(Map<String, String> body) {
         //todo 增加unionid
+        try {
+            String wechatId = body.get("wechatId");
+            String toUserName = body.get("ToUserName");
+            WxUser wxUser = WechatClientDelegate.getUser(wechatId, toUserName);
+            body.put("unionId", wxUser.getUnionid());
+        } catch (Exception e) {
+            log.error("增加unionId 失败", e);
+        }
     }
-
 }
