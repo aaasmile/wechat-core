@@ -49,9 +49,6 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
     @Autowired
     private EventService eventService;
 
-    @Override
-    public Page<InterfaceConfigDto> selectItems(Map<String, String> query) {
-        return interfaceConfigMapper.selectItems(query);
 	private EventForwardMapper eventForwardMapper;
 
 	@Override
