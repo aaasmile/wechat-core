@@ -39,8 +39,8 @@ public class Security {
 		return new String(output);
 	}
 	public static void main(String[] args) throws UnsupportedEncodingException {
-		String data = "hCitdHPhwKNRnI5bNl3ZiQzF3N8Mj%2FIBFaz2TYQgGLinaEf7Im0LEh%2BAnUsKk9cJbLRtzuxzkJU1dzTja7TTVubw6QYOeLwxNUkzQfTxgY%2FTPv19FqkWJ6wUlMFKLrIlEd%2F%2BlAvLIjHA3DVxOJcs%2F7OrGnVmyyXZvmJnqftMS9Hk9K9V3o7%2BUsNCRuz4ST8FZYbm8oxgA3%2FgRcIJ26WSLriXQU9W6IKDfGC8S6lEgyaijVAnfcflv0nVKy05zKh16jK%2BhGnDTjZ%2FXoSJXlL9rBjiG2zWSCHCvJDwC4TTGWU%3D";
-		data = URLDecoder.decode(data, "UTF-8");
+//		String data = "hCitdHPhwKNRnI5bNl3ZiQzF3N8Mj%2FIBFaz2TYQgGLinaEf7Im0LEh%2BAnUsKk9cJbLRtzuxzkJU1dzTja7TTVubw6QYOeLwxNUkzQfTxgY%2FTPv19FqkWJ6wUlMFKLrIlEd%2F%2BlAvLIjHA3DVxOJcs%2F7OrGnVmyyXZvmJnqftMS9Hk9K9V3o7%2BUsNCRuz4ST8FZYbm8oxgA3%2FgRcIJ26WSLriXQU9W6IKDfGC8S6lEgyaijVAnfcflv0nVKy05zKh16jK%2BhGnDTjZ%2FXoSJXlL9rBjiG2zWSCHCvJDwC4TTGWU%3D";
+		String data = "oWjsd+bk5/xTr+tmA4xMtg==";
 		System.out.println(Security.decrypt(data, "aes_key_d1m_2018"));
 	}
 }
