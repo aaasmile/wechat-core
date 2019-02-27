@@ -92,7 +92,7 @@
 		<if test="type == 41">
 			SELECT
 			ic.id,
-			ic.brand,
+			ic.name as brand,
 			ic.`name`,
 			ic.type,
 			ic.method_type,
