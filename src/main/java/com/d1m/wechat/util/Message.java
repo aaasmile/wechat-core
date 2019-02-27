@@ -21,6 +21,8 @@ public enum Message {
 
     ILLEGAL_REQUEST(105, "非法请求"),
 
+    MISSING_PARAMTERS(106, "缺少参数"),
+
     /**
      * member
      */
@@ -1000,11 +1002,14 @@ public enum Message {
 
     INTERFACECONFIG_CREATE_FAIL(42011, "接口创建失败"),
 
+    INTERFACECONFIG_EXIST(42012, "接口已存在"),
+
     INTERFACECONFIG_UPDATE_FAIL(42021, "接口编辑失败"),
 
     INTERFACECONFIG_DELETE_FAIL(42031, "接口删除失败"),
 
-    INTERFACECONFIG_IN_USED(42032, "接口在使用中"),
+    INTERFACECONFIG_IN_USED_MENU(420321, "接口在被menu使用中"),
+    INTERFACECONFIG_IN_USED_EVENT_FORWARD(420322, "接口在被eventForward使用中"),
 
     INTERFACECONFIG_GET_FAIL(42041, "接口获取失败"),
 
@@ -1020,7 +1025,20 @@ public enum Message {
 
     INTERFACECONFIG_BRAND_IN_USED(42082, "第三方类别在使用中"),
 
-    INTERFACECONFIG_SECRET_GET_FAIL(42091, "获取秘钥失败")
+    INTERFACECONFIG_SECRET_GET_FAIL(42091, "获取秘钥失败"),
+
+    INTERFACECONFIG_ID_NOT_EXIST(42500,"id不能为空"),
+
+    INTERFACECONFIG_STATUS_NOT_EXIST(42501,"status不能为空"),
+
+
+    /**
+     * event forward
+     */
+
+    EVENT_FORWARD_ADD_FAIL(50000, "添加事件转发失败"),
+    EVENT_FORWARD_EXIST(50001, "事件转发已存在"),
+
 
     ;
 

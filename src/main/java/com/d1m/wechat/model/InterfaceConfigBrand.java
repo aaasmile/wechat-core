@@ -2,6 +2,7 @@ package com.d1m.wechat.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import javax.persistence.*;
 
@@ -9,6 +10,7 @@ import javax.persistence.*;
  * Auth: Jo.Ho
  * Date: 2018/12/9
  */
+@Data
 @Table(name = "interface_brand")
 public class InterfaceConfigBrand {
 
