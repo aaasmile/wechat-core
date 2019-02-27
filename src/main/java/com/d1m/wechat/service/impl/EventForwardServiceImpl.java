@@ -30,4 +30,10 @@ public class EventForwardServiceImpl implements EventForwardService {
         List<String> events =wxEventMapper.selectEventItmes(id);
         return events;
     }
+
+    @Override
+    public List<String> queryEventForwardByInterfaceId(String id) {
+        return eventForwardMapper.queryEventForwardByInterfaceId(id);
+    }
+
 }

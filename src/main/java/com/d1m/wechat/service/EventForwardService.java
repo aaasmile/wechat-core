@@ -11,4 +11,6 @@ public interface EventForwardService {
     Page<EventForwardDto> selectForwardItems(Map<String, String> query);
     //查询事件
     List<String> selectEventItems(Integer id);
+    //查询是否需要union_id
+    List<String> queryEventForwardByInterfaceId(String id);
 }
