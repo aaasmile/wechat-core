@@ -10,9 +10,11 @@ import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -24,8 +26,8 @@ public class ThirdPartyController {
 	@Autowired
 	private ConsulClient consulClient;
 
-	@RequestMapping("/api/menu/callback")
-	public CustomRequestBody callback(String encryptedData) throws Exception {
+	@RequestMapping(value = "/api/menu/callback")
+	public List<CustomRequestBody> callback(@RequestBody String encryptedData) throws Exception {
 		log.info("encryptedData..." + encryptedData);
 		Response<GetValue> response = consulClient.getKVValue("configuration/application/secret");
 		String secret = response.getValue().getDecodedValue();
@@ -39,8 +41,8 @@ public class ThirdPartyController {
 		Response<GetValue> messageR = consulClient.getKVValue("configuration/application/message");
 		String message = response.getValue().getDecodedValue();
 		log.info(message);
-		CustomRequestBody customRequestBody = om.readValue(message, CustomRequestBody.class);
-		customRequestBody.setTouser(fromUserName);
-		return customRequestBody;
+		List<CustomRequestBody> callbackList = om.readValue(message, List.class);
+//		customRequestBody.setTouser(fromUserName);
+		return callbackList;
 	}
 }
