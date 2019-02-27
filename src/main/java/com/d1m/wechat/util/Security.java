@@ -1,19 +1,14 @@
 package com.d1m.wechat.util;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
-
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
-@Slf4j
 public class Security {
 	
 	private static final Logger log = LoggerFactory.getLogger(Security.class);
