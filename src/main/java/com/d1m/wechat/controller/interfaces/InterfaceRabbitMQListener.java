@@ -195,7 +195,7 @@ public class InterfaceRabbitMQListener implements InterfaceRabbit {
             }
             if("true".equals(list.get(0))){
                 String wechatId = body.get("wechatId");
-                String toUserName = body.get("ToUserName");
+                String toUserName = body.get("FromUserName");
                 WxUser wxUser = WechatClientDelegate.getUser(Integer.parseInt(wechatId), toUserName);
                 log.info("增加unionid----wxUser--- {}", JSONObject.toJSONString(wxUser));
                 body.put("unionId", wxUser.getUnionid());
