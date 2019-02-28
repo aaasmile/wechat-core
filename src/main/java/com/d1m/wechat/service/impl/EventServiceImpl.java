@@ -97,6 +97,13 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public boolean deleteEventForward(Integer eventForwardId) {
+        eventForwardMapper.deleteEventForward(eventForwardId);
+        return true;
+    }
+
+
+    @Override
     public MyMapper<WxEvent> getMapper() {
         return wxEventMapper;
     }
