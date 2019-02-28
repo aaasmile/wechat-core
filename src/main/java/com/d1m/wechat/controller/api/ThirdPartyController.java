@@ -42,7 +42,9 @@ public class ThirdPartyController {
 		String message = messageR.getValue().getDecodedValue();
 		log.info(message);
 		List<CustomRequestBody> callbackList = om.readValue(message, List.class);
-//		customRequestBody.setTouser(fromUserName);
+		for(CustomRequestBody customRequestBody: callbackList) {
+			customRequestBody.setTouser(fromUserName);
+		}
 		return callbackList;
 	}
 
