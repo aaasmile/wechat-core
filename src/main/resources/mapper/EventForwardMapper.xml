@@ -59,7 +59,7 @@
 
 
 	<select id="queryEventForwardDetailsById" resultMap="EventForwardDetailsMap">
-		select ef.*, ic.name as thirdPartyName, ib.name interfaceName
+		select ef.*, ib.name as thirdPartyName, ic.name as interfaceName
 		from event_forward ef
 		left join interface_brand ib on ef.third_party_id = ib.id
 		left join interface_config ic on ef.interface_id = ic.id and ib.id = ic.brand
