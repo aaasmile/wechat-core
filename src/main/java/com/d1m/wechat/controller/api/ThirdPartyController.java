@@ -47,8 +47,8 @@ public class ThirdPartyController {
 		JSONArray array = new JSONArray(message);
 		List<CustomRequestBody> callbackList = new ArrayList<>();
 		for(int i = 0; i < array.length(); i++) {
-			System.out.println(array.getString(0));
-			CustomRequestBody customRequestBody = om.readValue(array.getString(0), CustomRequestBody.class);
+			CustomRequestBody customRequestBody = gson.fromJson(array.getJSONObject(i).toString(), CustomRequestBody.class);
+			System.out.println(array.getJSONObject(0).toString());
 			customRequestBody.setTouser(fromUserName);
 			callbackList.add(customRequestBody);
 		}
