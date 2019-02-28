@@ -15,6 +15,7 @@ import com.d1m.wechat.model.InterfaceConfig;
 import com.d1m.wechat.model.InterfaceConfigBrand;
 import com.d1m.wechat.model.Menu;
 import com.d1m.wechat.model.enums.InterfaceStatus;
+import com.d1m.wechat.model.enums.InterfaceType;
 import com.d1m.wechat.service.EventForwardService;
 import com.d1m.wechat.service.EventService;
 import com.d1m.wechat.service.InterfaceConfigService;
@@ -185,6 +186,10 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
         if (interfaceConfigs == null || interfaceConfigs.size() == 0) {
             return null;
         }
+
+        interfaceConfigs = interfaceConfigs.stream()
+                .filter((InterfaceConfig i) -> InterfaceType.TAKE_INITIATIVE_PUSH != i.getType())
+                .collect(Collectors.toList());
 
         List<InterfaceConfigDto> interfaceConfigDtos = new ArrayList<>();
 
