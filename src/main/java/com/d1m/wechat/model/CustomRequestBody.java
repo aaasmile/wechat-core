@@ -11,6 +11,7 @@ public class CustomRequestBody {
 	private Music music;
 	private Wxcard wxcard;
 	private News news;
+	private Text text;
 
 	public String getTouser() {
 		return touser;
@@ -84,7 +85,15 @@ public class CustomRequestBody {
 		this.news = news;
 	}
 
-	public CustomRequestBody(String touser, String msgtype, Media image, Media voice, Media mpnews, Video video, Music music, Wxcard wxcard, News news) {
+	public Text getText() {
+		return text;
+	}
+
+	public void setText(Text text) {
+		this.text = text;
+	}
+
+	public CustomRequestBody(String touser, String msgtype, Media image, Media voice, Media mpnews, Video video, Music music, Wxcard wxcard, News news, Text text) {
 		super();
 		this.touser = touser;
 		this.msgtype = msgtype;
@@ -95,6 +104,7 @@ public class CustomRequestBody {
 		this.music = music;
 		this.wxcard = wxcard;
 		this.news = news;
+		this.text = text;
 	}
 
 	public CustomRequestBody() {
@@ -111,6 +121,7 @@ public class CustomRequestBody {
 		private Music music;
 		private Wxcard wxcard;
 		private News news;
+		private Text text;
 
 		public Builder touser(String touser) {
 			this.touser = touser;
@@ -157,6 +168,11 @@ public class CustomRequestBody {
 			return this;
 		}
 
+		public Builder text(Text text) {
+			this.text = text;
+			return this;
+		}
+
 		public CustomRequestBody build() {
 			return new CustomRequestBody(this);
 		}
@@ -172,5 +188,22 @@ public class CustomRequestBody {
 		this.music = builder.music;
 		this.wxcard = builder.wxcard;
 		this.news = builder.news;
+		this.text = builder.text;
+	}
+
+	@Override
+	public String toString() {
+		return "CustomRequestBody{" +
+				"touser='" + touser + '\'' +
+				", msgtype='" + msgtype + '\'' +
+				", image=" + image +
+				", voice=" + voice +
+				", mpnews=" + mpnews +
+				", video=" + video +
+				", music=" + music +
+				", wxcard=" + wxcard +
+				", news=" + news +
+				", text=" + text +
+				'}';
 	}
 }
