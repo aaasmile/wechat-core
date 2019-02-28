@@ -116,6 +116,8 @@
         <result property="tag" jdbcType="VARCHAR" column="tag"/>
         <result property="unionId" jdbcType="VARCHAR" column="union_id"/>
         <result property="unsubscribeAt" jdbcType="TIMESTAMP" column="unsubscribe_at"/>
+        <result property="bindName" jdbcType="TIMESTAMP" column="bind_name"/>
+        <result property="bindAddress" jdbcType="TIMESTAMP" column="bind_address"/>
     </resultMap>
 
 
@@ -130,8 +132,8 @@
         m.`status` as bind_status,
         ifnull(m.batchsend_month, 0) as message_sent,
         m.open_id,
-        ai.c_name as province,
-        ai1.c_name as city,
+        ifnull(ai.c_name,m.province_name) as province,
+        ifnull(ai1.c_name,m.city_name) as city,
         mmt.tags as tag,
         m.bind_at as bind_date,
         m.unsubscribe_at as unsubscribe_at,
@@ -142,9 +144,11 @@
         mp.county as bind_county,
         mp.sex as bind_gender,
         mp.birth_date as bind_birthday,
+        mp.address as bind_address,
         m.remark as remarks,
         m.language as lang,
-        m.subscribe_scene as subscribe_scene
+        m.subscribe_scene as subscribe_scene,
+        mp.name as bind_name
         from member m
         left join member_profile mp on mp.member_id = m.id
         LEFT JOIN area_info ai on m.province = ai.id

@@ -4,33 +4,59 @@ import java.util.Date;
 
 public class ImageTextDto {
 
-	private Integer id;
+    private Integer id;
 
-	private Integer wechatId;
+    private Integer wechatId;
 
-	private String title;
+    private String title;
 
-	private String author;
+    private String author;
 
-	private Date createdAt;
+    private Date createdAt;
 
-	private String content;
+    private String content;
 
-	private Boolean contentSourceChecked;
+    private Boolean contentSourceChecked;
 
-	private String contentSourceUrl;
+    private String contentSourceUrl;
 
-	private boolean showCover;
+    private boolean showCover;
 
-	private String summary;
+    private String summary;
 
-	private Integer materialCoverId;
+    private Integer materialCoverId;
 
-	private String materialCoverUrl;
+    private String materialCoverUrl;
 
-	private String materialCoverMediaId;
+    private String materialCoverMediaId;
 
-	private Integer comment;
+    private Integer comment;
+
+    private String remarks;
+
+    private Boolean available;
+
+    private String url;
+
+    private String mediaId;
+
+    private String sn;
+
+    public String getSn() {
+        return sn;
+    }
+
+    public void setSn(String sn) {
+        this.sn = sn;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
 
     public Integer getWechatId() {
         return wechatId;
@@ -41,106 +67,130 @@ public class ImageTextDto {
     }
 
     public String getAuthor() {
-		return author;
-	}
+        return author;
+    }
 
-	public String getContent() {
-		return content;
-	}
+    public String getContent() {
+        return content;
+    }
 
-	public Boolean getContentSourceChecked() {
-		return contentSourceChecked;
-	}
+    public Boolean getContentSourceChecked() {
+        return contentSourceChecked;
+    }
 
-	public String getContentSourceUrl() {
-		return contentSourceUrl;
-	}
+    public String getContentSourceUrl() {
+        return contentSourceUrl;
+    }
 
-	public Date getCreatedAt() {
-		return createdAt;
-	}
+    public Date getCreatedAt() {
+        return createdAt;
+    }
 
-	public Integer getId() {
-		return id;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public Integer getMaterialCoverId() {
-		return materialCoverId;
-	}
+    public Integer getMaterialCoverId() {
+        return materialCoverId;
+    }
 
-	public String getMaterialCoverMediaId() {
-		return materialCoverMediaId;
-	}
+    public String getMaterialCoverMediaId() {
+        return materialCoverMediaId;
+    }
 
-	public String getMaterialCoverUrl() {
-		return materialCoverUrl;
-	}
+    public String getMaterialCoverUrl() {
+        return materialCoverUrl;
+    }
 
-	public String getSummary() {
-		return summary;
-	}
+    public String getSummary() {
+        return summary;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public boolean isShowCover() {
-		return showCover;
-	}
+    public boolean isShowCover() {
+        return showCover;
+    }
 
-	public void setAuthor(String author) {
-		this.author = author;
-	}
+    public void setAuthor(String author) {
+        this.author = author;
+    }
 
-	public void setContent(String content) {
-		this.content = content;
-	}
+    public void setContent(String content) {
+        this.content = content;
+    }
 
-	public void setContentSourceChecked(Boolean contentSourceChecked) {
-		this.contentSourceChecked = contentSourceChecked;
-	}
+    public void setContentSourceChecked(Boolean contentSourceChecked) {
+        this.contentSourceChecked = contentSourceChecked;
+    }
 
-	public void setContentSourceUrl(String contentSourceUrl) {
-		this.contentSourceUrl = contentSourceUrl;
-	}
+    public void setContentSourceUrl(String contentSourceUrl) {
+        this.contentSourceUrl = contentSourceUrl;
+    }
 
-	public void setCreatedAt(Date createdAt) {
-		this.createdAt = createdAt;
-	}
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public void setMaterialCoverId(Integer materialCoverId) {
-		this.materialCoverId = materialCoverId;
-	}
+    public void setMaterialCoverId(Integer materialCoverId) {
+        this.materialCoverId = materialCoverId;
+    }
 
-	public void setMaterialCoverMediaId(String materialCoverMediaId) {
-		this.materialCoverMediaId = materialCoverMediaId;
-	}
+    public void setMaterialCoverMediaId(String materialCoverMediaId) {
+        this.materialCoverMediaId = materialCoverMediaId;
+    }
 
-	public void setMaterialCoverUrl(String materialCoverUrl) {
-		this.materialCoverUrl = materialCoverUrl;
-	}
+    public void setMaterialCoverUrl(String materialCoverUrl) {
+        this.materialCoverUrl = materialCoverUrl;
+    }
 
-	public void setShowCover(boolean showCover) {
-		this.showCover = showCover;
-	}
+    public void setShowCover(boolean showCover) {
+        this.showCover = showCover;
+    }
 
-	public void setSummary(String summary) {
-		this.summary = summary;
-	}
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
+    public Integer getComment() {
+        return comment;
+    }
 
-	public Integer getComment() {
-		return comment;
-	}
-	public void setComment(Integer comment) {
-		this.comment = comment;
-	}
+    public void setComment(Integer comment) {
+        this.comment = comment;
+    }
+
+    public Boolean getAvailable() {
+        return available;
+    }
+
+    public void setAvailable(Boolean available) {
+        this.available = available;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getMediaId() {
+        return mediaId;
+    }
+
+    public void setMediaId(String mediaId) {
+        this.mediaId = mediaId;
+    }
 }

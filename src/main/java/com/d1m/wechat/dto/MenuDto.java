@@ -1,5 +1,7 @@
 package com.d1m.wechat.dto;
 
+import com.d1m.wechat.model.InterfaceConfig;
+
 import java.util.List;
 
 public class MenuDto {
@@ -28,7 +30,11 @@ public class MenuDto {
 
 	private String appUrl;
 	
-	private String interfaceId;
+	private String menuKey;
+
+	private String apiClass;
+
+	private InterfaceConfig interfaceConfig;
 	
 	public List<MenuDto> getChildren() {
 		return children;
@@ -126,11 +132,27 @@ public class MenuDto {
 		this.appUrl = appUrl;
 	}
 
-	public String getInterfaceId() {
-		return interfaceId;
+	public String getMenuKey() {
+		return menuKey;
 	}
 
-	public void setInterfaceId(String interfaceId) {
-		this.interfaceId = interfaceId;
+	public void setMenuKey(String menuKey) {
+		this.menuKey = menuKey;
+	}
+
+	public String getApiClass() {
+		return apiClass;
+	}
+
+	public void setApiClass(String apiClass) {
+		this.apiClass = apiClass;
+	}
+
+	public InterfaceConfig getInterfaceConfig() {
+		return interfaceConfig;
+	}
+
+	public void setInterfaceConfig(InterfaceConfig interfaceConfig) {
+		this.interfaceConfig = interfaceConfig;
 	}
 }

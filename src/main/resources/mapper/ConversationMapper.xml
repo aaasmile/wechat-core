@@ -1,519 +1,568 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.d1m.wechat.mapper.ConversationMapper">
-  <resultMap id="BaseResultMap" type="com.d1m.wechat.model.Conversation">
-    <!--
-      WARNING - @mbggenerated
-    -->
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="member_id" jdbcType="INTEGER" property="memberId" />
-    <result column="open_id" jdbcType="VARCHAR" property="openId" />
-    <result column="union_id" jdbcType="VARCHAR" property="unionId" />
-    <result column="user_id" jdbcType="INTEGER" property="userId" />
-    <result column="material_id" jdbcType="INTEGER" property="materialId" />
-    <result column="msg_id" jdbcType="VARCHAR" property="msgId" />
-    <result column="msg_type" jdbcType="TINYINT" property="msgType" />
-    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
-    <result column="wechat_id" jdbcType="INTEGER" property="wechatId" />
-    <result column="status" jdbcType="TINYINT" property="status" />
-    <result column="original_conversation_id" jdbcType="INTEGER" property="originalConversationId" />
-    <result column="event" jdbcType="TINYINT" property="event" />
-    <result column="pic_url" jdbcType="VARCHAR" property="picUrl" />
-    <result column="music_url" jdbcType="VARCHAR" property="musicUrl" />
-    <result column="voice_url" jdbcType="VARCHAR" property="voiceUrl" />
-    <result column="video_url" jdbcType="VARCHAR" property="videoUrl" />
-    <result column="short_video_url" jdbcType="VARCHAR" property="shortVideoUrl" />
-    <result column="media_id" jdbcType="VARCHAR" property="mediaId" />
-    <result column="format" jdbcType="VARCHAR" property="format" />
-    <result column="recognition" jdbcType="VARCHAR" property="recognition" />
-    <result column="thumb_media_id" jdbcType="INTEGER" property="thumbMediaId" />
-    <result column="location_x" jdbcType="DOUBLE" property="locationX" />
-    <result column="location_y" jdbcType="DOUBLE" property="locationY" />
-    <result column="location_precision" jdbcType="DOUBLE" property="locationPrecision" />
-    <result column="scale" jdbcType="DOUBLE" property="scale" />
-    <result column="label" jdbcType="VARCHAR" property="label" />
-    <result column="title" jdbcType="VARCHAR" property="title" />
-    <result column="description" jdbcType="VARCHAR" property="description" />
-    <result column="url" jdbcType="VARCHAR" property="url" />
-    <result column="event_key" jdbcType="VARCHAR" property="eventKey" />
-    <result column="menu_id" jdbcType="INTEGER" property="menuId" />
-    <result column="menu_parent_id" jdbcType="INTEGER" property="menuParentId" />
-    <result column="menu_group_id" jdbcType="INTEGER" property="menuGroupId" />
-    <result column="ticket" jdbcType="VARCHAR" property="ticket" />
-    <result column="uniq_id" jdbcType="VARCHAR" property="uniqId" />
-    <result column="poi_id" jdbcType="VARCHAR" property="poiId" />
-    <result column="result" jdbcType="VARCHAR" property="result" />
-    <result column="direction" jdbcType="BIT" property="direction" />
-    <result column="member_photo" jdbcType="VARCHAR" property="memberPhoto" />
-    <result column="kf_photo" jdbcType="VARCHAR" property="kfPhoto" />
-    <result column="is_mass" jdbcType="BIT" property="isMass" />
-    <result column="content" jdbcType="LONGVARCHAR" property="content" />
-  </resultMap>
-  
-  	<resultMap type="com.d1m.wechat.model.UserBehavior" id="userBehaviorResultMap">
-		<result property="title" column="title"/>
-		<result property="eventName" column="event_name"/>
-		<result property="createdAt" column="created_at"/>
-	</resultMap>
-  	<resultMap type="com.d1m.wechat.model.UserLocation" id="userLocationResultMap">
-		<result property="locationX" column="location_x"/>
-		<result property="locationY" column="location_y"/>
-		<result property="eventName" column="event_name"/>
-		<result property="createdAt" column="created_at"/>
-	</resultMap>
-
-	<select id="selectUserBehavior" parameterType="HashMap" resultMap="userBehaviorResultMap">
-		select ifnull(title, '') as title,ifnull(event_name, '') as event_name,created_at from conversation where member_id = #{memberId} order by created_at desc
-	</select>
-	<select id="selectUserLocation" parameterType="HashMap" resultMap="userLocationResultMap">
-		select ifnull(location_x, '0.0') as location_x, ifnull(location_y, '0.0') as location_y, ifnull(event_name, '0.0') as event_name,created_at from conversation where member_id = #{memberId} order by created_at desc
-	</select>
-  <select id="search" parameterType="HashMap" resultMap="ConversationDtoResultMap">
-	(select c.id, c.material_id, c.is_mass, c.member_photo, c.kf_photo, DATE_FORMAT(now(),'%Y-%m-%d %T') as current, DATE_FORMAT(c.created_at,'%Y-%m-%d %T') as created_at, c.content, c.msg_type, c.event, c.direction,c.voice_url,m.id as member_id, m.nickname as member_nickname, m.open_id as member_open_id, c.status from conversation c left join member m on c.member_id = m.id
-	<where>
-		c.wechat_id = #{wechatId} and c.is_mass = 0 and (c.event is null or c.event!=4)
-		<if test="dir != null">
-			<if test="dir == 0">
-				<if test="lastConversationAt != null">
-					and c.created_at &lt; #{lastConversationAt}
-				</if>
-			</if>
-			<if test="dir == 1">
-				<if test="lastConversationAt != null">
-					and c.created_at &gt; #{lastConversationAt}
-				</if>
-			</if>
-		</if>
-		<if test="type != null">
-			and c.direction = #{type}
-		</if>
-		<if test="startAt != null">
-			and c.created_at &gt;= #{startAt}
-		</if>
-		<if test="endAt != null">
-			and c.created_at &lt;= #{endAt}
-		</if>
-		<if test="status != null">
-			and c.status = #{status}
-		</if>
-
-		<if test="memberId != null">
-			and c.member_id = #{memberId}
-		</if>
-
-		<if test="msgType != null">
-			and c.msg_type = #{msgType}
-		</if>
-
-		<if test="keyWords != null">
-			and c.content like CONCAT('%',#{keyWords},'%')
-		</if>
-
-	</where>
-	)
-	union
-	(select c1.id, c1.material_id, c1.is_mass, c1.member_photo, c1.kf_photo, DATE_FORMAT(now(),'%Y-%m-%d %T') as current, DATE_FORMAT(c1.created_at,'%Y-%m-%d %T') as created_at, c1.content, c1.msg_type, c1.event, c1.direction,c1.voice_url, m.id as member_id, m.nickname as member_nickname, m.open_id as member_open_id, mc.status from conversation c1 left join mass_conversation mc on c1.id = mc.conversation_id left join member m on c1.member_id = m.id
-	<where>
-		c1.wechat_id = #{wechatId} and c1.is_mass = 1
-		<if test="lastConversationAt != null">
-			and c1.created_at &gt; #{lastConversationAt}
-		</if>
-		<if test="memberId != null">
-			and mc.member_id = #{memberId}
-		</if>
-		<if test="startAt != null">
-			and c1.created_at &gt;= #{startAt}
-		</if>
-		<if test="endAt != null">
-			and c1.created_at &lt;= #{endAt}
-		</if>
-		<if test="status != null">
-			and mc.status = #{status}
-		</if>
-		<if test="msgType != null">
-			and c1.msg_type = #{msgType}
-		</if>
-		<if test="keyWords != null">
-			and c1.content like CONCAT('%',#{keyWords},'%')
-		</if>
-	</where>
-	)
-	<if test="sortName != null">
-		order by ${sortName}
-		<if test="sortDir != null">
-			${sortDir}
-		</if>
-		<if test="sortDir == null">
-			desc
-		</if>
-	</if>
-	<if test="sortName == null">
-		order by id desc
-	</if>
-
-  </select>
-
-
-	<select id="searchCustomerServiceConversation" parameterType="HashMap" resultMap="ConversationDtoResultMap">
-		(select DATE_FORMAT(c.created_at,'%Y-%m-%d %T') as created_at, c.content, c.msg_type, c.voice_url, m.nickname as member_nickname, m.open_id as member_open_id from conversation c left join member m on c.member_id = m.id
-		<where>
-			c.wechat_id = #{wechatId} and c.is_mass = 0 and (c.event is null or c.event!=4)
-			<if test="startDate != null">
-				and c.created_at &gt;= #{startDate}
-			</if>
-			<if test="endDate != null">
-				and c.created_at &lt;= #{endDate}
-			</if>
-		</where>
-		) order by c.id asc
-	</select>
-
-
-  <select id="searchUp" parameterType="HashMap" resultMap="ConversationDtoResultMap">
-	(select c.id, c.material_id, c.is_mass, c.member_photo, c.kf_photo, DATE_FORMAT(now(),'%Y-%m-%d %T') as current, DATE_FORMAT(c.created_at,'%Y-%m-%d %T') as created_at, c.content, c.msg_type, c.event, c.direction, c.status,c.voice_url, m.id as member_id, m.nickname as member_nickname, m.open_id as member_open_id from conversation c left join member m on c.member_id = m.id
-	<where>
-		c.wechat_id = #{wechatId} and c.is_mass = 0
-		<if test="dir != null">
-			<if test="dir == 0">
-				<if test="lastConversationAt != null">
-					and c.created_at &lt; #{lastConversationAt}
-				</if>
-			</if>
-			<if test="dir == 1">
-				<if test="lastConversationAt != null">
-					and c.created_at &gt; #{lastConversationAt}
-				</if>
-			</if>
-		</if>
-		<if test="msgTypes != null and msgTypes.size &gt; 0">
-			and c.msg_type in
-			<foreach close=")" collection="msgTypes" index="index" item="item" open="(" separator=",">
-				#{item}
-			</foreach>
-		</if>
-		<if test="type != null">
-			and c.direction = #{type}
-		</if>
-		<if test="startAt != null">
-			and c.created_at &gt;= #{startAt}
-		</if>
-		<if test="endAt != null">
-			and c.created_at &lt;= #{endAt}
-		</if>
-		<if test="status != null">
-			and c.status = #{status}
-		</if>
-
-		<if test="memberId != null">
-			and c.member_id = #{memberId}
-		</if>
-	</where>
-	)
-	order by id desc
-  </select>
-
-  <resultMap id="ConversationDtoResultMap" type="com.d1m.wechat.dto.ConversationDto">
-  	 <id column="id" jdbcType="INTEGER" property="id" />
-  	 <result column="material_id" jdbcType="INTEGER" property="materialId" />
-     <result column="member_photo" jdbcType="VARCHAR" property="memberPhoto" />
-     <result column="kf_photo" jdbcType="VARCHAR" property="kfPhoto" />
-     <result column="content" jdbcType="VARCHAR" property="content" />
-     <result column="created_at" jdbcType="VARCHAR" property="createdAt" />
-     <result column="msg_type" jdbcType="TINYINT" property="msgType" />
-     <result column="event" jdbcType="TINYINT" property="event" />
-     <result column="direction" jdbcType="BIT" property="dir" />
-     <result column="is_mass" jdbcType="BIT" property="isMass" />
-     <result column="member_id" jdbcType="INTEGER" property="memberId" />
-     <result column="member_nickname" jdbcType="VARCHAR" property="memberNickname" />
-     <result column="member_open_id" jdbcType="VARCHAR" property="memberOpenId" />
-	  <result column="voice_url" jdbcType="VARCHAR" property="voiceUrl" />
-	  <result column="status" jdbcType="TINYINT" property="status" />
-  </resultMap>
-
-  <select id="searchMass" parameterType="HashMap" resultMap="MassConversationDtoResultMap">
-	select c1.id as cid, mcr.id as id, c1.is_mass, c1.member_photo, c1.kf_photo, DATE_FORMAT(now(),'%Y-%m-%d %T') as current, DATE_FORMAT(c1.created_at,'%Y-%m-%d %T') as created_at,
-	c1.content, c1.msg_type, c1.event, DATE_FORMAT(mcr.audit_at,'%Y-%m-%d %T') as audit_at, mcr.audit_reason, DATE_FORMAT(mcr.run_at,'%Y-%m-%d %T') as run_at, mcr.status,
-	mcr.material_id, DATE_FORMAT(mcr.send_at,'%Y-%m-%d %T') as send_at, DATE_FORMAT(mcr.wx_send_at,'%Y-%m-%d %T') as wx_send_at, u.username as audit_by
-	from conversation as c1
-	left join mass_conversation_result as mcr on c1.id = mcr.conversation_id
-	left join user as u on mcr.audit_by = u.id
-	<where>
-		c1.wechat_id = #{wechatId} and c1.is_mass = 1
-		<if test="startAt != null">
-			and c1.created_at &gt;= #{startAt}
-		</if>
-		<if test="endAt != null">
-			and c1.created_at &lt;= #{endAt}
-		</if>
-		<if test="status != null">
-			and mcr.status = #{status}
-		</if>
-	</where>
-	<if test="sortName != null">
-		order by mcr.${sortName}
-		<if test="sortDir != null">
-			${sortDir}
-		</if>
-		<if test="sortDir == null">
-			desc
-		</if>
-	</if>
-	<if test="sortName == null">
-		order by c1.id desc
-	</if>
-  </select>
-
-  <resultMap id="MassConversationDtoResultMap" type="com.d1m.wechat.dto.ConversationDto">
-  	 <id column="id" jdbcType="INTEGER" property="id" />
-  	 <id column="cid" jdbcType="INTEGER" property="cid" />
-     <result column="member_photo" jdbcType="VARCHAR" property="memberPhoto" />
-     <result column="kf_photo" jdbcType="VARCHAR" property="kfPhoto" />
-     <result column="content" jdbcType="VARCHAR" property="content" />
-     <result column="created_at" jdbcType="VARCHAR" property="createdAt" />
-     <result column="msg_type" jdbcType="TINYINT" property="msgType" />
-     <result column="status" jdbcType="TINYINT" property="status" />
-     <result column="event" jdbcType="TINYINT" property="event" />
-     <result column="direction" jdbcType="BIT" property="dir" />
-     <result column="is_mass" jdbcType="BIT" property="isMass" />
-     <result column="audit_at" jdbcType="VARCHAR" property="auditAt" />
-     <result column="send_at" jdbcType="VARCHAR" property="sendAt" />
-     <result column="wx_send_at" jdbcType="VARCHAR" property="wxSendAt" />
-     <result column="audit_by" jdbcType="VARCHAR" property="auditBy" />
-     <result column="audit_reason" jdbcType="VARCHAR" property="reason" />
-     <result column="run_at" jdbcType="VARCHAR" property="runAt" />
-     <result column="material_id" jdbcType="INTEGER" property="materialId" />
-     <association column="{conversationId=cid}" javaType="com.d1m.wechat.dto.MassConversationResultDto" property="result" select="getMassConversationResult" />
-  </resultMap>
-
-  <select id="getMassConversationResult" parameterType="HashMap" resultMap="MassConversationResultMap">
-  	select conditions, status, total_count, filter_count, send_count, error_count from mass_conversation_result
-  	<where>
-  		conversation_id = #{conversationId}
-  	</where>
-  </select>
-
-  <resultMap id="MassConversationResultMap" type="com.d1m.wechat.dto.MassConversationResultDto">
-  	<result column="status" jdbcType="TINYINT" property="status" />
-  	<result column="total_count" jdbcType="INTEGER" property="totalCount" />
-  	<result column="filter_count" jdbcType="INTEGER" property="filterCount" />
-  	<result column="send_count" jdbcType="INTEGER" property="sendCount" />
-  	<result column="error_count" jdbcType="INTEGER" property="errorCount" />
-  	<result column="conditions" jdbcType="LONGVARCHAR" property="conditions" />
-  </resultMap>
-
-  <select id="countMass" parameterType="HashMap" resultType="int">
-  	select count(c1.id) from conversation as c1 left join (select * from mass_conversation where id in (select  max(id)  from mass_conversation group by conversation_id)) as mass on c1.id = mass.conversation_id
-	<where>
-		c1.wechat_id = #{wechatId} and c1.is_mass = 1
-		<if test="startAt != null">
-			and c1.created_at &gt; #{startAt}
-		</if>
-		<if test="endAt != null">
-			and c1.created_at &lt; #{endAt}
-		</if>
-		<if test="status != null">
-			and mass.status = #{status}
-		</if>
-	</where>
-  </select>
-
-  <resultMap id="MessageBaseResultMap" type="com.d1m.wechat.dto.ReportMessageItemDto">
-  	 <id column="created_at" jdbcType="TIMESTAMP" property="date" />
-  	 <result column="sendTimes" jdbcType="INTEGER" property="sendTimes" />
-     <result column="text" jdbcType="INTEGER" property="text" />
-     <result column="image" jdbcType="INTEGER" property="image" />
-     <result column="voice" jdbcType="INTEGER" property="voice" />
-     <result column="video" jdbcType="INTEGER" property="video" />
-     <result column="shortvideo" jdbcType="INTEGER" property="shortvideo" />
-     <result column="imagetext" jdbcType="INTEGER" property="imagetext" />
-     <result column="location" jdbcType="INTEGER" property="location" />
-     <result column="link" jdbcType="INTEGER" property="link" />
-     <result column="music" jdbcType="INTEGER" property="music" />
-     <result column="scan" jdbcType="INTEGER" property="scan" />
-     <result column="click" jdbcType="INTEGER" property="click" />
-  </resultMap>
-
-  <resultMap id="MessageCountResultMap" type="com.d1m.wechat.dto.ReportMessageDto">
-     <result column="receiver" jdbcType="INTEGER" property="receiver" />
-     <result column="sendTimes" jdbcType="INTEGER" property="sendTimes" />
-  </resultMap>
-
-
-
-  <select id="messageReport" resultMap="MessageBaseResultMap">
-		select DATE_FORMAT(m.created_at,'%Y-%m-%d') as date,
-		count(m.wechat_id) as sendTimes,
-		sum(case m.msg_type when 1 then 1 else 0 end) as imagetext,
-		sum(case m.msg_type when 2 then 1 else 0 end) as image,
-		sum(case m.msg_type when 3 then 1 else 0 end) as voice,
-		sum(case m.msg_type when 4 then 1 else 0 end) as video,
-		sum(case m.msg_type when 5 then 1 else 0 end) as shortvideo,
-		sum(case m.msg_type when 6 then 1 else 0 end) as text,
-		sum(case m.msg_type when 7 then 1 else 0 end) as location,
-		sum(case m.msg_type when 8 then 1 else 0 end) as link,
-		sum(case m.msg_type when 9 then 1 else 0 end) as music,
-		sum(case m.event when 3 then 1 else 0 end) as scan,
-		sum(case m.event when 5 and 6 then 1 else 0 end) as click
-		from conversation m
-		<where>
-			wechat_id = #{wechatId}
-			<if test="start != null">
-				<if test="end != null">
-				and	m.created_at between #{start} and #{end}
-				</if>
-			</if>
-			group by date
-			order by date desc
-		</where>
-	</select>
-
-
-	<select id="messageCount" resultMap="MessageCountResultMap">
-		select count(distinct m.member_id) as receiver,count(m.wechat_id) as sendTimes from conversation m
-		<where>
-			m.wechat_id = #{wechatId}
-			<if test="start != null">
-				<if test="end != null">
-				and	m.created_at between #{start} and #{end}
-				</if>
-			</if>
-		</where>
-	</select>
-
-	<resultMap id="HourMessageBaseResultMap" type="com.d1m.wechat.dto.ReportMessageItemDto">
-	 <result column="time" jdbcType="VARCHAR" property="time" />
-	 <result column="date" jdbcType="VARCHAR" property="date" />
-  	 <result column="sendTimes" jdbcType="INTEGER" property="sendTimes" />
-     <result column="text" jdbcType="INTEGER" property="text" />
-     <result column="image" jdbcType="INTEGER" property="image" />
-     <result column="voice" jdbcType="INTEGER" property="voice" />
-     <result column="video" jdbcType="INTEGER" property="video" />
-     <result column="shortvideo" jdbcType="INTEGER" property="shortvideo" />
-     <result column="imagetext" jdbcType="INTEGER" property="imagetext" />
-     <result column="location" jdbcType="INTEGER" property="location" />
-     <result column="link" jdbcType="INTEGER" property="link" />
-     <result column="music" jdbcType="INTEGER" property="music" />
-     <result column="scan" jdbcType="INTEGER" property="scan" />
-     <result column="click" jdbcType="INTEGER" property="click" />
+    <resultMap id="BaseResultMap" type="com.d1m.wechat.model.Conversation">
+        <!--
+          WARNING - @mbggenerated
+        -->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="member_id" jdbcType="INTEGER" property="memberId"/>
+        <result column="open_id" jdbcType="VARCHAR" property="openId"/>
+        <result column="union_id" jdbcType="VARCHAR" property="unionId"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="material_id" jdbcType="INTEGER" property="materialId"/>
+        <result column="msg_id" jdbcType="VARCHAR" property="msgId"/>
+        <result column="msg_type" jdbcType="TINYINT" property="msgType"/>
+        <result column="created_at" jdbcType="TIMESTAMP" property="createdAt"/>
+        <result column="wechat_id" jdbcType="INTEGER" property="wechatId"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="original_conversation_id" jdbcType="INTEGER" property="originalConversationId"/>
+        <result column="event" jdbcType="TINYINT" property="event"/>
+        <result column="pic_url" jdbcType="VARCHAR" property="picUrl"/>
+        <result column="music_url" jdbcType="VARCHAR" property="musicUrl"/>
+        <result column="voice_url" jdbcType="VARCHAR" property="voiceUrl"/>
+        <result column="video_url" jdbcType="VARCHAR" property="videoUrl"/>
+        <result column="short_video_url" jdbcType="VARCHAR" property="shortVideoUrl"/>
+        <result column="media_id" jdbcType="VARCHAR" property="mediaId"/>
+        <result column="format" jdbcType="VARCHAR" property="format"/>
+        <result column="recognition" jdbcType="VARCHAR" property="recognition"/>
+        <result column="thumb_media_id" jdbcType="INTEGER" property="thumbMediaId"/>
+        <result column="location_x" jdbcType="DOUBLE" property="locationX"/>
+        <result column="location_y" jdbcType="DOUBLE" property="locationY"/>
+        <result column="location_precision" jdbcType="DOUBLE" property="locationPrecision"/>
+        <result column="scale" jdbcType="DOUBLE" property="scale"/>
+        <result column="label" jdbcType="VARCHAR" property="label"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="url" jdbcType="VARCHAR" property="url"/>
+        <result column="event_key" jdbcType="VARCHAR" property="eventKey"/>
+        <result column="menu_id" jdbcType="INTEGER" property="menuId"/>
+        <result column="menu_parent_id" jdbcType="INTEGER" property="menuParentId"/>
+        <result column="menu_group_id" jdbcType="INTEGER" property="menuGroupId"/>
+        <result column="ticket" jdbcType="VARCHAR" property="ticket"/>
+        <result column="uniq_id" jdbcType="VARCHAR" property="uniqId"/>
+        <result column="poi_id" jdbcType="VARCHAR" property="poiId"/>
+        <result column="result" jdbcType="VARCHAR" property="result"/>
+        <result column="direction" jdbcType="BIT" property="direction"/>
+        <result column="member_photo" jdbcType="VARCHAR" property="memberPhoto"/>
+        <result column="kf_photo" jdbcType="VARCHAR" property="kfPhoto"/>
+        <result column="is_mass" jdbcType="BIT" property="isMass"/>
+        <result column="content" jdbcType="LONGVARCHAR" property="content"/>
     </resultMap>
 
-	<select id="messageItemReport" resultMap="HourMessageBaseResultMap">
-		select concat(date_format(m.created_at,"%k:00~"),hour(m.created_at)+1,":00") as time,
-		concat(hour(m.created_at)+1,":00") as date,
-		hour(m.created_at)+1 as hour,
-		count(m.wechat_id) as sendTimes,
-		sum(case m.msg_type when 1 then 1 else 0 end) as imagetext,
-		sum(case m.msg_type when 2 then 1 else 0 end) as image,
-		sum(case m.msg_type when 3 then 1 else 0 end) as voice,
-		sum(case m.msg_type when 4 then 1 else 0 end) as video,
-		sum(case m.msg_type when 5 then 1 else 0 end) as shortvideo,
-		sum(case m.msg_type when 6 then 1 else 0 end) as text,
-		sum(case m.msg_type when 7 then 1 else 0 end) as location,
-		sum(case m.msg_type when 8 then 1 else 0 end) as link,
-		sum(case m.msg_type when 9 then 1 else 0 end) as music,
-		sum(case m.event when 3 then 1 else 0 end) as scan,
-		sum(case m.event when 5 and 6 then 1 else 0 end) as click
-		from conversation m
-		<where>
-			wechat_id = #{wechatId}
-			<if test="start != null">
-				<if test="end != null">
-				and	m.created_at between #{start} and #{end}
-				</if>
-			</if>
-			group by time
-			order by hour asc
-		</where>
-	</select>
+    <resultMap type="com.d1m.wechat.model.UserBehavior" id="userBehaviorResultMap">
+        <result property="title" column="title"/>
+        <result property="eventName" column="event_name"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+    <resultMap type="com.d1m.wechat.model.UserLocation" id="userLocationResultMap">
+        <result property="locationX" column="location_x"/>
+        <result property="locationY" column="location_y"/>
+        <result property="eventName" column="event_name"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
 
-	<select id="getFirstTextOrImageConversation" parameterType="HashMap" resultMap="BaseResultMap">
-		select * from conversation
-		<where>
-			wechat_id = #{wechatId} and member_id = ${memberId} and (msg_type = 2 or msg_type = 6) order by id asc limit 0, 1;
-		</where>
-	</select>
+    <select id="selectUserBehavior" parameterType="HashMap" resultMap="userBehaviorResultMap">
+        select ifnull(title, '') as title, ifnull(LOWER(event_name), '') AS event_name, created_at
+        from conversation
+        where member_id = #{memberId}
+          and cast(event as char) in (1, 2, 3, 5, 6, 9, 10, 22, 30, 31, 32, 33, 35, 36)
+        order by created_at desc
+    </select>
+    <select id="selectUserLocation" parameterType="HashMap" resultMap="userLocationResultMap">
+        select ifnull(location_x, '0.0')     as location_x,
+               ifnull(location_y, '0.0')     as location_y,
+               ifnull(LOWER(event_name), '') AS event_name,
+               created_at
+        from conversation
+        where member_id = #{memberId}
+          and cast(event as char) in (4, 34)
+        order by created_at desc
+    </select>
+    <select id="search" parameterType="HashMap" resultMap="ConversationDtoResultMap">
+        (select c.id, c.material_id, c.is_mass, c.member_photo, c.kf_photo, DATE_FORMAT(now(),'%Y-%m-%d %T') as current,
+        DATE_FORMAT(c.created_at,'%Y-%m-%d %T') as created_at, c.content, c.msg_type, c.event,
+        c.direction,c.voice_url,m.id as member_id, m.nickname as member_nickname, m.open_id as member_open_id, c.status
+        from conversation c left join member m on c.member_id = m.id
+        <where>
+            c.wechat_id = #{wechatId} and c.is_mass = 0 and (c.event is null or c.event!=4)
+            <if test="dir != null">
+                <if test="dir == 0">
+                    <if test="lastConversationAt != null">
+                        and c.created_at &lt; #{lastConversationAt}
+                    </if>
+                </if>
+                <if test="dir == 1">
+                    <if test="lastConversationAt != null">
+                        and c.created_at &gt; #{lastConversationAt}
+                    </if>
+                </if>
+            </if>
+            <if test="type != null">
+                and c.direction = #{type}
+            </if>
+            <if test="startAt != null">
+                and c.created_at &gt;= #{startAt}
+            </if>
+            <if test="endAt != null">
+                and c.created_at &lt;= #{endAt}
+            </if>
+            <if test="status != null">
+                and c.status = #{status}
+            </if>
+
+            <if test="memberId != null">
+                and c.member_id = #{memberId}
+            </if>
+
+            <if test="msgType != null">
+                and c.msg_type = #{msgType}
+            </if>
+
+            <if test="keyWords != null">
+                and c.content like CONCAT('%',#{keyWords},'%')
+            </if>
+
+        </where>
+        )
+        union
+        (select c1.id, c1.material_id, c1.is_mass, c1.member_photo, c1.kf_photo, DATE_FORMAT(now(),'%Y-%m-%d %T') as
+        current, DATE_FORMAT(c1.created_at,'%Y-%m-%d %T') as created_at, c1.content, c1.msg_type, c1.event,
+        c1.direction,c1.voice_url, m.id as member_id, m.nickname as member_nickname, m.open_id as member_open_id,
+        mc.status from conversation c1 left join mass_conversation mc on c1.id = mc.conversation_id left join member m
+        on c1.member_id = m.id
+        <where>
+            c1.wechat_id = #{wechatId} and c1.is_mass = 1
+            <if test="lastConversationAt != null">
+                and c1.created_at &gt; #{lastConversationAt}
+            </if>
+            <if test="memberId != null">
+                and mc.member_id = #{memberId}
+            </if>
+            <if test="startAt != null">
+                and c1.created_at &gt;= #{startAt}
+            </if>
+            <if test="endAt != null">
+                and c1.created_at &lt;= #{endAt}
+            </if>
+            <if test="status != null">
+                and mc.status = #{status}
+            </if>
+            <if test="msgType != null">
+                and c1.msg_type = #{msgType}
+            </if>
+            <if test="keyWords != null">
+                and c1.content like CONCAT('%',#{keyWords},'%')
+            </if>
+        </where>
+        )
+        <if test="sortName != null">
+            order by ${sortName}
+            <if test="sortDir != null">
+                ${sortDir}
+            </if>
+            <if test="sortDir == null">
+                desc
+            </if>
+        </if>
+        <if test="sortName == null">
+            order by id desc
+        </if>
+
+    </select>
+
+
+    <select id="searchCustomerServiceConversation" parameterType="HashMap" resultMap="ConversationDtoResultMap">
+        (select DATE_FORMAT(c.created_at,'%Y-%m-%d %T') as created_at, c.content, c.msg_type, c.voice_url, m.nickname as
+        member_nickname, m.open_id as member_open_id from conversation c left join member m on c.member_id = m.id
+        <where>
+            c.wechat_id = #{wechatId} and c.is_mass = 0 and (c.event is null or c.event!=4)
+            <if test="startDate != null">
+                and c.created_at &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                and c.created_at &lt;= #{endDate}
+            </if>
+        </where>
+        ) order by c.id asc
+    </select>
+
+
+    <select id="searchUp" parameterType="HashMap" resultMap="ConversationDtoResultMap">
+        (select c.id, c.material_id, c.is_mass, c.member_photo, c.kf_photo, DATE_FORMAT(now(),'%Y-%m-%d %T') as current,
+        DATE_FORMAT(c.created_at,'%Y-%m-%d %T') as created_at, c.content, c.msg_type, c.event, c.direction,
+        c.status,c.voice_url, m.id as member_id, m.nickname as member_nickname, m.open_id as member_open_id from
+        conversation c left join member m on c.member_id = m.id
+        <where>
+            c.wechat_id = #{wechatId} and c.is_mass = 0
+            <if test="dir != null">
+                <if test="dir == 0">
+                    <if test="lastConversationAt != null">
+                        and c.created_at &lt; #{lastConversationAt}
+                    </if>
+                </if>
+                <if test="dir == 1">
+                    <if test="lastConversationAt != null">
+                        and c.created_at &gt; #{lastConversationAt}
+                    </if>
+                </if>
+            </if>
+            <if test="msgTypes != null and msgTypes.size &gt; 0">
+                and c.msg_type in
+                <foreach close=")" collection="msgTypes" index="index" item="item" open="(" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="type != null">
+                and c.direction = #{type}
+            </if>
+            <if test="startAt != null">
+                and c.created_at &gt;= #{startAt}
+            </if>
+            <if test="endAt != null">
+                and c.created_at &lt;= #{endAt}
+            </if>
+            <if test="status != null">
+                and c.status = #{status}
+            </if>
+
+            <if test="memberId != null">
+                and c.member_id = #{memberId}
+            </if>
+        </where>
+        )
+        order by id desc
+    </select>
+
+    <resultMap id="ConversationDtoResultMap" type="com.d1m.wechat.dto.ConversationDto">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="material_id" jdbcType="INTEGER" property="materialId"/>
+        <result column="member_photo" jdbcType="VARCHAR" property="memberPhoto"/>
+        <result column="kf_photo" jdbcType="VARCHAR" property="kfPhoto"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="created_at" jdbcType="VARCHAR" property="createdAt"/>
+        <result column="msg_type" jdbcType="TINYINT" property="msgType"/>
+        <result column="event" jdbcType="TINYINT" property="event"/>
+        <result column="direction" jdbcType="BIT" property="dir"/>
+        <result column="is_mass" jdbcType="BIT" property="isMass"/>
+        <result column="member_id" jdbcType="INTEGER" property="memberId"/>
+        <result column="member_nickname" jdbcType="VARCHAR" property="memberNickname"/>
+        <result column="member_open_id" jdbcType="VARCHAR" property="memberOpenId"/>
+        <result column="voice_url" jdbcType="VARCHAR" property="voiceUrl"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+    </resultMap>
+
+    <select id="searchMass" parameterType="HashMap" resultMap="MassConversationDtoResultMap">
+        select mcr.conditions,c1.id as cid, mcr.id as id, c1.is_mass, c1.member_photo, c1.kf_photo,
+        DATE_FORMAT(now(),'%Y-%m-%d %T') as current, DATE_FORMAT(c1.created_at,'%Y-%m-%d %T') as created_at,
+        c1.content, c1.msg_type, c1.event, DATE_FORMAT(mcr.audit_at,'%Y-%m-%d %T') as audit_at, mcr.audit_reason,
+        DATE_FORMAT(mcr.run_at,'%Y-%m-%d %T') as run_at, mcr.status,
+        mcr.material_id, DATE_FORMAT(mcr.send_at,'%Y-%m-%d %T') as send_at, DATE_FORMAT(mcr.wx_send_at,'%Y-%m-%d %T') as
+        wx_send_at, u.username as audit_by
+        from conversation as c1
+        left join mass_conversation_result as mcr on c1.id = mcr.conversation_id
+        left join user as u on mcr.audit_by = u.id
+        <where>
+            c1.wechat_id = #{wechatId} and c1.is_mass = 1
+            <if test="startAt != null">
+                and c1.created_at &gt;= #{startAt}
+            </if>
+            <if test="endAt != null">
+                and c1.created_at &lt;= #{endAt}
+            </if>
+            <if test="status != null">
+                and mcr.status = #{status}
+            </if>
+        </where>
+        <if test="sortName != null">
+            order by mcr.${sortName}
+            <if test="sortDir != null">
+                ${sortDir}
+            </if>
+            <if test="sortDir == null">
+                desc
+            </if>
+        </if>
+        <if test="sortName == null">
+            order by c1.created_at desc
+        </if>
+    </select>
+
+    <resultMap id="MassConversationDtoResultMap" type="com.d1m.wechat.dto.ConversationDto">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <id column="cid" jdbcType="INTEGER" property="cid"/>
+        <result column="member_photo" jdbcType="VARCHAR" property="memberPhoto"/>
+        <result column="kf_photo" jdbcType="VARCHAR" property="kfPhoto"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="created_at" jdbcType="VARCHAR" property="createdAt"/>
+        <result column="msg_type" jdbcType="TINYINT" property="msgType"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="event" jdbcType="TINYINT" property="event"/>
+        <result column="direction" jdbcType="BIT" property="dir"/>
+        <result column="is_mass" jdbcType="BIT" property="isMass"/>
+        <result column="audit_at" jdbcType="VARCHAR" property="auditAt"/>
+        <result column="send_at" jdbcType="VARCHAR" property="sendAt"/>
+        <result column="wx_send_at" jdbcType="VARCHAR" property="wxSendAt"/>
+        <result column="audit_by" jdbcType="VARCHAR" property="auditBy"/>
+        <result column="audit_reason" jdbcType="VARCHAR" property="reason"/>
+        <result column="run_at" jdbcType="VARCHAR" property="runAt"/>
+        <result column="conditions" jdbcType="VARCHAR" property="conditions"/>
+        <result column="material_id" jdbcType="INTEGER" property="materialId"/>
+        <association column="{conversationId=cid}" javaType="com.d1m.wechat.dto.MassConversationResultDto"
+                     property="result" select="getMassConversationResult"/>
+        <collection column="{materialId=material_id}" property="items"
+                    select="com.d1m.wechat.mapper.MaterialMapper.selectImageTextDetail"/>
+    </resultMap>
+
+    <select id="getMassConversationResult" parameterType="HashMap" resultMap="MassConversationResultMap">
+        select conditions, status, total_count, filter_count, send_count, error_count from mass_conversation_result
+        <where>
+            conversation_id = #{conversationId}
+        </where>
+    </select>
+
+    <resultMap id="MassConversationResultMap" type="com.d1m.wechat.dto.MassConversationResultDto">
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="total_count" jdbcType="INTEGER" property="totalCount"/>
+        <result column="filter_count" jdbcType="INTEGER" property="filterCount"/>
+        <result column="send_count" jdbcType="INTEGER" property="sendCount"/>
+        <result column="error_count" jdbcType="INTEGER" property="errorCount"/>
+        <result column="conditions" jdbcType="LONGVARCHAR" property="conditions"/>
+    </resultMap>
+
+    <select id="countMass" parameterType="HashMap" resultType="int">
+        select count(c1.id) from conversation as c1 left join (select * from mass_conversation where id in (select
+        max(id) from mass_conversation group by conversation_id)) as mass on c1.id = mass.conversation_id
+        <where>
+            c1.wechat_id = #{wechatId} and c1.is_mass = 1
+            <if test="startAt != null">
+                and c1.created_at &gt; #{startAt}
+            </if>
+            <if test="endAt != null">
+                and c1.created_at &lt; #{endAt}
+            </if>
+            <if test="status != null">
+                and mass.status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <resultMap id="MessageBaseResultMap" type="com.d1m.wechat.dto.ReportMessageItemDto">
+        <id column="created_at" jdbcType="TIMESTAMP" property="date"/>
+        <result column="sendTimes" jdbcType="INTEGER" property="sendTimes"/>
+        <result column="text" jdbcType="INTEGER" property="text"/>
+        <result column="image" jdbcType="INTEGER" property="image"/>
+        <result column="voice" jdbcType="INTEGER" property="voice"/>
+        <result column="video" jdbcType="INTEGER" property="video"/>
+        <result column="shortvideo" jdbcType="INTEGER" property="shortvideo"/>
+        <result column="imagetext" jdbcType="INTEGER" property="imagetext"/>
+        <result column="location" jdbcType="INTEGER" property="location"/>
+        <result column="link" jdbcType="INTEGER" property="link"/>
+        <result column="music" jdbcType="INTEGER" property="music"/>
+        <result column="scan" jdbcType="INTEGER" property="scan"/>
+        <result column="click" jdbcType="INTEGER" property="click"/>
+    </resultMap>
+
+    <resultMap id="MessageCountResultMap" type="com.d1m.wechat.dto.ReportMessageDto">
+        <result column="receiver" jdbcType="INTEGER" property="receiver"/>
+        <result column="sendTimes" jdbcType="INTEGER" property="sendTimes"/>
+    </resultMap>
+
+
+    <select id="messageReport" resultMap="MessageBaseResultMap">
+        select DATE_FORMAT(m.created_at,'%Y-%m-%d') as date,
+        count(m.wechat_id) as sendTimes,
+        sum(case m.msg_type when 1 then 1 else 0 end) as imagetext,
+        sum(case m.msg_type when 2 then 1 else 0 end) as image,
+        sum(case m.msg_type when 3 then 1 else 0 end) as voice,
+        sum(case m.msg_type when 4 then 1 else 0 end) as video,
+        sum(case m.msg_type when 5 then 1 else 0 end) as shortvideo,
+        sum(case m.msg_type when 6 then 1 else 0 end) as text,
+        sum(case m.msg_type when 7 then 1 else 0 end) as location,
+        sum(case m.msg_type when 8 then 1 else 0 end) as link,
+        sum(case m.msg_type when 9 then 1 else 0 end) as music,
+        sum(case m.event when 3 then 1 else 0 end) as scan,
+        sum(case m.event when 5 and 6 then 1 else 0 end) as click
+        from conversation m
+        <where>
+            wechat_id = #{wechatId}
+            <if test="start != null">
+                <if test="end != null">
+                    and m.created_at between #{start} and #{end}
+                </if>
+            </if>
+            group by date
+            order by date desc
+        </where>
+    </select>
+
+
+    <select id="messageCount" resultMap="MessageCountResultMap">
+        select count(distinct m.member_id) as receiver,count(m.wechat_id) as sendTimes from conversation m
+        <where>
+            m.wechat_id = #{wechatId}
+            <if test="start != null">
+                <if test="end != null">
+                    and m.created_at between #{start} and #{end}
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <resultMap id="HourMessageBaseResultMap" type="com.d1m.wechat.dto.ReportMessageItemDto">
+        <result column="time" jdbcType="VARCHAR" property="time"/>
+        <result column="date" jdbcType="VARCHAR" property="date"/>
+        <result column="sendTimes" jdbcType="INTEGER" property="sendTimes"/>
+        <result column="text" jdbcType="INTEGER" property="text"/>
+        <result column="image" jdbcType="INTEGER" property="image"/>
+        <result column="voice" jdbcType="INTEGER" property="voice"/>
+        <result column="video" jdbcType="INTEGER" property="video"/>
+        <result column="shortvideo" jdbcType="INTEGER" property="shortvideo"/>
+        <result column="imagetext" jdbcType="INTEGER" property="imagetext"/>
+        <result column="location" jdbcType="INTEGER" property="location"/>
+        <result column="link" jdbcType="INTEGER" property="link"/>
+        <result column="music" jdbcType="INTEGER" property="music"/>
+        <result column="scan" jdbcType="INTEGER" property="scan"/>
+        <result column="click" jdbcType="INTEGER" property="click"/>
+    </resultMap>
+
+    <select id="messageItemReport" resultMap="HourMessageBaseResultMap">
+        select concat(date_format(m.created_at,"%k:00~"),hour(m.created_at)+1,":00") as time,
+        concat(hour(m.created_at)+1,":00") as date,
+        hour(m.created_at)+1 as hour,
+        count(m.wechat_id) as sendTimes,
+        sum(case m.msg_type when 1 then 1 else 0 end) as imagetext,
+        sum(case m.msg_type when 2 then 1 else 0 end) as image,
+        sum(case m.msg_type when 3 then 1 else 0 end) as voice,
+        sum(case m.msg_type when 4 then 1 else 0 end) as video,
+        sum(case m.msg_type when 5 then 1 else 0 end) as shortvideo,
+        sum(case m.msg_type when 6 then 1 else 0 end) as text,
+        sum(case m.msg_type when 7 then 1 else 0 end) as location,
+        sum(case m.msg_type when 8 then 1 else 0 end) as link,
+        sum(case m.msg_type when 9 then 1 else 0 end) as music,
+        sum(case m.event when 3 then 1 else 0 end) as scan,
+        sum(case m.event when 5 and 6 then 1 else 0 end) as click
+        from conversation m
+        <where>
+            wechat_id = #{wechatId}
+            <if test="start != null">
+                <if test="end != null">
+                    and m.created_at between #{start} and #{end}
+                </if>
+            </if>
+            group by time
+            order by hour asc
+        </where>
+    </select>
+
+    <select id="getFirstTextOrImageConversation" parameterType="HashMap" resultMap="BaseResultMap">
+        select * from conversation
+        <where>
+            wechat_id = #{wechatId} and member_id = ${memberId} and (msg_type = 2 or msg_type = 6) order by id asc limit
+            0, 1;
+        </where>
+    </select>
 
     <update id="updateMemberPhoto">
-        update conversation set
-        member_photo = #{memberPhoto}
-        where
-        member_id = #{memberId}
-        and (member_photo LIKE '%avatar%' or member_photo is null)
+        update conversation
+        set member_photo = #{memberPhoto}
+        where member_id = #{memberId}
+          and (member_photo LIKE '%avatar%' or member_photo is null)
     </update>
 
 
+    <!--
+        1：获取当天的回复粉丝数量
+        2：获取当天粉丝平均的响应时间, 以秒为单位， 可能为NULL
+        3：获取当天的新增回复的粉丝数量
+        4：获取当月的回复粉丝数量
+        5：获取当月粉丝平均的响应时间, 以秒为单位， 可能为NULL
+        6：获取当月的新增回复的粉丝数量
+    -->
+    <select id="getLiveChatStatistic" parameterType="HashMap" resultType="java.lang.Integer">
+        (SELECT COUNT(DISTINCT c.member_id) as result
+         from conversation c
+         where c.user_id is not null
+           and c.is_mass = 0
+           and (c.event is null or c.event != 4)
+           and CURDATE() = DATE(c.created_at)
+           and c.wechat_id = #{wechatId}) UNION ALL (select CAST(avg(res_time) as UNSIGNED) as result
+                                                     FROM (SELECT UNIX_TIMESTAMP(cc.tc_res_time) -
+                                                                  UNIX_TIMESTAMP(min(c.created_at)) as res_time
+                                                           from conversation c
+                                                                    left join (SELECT tc.member_id,
+                                                                                      min(tc.created_at) as tc_res_time
+                                                                               from conversation tc
+                                                                               where tc.user_id is not null
+                                                                                 and tc.is_mass = 0
+                                                                                 and (tc.event is null or tc.event != 4)
+                                                                                 and CURDATE() = DATE(tc.created_at)
+                                                                               group by tc.member_id) cc
+                                                                        on c.member_id = cc.member_id
+                                                           where c.user_id is null
+                                                             and c.is_mass = 0
+                                                             and (c.event is null or c.event != 4)
+                                                             and c.wechat_id = #{wechatId}
+                                                             and CURDATE() = DATE(c.created_at)
+                                                           group by c.member_id) as res_tab
+                                                     where res_time is not null)
+                                          UNION ALL (SELECT COUNT(DISTINCT c.member_id) as result
+                                                     from conversation c
+                                                              left join (SELECT DISTINCT tc.member_id
+                                                                         from conversation tc
+                                                                         where tc.user_id is not null
+                                                                           and tc.is_mass = 0
+                                                                           and (tc.event is null or tc.event != 4)
+                                                                           and tc.created_at &lt; DATE_SUB(NOW(), INTERVAL 1 DAY)) cc
+                                                                  on c.member_id = cc.member_id
+                                                     where c.user_id is not null
+                                                       and c.is_mass = 0
+                                                       and (c.event is null or c.event != 4)
+                                                       and c.wechat_id = #{wechatId}
+                                                       and CURDATE() = DATE(c.created_at)
+                                                       and cc.member_id is null)
+                                          UNION ALL (SELECT COUNT(DISTINCT c.member_id) as result
+                                                     from conversation c
+                                                     where c.user_id is not null
+                                                       and c.is_mass = 0
+                                                       and (c.event is null or c.event != 4)
+                                                       and c.created_at BETWEEN SUBDATE(CURDATE(), INTERVAL 1 MONTH) AND NOW()
+                                                       and c.wechat_id = #{wechatId})
+                                          UNION ALL (select CAST(avg(res_time) as UNSIGNED) as result
+                                                     FROM (SELECT UNIX_TIMESTAMP(cc.tc_res_time) -
+                                                                  UNIX_TIMESTAMP(min(c.created_at)) as res_time
+                                                           from conversation c
+                                                                    left join (SELECT tc.member_id,
+                                                                                      min(tc.created_at) as tc_res_time
+                                                                               from conversation tc
+                                                                               where tc.user_id is not null
+                                                                                 and tc.is_mass = 0
+                                                                                 and (tc.event is null or tc.event != 4)
+                                                                                 and tc.created_at BETWEEN SUBDATE(CURDATE(), INTERVAL 1 MONTH) AND NOW()
+                                                                               group by tc.member_id) cc
+                                                                        on c.member_id = cc.member_id
+                                                           where c.user_id is null
+                                                             and c.is_mass = 0
+                                                             and (c.event is null or c.event != 4)
+                                                             and c.wechat_id = #{wechatId}
+                                                             and c.created_at BETWEEN SUBDATE(CURDATE(), INTERVAL 1 MONTH) AND NOW()
+                                                           group by c.member_id) as res_tab
+                                                     where res_time is not null)
+                                          UNION ALL (SELECT COUNT(DISTINCT c.member_id) as result
+                                                     from conversation c
+                                                              left join (SELECT DISTINCT tc.member_id
+                                                                         from conversation tc
+                                                                         where tc.user_id is not null
+                                                                           and tc.is_mass = 0
+                                                                           and (tc.event is null or tc.event != 4)
+                                                                           and tc.created_at &lt; DATE_SUB(NOW(), INTERVAL 1 MONTH)) cc
+                                                                  on c.member_id = cc.member_id
+                                                     where c.user_id is not null
+                                                       and c.is_mass = 0
+                                                       and (c.event is null or c.event != 4)
+                                                       and c.wechat_id = #{wechatId}
+                                                       and c.created_at BETWEEN SUBDATE(CURDATE(), INTERVAL 1 MONTH) AND NOW()
+                                                       and cc.member_id is null)
 
-	<!--
-		1：获取当天的回复粉丝数量
-		2：获取当天粉丝平均的响应时间, 以秒为单位， 可能为NULL
-		3：获取当天的新增回复的粉丝数量
-		4：获取当月的回复粉丝数量
-		5：获取当月粉丝平均的响应时间, 以秒为单位， 可能为NULL
-		6：获取当月的新增回复的粉丝数量
-	-->
-	<select id="getLiveChatStatistic" parameterType="HashMap" resultType="java.lang.Integer">
-		(
-			SELECT COUNT(DISTINCT c.member_id) as result from conversation c
-			where c.user_id is not null and c.is_mass = 0 and (c.event is null or c.event!=4)
-				and CURDATE()=DATE(c.created_at) and c.wechat_id = #{wechatId}
-		)
-		UNION ALL
-		(
-			select CAST(avg(res_time) as UNSIGNED) as result FROM
-			(
-				SELECT UNIX_TIMESTAMP(cc.tc_res_time)-UNIX_TIMESTAMP(min(c.created_at)) as res_time from conversation c left join (
-					SELECT tc.member_id, min(tc.created_at) as tc_res_time from conversation tc
-					where tc.user_id is not null and tc.is_mass = 0 and (tc.event is null or tc.event!=4)
-					and CURDATE()=DATE(tc.created_at)
-					group by tc.member_id
-					) cc on c.member_id=cc.member_id
-				where c.user_id is null and c.is_mass = 0 and (c.event is null or c.event!=4) and c.wechat_id = #{wechatId}
-				and CURDATE()=DATE(c.created_at) group by c.member_id
-			) as res_tab
-			where res_time is not null
-		)
-		UNION ALL
-		(
-			SELECT COUNT(DISTINCT c.member_id) as result from conversation c left join (
-				SELECT DISTINCT tc.member_id from conversation tc
-				where tc.user_id is not null and tc.is_mass = 0 and (tc.event is null or tc.event!=4)
-				and tc.created_at &lt; DATE_SUB(NOW(), INTERVAL 1 DAY)
-				) cc on c.member_id=cc.member_id
-			where c.user_id is not null and c.is_mass = 0 and (c.event is null or c.event!=4) and c.wechat_id = #{wechatId}
-				and CURDATE()=DATE(c.created_at) and cc.member_id is null
-		)
-		UNION ALL
-		(
-			SELECT COUNT(DISTINCT c.member_id) as result from conversation c
-			where c.user_id is not null and c.is_mass = 0 and (c.event is null or c.event!=4)
-				and c.created_at BETWEEN SUBDATE(CURDATE(), INTERVAL 1 MONTH) AND NOW() and c.wechat_id = #{wechatId}
-		)
-		UNION ALL
-		(
-			select CAST(avg(res_time) as UNSIGNED) as result FROM
-			(
-				SELECT UNIX_TIMESTAMP(cc.tc_res_time)-UNIX_TIMESTAMP(min(c.created_at)) as res_time from conversation c left join (
-					SELECT tc.member_id, min(tc.created_at) as tc_res_time from conversation tc
-					where tc.user_id is not null and tc.is_mass = 0 and (tc.event is null or tc.event!=4)
-					and tc.created_at BETWEEN SUBDATE(CURDATE(), INTERVAL 1 MONTH) AND NOW()
-					group by tc.member_id
-					) cc on c.member_id=cc.member_id
-				where c.user_id is null and c.is_mass = 0 and (c.event is null or c.event!=4) and c.wechat_id = #{wechatId}
-				and c.created_at BETWEEN SUBDATE(CURDATE(), INTERVAL 1 MONTH) AND NOW()
-				group by c.member_id
-			) as res_tab
-			where res_time is not null
-		)
-		UNION ALL
-		(
-			SELECT COUNT(DISTINCT c.member_id) as result from conversation c left join (
-			SELECT DISTINCT tc.member_id from conversation tc
-			where tc.user_id is not null and tc.is_mass = 0 and (tc.event is null or tc.event!=4)
-			and tc.created_at &lt; DATE_SUB(NOW(), INTERVAL 1 MONTH)
-			) cc on c.member_id=cc.member_id
-			where c.user_id is not null and c.is_mass = 0 and (c.event is null or c.event!=4) and c.wechat_id = #{wechatId}
-				and c.created_at BETWEEN SUBDATE(CURDATE(), INTERVAL 1 MONTH) AND NOW() and cc.member_id is null
-		)
-
-	</select>
+    </select>
 </mapper>

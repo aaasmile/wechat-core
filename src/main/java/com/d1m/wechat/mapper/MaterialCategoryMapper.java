@@ -1,8 +1,9 @@
 package com.d1m.wechat.mapper;
 
+import com.d1m.wechat.dto.MaterialCategoryDto;
 import com.d1m.wechat.model.MaterialCategory;
 
-import com.d1m.wechat.util.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 import com.d1m.wechat.util.MyMapper;
 
 import java.util.List;
@@ -20,9 +21,11 @@ public interface MaterialCategoryMapper extends MyMapper<MaterialCategory> {
 
     MaterialCategory queryObject(String id);
 
-    List<MaterialCategory> queryList(Map<String, Object> map);
+    List<MaterialCategoryDto> queryList(Map<String, Object> map);
 
 
     int update(MaterialCategory t);
+
+    int del(@Param("id") String id);
 
 }

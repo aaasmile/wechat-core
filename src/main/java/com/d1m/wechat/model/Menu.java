@@ -95,10 +95,10 @@ public class Menu {
      * 顺序
      */
     private Integer seq;
-    
-    @Column(name = "interface_id")
-    private String interfaceId;
 
+    @Column(name = "api_class")
+    private String apiClass;
+    
     /**
      * 获取主键ID
      *
@@ -387,11 +387,11 @@ public class Menu {
         this.seq = seq;
     }
 
-	public String getInterfaceId() {
-		return interfaceId;
-	}
+    public String getApiClass() {
+        return apiClass;
+    }
 
-	public void setInterfaceId(String interfaceId) {
-		this.interfaceId = interfaceId;
-	}
+    public void setApiClass(String apiClass) {
+        this.apiClass = apiClass;
+    }
 }

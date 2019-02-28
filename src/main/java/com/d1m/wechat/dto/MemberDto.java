@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Row;
 
@@ -83,6 +84,15 @@ public class MemberDto {
 	private String qrSceneStr;
 
 	private String remark;
+
+
+	private String provinceName;
+
+
+	private String cityName;
+
+
+	private String countryName;
 
 	public String getRemark() {
 		return remark;
@@ -362,6 +372,30 @@ public class MemberDto {
 		this.qrSceneStr = qrSceneStr;
 	}
 
+	public String getProvinceName() {
+		return provinceName;
+	}
+
+	public void setProvinceName(String provinceName) {
+		this.provinceName = provinceName;
+	}
+
+	public String getCityName() {
+		return cityName;
+	}
+
+	public void setCityName(String cityName) {
+		this.cityName = cityName;
+	}
+
+	public String getCountryName() {
+		return countryName;
+	}
+
+	public void setCountryName(String countryName) {
+		this.countryName = countryName;
+	}
+
 	/**
 	 * 条件查询，不建议全量导出
 	 * @param dataRow
@@ -424,7 +458,13 @@ public class MemberDto {
 			dataRow.createCell(14).setCellValue(unionId);
 		}
 	}
-	public static void main(String[] args) {
-		System.out.println(DF.format("2018-11-07 16:38:06"));
+	
+	public void MemberToMap(Map<String, String> wechatMessage) {
+		wechatMessage.put("memberId", this.id == null ? "-1" : String.valueOf(this.id));
+		wechatMessage.put("unionId", this.unionId);
+		wechatMessage.put("openId", this.openId);
+		wechatMessage.put("nickname", this.nickname);
+		wechatMessage.put("localHeadImgUrl", this.localHeadImgUrl);
+		wechatMessage.put("sex", this.sex == null ? "0" : Sex.getByValue(this.sex).getName());
 	}
 }

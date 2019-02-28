@@ -21,7 +21,6 @@
     <result column="deleted_at" jdbcType="TIMESTAMP" property="deletedAt" />
     <result column="deletor_id" jdbcType="INTEGER" property="deletorId" />
     <result column="seq" jdbcType="INTEGER" property="seq" />
-    <result column="interface_id" jdbcType="VARCHAR" property="interfaceId" />
   </resultMap>
   
   <select id="list" resultMap="BaseResultMap">

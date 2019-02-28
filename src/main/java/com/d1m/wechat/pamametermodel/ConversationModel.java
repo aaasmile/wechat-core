@@ -55,6 +55,9 @@ public class ConversationModel extends BaseModel {
 	private String start;
 
 	private List<Byte> msgTypes;
+	
+	private Integer newid;
+	private String newtype;
 
 	public String getContent() {
 		return content;
@@ -166,6 +169,22 @@ public class ConversationModel extends BaseModel {
 
 	public void setUpdateRead(boolean updateRead) {
 		this.updateRead = updateRead;
+	}
+
+	public Integer getNewid() {
+		return newid;
+	}
+
+	public void setNewid(Integer newid) {
+		this.newid = newid;
+	}
+
+	public String getNewtype() {
+		return newtype;
+	}
+
+	public void setNewtype(String newtype) {
+		this.newtype = newtype;
 	}
 
 }

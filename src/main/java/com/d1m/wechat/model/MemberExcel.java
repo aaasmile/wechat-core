@@ -14,76 +14,82 @@ import java.util.Date;
 public class MemberExcel {
 
 
-    @Excel(name = "no", type = 10)
+    @Excel(name = "no", type = 10, orderNum = "0")
     private Integer id;
 
-    @Excel(name = "nickname")
+    @Excel(name = "nickname", orderNum = "1")
     private String nickname;
 
-    @Excel(name = "gender")
+    @Excel(name = "gender", orderNum = "2")
     private Sex gender;
 
-    @Excel(name = "mobile", width = 12)
+    @Excel(name = "bind.mobile", width = 12, orderNum = "22")
     private String mobile;
 
-    @Excel(name = "province")
+    @Excel(name = "province", orderNum = "4")
     private String province;
 
-    @Excel(name = "city")
+    @Excel(name = "city", orderNum = "5")
     private String city;
 
-    @Excel(name = "subscribe.status")
+    @Excel(name = "subscribe.status", orderNum = "6")
     private Integer subscribeStatus;
 
-    @Excel(name = "subscribe.at", width = 20, exportFormat = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "subscribe.at", width = 20, exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "7")
     private Date subscribeAt;
 
-    @Excel(name = "unsubscribe.at", width = 20, exportFormat = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "unsubscribe.at", width = 20, exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "8")
     private Date unsubscribeAt;
 
-    @Excel(name = "subscribe.scene", width = 14)
+    @Excel(name = "subscribe.scene", width = 14, orderNum = "9")
     private MemberSubscribeScene subscribeScene;
 
-    @Excel(name = "customer.service.open.id", width = 32)
+    @Excel(name = "customer.service.open.id", width = 32, orderNum = "10")
     private String openId;
 
-    @Excel(name = "unionid", width = 32)
+    @Excel(name = "unionid", width = 32, orderNum = "11")
     private String unionId;
 
-    @Excel(name = "tag", width = 22)
+    @Excel(name = "tag", width = 22, orderNum = "12")
     private String tag;
 
-    @Excel(name = "lang")
+    @Excel(name = "lang", orderNum = "13")
     private Byte lang;
 
-    @Excel(name = "group.message.sent")
+    @Excel(name = "group.message.sent", orderNum = "14")
     private Integer groupMessageSent;
 
-    @Excel(name = "bind.status")
+    @Excel(name = "bind.status", orderNum = "15")
     private MemberProfileStatus bindStatus;
 
-    @Excel(name = "bind.at", width = 20, exportFormat = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "bind.at", width = 20, exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "16")
     private Date bindAt;
 
-    @Excel(name = "bind.province")
+    @Excel(name = "bind.name", width = 20, orderNum = "17")
+    private String bindName;
+
+    @Excel(name = "bind.province", orderNum = "18")
     private String bindProvince;
 
-    @Excel(name = "bind.city")
+    @Excel(name = "bind.city", orderNum = "19")
     private String bindCity;
 
-    @Excel(name = "bind.county")
+    @Excel(name = "bind.county", orderNum = "20")
     private String bindCounty;
 
-    @Excel(name = "bind.mobile")
+    @Excel(name = "bind.address", orderNum = "21")
+    private String bindAddress;
+
+    @Excel(name = "mobile", orderNum = "3")
     private String bindMobile;
 
-    @Excel(name = "bind.gender")
+    @Excel(name = "bind.gender", orderNum = "23")
     private Sex bindGender;
 
-    @Excel(name = "bind.birthday", width = 20, exportFormat = "yyyy-MM-dd")
+    @Excel(name = "bind.birthday", width = 20, exportFormat = "yyyy-MM-dd", orderNum = "24")
     private Date bindBirthday;
 
-    @Excel(name = "remarks")
+    @Excel(name = "remarks", orderNum = "25")
     private String remarks;
 
 
@@ -278,5 +284,21 @@ public class MemberExcel {
 
     public void setBindGender(Sex bindGender) {
         this.bindGender = bindGender;
+    }
+
+    public String getBindAddress() {
+        return bindAddress;
+    }
+
+    public void setBindAddress(String bindAddress) {
+        this.bindAddress = bindAddress;
+    }
+
+    public String getBindName() {
+        return bindName;
+    }
+
+    public void setBindName(String bindName) {
+        this.bindName = bindName;
     }
 }

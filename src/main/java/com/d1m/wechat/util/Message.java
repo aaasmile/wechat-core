@@ -42,6 +42,8 @@ public enum Message {
 
     MEMBER_SELECTED_ALL_OFFLINE(10005, "强推消息所选会员都不在线"),
 
+    MEMBER_ADD_TAG_OPERATOR_ONLY(10005, "添加会员标签正在执行中"),
+
     /**
      * member_tag_type
      */
@@ -980,6 +982,7 @@ public enum Message {
     MATERIAL_CATEGORY_NAME_EXITS(50001,"分类名称已存在"),
     MATERIAL_CATEGORY_ID_NOT_NULL(50002,"id不能为空"),
     MATERIAL_CATEGORY_BE_USED(50003,"有{0}条图文正在使用此分类，无法删除"),
+    MATERIAL_CATEGORY_OVER_LIMIT(50004,"分类名称限15个中文字符，英文30个"),
 
     /**
      * DcrmImageTextDetail
@@ -987,6 +990,7 @@ public enum Message {
     DcrmImageTextDetail_NOT_NULL(60000,"标题不能为空"),
     DcrmImageTextDetail_IAMGE_NOT_NULL(60001,"封面图不能为空"),
     DCRM_IMAGE_TEXT_DETAIL_ID_NOT(60002,"id不能为空"),
+    Dcrm_MATRIAl_NOT_EXIST(60003,"封面图id不存在"),
     
     /**
      * InterfaceConfig
@@ -1008,11 +1012,15 @@ public enum Message {
 
     INTERFACECONFIG_BRAND_CREATE_FAIL(42061, "创建第三方列表失败"),
 
+    INTERFACECONFIG_BRAND_EXIST(42062, "第三方列表已存在"),
+
     INTERFACECONFIG_BRAND_UPDATE_FAIL(42071, "更新第三方列表失败"),
 
     INTERFACECONFIG_BRAND_DELETE_FAIL(42081, "删除第三方列表失败"),
 
-    INTERFACECONFIG_BRAND_IN_USED(42082, "第三方类别在使用中")
+    INTERFACECONFIG_BRAND_IN_USED(42082, "第三方类别在使用中"),
+
+    INTERFACECONFIG_SECRET_GET_FAIL(42091, "获取秘钥失败")
 
     ;
 

@@ -75,18 +75,162 @@ public class DcrmImageTextDetailDto implements Serializable {
      */
     private String tagId;
 
-    //创建时间
+    /**
+     * 创建时间
+     */
     private Integer createdAt;
 
-    //最后更新时间
+    /**
+     * 最后更新时间
+     */
     private Integer lasteUpdatedAt;
 
     private Integer createdBy;
 
-    //最后更新人
+    /**
+     * 最后更新人
+     */
     private Integer lasteUpdatedBy;
-
+    /**
+     * 素材分类ID
+     */
     private String materialCategoryId;
+    /**
+     * 会员ID
+     */
+    private Integer memberId;
+    /**
+     * 发送次数
+     */
+    private Integer sendTimes;
+    /**
+     * 阅读次数
+     */
+    private Integer readTimes;
+
+    /**
+     * 封面图url
+     */
+    private String coverPicUrl;
+    /**
+     * 素材分类名称
+     */
+    private String categoryName;
+
+    /**
+     * 标签名称
+     */
+    private String tagName;
+
+    /**
+     * 二维码id
+     */
+    private Integer qrcodeId;
+    
+	private Integer newid;
+
+	private String newtype;
+
+    /**
+     * 图文页的URL
+     */
+    private String url;
+    /**
+     * 是否不完整图文
+     */
+    private Boolean notComplete;
+
+    /**
+     * 微信图文是否存在
+     */
+    private Boolean wxImageTextExist;
+
+    /**
+     * 微信图文是否更新
+     */
+    private Boolean wxImageTextUpdate;
+    /**
+     * 封面图url
+     */
+    private String picUrl;
+
+    /**
+     * 微信最后更新时间
+     */
+    private Date wxLastPushTime;
+
+
+    public Boolean getWxImageTextUpdate() {
+        return wxImageTextUpdate;
+    }
+
+    public void setWxImageTextUpdate(Boolean wxImageTextUpdate) {
+        this.wxImageTextUpdate = wxImageTextUpdate;
+    }
+
+    public String getPicUrl() {
+        return picUrl;
+    }
+
+    public void setPicUrl(String picUrl) {
+        this.picUrl = picUrl;
+    }
+
+    public Date getWxLastPushTime() {
+        return wxLastPushTime;
+    }
+
+    public void setWxLastPushTime(Date wxLastPushTime) {
+        this.wxLastPushTime = wxLastPushTime;
+    }
+
+    public Boolean getWxImageTextExist() {
+        return wxImageTextExist;
+    }
+
+    public void setWxImageTextExist(Boolean wxImageTextExist) {
+        this.wxImageTextExist = wxImageTextExist;
+    }
+
+    public Boolean getNotComplete() {
+        return notComplete;
+    }
+
+    public void setNotComplete(Boolean notComplete) {
+        this.notComplete = notComplete;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getTagName() {
+        return tagName;
+    }
+
+    public void setTagName(String tagName) {
+        this.tagName = tagName;
+    }
+
+    public Integer getQrcodeId() {
+        return qrcodeId;
+    }
+
+    public void setQrcodeId(Integer qrcodeId) {
+        this.qrcodeId = qrcodeId;
+    }
+
+    public Integer getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(Integer memberId) {
+        this.memberId = memberId;
+    }
 
     public String getMaterialCategoryId() {
         return materialCategoryId;
@@ -239,4 +383,52 @@ public class DcrmImageTextDetailDto implements Serializable {
     public void setLasteUpdatedAt(Integer lasteUpdatedAt) {
         this.lasteUpdatedAt = lasteUpdatedAt;
     }
+
+    public Integer getSendTimes() {
+        return sendTimes;
+    }
+
+    public void setSendTimes(Integer sendTimes) {
+        this.sendTimes = sendTimes;
+    }
+
+    public Integer getReadTimes() {
+        return readTimes;
+    }
+
+    public void setReadTimes(Integer readTimes) {
+        this.readTimes = readTimes;
+    }
+
+    public String getCoverPicUrl() {
+        return coverPicUrl;
+    }
+
+    public void setCoverPicUrl(String coverPicUrl) {
+        this.coverPicUrl = coverPicUrl;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+	public Integer getNewid() {
+		return newid;
+	}
+
+	public void setNewid(Integer newid) {
+		this.newid = newid;
+	}
+
+	public String getNewtype() {
+		return newtype;
+	}
+
+	public void setNewtype(String newtype) {
+		this.newtype = newtype;
+	}
 }

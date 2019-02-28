@@ -7,9 +7,11 @@ import com.github.pagehelper.Page;
 
 import java.util.Map;
 
-public interface InterfaceConfigMapper extends MyMapper<InterfaceConfig> {
+public interface InterfaceConfigMapper extends MyMapper<InterfaceConfig>{
 
     Page<InterfaceConfigDto> selectItems(Map<String, String> query);
 
     InterfaceConfigDto get(String id);
+
+	InterfaceConfigDto getSecret(String id);
 }

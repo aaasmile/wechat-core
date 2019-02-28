@@ -1,13 +1,11 @@
 package com.d1m.wechat.service;
 
 import com.d1m.wechat.dto.DcrmImageTextDetailDto;
+import com.d1m.wechat.dto.QrcodeDto;
 import com.d1m.wechat.dto.QueryDto;
-import com.d1m.wechat.model.Material;
-import com.d1m.wechat.model.MaterialCategory;
+import com.d1m.wechat.model.Qrcode;
 import com.github.pagehelper.PageInfo;
 
-
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -56,4 +54,23 @@ public interface DcrmImageTextDetailService {
     PageInfo<DcrmImageTextDetailDto> queryList(QueryDto dto);
 
 
+    /**
+     * 发送图文
+     * @param detailDto
+     */
+     void previewMaterial(DcrmImageTextDetailDto detailDto);
+
+    /**
+     * 生成二维码
+     * @param dto
+     * @return
+     */
+    Map<String, Object> createQrcode(DcrmImageTextDetailDto dto);
+
+    /**
+     * 更新发送数量
+     * @param id
+     * @return
+     */
+    int updateSendTimes(Integer id);
 }

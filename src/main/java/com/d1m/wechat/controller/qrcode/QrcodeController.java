@@ -142,7 +142,7 @@ public class QrcodeController extends BaseController {
 			@ApiParam("二维码ID")
 				@PathVariable Integer id, HttpSession session) {
 		try {
-			QrcodeDto qrcode = qrcodeService.get(getWechatId(session), id);
+			QrcodeDto qrcode = qrcodeService.get(getWechatId(), id);
 			return representation(Message.QRCODE_GET_SUCCESS, qrcode);
 		} catch (Exception e) {
 			log.error(e.getMessage());

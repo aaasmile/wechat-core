@@ -13,6 +13,7 @@ import com.d1m.wechat.model.Menu;
 import com.d1m.wechat.util.MD5;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +41,7 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 	public String create(InterfaceConfig interfaceConfig) {
 		String id = UUID.randomUUID().toString().replaceAll("-", "");
 		interfaceConfig.setId(id);
-		interfaceConfigMapper.insert(interfaceConfig);
+		interfaceConfigMapper.insertSelective(interfaceConfig);
 		return id;
 
 	}
@@ -53,7 +54,7 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 	@Override
 	public int delete(String id) throws WechatException {
 		Menu menu = new Menu();
-		menu.setInterfaceId(id);
+		menu.setMenuKey(Integer.valueOf(id));
 		if (menuMapper.selectCount(menu) > 0) throw new WechatException(Message.INTERFACECONFIG_IN_USED, Message.INTERFACECONFIG_IN_USED.getName());
 		InterfaceConfig interfaceConfig = new InterfaceConfig();
 		interfaceConfig.setId(id);
@@ -72,12 +73,14 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 	}
 
 	@Override
-	public Map<String, String> createBrand(InterfaceConfigBrand interfaceConfigBrand) {
+	public Map<String, String> createBrand(InterfaceConfigBrand interfaceConfigBrand) throws WechatException{
+		List<InterfaceConfigBrand> select = interfaceConfigBrandMapper.select(interfaceConfigBrand);
+		if (CollectionUtils.isNotEmpty(select)) throw new WechatException(Message.INTERFACECONFIG_BRAND_EXIST, Message.INTERFACECONFIG_BRAND_EXIST.getName());
 		String key = UUID.randomUUID().toString().replaceAll("-", "");
 		String secret = MD5.MD5Encode(key + interfaceConfigBrand.getName());
 		interfaceConfigBrand.setKey(key);
 		interfaceConfigBrand.setSecret(secret);
-		interfaceConfigBrandMapper.insert(interfaceConfigBrand);
+		interfaceConfigBrandMapper.insertSelective(interfaceConfigBrand);
 		Map<String, String> result = new HashMap<>();
 		result.put("key", key);
 		result.put("secret", secret);
@@ -90,13 +93,18 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 	}
 
 	@Override
-	public int deleteBrand(String id) {
+	public int deleteBrand(String id) throws WechatException{
 		InterfaceConfig interfaceConfig = new InterfaceConfig();
 		interfaceConfig.setBrand(id);
 		if (interfaceConfigMapper.selectCount(interfaceConfig) > 0) throw new WechatException(Message.INTERFACECONFIG_BRAND_IN_USED, Message.INTERFACECONFIG_BRAND_IN_USED.getName());
 		InterfaceConfigBrand interfaceConfigBrand = new InterfaceConfigBrand();
 		interfaceConfigBrand.setId(Long.valueOf(id));
 		interfaceConfigBrand.setDeleted(true);
-		return interfaceConfigBrandMapper.updateByPrimaryKey(interfaceConfigBrand);
+		return interfaceConfigBrandMapper.updateByPrimaryKeySelective(interfaceConfigBrand);
+	}
+
+	@Override
+	public InterfaceConfigDto getSecret(String id) {
+		return interfaceConfigMapper.getSecret(id);
 	}
 }
