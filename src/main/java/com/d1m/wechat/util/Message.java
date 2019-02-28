@@ -1039,6 +1039,12 @@ public enum Message {
     EVENT_FORWARD_ADD_FAIL(50000, "添加事件转发失败"),
     EVENT_FORWARD_EXIST(50001, "事件转发已存在"),
 
+    /**
+     * 测试接口
+     */
+     TEST_INTERFACE__FALL(60000,"接口测试失败"),
+     TEST_INTERFACE__SUCCESS(60001,"接口测试成功"),
+
 
     ;
 

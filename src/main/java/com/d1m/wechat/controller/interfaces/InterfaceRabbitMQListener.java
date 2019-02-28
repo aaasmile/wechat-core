@@ -102,7 +102,7 @@ public class InterfaceRabbitMQListener implements InterfaceRabbit {
                     throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "加密失败");
                 }
                 final byte[] encryptBody = encrypt.getBytes(StandardCharsets.UTF_8);
-                execution.execute(request, encryptBody);
+               return execution.execute(request, encryptBody);
             }
             return execution.execute(request, body);
         });

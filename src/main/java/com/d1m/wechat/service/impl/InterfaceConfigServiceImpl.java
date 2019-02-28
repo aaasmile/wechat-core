@@ -16,7 +16,6 @@ import com.d1m.wechat.model.InterfaceConfigBrand;
 import com.d1m.wechat.model.Menu;
 import com.d1m.wechat.model.enums.InterfaceStatus;
 import com.d1m.wechat.service.EventForwardService;
-import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.service.EventService;
 import com.d1m.wechat.service.InterfaceConfigService;
 import com.d1m.wechat.util.DateUtil;
@@ -182,7 +181,7 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 
     @Override
     public List<InterfaceConfigDto> getByEventForward(String id) {
-        List<InterfaceConfig> interfaceConfigs = interfaceConfigMapper.select(new InterfaceConfig(id));
+        List<InterfaceConfig> interfaceConfigs = interfaceConfigMapper.select(new InterfaceConfig(id, false));
         if (interfaceConfigs == null || interfaceConfigs.size() == 0) {
             return null;
         }
