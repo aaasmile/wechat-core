@@ -33,7 +33,7 @@
 	<sql id="findParams">
 		<if test="id != null and id!='' "> AND  ic.id = #{id} </if>
 		<if test="brand != null and brand!=0"> AND ic.brand =#{brand} </if>
-		<if test="name != null and name!=''"> AND ic.name LIKE '%${name}%' </if>
+		<if test="name != null and name!=''"> AND ic.name LIKE concat ('%',#{name},'%') </if>
 		<if test="status != null and status!=-1"> AND ef.status = #{status} </if>
 
 	</sql>
@@ -76,6 +76,11 @@
 		status = #{status}
 		WHERE id = #{id}
 	</update>
+
+	<update id="deleteEventForward" parameterType="java.util.HashMap">
+		update event_forward set status=0 where id=#{id}
+	</update>
+
 
 
 

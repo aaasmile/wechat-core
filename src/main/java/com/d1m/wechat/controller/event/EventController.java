@@ -76,4 +76,20 @@ public class EventController extends BaseController {
             return wrapException(e);
         }
     }
+
+    @ApiOperation(value = "删除事件转发接口", tags = "事件转发接口列表")
+    @ApiResponse(code = 200, message = "删除成功")
+    @GetMapping("/delete/{eventForwardId}")
+    public JSONObject delete(@PathVariable("eventForwardId") Integer eventForwardId) {
+        try {
+            eventService.deleteEventForward(eventForwardId);
+            return representation(Message.SUCCESS);
+        } catch (WechatException e) {
+            return wrapException(e);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return wrapException(e);
+        }
+    }
+
 }

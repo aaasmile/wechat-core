@@ -24,4 +24,6 @@ public interface EventForwardMapper extends MyMapper<EventForward> {
     EventForwardDetailsDto queryEventForwardDetailsById(Integer id);
 
     List<String> queryEventForwardByInterfaceId(String id);
+
+    boolean deleteEventForward(Integer id);
 }

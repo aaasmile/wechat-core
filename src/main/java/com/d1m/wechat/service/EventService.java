@@ -19,4 +19,6 @@ public interface EventService extends BaseService<WxEvent> {
     boolean editEventForward(EditEventForwardModel model);
 
     EventForwardDetailsDto queryEventForwardDetails(Integer eventForwardId);
+
+    boolean deleteEventForward(Integer eventForwardId);
 }
