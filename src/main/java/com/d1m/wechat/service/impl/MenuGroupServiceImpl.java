@@ -820,7 +820,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 					}
 					//新增第三方接口，事件类型为CLICK
 					else if (menuType == MenuType.INTERFACE) {
-						subWxMenu.setKey(menuDto.getId().toString());
+						subWxMenu.setKey(child.getId().toString());
 						subWxMenu.setType(MenuType.CLICK.name().toLowerCase());
 					}
 					subWxMenu.setName(child.getName());
