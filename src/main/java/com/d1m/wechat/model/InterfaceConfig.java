@@ -46,10 +46,10 @@ public class InterfaceConfig {
 
 	private String wrongUrl;  //接口格式有误请重新地址
 
-	private int sequence;
+	private Integer sequence;
 
 	@Column(name = "is_deleted")
-	private boolean deleted;
+	private Boolean deleted;
 
 	@Column(name = "created_at")
 	private String createdAt;
@@ -72,7 +72,7 @@ public class InterfaceConfig {
 	 * 是否需要重试  0否 1是
 	 */
 	@Column(name = "retry")
-	private boolean retry;
+	private Boolean retry;
 
 	public InterfaceConfig() {}
 
