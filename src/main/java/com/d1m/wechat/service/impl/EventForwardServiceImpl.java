@@ -35,25 +35,6 @@ public class EventForwardServiceImpl implements EventForwardService {
         return events;
     }
 
-    @Override
-    public int findByInterfaceId(String interfaceId) {
-        return eventForwardMapper.findByInterfaceId(interfaceId);
-
-    }
-
-    @Override
-    public EventForward checkIsExist(Integer id) {
-        return eventForwardMapper.selectByPrimaryKey(id);
-    }
-
-    @Override
-    public void eventForwardEnableOrDisable(InterfaceStatus status, Integer id) {
-        try {
-            int t = eventForwardMapper.updateStatusById(id, status, DateUtil.formatYYYYMMDDHHMM(new Date()));
-        } catch (Exception e) {
-            //logger.error(e.getMessage());
-        }
-    }
 
     @Override
     public void updateStatus(EventForward eventForward) {
