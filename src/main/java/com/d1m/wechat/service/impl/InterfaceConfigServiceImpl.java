@@ -108,7 +108,7 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
             throw new WechatException(Message.INTERFACECONFIG_BRAND_EXIST, Message.INTERFACECONFIG_BRAND_EXIST.getName());
         String key = UUID.randomUUID().toString().replaceAll("-", "");
         String oldSecret = MD5.MD5Encode(key + interfaceConfigBrand.getName());
-        final String secret = oldSecret.substring(0, 15);
+        final String secret = oldSecret.substring(0, 16);
         interfaceConfigBrand.setKey(key);
         interfaceConfigBrand.setSecret(secret);
         interfaceConfigBrand.setCreateAt(DateUtil.formatYYYYMMDDHHMMSS(new Date()));
