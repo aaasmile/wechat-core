@@ -41,6 +41,12 @@ public class EventForward {
         this.interfaceId = interfaceId;
     }
 
+    public EventForward(Integer thirdPartyId, String interfaceId, Integer status) {
+        this.thirdPartyId = thirdPartyId;
+        this.interfaceId = interfaceId;
+        this.status = status;
+    }
+
     public EventForward(Integer thirdPartyId, String interfaceId, String userUuid) {
         this.thirdPartyId = thirdPartyId;
         this.interfaceId = interfaceId;
