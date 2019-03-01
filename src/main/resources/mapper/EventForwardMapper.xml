@@ -78,7 +78,7 @@
 	</update>
 
 	<update id="deleteEventForward" parameterType="java.util.HashMap">
-		update event_forward set status=0 where id=#{id}
+		update event_forward set status=2 where id=#{id}
 	</update>
 
 
