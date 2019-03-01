@@ -14,6 +14,7 @@ import com.d1m.wechat.model.EventForward;
 import com.d1m.wechat.model.InterfaceConfig;
 import com.d1m.wechat.model.InterfaceConfigBrand;
 import com.d1m.wechat.model.Menu;
+import com.d1m.wechat.model.enums.EventForwardStatus;
 import com.d1m.wechat.model.enums.InterfaceStatus;
 import com.d1m.wechat.model.enums.InterfaceType;
 import com.d1m.wechat.service.EventForwardService;
@@ -192,7 +193,7 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 
         List<InterfaceConfigDto> interfaceConfigDtos = new ArrayList<>();
 
-        List<EventForward> eventForwards = eventService.getForwardByThirdPartyId(Integer.parseInt(id));
+        List<EventForward> eventForwards = eventService.getForwardByThirdPartyIdAndStatus(Integer.parseInt(id), EventForwardStatus.INUSED.getStatus());
         if (eventForwards == null || eventForwards.size() == 0) {
             interfaceConfigs.forEach(interfaceConfig -> {
                 interfaceConfigDtos.add(new InterfaceConfigDto(interfaceConfig.getId(), interfaceConfig.getName(), interfaceConfig.getName()));
