@@ -73,6 +73,11 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public List<EventForward> getForwardByThirdPartyIdAndStatus(Integer thirdPartyId, Integer status) {
+        return eventForwardMapper.select(new EventForward(thirdPartyId, status));
+    }
+
+    @Override
     public boolean editEventForward(EditEventForwardModel model) {
         EventForward eventForward = eventForwardMapper.selectByPrimaryKey(model.getId());
         if (eventForward == null) {
