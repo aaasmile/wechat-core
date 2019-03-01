@@ -48,14 +48,14 @@ public class ThirdPartyController {
 		List<CustomRequestBody> callbackList = new ArrayList<>();
 		for(int i = 0; i < array.length(); i++) {
 			CustomRequestBody customRequestBody = gson.fromJson(array.getJSONObject(i).toString(), CustomRequestBody.class);
-			System.out.println(array.getJSONObject(0).toString());
 			customRequestBody.setTouser(fromUserName);
+			System.out.println(array.getJSONObject(0).toString());
 			callbackList.add(customRequestBody);
 		}
 		return callbackList;
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main1(String[] args) throws Exception {
 //		String encryptedData = "oWjsd+bk5/xTr+tmA4xMtg==";
 //		String secret = "aes_key_d1m_2018";
 //		String data = Security.decrypt(encryptedData, secret);
@@ -96,5 +96,9 @@ public class ThirdPartyController {
 			System.out.println(customRequestBody.toString());
 		}
 		System.out.println(callbackList.toArray());
+	}
+
+	public static void main(String[] args) {
+		System.out.println(Security.decrypt("6PFJM72Xp0k2WrMUsScaMiAQdLDPBmqekuAXil06Ij2zWtjroISxa0o8aKRjPzOmcnVxvW2TZGMrWm+7XwajyhAfI3sEAArjAOVPP+ruQIdq191O81/iIyS1hWdlmHDYP0WBEqN5zHFEU7qQQ+r1tb/mys4oa8QlDAme1/Q2MDGeOEocTCSWcMvrr6XfErKXMH4l8RFNPGUUlth0g/oopkfreQhyMfhK9ldRWtcb2wJvf2swZgHxn3cw8JjngsED", "dcd9b0464f2c6824"));
 	}
 }
