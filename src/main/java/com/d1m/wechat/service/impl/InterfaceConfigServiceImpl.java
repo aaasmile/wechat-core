@@ -84,10 +84,8 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
         Menu menu = new Menu();
         menu.setMenuKey(interfaceConfig1.getMenuKey());
         if (menuMapper.selectCount(menu) > 0)
-            throw new WechatException(Message.INTERFACECONFIG_IN_USED_MENU, Message.INTERFACECONFIG_IN_USED_MENU.getName());
-        if (eventForwardService.findByInterfaceId(id) > 0)
-            throw new WechatException(Message.INTERFACECONFIG_IN_USED_EVENT_FORWARD, Message.INTERFACECONFIG_IN_USED_EVENT_FORWARD.getName());
-        InterfaceConfig interfaceConfig = new InterfaceConfig();
+            throw new WechatException(Message.INTERFACECONFIG_IN_USED, Message.INTERFACECONFIG_IN_USED.getName());
+           InterfaceConfig interfaceConfig = new InterfaceConfig();
         interfaceConfig.setId(id);
         interfaceConfig.setDeleted(true);
         return interfaceConfigMapper.updateByPrimaryKeySelective(interfaceConfig);
@@ -113,6 +111,7 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
         final String secret = oldSecret.substring(0, 15);
         interfaceConfigBrand.setKey(key);
         interfaceConfigBrand.setSecret(secret);
+        interfaceConfigBrand.setCreateAt(DateUtil.formatYYYYMMDDHHMMSS(new Date()));
         interfaceConfigBrandMapper.insertSelective(interfaceConfigBrand);
         Map<String, String> result = new HashMap<>();
         result.put("key", key);

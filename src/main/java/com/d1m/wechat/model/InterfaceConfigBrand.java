@@ -26,6 +26,9 @@ public class InterfaceConfigBrand {
 	@Column(name = "app_secret")
 	private String secret;
 
+	@Column(name ="create_at")
+	private String createAt;
+
 	@Column(name = "is_deleted")
 	private boolean deleted;
 
