@@ -50,4 +50,9 @@ public class EventForward {
     public EventForward(Integer thirdPartyId) {
         this.thirdPartyId = thirdPartyId;
     }
+
+    public EventForward(Integer thirdPartyId, Integer status) {
+        this.thirdPartyId = thirdPartyId;
+        this.status = status;
+    }
 }
