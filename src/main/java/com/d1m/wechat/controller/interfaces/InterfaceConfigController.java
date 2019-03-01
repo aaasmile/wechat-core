@@ -101,6 +101,7 @@ public class InterfaceConfigController extends BaseController {
             }
             interfaceConfig.setCreatedBy(String.valueOf(getUser().getId()));
             interfaceConfig.setCreatedAt(DateUtil.formatYYYYMMDDHHMMSS(new Date()));
+            interfaceConfig.setStatus(InterfaceStatus.NOT_EFFECT);
             return representation(Message.SUCCESS, interfaceConfigService.create(interfaceConfig));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -138,7 +139,7 @@ public class InterfaceConfigController extends BaseController {
             return representation(Message.SUCCESS, interfaceConfigService.delete(id));
         } catch (WechatException e) {
             log.error(e.getMessage(), e);
-            return representation(Message.INTERFACECONFIG_IN_USED_MENU, e.getMessageInfo());
+            return representation(Message.INTERFACECONFIG_IN_USED, e.getMessageInfo());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return representation(Message.INTERFACECONFIG_DELETE_FAIL, e.getMessage());

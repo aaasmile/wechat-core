@@ -14,13 +14,6 @@ public interface EventForwardService {
     //查询事件
     List<String> selectEventItems(Integer id);
 
-    int findByInterfaceId(String interfaceId);
-
-
-    EventForward checkIsExist(Integer id);
-
-    void eventForwardEnableOrDisable(InterfaceStatus status, Integer id);
-
     void updateStatus(EventForward eventForward);
     //查询是否需要union_id
     List<String> queryEventForwardByInterfaceId(String id);
