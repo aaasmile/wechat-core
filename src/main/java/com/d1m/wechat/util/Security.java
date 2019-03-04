@@ -6,25 +6,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 
 public class Security {
-	
-	private static final Logger log = LoggerFactory.getLogger(Security.class);
-	
-	public static String encrypt(String input, String key) {
-		byte[] crypted = null;
-		try {
-			SecretKeySpec skey = new SecretKeySpec(key.getBytes(), "AES");
-			Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-			cipher.init(Cipher.ENCRYPT_MODE, skey);
-			crypted = cipher.doFinal(input.getBytes());
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		}
-		return new String(Base64.encodeBase64(crypted));
-	}
+
+    private static final Logger log = LoggerFactory.getLogger(Security.class);
 
     /**
      * 数据加密
