@@ -22,8 +22,8 @@ PRIMARY KEY (`id`)
 CREATE TABLE `interface_brand` (
   `id` int(11) NOT NULL COMMENT 'ID 唯一标识',
   `name` varchar(63) DEFAULT NULL COMMENT '第三方名称',
-  `key` varchar(32) DEFAULT NULL COMMENT '接口KEY',
-  `secret` varchar(32) DEFAULT NULL COMMENT '接口密码',
+  `app_key` varchar(32) DEFAULT NULL COMMENT '接口KEY',
+  `app_secret` varchar(32) DEFAULT NULL COMMENT '接口密码',
   `is_deleted` tinyint(2) DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
