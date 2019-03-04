@@ -1,5 +1,6 @@
 package com.d1m.wechat.controller;
 
+import com.d1m.wechat.anno.RedisLock;
 import com.d1m.wechat.domain.web.BaseResponse;
 import com.d1m.wechat.dto.MemberDto;
 import com.d1m.wechat.mapper.MemberMapper;
@@ -164,6 +165,16 @@ public class TestController {
                 .resultCode(1)
                 .msg("success")
                 .data(rawBody)
+                .build();
+    }
+
+    @GetMapping("/distributed")
+    @RedisLock(key = "distributed")
+    public BaseResponse<String> distributedLockTest() {
+        return BaseResponse.builder()
+                .resultCode(1)
+                .msg("success")
+                .data("null")
                 .build();
     }
 

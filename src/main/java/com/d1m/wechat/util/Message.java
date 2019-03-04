@@ -23,6 +23,8 @@ public enum Message {
 
     MISSING_PARAMTERS(106, "缺少参数"),
 
+    JOB_RUNNING(107, "任务执行中，请稍候在试"),
+
     /**
      * member
      */
@@ -381,7 +383,7 @@ public enum Message {
     CONVERSATION_CONTENT_NOT_SUPPORT(20002, "会话内容类型不支持"),
 
     CONVERSATION_LIST_SUCCESS(1, "获取会话列表成功"),
-    
+
     CONVERSATION_LIST_FAIL(0, "获取会话列表失败"),
 
     CONVERSATION_MASS_LIST_SUCCESS(1, "获取群发会话列表成功"),
@@ -600,7 +602,7 @@ public enum Message {
     CSV_UPLOAD_SUCCESS(1, "csv导入文件上传成功"),
 
     CSV_OR_EXCEL_PARSER_FAIL(26004, "CSV或者Excel解析失败！"),
-    
+
     CSV_TEST_FAIL(26005, "CSV测试失败！"),
     CSV_TEST_SUCCESS(26005, "CSV测试成功！"),
 
@@ -978,23 +980,22 @@ public enum Message {
     /**
      * material_category
      */
-    MATERIAL_CATEGORY_NAME_NOT_NULL(50000,"分类名称不能为空"),
-    MATERIAL_CATEGORY_NAME_EXITS(50001,"分类名称已存在"),
-    MATERIAL_CATEGORY_ID_NOT_NULL(50002,"id不能为空"),
-    MATERIAL_CATEGORY_BE_USED(50003,"有{0}条图文正在使用此分类，无法删除"),
-    MATERIAL_CATEGORY_OVER_LIMIT(50004,"分类名称限15个中文字符，英文30个"),
+    MATERIAL_CATEGORY_NAME_NOT_NULL(50000, "分类名称不能为空"),
+    MATERIAL_CATEGORY_NAME_EXITS(50001, "分类名称已存在"),
+    MATERIAL_CATEGORY_ID_NOT_NULL(50002, "id不能为空"),
+    MATERIAL_CATEGORY_BE_USED(50003, "有{0}条图文正在使用此分类，无法删除"),
+    MATERIAL_CATEGORY_OVER_LIMIT(50004, "分类名称限15个中文字符，英文30个"),
 
     /**
      * DcrmImageTextDetail
      */
-    DcrmImageTextDetail_NOT_NULL(60000,"标题不能为空"),
-    DcrmImageTextDetail_IAMGE_NOT_NULL(60001,"封面图不能为空"),
-    DCRM_IMAGE_TEXT_DETAIL_ID_NOT(60002,"id不能为空"),
-    Dcrm_MATRIAl_NOT_EXIST(60003,"封面图id不存在"),
-    
+    DcrmImageTextDetail_NOT_NULL(60000, "标题不能为空"),
+    DcrmImageTextDetail_IAMGE_NOT_NULL(60001, "封面图不能为空"),
+    DCRM_IMAGE_TEXT_DETAIL_ID_NOT(60002, "id不能为空"),
+    Dcrm_MATRIAl_NOT_EXIST(60003, "封面图id不存在"),
+
     /**
      * InterfaceConfig
-     *
      */
     INTERFACECONFIG_SELECT_FAIL(42001, "接口查询失败"),
 
@@ -1025,9 +1026,9 @@ public enum Message {
 
     INTERFACECONFIG_SECRET_GET_FAIL(42091, "获取秘钥失败"),
 
-    INTERFACECONFIG_ID_NOT_EXIST(42500,"id不能为空"),
+    INTERFACECONFIG_ID_NOT_EXIST(42500, "id不能为空"),
 
-    INTERFACECONFIG_STATUS_NOT_EXIST(42501,"status不能为空"),
+    INTERFACECONFIG_STATUS_NOT_EXIST(42501, "status不能为空"),
 
 
     /**
@@ -1083,6 +1084,7 @@ public enum Message {
 
     /**
      * With parameters
+     *
      * @param params
      * @return
      */
