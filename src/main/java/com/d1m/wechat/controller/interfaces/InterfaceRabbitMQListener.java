@@ -181,7 +181,6 @@ public class InterfaceRabbitMQListener implements InterfaceRabbit {
         httpHeaders.set(SECRET, interfaceConfigDto.getSecret());
         httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
         this.addKeyValue(payload, interfaceConfigDto);
-        payload.remove("wechatId");
         HttpEntity<Object> requestEntity = new HttpEntity<>(payload, httpHeaders);
         final BaseResponse response = restTemplate.postForObject(interfaceConfigDto.getUrl(), requestEntity, BaseResponse.class);
         log.info("事件转发第三方相应： {}", response);
