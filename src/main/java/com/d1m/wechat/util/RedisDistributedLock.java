@@ -9,7 +9,6 @@ import redis.clients.jedis.JedisCommands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by jone.wang on 2019/2/28.
@@ -18,7 +17,7 @@ import java.util.UUID;
 @Slf4j
 public class RedisDistributedLock implements DistributedLock {
 
-    private RedisTemplate<Object, Object> redisTemplate;
+    private RedisTemplate<?, ?> redisTemplate;
 
     private ThreadLocal<String> lockFlag = new ThreadLocal<>();
 
@@ -33,7 +32,7 @@ public class RedisDistributedLock implements DistributedLock {
                 "end ";
     }
 
-    public RedisDistributedLock(RedisTemplate<Object, Object> redisTemplate) {
+    public RedisDistributedLock(RedisTemplate<?, ?> redisTemplate) {
         super();
         this.redisTemplate = redisTemplate;
     }
@@ -58,9 +57,9 @@ public class RedisDistributedLock implements DistributedLock {
         try {
             String result = redisTemplate.execute((RedisCallback<String>) connection -> {
                 JedisCommands commands = (JedisCommands) connection.getNativeConnection();
-                String uuid = UUID.randomUUID().toString();
-                lockFlag.set(uuid);
-                return commands.set(key, uuid, "NX", "PX", expire);
+                String value = "now: " + System.currentTimeMillis() + ", expire: " + expire;
+                lockFlag.set(value);
+                return commands.set(key, value, "NX", "PX", expire);
             });
             return !StringUtils.isNullOrEmpty(result);
         } catch (Exception e) {
