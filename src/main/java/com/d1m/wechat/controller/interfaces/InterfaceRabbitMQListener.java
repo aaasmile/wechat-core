@@ -54,6 +54,7 @@ public class InterfaceRabbitMQListener implements InterfaceRabbit {
 
     private RestTemplate restTemplate;
 
+    @SuppressWarnings("UnstableApiUsage")
     private final Retryer<Boolean> retryer = RetryerBuilder
             .<Boolean>newBuilder()
             .retryIfException() //异常重试
@@ -61,6 +62,12 @@ public class InterfaceRabbitMQListener implements InterfaceRabbit {
             .retryIfResult(result -> Objects.equals(result, Boolean.FALSE)) //返回结果部位true重试
             .withWaitStrategy(WaitStrategies.fixedWait(1, TimeUnit.MINUTES)) //重试策略：间隔1分钟
             .withStopStrategy(StopStrategies.stopAfterAttempt(3)) //重试策略: 共重试三次
+            .withRetryListener(new RetryListener() {
+                @Override
+                public <V> void onRetry(Attempt<V> attempt) {
+                    log.info("attempt number: {}", attempt.getAttemptNumber());
+                }
+            })
             .build();
 
     @Autowired
