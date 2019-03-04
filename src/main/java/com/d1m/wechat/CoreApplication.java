@@ -1,11 +1,8 @@
 package com.d1m.wechat;
 
 import cn.afterturn.easypoi.handler.inter.IExcelI18nHandler;
-import com.d1m.wechat.util.AppContextUtils;
-import com.d1m.wechat.util.IExcelI18nHandlerImpl;
-import com.d1m.wechat.util.MemberExcelDateHandler;
+import com.d1m.wechat.util.*;
 import com.d1m.wechat.wechatclient.ConsulProperties;
-import com.xxl.job.core.executor.XxlJobExecutor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -17,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
@@ -38,7 +36,7 @@ public class CoreApplication {
 
     public static void main(String[] args) {
         ConsulProperties consulProperties = new ConsulProperties();
-		consulProperties.onStartup();
+        consulProperties.onStartup();
         SpringApplication.run(CoreApplication.class, args);
     }
 
@@ -70,6 +68,11 @@ public class CoreApplication {
     @Bean
     public MemberExcelDateHandler memberExcelDateHandler() {
         return new MemberExcelDateHandler();
+    }
+
+    @Bean
+    DistributedLock distributedLock(RedisTemplate redisTemplate) {
+        return new RedisDistributedLock(redisTemplate);
     }
 
 }
