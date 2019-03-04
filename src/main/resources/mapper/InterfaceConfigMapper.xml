@@ -115,6 +115,7 @@
         where ib.is_deleted = 0
           and ic.is_deleted = 0
           and ic.status = 0
+          and ef.status = 1
           and we.code = #{eventCode}
     </select>
 
