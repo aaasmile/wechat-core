@@ -34,4 +34,5 @@ public interface InterfaceConfigMapper extends MyMapper<InterfaceConfig> {
      */
     int updateStatusById(@Param("id") String id, @Param("status") InterfaceStatus status, @Param("updatedAt") String  updatedAt);
 
+    int findIdAndDeleted(Long brand);
 }

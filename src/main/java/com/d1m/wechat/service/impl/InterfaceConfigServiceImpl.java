@@ -48,8 +48,11 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 
     @Autowired
     private EventService eventService;
-
+    @Autowired
 	private EventForwardMapper eventForwardMapper;
+
+    @Autowired
+	private InterfaceConfigService interfaceConfigService;
 
 	@Override
 	public Page<InterfaceConfigDto> selectItems(Map<String, String> query) {
@@ -75,6 +78,8 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 
     @Autowired
     private EventForwardService eventForwardService;
+
+
 
 
     @Override
@@ -137,13 +142,11 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 
     @Override
     @CacheEvict(value = Constant.Cache.THIRD_PARTY_INTERFACE, allEntries = true)
-    public int deleteBrand(String id) throws WechatException {
-        InterfaceConfig interfaceConfig = new InterfaceConfig();
-        interfaceConfig.setBrand(id);
-        if (interfaceConfigMapper.selectCount(interfaceConfig) > 0)
-            throw new WechatException(Message.INTERFACECONFIG_BRAND_IN_USED, Message.INTERFACECONFIG_BRAND_IN_USED.getName());
+    public int deleteBrand(Long brand) throws WechatException {
+        if (interfaceConfigService.findByIdAndDeleted(brand) > 0)
+           throw new WechatException(Message.INTERFACECONFIG_BRAND_IN_USED, Message.INTERFACECONFIG_BRAND_IN_USED.getName());
         InterfaceConfigBrand interfaceConfigBrand = new InterfaceConfigBrand();
-        interfaceConfigBrand.setId(Long.valueOf(id));
+        interfaceConfigBrand.setId(Long.valueOf(brand).longValue());
         interfaceConfigBrand.setDeleted(true);
         return interfaceConfigBrandMapper.updateByPrimaryKeySelective(interfaceConfigBrand);
     }
@@ -231,6 +234,12 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
         InterfaceConfig interfaceConfig = new InterfaceConfig();
         interfaceConfig.setId(id);
         return interfaceConfigMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public int findByIdAndDeleted(Long brand) {
+        int count =interfaceConfigMapper.findIdAndDeleted(brand);
+        return count;
     }
 
 }

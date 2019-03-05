@@ -11,8 +11,8 @@ public class InterfaceConfigDto {
     private Integer menuKey;
     private String brand;
     private String name;
-    private int methodType;  //修改
-    private int type;              //修改
+    private Integer methodType;  //修改
+    private Integer type;              //修改
     private String event;
     private String interfaceName;
     private String parameter;
@@ -30,7 +30,7 @@ public class InterfaceConfigDto {
     @Getter
     @Setter
     private Boolean retry;
-    private int status;        //修改
+    private Integer status;        //修改
 
     public String getId() {
         return id;
@@ -72,11 +72,11 @@ public class InterfaceConfigDto {
         this.methodType = methodType;                              //修改
     }
 
-    public int getType() {
+    public Integer getType() {
         return type;
     }                 //修改
 
-    public void setType(int type) {
+    public void setType(Integer type) {
         this.type = type;
     }    //修改
 
@@ -193,11 +193,11 @@ public class InterfaceConfigDto {
     }
 
 
-    public int getStatus() {
+    public Integer getStatus() {
         return status;
     }                      //修改
 
-    public void setStatus(int status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }       //修改
 
@@ -210,8 +210,8 @@ public class InterfaceConfigDto {
         private Integer menuKey;
         private String brand;
         private String name;
-        private int methodType;
-        private int type;
+        private Integer methodType;
+        private Integer type;
         private String event;
         private String interfaceName;
         private String parameter;
@@ -226,7 +226,7 @@ public class InterfaceConfigDto {
         private String createdBy;
         private String lasteUpdatedAt;
         private String lasteUpdatedBy;
-        private int status;
+        private Integer status;
         private Boolean retry;
 
         public Builder id(String id) {
@@ -249,12 +249,12 @@ public class InterfaceConfigDto {
             return this;
         }
 
-        public Builder methodType(int methodType) {
+        public Builder methodType(Integer methodType) {
             this.methodType = methodType;
             return this;
         }
 
-        public Builder type(int type) {
+        public Builder type(Integer type) {
             this.type = type;
             return this;
         }
