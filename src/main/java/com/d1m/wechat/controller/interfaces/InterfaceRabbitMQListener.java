@@ -104,12 +104,13 @@ public class InterfaceRabbitMQListener implements InterfaceRabbit {
             }
             if (!ObjectUtils.isEmpty(body)) {
                 final String bodyStr = new String(body);
+                log.info("send event info to third part: {}", bodyStr);
                 final String encrypt = Security.encrypt(bodyStr, secret);
                 if (StringUtils.isBlank(encrypt)) {
                     throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "加密失败");
                 }
                 final byte[] encryptBody = encrypt.getBytes(StandardCharsets.UTF_8);
-               return execution.execute(request, encryptBody);
+                return execution.execute(request, encryptBody);
             }
             return execution.execute(request, body);
         });

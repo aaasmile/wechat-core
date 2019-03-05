@@ -19,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class VerifyHandler implements IExcelVerifyHandler<MemberTagDataServiceImpl.BatchEntity> {
 
-	private static final Logger log = LoggerFactory.getLogger(VerifyHandler.class);
     @Override
     public ExcelVerifyHandlerResult verifyHandler(MemberTagDataServiceImpl.BatchEntity batchEntity) {
         ExcelVerifyHandlerResult result = new ExcelVerifyHandlerResult();
