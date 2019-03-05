@@ -6,12 +6,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 
 public class Security {
-	
-	private static final Logger log = LoggerFactory.getLogger(Security.class);
+
+    private static final Logger log = LoggerFactory.getLogger(Security.class);
 
     /**
      * 数据加密
