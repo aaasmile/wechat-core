@@ -1,5 +1,6 @@
 package com.d1m.wechat.service.impl;
 
+import com.d1m.wechat.common.Constant;
 import com.d1m.wechat.dto.EventForwardDetailsDto;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.EventForwardDetailsMapper;
@@ -16,6 +17,7 @@ import com.d1m.wechat.util.Message;
 import com.d1m.wechat.util.MyMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -41,10 +43,11 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @CacheEvict(value = Constant.Cache.THIRD_PARTY_INTERFACE, allEntries = true)
     public boolean addEventForward(AddEventForwardModel model) {
         EventForward eventForward = new EventForward(model.getThirdPartyId(), model.getInterfaceId(), EventForwardStatus.INUSED.getStatus());
         List<EventForward> eventForwards = eventForwardMapper.select(eventForward);
-        if(eventForwards != null && eventForwards.size() > 0) {
+        if (eventForwards != null && eventForwards.size() > 0) {
             throw new WechatException(Message.EVENT_FORWARD_EXIST);
         }
 
@@ -80,6 +83,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @CacheEvict(value = Constant.Cache.THIRD_PARTY_INTERFACE, allEntries = true)
     public boolean editEventForward(EditEventForwardModel model) {
         EventForward eventForward = eventForwardMapper.selectByPrimaryKey(model.getId());
         if (eventForward == null) {
@@ -105,6 +109,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @CacheEvict(value = Constant.Cache.THIRD_PARTY_INTERFACE, allEntries = true)
     public boolean deleteEventForward(Integer eventForwardId) {
         eventForwardMapper.deleteEventForward(eventForwardId);
         return true;
