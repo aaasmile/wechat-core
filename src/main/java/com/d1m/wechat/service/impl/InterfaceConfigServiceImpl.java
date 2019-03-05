@@ -16,7 +16,6 @@ import com.d1m.wechat.model.InterfaceConfigBrand;
 import com.d1m.wechat.model.Menu;
 import com.d1m.wechat.model.enums.InterfaceStatus;
 import com.d1m.wechat.service.EventForwardService;
-import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.service.EventService;
 import com.d1m.wechat.service.InterfaceConfigService;
 import com.d1m.wechat.util.DateUtil;
@@ -49,11 +48,11 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
     @Autowired
     private EventService eventService;
 
-	private EventForwardMapper eventForwardMapper;
+    private EventForwardMapper eventForwardMapper;
 
-	@Override
-	public Page<InterfaceConfigDto> selectItems(Map<String, String> query) {
-		return interfaceConfigMapper.selectItems(query);
+    @Override
+    public Page<InterfaceConfigDto> selectItems(Map<String, String> query) {
+        return interfaceConfigMapper.selectItems(query);
 
     }
 
@@ -212,6 +211,7 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
      * @param status 状态 0 停用，1 启用
      * @param id
      */
+    @CacheEvict(value = Constant.Cache.THIRD_PARTY_INTERFACE, allEntries = true)
     public void enableOrDisable(InterfaceStatus status, String id) {
         try {
             int t = interfaceConfigMapper.updateStatusById(id, status, DateUtil.formatYYYYMMDDHHMM(new Date()));

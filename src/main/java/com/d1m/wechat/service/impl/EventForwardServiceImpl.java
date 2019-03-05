@@ -1,5 +1,6 @@
 package com.d1m.wechat.service.impl;
 
+import com.d1m.wechat.common.Constant;
 import com.d1m.wechat.dto.EventForwardDto;
 import com.d1m.wechat.mapper.EventForwardMapper;
 import com.d1m.wechat.mapper.WxEventMapper;
@@ -10,6 +11,7 @@ import com.d1m.wechat.util.DateUtil;
 import com.github.pagehelper.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -25,14 +27,12 @@ public class EventForwardServiceImpl implements EventForwardService {
     @Override
     public Page<EventForwardDto> selectForwardItems(Map<String, String> query) {
 
-        Page<EventForwardDto>  InterfaceEventForwardDtos = eventForwardMapper.selectEventForwardItems(query);
-        return InterfaceEventForwardDtos;
+        return eventForwardMapper.selectEventForwardItems(query);
     }
 
     @Override
     public List<String> selectEventItems(Integer id) {
-        List<String> events =wxEventMapper.selectEventItmes(id);
-        return events;
+        return wxEventMapper.selectEventItmes(id);
     }
 
     @Override
@@ -47,6 +47,7 @@ public class EventForwardServiceImpl implements EventForwardService {
     }
 
     @Override
+    @CacheEvict(value = Constant.Cache.THIRD_PARTY_INTERFACE, allEntries = true)
     public void eventForwardEnableOrDisable(InterfaceStatus status, Integer id) {
         try {
             int t = eventForwardMapper.updateStatusById(id, status, DateUtil.formatYYYYMMDDHHMM(new Date()));
@@ -56,6 +57,7 @@ public class EventForwardServiceImpl implements EventForwardService {
     }
 
     @Override
+    @CacheEvict(value = Constant.Cache.THIRD_PARTY_INTERFACE, allEntries = true)
     public void updateStatus(EventForward eventForward) {
         eventForwardMapper.updateByPrimaryKeySelective(eventForward);
     }
