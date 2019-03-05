@@ -103,9 +103,8 @@
 			FROM
 			interface_config ic
 			LEFT JOIN interface_brand ib ON ic.brand = ib.id
-			WHERE
-			ic.is_deleted = 0
-			AND ic.is_deleted = 0
+			WHERE 1=1
+			AND ic.`status` = 1 and ic.is_deleted = 0
 			AND ic.id = #{url}
 		</if>
 
@@ -123,9 +122,8 @@
 			FROM
 			interface_config ic
 			LEFT JOIN interface_brand ib ON ic.brand = ib.id
-			WHERE
-			ic.is_deleted = 0
-			AND ic.is_deleted = 0
+			WHERE 1=1
+			AND ic.`status` = 1 and ic.is_deleted = 0
 			AND ic.id = -1
 		</if>
 	</select>
