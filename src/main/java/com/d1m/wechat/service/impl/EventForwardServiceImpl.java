@@ -35,26 +35,6 @@ public class EventForwardServiceImpl implements EventForwardService {
         return wxEventMapper.selectEventItmes(id);
     }
 
-    @Override
-    public int findByInterfaceId(String interfaceId) {
-        return eventForwardMapper.findByInterfaceId(interfaceId);
-
-    }
-
-    @Override
-    public EventForward checkIsExist(Integer id) {
-        return eventForwardMapper.selectByPrimaryKey(id);
-    }
-
-    @Override
-    @CacheEvict(value = Constant.Cache.THIRD_PARTY_INTERFACE, allEntries = true)
-    public void eventForwardEnableOrDisable(InterfaceStatus status, Integer id) {
-        try {
-            int t = eventForwardMapper.updateStatusById(id, status, DateUtil.formatYYYYMMDDHHMM(new Date()));
-        } catch (Exception e) {
-            //logger.error(e.getMessage());
-        }
-    }
 
     @Override
     @CacheEvict(value = Constant.Cache.THIRD_PARTY_INTERFACE, allEntries = true)
