@@ -85,9 +85,8 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
     @Override
     @CacheEvict(value = Constant.Cache.THIRD_PARTY_INTERFACE, allEntries = true)
     public int delete(String id) throws WechatException {
-        InterfaceConfig interfaceConfig1 = interfaceConfigMapper.selectByPrimaryKey(id);
         Menu menu = new Menu();
-        menu.setMenuKey(interfaceConfig1.getMenuKey());
+        menu.setUrl(id);
         if (menuMapper.selectCount(menu) > 0)
             throw new WechatException(Message.INTERFACECONFIG_IN_USED, Message.INTERFACECONFIG_IN_USED.getName());
            InterfaceConfig interfaceConfig = new InterfaceConfig();

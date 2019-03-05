@@ -86,7 +86,6 @@ public class InterfaceConfigController extends BaseController {
             return representation(Message.INTERFACECONFIG_SELECT_FAIL, e.getMessage());
         }
     }
-
     @ApiOperation(value = "创建第三方接口", tags = "第三方接口列表")
     @ApiResponse(code = 200, message = "创建第三方接口信息成功")
     @RequestMapping(value = "newItem.json", method = RequestMethod.PUT)
