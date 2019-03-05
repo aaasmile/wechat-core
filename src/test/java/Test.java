@@ -79,7 +79,7 @@ public class Test {
                     if (CollectionUtils.isEmpty(validate)) {
                         return true;
                     } else {
-                        log.error(validate.toString());
+                        log.error("校验不合格，openId：{}，不合格信息：{}", t.getTouser(), validate.toString());
                         return false;
                     }
                 })
