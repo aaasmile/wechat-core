@@ -1,7 +1,7 @@
 package com.d1m.wechat.model;
 
-import java.util.Date;
 import javax.persistence.*;
+import java.util.Date;
 
 @Table(name = "member_tag")
 public class MemberTag {
@@ -170,5 +170,12 @@ public class MemberTag {
      */
     public void setStatus(Byte status) {
         this.status = status;
+    }
+
+    public MemberTag() {}
+
+    public MemberTag(Integer id, Integer wechatId) {
+        this.id = id;
+        this.wechatId = wechatId;
     }
 }
