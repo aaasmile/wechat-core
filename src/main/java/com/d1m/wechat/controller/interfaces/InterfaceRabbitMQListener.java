@@ -54,6 +54,7 @@ public class InterfaceRabbitMQListener implements InterfaceRabbit {
 
     private RestTemplate restTemplate;
 
+    @SuppressWarnings("UnstableApiUsage")
     private final Retryer<Boolean> retryer = RetryerBuilder
             .<Boolean>newBuilder()
             .retryIfException() //异常重试
@@ -61,6 +62,12 @@ public class InterfaceRabbitMQListener implements InterfaceRabbit {
             .retryIfResult(result -> Objects.equals(result, Boolean.FALSE)) //返回结果部位true重试
             .withWaitStrategy(WaitStrategies.fixedWait(1, TimeUnit.MINUTES)) //重试策略：间隔1分钟
             .withStopStrategy(StopStrategies.stopAfterAttempt(3)) //重试策略: 共重试三次
+            .withRetryListener(new RetryListener() {
+                @Override
+                public <V> void onRetry(Attempt<V> attempt) {
+                    log.info("attempt number: {}", attempt.getAttemptNumber());
+                }
+            })
             .build();
 
     @Autowired
@@ -97,12 +104,13 @@ public class InterfaceRabbitMQListener implements InterfaceRabbit {
             }
             if (!ObjectUtils.isEmpty(body)) {
                 final String bodyStr = new String(body);
+                log.info("send event info to third part: {}", bodyStr);
                 final String encrypt = Security.encrypt(bodyStr, secret);
                 if (StringUtils.isBlank(encrypt)) {
                     throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "加密失败");
                 }
                 final byte[] encryptBody = encrypt.getBytes(StandardCharsets.UTF_8);
-               return execution.execute(request, encryptBody);
+                return execution.execute(request, encryptBody);
             }
             return execution.execute(request, body);
         });
@@ -174,7 +182,6 @@ public class InterfaceRabbitMQListener implements InterfaceRabbit {
         httpHeaders.set(SECRET, interfaceConfigDto.getSecret());
         httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
         this.addKeyValue(payload, interfaceConfigDto);
-        payload.remove("wechatId");
         HttpEntity<Object> requestEntity = new HttpEntity<>(payload, httpHeaders);
         final BaseResponse response = restTemplate.postForObject(interfaceConfigDto.getUrl(), requestEntity, BaseResponse.class);
         log.info("事件转发第三方相应： {}", response);

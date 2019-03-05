@@ -14,9 +14,10 @@ import com.d1m.wechat.model.EventForward;
 import com.d1m.wechat.model.InterfaceConfig;
 import com.d1m.wechat.model.InterfaceConfigBrand;
 import com.d1m.wechat.model.Menu;
+import com.d1m.wechat.model.enums.EventForwardStatus;
 import com.d1m.wechat.model.enums.InterfaceStatus;
+import com.d1m.wechat.model.enums.InterfaceType;
 import com.d1m.wechat.service.EventForwardService;
-import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.service.EventService;
 import com.d1m.wechat.service.InterfaceConfigService;
 import com.d1m.wechat.util.DateUtil;
@@ -48,6 +49,7 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 
     @Autowired
     private EventService eventService;
+
     @Autowired
 	private EventForwardMapper eventForwardMapper;
 
@@ -57,6 +59,7 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 	@Override
 	public Page<InterfaceConfigDto> selectItems(Map<String, String> query) {
 		return interfaceConfigMapper.selectItems(query);
+
 
     }
 
@@ -183,14 +186,18 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 
     @Override
     public List<InterfaceConfigDto> getByEventForward(String id) {
-        List<InterfaceConfig> interfaceConfigs = interfaceConfigMapper.select(new InterfaceConfig(id));
+        List<InterfaceConfig> interfaceConfigs = interfaceConfigMapper.select(new InterfaceConfig(id, false));
         if (interfaceConfigs == null || interfaceConfigs.size() == 0) {
             return null;
         }
 
+        interfaceConfigs = interfaceConfigs.stream()
+                .filter((InterfaceConfig i) -> InterfaceType.TAKE_INITIATIVE_PUSH != i.getType())
+                .collect(Collectors.toList());
+
         List<InterfaceConfigDto> interfaceConfigDtos = new ArrayList<>();
 
-        List<EventForward> eventForwards = eventService.getForwardByThirdPartyId(Integer.parseInt(id));
+        List<EventForward> eventForwards = eventService.getForwardByThirdPartyIdAndStatus(Integer.parseInt(id), EventForwardStatus.INUSED.getStatus());
         if (eventForwards == null || eventForwards.size() == 0) {
             interfaceConfigs.forEach(interfaceConfig -> {
                 interfaceConfigDtos.add(new InterfaceConfigDto(interfaceConfig.getId(), interfaceConfig.getName(), interfaceConfig.getName()));
@@ -213,6 +220,7 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
      * @param status 状态 0 停用，1 启用
      * @param id
      */
+    @CacheEvict(value = Constant.Cache.THIRD_PARTY_INTERFACE, allEntries = true)
     public void enableOrDisable(InterfaceStatus status, String id) {
         try {
             int t = interfaceConfigMapper.updateStatusById(id, status, DateUtil.formatYYYYMMDDHHMM(new Date()));

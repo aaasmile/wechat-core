@@ -5,6 +5,7 @@ import cn.d1m.wechat.client.model.WxUser;
 import com.d1m.common.ds.TenantContext;
 import com.d1m.wechat.dto.*;
 import com.d1m.wechat.exception.WechatException;
+import com.d1m.wechat.lock.RedisLock;
 import com.d1m.wechat.mapper.*;
 import com.d1m.wechat.model.*;
 import com.d1m.wechat.model.enums.Language;
@@ -28,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
@@ -97,6 +99,9 @@ public class MemberServiceImpl extends BaseService<Member> implements
     public Mapper<Member> getGenericMapper() {
         return memberMapper;
     }
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     public MemberDto getMemberDto(Integer wechatId, Integer id) {
@@ -278,13 +283,8 @@ public class MemberServiceImpl extends BaseService<Member> implements
 
     }
 
-    @Override
-    public List<MemberTagDto> addMemberTag(Integer wechatId, User user,
-                                           AddMemberTagModel addMemberTagModel) throws WechatException {
-        if (addMemberTagModel.emptyQuery()) {
-            throw new WechatException(Message.MEMBER_NOT_BLANK);
-        }
-
+    private List<MemberTagDto> processAddMemberTag(Integer wechatId, User user,
+                                                   AddMemberTagModel addMemberTagModel) {
         List<MemberTag> memberTagsIn = getMemberTags(wechatId, user,
                 addMemberTagModel.getTags());
 
@@ -327,6 +327,30 @@ public class MemberServiceImpl extends BaseService<Member> implements
             memberTagDtos.add(memberTagDto);
         }
         return memberTagDtos;
+    }
+
+    @Override
+    public List<MemberTagDto> addMemberTag(Integer wechatId, User user,
+                                           AddMemberTagModel addMemberTagModel) throws WechatException {
+        if (addMemberTagModel.emptyQuery()) {
+            throw new WechatException(Message.MEMBER_NOT_BLANK);
+        }
+
+        RedisLock redisLock = new RedisLock(stringRedisTemplate, "addMemberTag", 60 * 60 * 1000, 2 * 1000);
+
+        try {
+            if(!redisLock.lock()) {
+                throw new WechatException(Message.MEMBER_ADD_TAG_OPERATOR_ONLY);
+            }
+
+            return processAddMemberTag(wechatId, user, addMemberTagModel);
+        } catch (WechatException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new WechatException(Message.SYSTEM_ERROR);
+        } finally {
+            redisLock.unlock();
+        }
     }
 
 

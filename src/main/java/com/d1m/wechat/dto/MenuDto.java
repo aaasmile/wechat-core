@@ -34,7 +34,7 @@ public class MenuDto {
 
 	private String apiClass;
 
-	private InterfaceConfig interfaceConfig;
+	private InterfaceConfig third;
 	
 	public List<MenuDto> getChildren() {
 		return children;
@@ -148,11 +148,32 @@ public class MenuDto {
 		this.apiClass = apiClass;
 	}
 
-	public InterfaceConfig getInterfaceConfig() {
-		return interfaceConfig;
+	public InterfaceConfig getThird() {
+		return third;
 	}
 
-	public void setInterfaceConfig(InterfaceConfig interfaceConfig) {
-		this.interfaceConfig = interfaceConfig;
+	public void setThird(InterfaceConfig third) {
+		this.third = third;
+	}
+
+	@Override
+	public String toString() {
+		return "MenuDto{" +
+				"id=" + id +
+				", type=" + type +
+				", materialType=" + materialType +
+				", name='" + name + '\'' +
+				", url='" + url + '\'' +
+				", material=" + material +
+				", parent=" + parent +
+				", children=" + children +
+				", seq=" + seq +
+				", appId='" + appId + '\'' +
+				", pagePath='" + pagePath + '\'' +
+				", appUrl='" + appUrl + '\'' +
+				", menuKey='" + menuKey + '\'' +
+				", apiClass='" + apiClass + '\'' +
+				", third=" + third +
+				'}';
 	}
 }

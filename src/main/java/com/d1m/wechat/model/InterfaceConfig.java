@@ -76,7 +76,8 @@ public class InterfaceConfig {
 
 	public InterfaceConfig() {}
 
-	public InterfaceConfig(String brand) {
+	public InterfaceConfig(String brand, Boolean deleted) {
 		this.brand = brand;
+		this.deleted = deleted;
 	}
 }

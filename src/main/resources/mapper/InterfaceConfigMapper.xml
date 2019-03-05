@@ -116,7 +116,8 @@
                  left join wx_event we on we.id = efd.event_id
         where ib.is_deleted = 0
           and ic.is_deleted = 0
-          and ic.status = 0
+          and ic.status = 1
+          and ef.status = 1
           and we.code = #{eventCode}
     </select>
 

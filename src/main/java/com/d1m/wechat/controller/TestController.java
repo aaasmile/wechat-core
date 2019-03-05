@@ -1,10 +1,12 @@
 package com.d1m.wechat.controller;
 
+import com.d1m.wechat.anno.RedisLock;
 import com.d1m.wechat.domain.web.BaseResponse;
 import com.d1m.wechat.dto.MemberDto;
 import com.d1m.wechat.mapper.MemberMapper;
 import com.d1m.wechat.model.Member;
 import com.d1m.wechat.util.Security;
+import com.d1m.wechat.util.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.google.common.collect.Lists;
@@ -157,13 +159,25 @@ public class TestController {
         final String encryptBody = stringBuilder.toString();
         log.info("encrypt body: {}", encryptBody);
 
-        final String rawBody = Security.decrypt(encryptBody, secret);
+        final String secret = request.getParameter("secret");
+
+        final String rawBody = Security.decrypt(encryptBody, StringUtils.isNotEmpty(secret) ? secret : this.secret);
 
         log.info("raw body: {}", rawBody);
         return BaseResponse.builder()
                 .resultCode(1)
                 .msg("success")
                 .data(rawBody)
+                .build();
+    }
+
+    @GetMapping("/distributed")
+    @RedisLock(key = "distributed")
+    public BaseResponse<String> distributedLockTest() {
+        return BaseResponse.builder()
+                .resultCode(1)
+                .msg("success")
+                .data("null")
                 .build();
     }
 
