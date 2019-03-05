@@ -1044,7 +1044,7 @@ public enum Message {
      * 测试接口
      */
      TEST_INTERFACE__FALL(60000,"接口测试失败"),
-     TEST_INTERFACE__SUCCESS(60001,"接口测试成功"),
+
 
 
     ;

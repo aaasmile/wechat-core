@@ -86,7 +86,6 @@ public class InterfaceConfigController extends BaseController {
             return representation(Message.INTERFACECONFIG_SELECT_FAIL, e.getMessage());
         }
     }
-
     @ApiOperation(value = "创建第三方接口", tags = "第三方接口列表")
     @ApiResponse(code = 200, message = "创建第三方接口信息成功")
     @RequestMapping(value = "newItem.json", method = RequestMethod.PUT)
@@ -176,6 +175,8 @@ public class InterfaceConfigController extends BaseController {
     public JSONObject createBrand(@RequestBody InterfaceConfigBrand interfaceConfigBrand) {
         try {
             return representation(Message.SUCCESS, interfaceConfigService.createBrand(interfaceConfigBrand));
+        } catch (WechatException e) {
+            return representation(e.getMessageInfo(), e.getMessage());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return representation(Message.INTERFACECONFIG_BRAND_CREATE_FAIL, e.getMessage());
@@ -197,9 +198,9 @@ public class InterfaceConfigController extends BaseController {
     @ApiOperation(value = "删除第三方列表", tags = "第三方接口列表")
     @ApiResponse(code = 200, message = "删除第三方列表成功")
     @RequestMapping(value = "deleteBrand.json", method = RequestMethod.DELETE)
-    public JSONObject deleteBrand(@RequestParam("id") String id) {
+    public JSONObject deleteBrand(@RequestParam("id") Long brand) {
         try {
-            return representation(Message.SUCCESS, interfaceConfigService.deleteBrand(id));
+            return representation(Message.SUCCESS, interfaceConfigService.deleteBrand(brand));
         } catch (WechatException e) {
             log.error(e.getMessage(), e);
             return representation(Message.INTERFACECONFIG_BRAND_IN_USED, e.getMessageInfo());
@@ -343,10 +344,10 @@ public class InterfaceConfigController extends BaseController {
     public JSONObject testThirdPartyInterface(@PathVariable String id) {
         try {
             final Map<String, String> payload = new HashMap<>();
-            payload.put("type","testInterface");
+            payload.put("type", "testInterface");
             payload.put("ToUserName", "gh_d222d6a8e09b");
             payload.put("FromUserName", "oxOHEs4Ra-S5VUIf81mgOIa9ZAgE");
-            payload.put("CreateTime", System.currentTimeMillis()/1000+"");
+            payload.put("CreateTime", System.currentTimeMillis() / 1000 + "");
             payload.put("MsgType", "event");
             payload.put("Event", "giftcard_pay_done");
             payload.put("unionId", "sdfjfhsd");
@@ -357,9 +358,9 @@ public class InterfaceConfigController extends BaseController {
             log.error(e.getMessage(), e);
             return representation(Message.TEST_INTERFACE__FALL, "URL无法访问");
 
-        } catch( HttpStatusCodeException e){
+        } catch (HttpStatusCodeException e) {
             log.error(e.getMessage(), e);
-            return representation(Message.TEST_INTERFACE__FALL, "调用接口返回错误码"+e.getStatusCode());
+            return representation(Message.TEST_INTERFACE__FALL, "调用接口返回错误码" + e.getStatusCode());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return representation(Message.TEST_INTERFACE__FALL, e.getMessage());

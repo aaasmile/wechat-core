@@ -50,11 +50,16 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
     @Autowired
     private EventService eventService;
 
-    private EventForwardMapper eventForwardMapper;
+    @Autowired
+	private EventForwardMapper eventForwardMapper;
 
-    @Override
-    public Page<InterfaceConfigDto> selectItems(Map<String, String> query) {
-        return interfaceConfigMapper.selectItems(query);
+    @Autowired
+	private InterfaceConfigService interfaceConfigService;
+
+	@Override
+	public Page<InterfaceConfigDto> selectItems(Map<String, String> query) {
+		return interfaceConfigMapper.selectItems(query);
+
 
     }
 
@@ -78,12 +83,13 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
     private EventForwardService eventForwardService;
 
 
+
+
     @Override
     @CacheEvict(value = Constant.Cache.THIRD_PARTY_INTERFACE, allEntries = true)
     public int delete(String id) throws WechatException {
-        InterfaceConfig interfaceConfig1 = interfaceConfigMapper.selectByPrimaryKey(id);
         Menu menu = new Menu();
-        menu.setMenuKey(interfaceConfig1.getMenuKey());
+        menu.setUrl(id);
         if (menuMapper.selectCount(menu) > 0)
             throw new WechatException(Message.INTERFACECONFIG_IN_USED, Message.INTERFACECONFIG_IN_USED.getName());
            InterfaceConfig interfaceConfig = new InterfaceConfig();
@@ -138,13 +144,11 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 
     @Override
     @CacheEvict(value = Constant.Cache.THIRD_PARTY_INTERFACE, allEntries = true)
-    public int deleteBrand(String id) throws WechatException {
-        InterfaceConfig interfaceConfig = new InterfaceConfig();
-        interfaceConfig.setBrand(id);
-        if (interfaceConfigMapper.selectCount(interfaceConfig) > 0)
-            throw new WechatException(Message.INTERFACECONFIG_BRAND_IN_USED, Message.INTERFACECONFIG_BRAND_IN_USED.getName());
+    public int deleteBrand(Long brand) throws WechatException {
+        if (interfaceConfigService.findByIdAndDeleted(brand) > 0)
+           throw new WechatException(Message.INTERFACECONFIG_BRAND_IN_USED, Message.INTERFACECONFIG_BRAND_IN_USED.getName());
         InterfaceConfigBrand interfaceConfigBrand = new InterfaceConfigBrand();
-        interfaceConfigBrand.setId(Long.valueOf(id));
+        interfaceConfigBrand.setId(Long.valueOf(brand).longValue());
         interfaceConfigBrand.setDeleted(true);
         return interfaceConfigBrandMapper.updateByPrimaryKeySelective(interfaceConfigBrand);
     }
@@ -237,6 +241,12 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
         InterfaceConfig interfaceConfig = new InterfaceConfig();
         interfaceConfig.setId(id);
         return interfaceConfigMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public int findByIdAndDeleted(Long brand) {
+        int count =interfaceConfigMapper.findIdAndDeleted(brand);
+        return count;
     }
 
 }

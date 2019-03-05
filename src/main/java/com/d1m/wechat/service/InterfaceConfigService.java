@@ -28,7 +28,7 @@ public interface InterfaceConfigService {
 
     int updateBrand(InterfaceConfigBrand interfaceConfigBrand);
 
-    int deleteBrand(String id) throws WechatException;
+    int deleteBrand(Long brand) throws WechatException;
 
     InterfaceConfigDto getSecret(String id);
 
@@ -58,4 +58,6 @@ public interface InterfaceConfigService {
      * @return
      */
     InterfaceConfig checkIsExist(String id);
+
+    int findByIdAndDeleted(Long brand);
 }
