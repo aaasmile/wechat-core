@@ -46,6 +46,8 @@ public enum Message {
 
     MEMBER_SELECTED_ALL_OFFLINE(10005, "强推消息所选会员都不在线"),
 
+    MEMBER_ADD_TAG_OPERATOR_ONLY(10005, "添加会员标签正在执行中"),
+
     /**
      * member_tag_type
      */
@@ -1007,8 +1009,8 @@ public enum Message {
 
     INTERFACECONFIG_DELETE_FAIL(42031, "接口删除失败"),
 
-    INTERFACECONFIG_IN_USED_MENU(420321, "接口在被menu使用中"),
-    INTERFACECONFIG_IN_USED_EVENT_FORWARD(420322, "接口在被eventForward使用中"),
+    INTERFACECONFIG_IN_USED(42032, "接口在被使用中"),
+
 
     INTERFACECONFIG_GET_FAIL(42041, "接口获取失败"),
 
@@ -1037,6 +1039,12 @@ public enum Message {
 
     EVENT_FORWARD_ADD_FAIL(50000, "添加事件转发失败"),
     EVENT_FORWARD_EXIST(50001, "事件转发已存在"),
+
+    /**
+     * 测试接口
+     */
+     TEST_INTERFACE__FALL(60000,"接口测试失败"),
+     TEST_INTERFACE__SUCCESS(60001,"接口测试成功"),
 
 
     ;

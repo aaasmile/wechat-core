@@ -15,7 +15,7 @@ public interface EventForwardMapper extends MyMapper<EventForward> {
 
     Page<EventForwardDto> selectEventForwardItems(Map<String, String> query);
 
-    int findByInterfaceId(String interfaceId);
+
 
     int updateStatusById(@Param("id") Integer id, @Param("status") InterfaceStatus status, @Param("updatedAt") String  updatedAt);
 

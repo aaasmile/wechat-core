@@ -14,7 +14,9 @@ import com.d1m.wechat.model.EventForward;
 import com.d1m.wechat.model.InterfaceConfig;
 import com.d1m.wechat.model.InterfaceConfigBrand;
 import com.d1m.wechat.model.Menu;
+import com.d1m.wechat.model.enums.EventForwardStatus;
 import com.d1m.wechat.model.enums.InterfaceStatus;
+import com.d1m.wechat.model.enums.InterfaceType;
 import com.d1m.wechat.service.EventForwardService;
 import com.d1m.wechat.service.EventService;
 import com.d1m.wechat.service.InterfaceConfigService;
@@ -83,10 +85,8 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
         Menu menu = new Menu();
         menu.setMenuKey(interfaceConfig1.getMenuKey());
         if (menuMapper.selectCount(menu) > 0)
-            throw new WechatException(Message.INTERFACECONFIG_IN_USED_MENU, Message.INTERFACECONFIG_IN_USED_MENU.getName());
-        if (eventForwardService.findByInterfaceId(id) > 0)
-            throw new WechatException(Message.INTERFACECONFIG_IN_USED_EVENT_FORWARD, Message.INTERFACECONFIG_IN_USED_EVENT_FORWARD.getName());
-        InterfaceConfig interfaceConfig = new InterfaceConfig();
+            throw new WechatException(Message.INTERFACECONFIG_IN_USED, Message.INTERFACECONFIG_IN_USED.getName());
+           InterfaceConfig interfaceConfig = new InterfaceConfig();
         interfaceConfig.setId(id);
         interfaceConfig.setDeleted(true);
         return interfaceConfigMapper.updateByPrimaryKeySelective(interfaceConfig);
@@ -109,9 +109,10 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
             throw new WechatException(Message.INTERFACECONFIG_BRAND_EXIST, Message.INTERFACECONFIG_BRAND_EXIST.getName());
         String key = UUID.randomUUID().toString().replaceAll("-", "");
         String oldSecret = MD5.MD5Encode(key + interfaceConfigBrand.getName());
-        final String secret = oldSecret.substring(0, 15);
+        final String secret = oldSecret.substring(0, 16);
         interfaceConfigBrand.setKey(key);
         interfaceConfigBrand.setSecret(secret);
+        interfaceConfigBrand.setCreateAt(DateUtil.formatYYYYMMDDHHMMSS(new Date()));
         interfaceConfigBrandMapper.insertSelective(interfaceConfigBrand);
         Map<String, String> result = new HashMap<>();
         result.put("key", key);
@@ -181,14 +182,18 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 
     @Override
     public List<InterfaceConfigDto> getByEventForward(String id) {
-        List<InterfaceConfig> interfaceConfigs = interfaceConfigMapper.select(new InterfaceConfig(id));
+        List<InterfaceConfig> interfaceConfigs = interfaceConfigMapper.select(new InterfaceConfig(id, false));
         if (interfaceConfigs == null || interfaceConfigs.size() == 0) {
             return null;
         }
 
+        interfaceConfigs = interfaceConfigs.stream()
+                .filter((InterfaceConfig i) -> InterfaceType.TAKE_INITIATIVE_PUSH != i.getType())
+                .collect(Collectors.toList());
+
         List<InterfaceConfigDto> interfaceConfigDtos = new ArrayList<>();
 
-        List<EventForward> eventForwards = eventService.getForwardByThirdPartyId(Integer.parseInt(id));
+        List<EventForward> eventForwards = eventService.getForwardByThirdPartyIdAndStatus(Integer.parseInt(id), EventForwardStatus.INUSED.getStatus());
         if (eventForwards == null || eventForwards.size() == 0) {
             interfaceConfigs.forEach(interfaceConfig -> {
                 interfaceConfigDtos.add(new InterfaceConfigDto(interfaceConfig.getId(), interfaceConfig.getName(), interfaceConfig.getName()));

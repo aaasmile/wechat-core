@@ -8,6 +8,7 @@ import com.d1m.wechat.mapper.WxEventMapper;
 import com.d1m.wechat.model.EventForward;
 import com.d1m.wechat.model.EventForwardDetails;
 import com.d1m.wechat.model.WxEvent;
+import com.d1m.wechat.model.enums.EventForwardStatus;
 import com.d1m.wechat.pamametermodel.AddEventForwardModel;
 import com.d1m.wechat.pamametermodel.EditEventForwardModel;
 import com.d1m.wechat.service.EventService;
@@ -40,7 +41,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public boolean addEventForward(AddEventForwardModel model) {
-        EventForward eventForward = new EventForward(model.getThirdPartyId(), model.getInterfaceId());
+        EventForward eventForward = new EventForward(model.getThirdPartyId(), model.getInterfaceId(), EventForwardStatus.INUSED.getStatus());
         List<EventForward> eventForwards = eventForwardMapper.select(eventForward);
         if(eventForwards != null && eventForwards.size() > 0) {
             throw new WechatException(Message.EVENT_FORWARD_EXIST);
@@ -70,6 +71,11 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventForward> getForwardByThirdPartyId(Integer thirdPartyId) {
         return eventForwardMapper.select(new EventForward(thirdPartyId));
+    }
+
+    @Override
+    public List<EventForward> getForwardByThirdPartyIdAndStatus(Integer thirdPartyId, Integer status) {
+        return eventForwardMapper.select(new EventForward(thirdPartyId, status));
     }
 
     @Override

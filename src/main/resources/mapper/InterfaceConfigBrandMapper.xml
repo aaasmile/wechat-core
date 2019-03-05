@@ -6,12 +6,14 @@
     	<result column="name" property="name" />
     	<result column="app_key" property="key" />
     	<result column="app_secret" property="secret" />
+		<result column="create_at" property="createAt" />
     	<result column="is_deleted" property="deleted" />
 	</resultMap>
 
 	<select id="listBrand" resultMap="interfaceConfigBrandResultMap" >
-		SELECT id,name,app_key,app_secret,is_deleted
+		SELECT id,name,app_key,app_secret,create_at ,is_deleted
 		FROM interface_brand where  is_deleted=0
+		ORDER BY create_at DESC
 	</select>
 
 </mapper>
