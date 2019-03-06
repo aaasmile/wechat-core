@@ -202,13 +202,7 @@ public class InterfaceRabbitMQListener implements InterfaceRabbit {
     private void addKeyValue(Map<String, String> body, InterfaceConfigDto interfaceConfigDto) {
         log.info("增加unionid ----strat");
         try {
-            TenantContext.setCurrentTenant(body.get("wechatId"));
-            List<String> list = eventForwardService.queryEventForwardByInterfaceId(interfaceConfigDto.getId());
-            if (null == list || list.size() < 1) {
-                log.info("增加unionid------该用户不用附加uuid");
-                return;
-            }
-            if ("true".equals(list.get(0))) {
+            if ("true".equals(interfaceConfigDto.getUnionIdControl())) {
                 String wechatId = body.get("wechatId");
                 String toUserName = body.get("FromUserName");
                 WxUser wxUser = WechatClientDelegate.getUser(Integer.parseInt(wechatId), toUserName);
