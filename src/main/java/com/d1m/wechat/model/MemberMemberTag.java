@@ -139,11 +139,11 @@ public class MemberMemberTag {
 
 	public MemberMemberTag() {}
 
-	public MemberMemberTag(Integer memberId, Integer memberTagId, Integer wechatId, String openId) {
+	public MemberMemberTag(Integer memberId, Integer memberTagId, Integer wechatId, String openId, Date createdAt) {
         this.memberId = memberId;
         this.memberTagId = memberTagId;
         this.wechatId = wechatId;
         this.openId = openId;
-        this.createdAt = new Date();
+        this.createdAt = createdAt;
     }
 }

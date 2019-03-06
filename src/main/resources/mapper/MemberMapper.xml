@@ -961,4 +961,10 @@
         select id, open_id as openId from member where id >= #{offset} and wechat_id = #{wechatId} order by id limit #{rows}
     </select>
 
+    <select id="findMemberTagsByWechatIdForSubLimit" resultType="com.d1m.wechat.dto.MemberUseTagDto">
+        select x.id as id, x.open_id as openId, mmt.member_tag_id as tagId  from
+            (SELECT id, open_id FROM member where id >= #{offset} and wechat_id = #{wechatId} order by id limit #{rows}) x
+        left join member_member_tag mmt on mmt.member_id = x.id order by x.id;
+    </select>
+
 </mapper>

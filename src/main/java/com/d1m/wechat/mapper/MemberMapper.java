@@ -280,7 +280,5 @@ public interface MemberMapper extends MyMapper<Member> {
                                          @Param("sortName") String sortName, @Param("sortDir") String sortDir,
                                          @Param("bindStatus") Integer bindStatus, @Param("daytime") Date daytime);
 
-    List<Map<String, Object>> findByWechatIdForLimit(@Param("wechatId") Integer wechatId, @Param("offset") Integer offset, @Param("rows") Integer rows);
-
-    List<Map<String, Object>> findByWechatIdForSubLimit(@Param("wechatId") Integer wechatId, @Param("offset") Integer offset, @Param("rows") Integer rows);
+    List<MemberUseTagDto> findMemberTagsByWechatIdForSubLimit(@Param("wechatId") Integer wechatId, @Param("offset") Integer offset, @Param("rows") Integer rows);
 }
