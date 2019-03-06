@@ -30,7 +30,10 @@ public class InterfaceConfigDto {
     @Getter
     @Setter
     private Boolean retry;
-    private Integer status;        //修改
+    private Integer status;//修改
+    @Getter
+    @Setter
+    private String unionIdControl;          //是否需要uuid
 
     public String getId() {
         return id;
