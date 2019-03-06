@@ -90,7 +90,8 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
     public int delete(String id) throws WechatException {
         Menu menu = new Menu();
         menu.setUrl(id);
-        if (menuMapper.selectCount(menu) > 0)
+        menu.setStatus((byte) 0);
+        if (menuMapper.selectCount(menu) > 1)
             throw new WechatException(Message.INTERFACECONFIG_IN_USED, Message.INTERFACECONFIG_IN_USED.getName());
            InterfaceConfig interfaceConfig = new InterfaceConfig();
         interfaceConfig.setId(id);
@@ -144,7 +145,7 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
 
     @Override
     @CacheEvict(value = Constant.Cache.THIRD_PARTY_INTERFACE, allEntries = true)
-    public int deleteBrand(Long brand) throws WechatException {
+    public int deleteBrand(String brand) throws WechatException {
         if (interfaceConfigService.findByIdAndDeleted(brand) > 0)
            throw new WechatException(Message.INTERFACECONFIG_BRAND_IN_USED, Message.INTERFACECONFIG_BRAND_IN_USED.getName());
         InterfaceConfigBrand interfaceConfigBrand = new InterfaceConfigBrand();
@@ -244,9 +245,9 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
     }
 
     @Override
-    public int findByIdAndDeleted(Long brand) {
-        int count =interfaceConfigMapper.findIdAndDeleted(brand);
-        return count;
+    public int findByIdAndDeleted(String brand) {
+        return interfaceConfigMapper.findIdAndDeleted(brand);
+
     }
 
 }

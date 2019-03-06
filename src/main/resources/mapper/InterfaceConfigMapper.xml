@@ -129,10 +129,10 @@
     </update>
 
 
-    <update id="findIdAndDeleted">
-        SELECT count(*) from interface_config
-        WHERE brand = #{brand} and is_deleted = 0
-    </update>
+    <select id="findIdAndDeleted" resultType="java.lang.Integer">
+        SELECT count(*) from interface_config ic
+        WHERE ic.brand = #{brand} AND ic.is_deleted = 0
+    </select>
 </mapper>
 
 

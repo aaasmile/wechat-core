@@ -198,7 +198,7 @@ public class InterfaceConfigController extends BaseController {
     @ApiOperation(value = "删除第三方列表", tags = "第三方接口列表")
     @ApiResponse(code = 200, message = "删除第三方列表成功")
     @RequestMapping(value = "deleteBrand.json", method = RequestMethod.DELETE)
-    public JSONObject deleteBrand(@RequestParam("id") Long brand) {
+    public JSONObject deleteBrand(@RequestParam("id") String brand) {
         try {
             return representation(Message.SUCCESS, interfaceConfigService.deleteBrand(brand));
         } catch (WechatException e) {
