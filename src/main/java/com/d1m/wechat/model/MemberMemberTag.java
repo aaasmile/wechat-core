@@ -144,5 +144,6 @@ public class MemberMemberTag {
         this.memberTagId = memberTagId;
         this.wechatId = wechatId;
         this.openId = openId;
+        this.createdAt = new Date();
     }
 }
