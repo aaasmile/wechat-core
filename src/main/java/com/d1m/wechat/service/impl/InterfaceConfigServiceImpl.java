@@ -90,8 +90,8 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
     public int delete(String id) throws WechatException {
         Menu menu = new Menu();
         menu.setUrl(id);
-        menu.setStatus((byte) 0);
-        if (menuMapper.selectCount(menu) > 1)
+        menu.setStatus((byte) 1);
+        if (menuMapper.selectCount(menu) > 0)
             throw new WechatException(Message.INTERFACECONFIG_IN_USED, Message.INTERFACECONFIG_IN_USED.getName());
            InterfaceConfig interfaceConfig = new InterfaceConfig();
         interfaceConfig.setId(id);
