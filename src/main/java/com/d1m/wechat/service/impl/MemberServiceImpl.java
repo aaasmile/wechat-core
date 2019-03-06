@@ -38,7 +38,9 @@ import tk.mybatis.mapper.common.Mapper;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
@@ -283,7 +285,66 @@ public class MemberServiceImpl extends BaseService<Member> implements
 
     }
 
+    private void processAddMemberTag(Integer wechatId, AddMemberTagModel addMemberTagModel) {
+        List<MemberTag> memberTagsIn = getMemberTags(wechatId, addMemberTagModel.getTags());
 
+        String tenant = TenantContext.getCurrentTenant();
+        if(ObjectUtils.isEmpty(addMemberTagModel.getMemberIds())) {
+            Long count = memberMapper.countAll();
+            if(count == null || count == 0) {
+                throw new WechatException(Message.MEMBER_NOT_BLANK);
+            }
+
+            int threadID = 11;
+            int rows = count.intValue()/threadID-1;
+            int more = count.intValue()%threadID-1;
+            int offset = 0;
+
+            CountDownLatch countDownLatch = new CountDownLatch(threadID);
+
+            for (int i = 0; i < threadID; i++) {
+                if(i == threadID - 1) rows = more;
+
+                List<Map<String, Object>> members = memberMapper.findByWechatIdForLimit(wechatId, offset, rows);
+                offset = Integer.valueOf(members.get(members.size() - 1).get("id").toString());
+
+                new Thread(() -> {
+                    TenantContext.setCurrentTenant(tenant);
+                    List<MemberMemberTag> memberMemberTags = new ArrayList<>();
+                    members.forEach( map -> {
+                        Integer id = Integer.valueOf(map.get("id").toString());
+                        String opendId =  map.get("opendId").toString();
+                        List<Integer> memberTagDtoIds = memberMapper.getMemberMemberTagsByMemberId(id);
+                        List<MemberTag> addTags = memberTagsIn.stream().filter((MemberTag t) -> !memberTagDtoIds.contains(t.getId())).collect(Collectors.toList());
+                        addTags.forEach(tag -> memberMemberTags.add(new MemberMemberTag(id, tag.getId(), wechatId, opendId)));
+                    });
+                    memberMemberTagMapper.insertList(memberMemberTags);
+                    countDownLatch.countDown();
+                }).start();
+            }
+
+            try {
+                countDownLatch.await();
+            } catch (InterruptedException e) {
+                log.error("批量打标签异常");
+            }
+
+
+        } else {
+            List<Member> members = memberMapper.selectByMemberIdsAndWechatId(addMemberTagModel.getMemberIds(), wechatId);
+            if (members.isEmpty()) {
+                throw new WechatException(Message.MEMBER_NOT_BLANK);
+            }
+
+            List<MemberMemberTag> memberMemberTags = new ArrayList<>();
+            members.forEach( member -> {
+                List<Integer> memberTagDtoIds = memberMapper.getMemberMemberTagsByMemberId(member.getId());
+                List<MemberTag> addTags = memberTagsIn.stream().filter((MemberTag t) -> !memberTagDtoIds.contains(t.getId())).collect(Collectors.toList());
+                addTags.forEach(tag -> memberMemberTags.add(new MemberMemberTag(member.getId(), tag.getId(), wechatId, member.getOpenId())));
+            });
+            memberMemberTagMapper.insertList(memberMemberTags);
+        }
+    }
 
     private List<MemberTagDto> processAddMemberTag(Integer wechatId, User user,
                                                    AddMemberTagModel addMemberTagModel) {
@@ -345,7 +406,14 @@ public class MemberServiceImpl extends BaseService<Member> implements
                 throw new WechatException(Message.MEMBER_ADD_TAG_OPERATOR_ONLY);
             }
 
-            return processAddMemberTag(wechatId, user, addMemberTagModel);
+            //return processAddMemberTag(wechatId, user, addMemberTagModel);
+            processAddMemberTag(wechatId, addMemberTagModel);
+
+            List<MemberTagDto> memberTagDtos = new ArrayList<>();
+            addMemberTagModel.getTags().forEach( memberTagModel -> {
+                memberTagDtos.add(new MemberTagDto(memberTagModel.getId(), memberTagModel.getName()));
+            });
+            return memberTagDtos;
         } catch (WechatException e) {
             throw e;
         } catch (Exception e) {
