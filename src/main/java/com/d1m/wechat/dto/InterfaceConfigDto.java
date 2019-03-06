@@ -64,7 +64,7 @@ public class InterfaceConfigDto {
         this.name = name;
     }
 
-    public int getMethodType() {                  //修改
+    public Integer getMethodType() {                  //修改
         return methodType;
     }
 
