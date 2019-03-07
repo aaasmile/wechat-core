@@ -184,11 +184,4 @@ public class MemberTagDto {
 	public void setMemberTagTypeName(String memberTagTypeName) {
 		this.memberTagTypeName = memberTagTypeName;
 	}
-	
-	public MemberTagDto() {}
-
-	public MemberTagDto(Integer id, String name) {
-		this.id = id;
-		this.name = name;
-	}
 }
