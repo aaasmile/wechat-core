@@ -963,8 +963,97 @@
 
     <select id="findMemberTagsByWechatIdForSubLimit" resultType="com.d1m.wechat.dto.MemberUseTagDto">
         select x.id as id, x.open_id as openId, mmt.member_tag_id as tagId  from
-            (SELECT id, open_id FROM member where id >= #{offset} and wechat_id = #{wechatId} order by id limit #{rows}) x
-        left join member_member_tag mmt on mmt.member_id = x.id order by x.id;
+            (SELECT m.id, m.open_id FROM member m
+        <if test="memberTags != null and memberTags.length &gt; 0">
+            inner join (
+              select t.member_id from member_member_tag t where t.member_tag_id in
+            <foreach close=")" collection="memberTags" index="index" item="item" open="(" separator=",">
+                #{item}
+            </foreach>
+              group by t.member_id)
+            as mt on mt.member_id = m.id
+        </if>
+            where m.id >= #{offset} and m.wechat_id = #{wechatId}
+        <if test="nickname != null">
+            and m.nickname like CONCAT('%',#{nickname},'%')
+        </if>
+        <if test="mobile != null">
+            and m.mobile like CONCAT('%',#{mobile},'%')
+        </if>
+        <if test="subscribe != null">
+            <if test="subscribe == true">
+                and m.is_subscribe = 1
+            </if>
+            <if test="subscribe == false">
+                and m.is_subscribe = 0
+            </if>
+        </if>
+        <if test="sex != null">
+            and m.sex = #{sex}
+        </if>
+        <if test="country != null">
+            and m.country = #{country}
+        </if>
+        <if test="province != null">
+            and m.province = #{province}
+        </if>
+        <if test="city != null">
+            and m.city = #{city}
+        </if>
+        <if test="isOnline != null">
+            <if test="isOnline == true">
+                and (m.is_subscribe = 1 and now() <![CDATA[ <= ]]> DATE_ADD(m.last_conversation_at, INTERVAL 48
+                DAY_HOUR))
+            </if>
+            <if test="isOnline == false">
+                and (m.is_subscribe = 0 or m.last_conversation_at is null or (m.is_subscribe = 1 and now()
+                <![CDATA[ > ]]> DATE_ADD(m.last_conversation_at, INTERVAL 48 DAY_HOUR)))
+            </if>
+        </if>
+        <if test="bindStatus != null">
+            <if test="bindStatus != 2">
+                and m.status = #{bindStatus}
+            </if>
+            <if test="bindStatus == 2">
+                and m.status is null
+            </if>
+        </if>
+        <if test="activityStartAt != null">
+            and m.activity &gt;= #{activityStartAt}
+        </if>
+        <if test="activityEndAt != null">
+            and m.activity &lt;= #{activityEndAt}
+        </if>
+        <if test="batchSendOfMonthStartAt != null">
+            and m.batchsend_month &gt;= #{batchSendOfMonthStartAt}
+        </if>
+        <if test="batchSendOfMonthEndAt != null">
+            and m.batchsend_month &lt;= #{batchSendOfMonthEndAt}
+        </if>
+        <if test="attentionStartAt != null">
+            and m.subscribe_at &gt;= #{attentionStartAt}
+        </if>
+        <if test="attentionEndAt != null">
+            and m.subscribe_at &lt;= #{attentionEndAt}
+        </if>
+        <if test="cancelSubscribeStartAt != null">
+            and m.unsubscribe_at &gt;= #{cancelSubscribeStartAt}
+        </if>
+        <if test="cancelSubscribeEndAt != null">
+            and m.unsubscribe_at &lt;= #{cancelSubscribeEndAt}
+        </if>
+        <if test="fuzzyRemarks!=null">
+            and m.remark like CONCAT('%', #{fuzzyRemarks}, '%')
+        </if>
+            order by m.id limit #{rows}) x
+        left join member_member_tag mmt on mmt.member_id = x.id
+        <if test="memberTags != null and memberTags.length &gt; 0">
+            where mmt.member_tag_id in
+            <foreach close=")" collection="memberTags" index="index" item="item" open="(" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        order by x.id;
     </select>
 
 </mapper>

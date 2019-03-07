@@ -285,9 +285,10 @@ public class MemberServiceImpl extends BaseService<Member> implements
     }
 
     private void processAddMemberTag(Integer wechatId, AddMemberTagModel addMemberTagModel) {
+        MemberModel memberModel = addMemberTagModel.getMemberModel();
         List<MemberTag> memberTagsIn = getMemberTags(wechatId, addMemberTagModel.getTags());
 
-        String tenant = TenantContext.getCurrentTenant();
+        //String tenant = TenantContext.getCurrentTenant();
         if(ObjectUtils.isEmpty(addMemberTagModel.getMemberIds())) {
             Long count = memberMapper.countAll();
             if(count == null || count == 0) {
@@ -302,7 +303,26 @@ public class MemberServiceImpl extends BaseService<Member> implements
 
             for (int i = 0; i < threadID; i++) {
                 if(i == threadID - 1) rows = more;
-                List<MemberUseTagDto> members = memberMapper.findMemberTagsByWechatIdForSubLimit(wechatId, offset, rows);
+                List<MemberUseTagDto> members = memberMapper.findMemberTagsByWechatIdForSubLimit(wechatId, offset, rows,
+                        memberModel.getMemberTags(),
+                        memberModel.getNickname(),
+                        memberModel.getMobile(),
+                        memberModel.getSubscribe(),
+                        memberModel.getSex(),
+                        memberModel.getCountry(),
+                        memberModel.getProvince(),
+                        memberModel.getCity(),
+                        memberModel.getIsOnline(),
+                        null,
+                        memberModel.getActivityStartAt(),
+                        memberModel.getActivityEndAt(),
+                        memberModel.getBatchSendOfMonthStartAt(),
+                        memberModel.getBatchSendOfMonthEndAt(),
+                        DateUtil.getDateBegin(DateUtil.parse(memberModel.getAttentionStartAt())),
+                        DateUtil.getDateBegin(DateUtil.parse(memberModel.getAttentionEndAt())),
+                        DateUtil.getDateBegin(DateUtil.parse(memberModel.getCancelSubscribeStartAt())),
+                        DateUtil.getDateBegin(DateUtil.parse(memberModel.getCancelSubscribeEndAt())),
+                        addMemberTagModel.getFuzzyRemarks());
                 offset = Integer.valueOf(members.get(members.size() - 1).getId());
 
                 List<MemberMemberTag> memberMemberTags = new ArrayList<>();
