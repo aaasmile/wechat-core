@@ -149,7 +149,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
         long total = memberMapper.count(wechatId, memberModel.getOpenId(),
                 memberModel.getNickname(), memberModel.getSex(), memberModel
                         .getCountry(), memberModel.getProvince(), memberModel
-                        .getCity(), memberModel.getSubscribe(), memberModel
+                        .getCity(), addMemberTagModel.getSubscribe(), memberModel
                         .getActivityStartAt(), memberModel.getActivityEndAt(),
                 memberModel.getBatchSendOfMonthStartAt(), memberModel
                         .getBatchSendOfMonthEndAt(), DateUtil
@@ -179,7 +179,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
             list = memberMapper.search(wechatId, memberModel.getOpenId(),
                     memberModel.getNickname(), memberModel.getSex(), memberModel
                             .getCountry(), memberModel.getProvince(), memberModel
-                            .getCity(), memberModel.getSubscribe(), memberModel
+                            .getCity(), addMemberTagModel.getSubscribe(), memberModel
                             .getActivityStartAt(), memberModel.getActivityEndAt(),
                     memberModel.getBatchSendOfMonthStartAt(), memberModel
                             .getBatchSendOfMonthEndAt(), DateUtil
@@ -258,7 +258,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
             members = memberMapper.search(wechatId, memberModel.getOpenId(),
                     memberModel.getNickname(), memberModel.getSex(),
                     memberModel.getCountry(), memberModel.getProvince(),
-                    memberModel.getCity(), memberModel.getSubscribe(),
+                    memberModel.getCity(), addMemberTagModel.getSubscribe(),
                     memberModel.getActivityStartAt(), memberModel
                             .getActivityEndAt(), memberModel
                             .getBatchSendOfMonthStartAt(), memberModel
@@ -1077,7 +1077,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
         return memberMapper.search(wechatId, memberModel.getOpenId(),
                 memberModel.getNickname(), memberModel.getSex(), memberModel
                         .getCountry(), memberModel.getProvince(), memberModel
-                        .getCity(), memberModel.getSubscribe(), memberModel
+                        .getCity(), addMemberTagModel.getSubscribe(), memberModel
                         .getActivityStartAt(), memberModel.getActivityEndAt(),
                 memberModel.getBatchSendOfMonthStartAt(), memberModel
                         .getBatchSendOfMonthEndAt(), DateUtil
