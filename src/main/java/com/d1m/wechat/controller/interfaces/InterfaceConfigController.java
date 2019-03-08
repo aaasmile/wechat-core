@@ -6,6 +6,7 @@ import com.d1m.wechat.domain.web.BaseResponse;
 import com.d1m.wechat.dto.EventForwardDto;
 import com.d1m.wechat.dto.InterfaceConfigDto;
 import com.d1m.wechat.exception.WechatException;
+import com.d1m.wechat.mapper.EventForwardMapper;
 import com.d1m.wechat.model.EventForward;
 import com.d1m.wechat.model.InterfaceConfig;
 import com.d1m.wechat.model.InterfaceConfigBrand;
@@ -50,7 +51,8 @@ public class InterfaceConfigController extends BaseController {
     private EventForwardService eventForwardService;
 
     @Autowired
-    private InterfaceSecretService interfaceSecretService;
+   private EventForwardMapper eventForwardMapper;
+
 
     @ApiOperation(value = "查询第三方接口", tags = "第三方接口列表")
     @ApiResponse(code = 200, message = "获取第三方接口信息成功")
@@ -96,6 +98,7 @@ public class InterfaceConfigController extends BaseController {
             final InterfaceConfig ifcf = new InterfaceConfig();
             ifcf.setName(interfaceConfig.getName());
             ifcf.setBrand(interfaceConfig.getBrand());
+            ifcf.setDeleted(false);
             int count = interfaceConfigService.checkRepeat(ifcf);
             if (count > 0) {
                 return representation(Message.INTERFACECONFIG_EXIST);
@@ -322,9 +325,11 @@ public class InterfaceConfigController extends BaseController {
     @ApiResponse(code = 200, message = "操作成功")
     @PutMapping("eventForwardEnableOrDisable.json/{id}")
     public JSONObject updateCardStatus(@PathVariable Integer id, @RequestBody updateEventForwardStatusReq urfsr) {
+        final EventForward efw =eventForwardMapper.selectByPrimaryKey(id);
         final EventForward eventForward = EventForward.builder()
                 .id(id)
                 .status(urfsr.status)
+                .updateAt(efw.getUpdateAt())
                 .build();
         eventForwardService.updateStatus(eventForward);
         return representation(Message.SUCCESS, null);

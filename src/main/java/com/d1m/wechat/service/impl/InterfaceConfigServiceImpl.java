@@ -238,7 +238,8 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
     @CacheEvict(value = Constant.Cache.THIRD_PARTY_INTERFACE, allEntries = true)
     public void enableOrDisable(InterfaceStatus status, String id) {
         try {
-            int t = interfaceConfigMapper.updateStatusById(id, status, DateUtil.formatYYYYMMDDHHMM(new Date()));
+            final InterfaceConfig interfaceConfig = interfaceConfigMapper.selectByPrimaryKey(id);
+            int t = interfaceConfigMapper.updateStatusById(id, status, interfaceConfig.getUpdatedAt());
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
