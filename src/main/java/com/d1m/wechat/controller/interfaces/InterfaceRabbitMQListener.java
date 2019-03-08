@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.d1m.common.ds.TenantContext;
 import com.d1m.wechat.domain.web.BaseResponse;
 import com.d1m.wechat.dto.InterfaceConfigDto;
+import com.d1m.wechat.service.AsyncService;
 import com.d1m.wechat.service.EventForwardService;
 import com.d1m.wechat.service.InterfaceConfigService;
 import com.d1m.wechat.service.InterfaceRabbit;
@@ -54,21 +55,16 @@ public class InterfaceRabbitMQListener implements InterfaceRabbit {
 
     private RestTemplate restTemplate;
 
+    @Autowired
+    private AsyncService asyncService;
+
     @SuppressWarnings("UnstableApiUsage")
-    private final Retryer<Boolean> retryer = RetryerBuilder
-            .<Boolean>newBuilder()
-            .retryIfException() //异常重试
-            .retryIfRuntimeException() //运行时异常也重试
-            .retryIfResult(result -> Objects.equals(result, Boolean.FALSE)) //返回结果部位true重试
-            .withWaitStrategy(WaitStrategies.fixedWait(1, TimeUnit.MINUTES)) //重试策略：间隔1分钟
-            .withStopStrategy(StopStrategies.stopAfterAttempt(3)) //重试策略: 共重试三次
-            .withRetryListener(new RetryListener() {
-                @Override
-                public <V> void onRetry(Attempt<V> attempt) {
-                    log.info("attempt number: {}", attempt.getAttemptNumber());
-                }
-            })
-            .build();
+    private RetryListener retryListener = new RetryListener() {
+        @Override
+        public <V> void onRetry(Attempt<V> attempt) {
+            log.info("attempt number: {}", attempt.getAttemptNumber());
+        }
+    };
 
     @Autowired
     private InterfaceConfigService interfaceConfigService;
@@ -144,21 +140,30 @@ public class InterfaceRabbitMQListener implements InterfaceRabbit {
 
             if (CollectionUtils.isNotEmpty(interfaceConfigDtos)) {
                 interfaceConfigDtos.parallelStream()
-                        .forEach(interfaceConfigDto -> {
-                            try {
-                                if (Boolean.TRUE.equals(interfaceConfigDto.getRetry())) {
-                                    this.retryer.call(() -> {
-                                        this.sendToThirdPart(interfaceConfigDto, payload);
-                                        return Boolean.TRUE;
-                                    });
-                                } else {
-                                    this.sendToThirdPart(interfaceConfigDto, payload);
-                                }
-                            } catch (ExecutionException | RetryException e) {
-                                log.error("事件转发失败", e);
-                            }
-
-                        });
+                        .forEach(interfaceConfigDto ->
+                                asyncService.asyncInvoke(() -> {
+                                    final Retryer<Boolean> retryer = RetryerBuilder
+                                            .<Boolean>newBuilder()
+                                            .retryIfException() //异常重试
+                                            .retryIfRuntimeException() //运行时异常也重试
+                                            .retryIfResult(result -> Objects.equals(result, Boolean.FALSE)) //返回结果部位true重试
+                                            .withWaitStrategy(WaitStrategies.fixedWait(1, TimeUnit.MINUTES)) //重试策略：间隔1分钟
+                                            .withStopStrategy(StopStrategies.stopAfterAttempt(3)) //重试策略: 共重试三次
+                                            .withRetryListener(retryListener)
+                                            .build();
+                                    try {
+                                        if (Boolean.TRUE.equals(interfaceConfigDto.getRetry())) {
+                                            retryer.call(() -> {
+                                                this.sendToThirdPart(interfaceConfigDto, payload);
+                                                return Boolean.TRUE;
+                                            });
+                                        } else {
+                                            this.sendToThirdPart(interfaceConfigDto, payload);
+                                        }
+                                    } catch (ExecutionException | RetryException e) {
+                                        log.error("事件转发失败", e);
+                                    }
+                                }));
             }
 
 
@@ -197,13 +202,7 @@ public class InterfaceRabbitMQListener implements InterfaceRabbit {
     private void addKeyValue(Map<String, String> body, InterfaceConfigDto interfaceConfigDto) {
         log.info("增加unionid ----strat");
         try {
-            TenantContext.setCurrentTenant(body.get("wechatId"));
-            List<String> list = eventForwardService.queryEventForwardByInterfaceId(interfaceConfigDto.getId());
-            if (null == list || list.size() < 1) {
-                log.info("增加unionid------该用户不用附加uuid");
-                return;
-            }
-            if ("true".equals(list.get(0))) {
+            if ("true".equals(interfaceConfigDto.getUnionIdControl())) {
                 String wechatId = body.get("wechatId");
                 String toUserName = body.get("FromUserName");
                 WxUser wxUser = WechatClientDelegate.getUser(Integer.parseInt(wechatId), toUserName);

@@ -22,7 +22,7 @@
         <result column="updated_by" property="updatedBy"/>
         <result column="status" jdbcType="TINYINT" property="status"/>
         <result column="retry" jdbcType="TINYINT" property="retry"/>
-
+        <result column="user_uuid" property="unionIdControl"/>
     </resultMap>
 
     <select id="selectItems" resultMap="interfaceConfigResultMap" parameterType="java.util.HashMap">
@@ -108,7 +108,8 @@
                         ib.name AS brand,
                         ifs.app_key,
                         ifs.app_secret,
-                        ic.retry
+                        ic.retry,
+                        ef.user_uuid
         from interface_config ic
                  left join event_forward ef on ic.id = ef.interface_id
                  LEFT JOIN interface_brand ib ON ib.id = ic.brand
