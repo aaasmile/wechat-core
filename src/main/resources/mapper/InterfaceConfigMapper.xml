@@ -3,7 +3,6 @@
 <mapper namespace="com.d1m.wechat.mapper.InterfaceConfigMapper">
     <resultMap type="com.d1m.wechat.dto.InterfaceConfigDto" id="interfaceConfigResultMap">
         <id column="id" property="id"/>
-        <result column="menu_key" property="menuKey"/>
         <result column="brand" property="brand"/>
         <result column="app_key" property="key"/>
         <result column="app_secret" property="secret"/>
@@ -27,7 +26,7 @@
     </resultMap>
 
     <select id="selectItems" resultMap="interfaceConfigResultMap" parameterType="java.util.HashMap">
-        SELECT ic.id,ic.name,ic.method_type,ic.type,ic.event,ic.parameter,ic.description,ic.url, ic.wrong_url
+        SELECT ic.id,ic.name,ic.type,ic.event,ic.parameter,ic.description,ic.url, ic.wrong_url
         ,ic.sequence,ic.is_deleted,ic.created_at,ic.created_by,ic.updated_at,ic.updated_by,ib.name AS
         brand, ifs.app_key,ic.status,ic.retry
         FROM interface_config ic
@@ -90,8 +89,7 @@
           AND ic.name = #{name}
     </select>
 
-    <select id="findInterfaceConfigDtoByWxEventCode"
-            resultMap="com.d1m.wechat.mapper.InterfaceConfigMapper.interfaceConfigResultMap">
+    <select id="findInterfaceConfigDtoByWxEventCode" resultMap="interfaceConfigResultMap">
         select distinct ic.id,
                         ic.name,
                         ic.method_type,
@@ -108,8 +106,8 @@
                         ic.updated_at,
                         ic.updated_by,
                         ib.name AS brand,
-                        ib.app_key,
-                        ib.app_secret,
+                        ifs.app_key,
+                        ifs.app_secret,
                         ic.retry,
                         ef.user_uuid
         from interface_config ic
@@ -117,6 +115,7 @@
                  LEFT JOIN interface_brand ib ON ib.id = ic.brand
                  left join event_forward_details efd on efd.event_forward_id = ef.id
                  left join wx_event we on we.id = efd.event_id
+                 left join interface_secret ifs ON ic.brand = ifs.brand_id AND ic.type = ifs.type
         where ib.is_deleted = 0
           and ic.is_deleted = 0
           and ic.status = 1
