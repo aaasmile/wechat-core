@@ -20,6 +20,7 @@ import com.d1m.wechat.model.enums.InterfaceType;
 import com.d1m.wechat.service.EventForwardService;
 import com.d1m.wechat.service.EventService;
 import com.d1m.wechat.service.InterfaceConfigService;
+import com.d1m.wechat.service.InterfaceSecretService;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.MD5;
 import com.d1m.wechat.util.Message;
@@ -30,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -50,20 +52,30 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
     @Autowired
     private EventService eventService;
 
+    @Autowired
 	private EventForwardMapper eventForwardMapper;
+
+    @Autowired
+	private InterfaceConfigService interfaceConfigService;
+
+    @Autowired
+    private InterfaceSecretService interfaceSecretService;
 
 	@Override
 	public Page<InterfaceConfigDto> selectItems(Map<String, String> query) {
 		return interfaceConfigMapper.selectItems(query);
 
+
     }
 
     @Override
+    @Transactional
     public String create(InterfaceConfig interfaceConfig) {
 
         String id = UUID.randomUUID().toString().replaceAll("-", "");
         interfaceConfig.setId(id);
         interfaceConfigMapper.insertSelective(interfaceConfig);
+        interfaceSecretService.createKeyAndSecret(interfaceConfig.getBrand(),interfaceConfig.getType(),interfaceConfig.getName());
         return id;
 
     }
@@ -78,15 +90,17 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
     private EventForwardService eventForwardService;
 
 
+
+
     @Override
     @CacheEvict(value = Constant.Cache.THIRD_PARTY_INTERFACE, allEntries = true)
     public int delete(String id) throws WechatException {
-        InterfaceConfig interfaceConfig1 = interfaceConfigMapper.selectByPrimaryKey(id);
         Menu menu = new Menu();
-        menu.setMenuKey(interfaceConfig1.getMenuKey());
+        menu.setUrl(id);
+        menu.setStatus((byte) 1);
         if (menuMapper.selectCount(menu) > 0)
             throw new WechatException(Message.INTERFACECONFIG_IN_USED, Message.INTERFACECONFIG_IN_USED.getName());
-           InterfaceConfig interfaceConfig = new InterfaceConfig();
+        InterfaceConfig interfaceConfig = new InterfaceConfig();
         interfaceConfig.setId(id);
         interfaceConfig.setDeleted(true);
         return interfaceConfigMapper.updateByPrimaryKeySelective(interfaceConfig);
@@ -103,6 +117,15 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
     }
 
     @Override
+    public void createBrand(InterfaceConfigBrand interfaceConfigBrand) {
+        List<InterfaceConfigBrand> select = interfaceConfigBrandMapper.select(interfaceConfigBrand);
+        if (CollectionUtils.isNotEmpty(select))
+            throw new WechatException(Message.INTERFACECONFIG_BRAND_EXIST, Message.INTERFACECONFIG_BRAND_EXIST.getName());
+        interfaceConfigBrand.setCreateAt(DateUtil.formatYYYYMMDDHHMMSS(new Date()));
+        interfaceConfigBrandMapper.insertSelective(interfaceConfigBrand);
+    }
+
+   /* @Override
     public Map<String, String> createBrand(InterfaceConfigBrand interfaceConfigBrand) throws WechatException {
         List<InterfaceConfigBrand> select = interfaceConfigBrandMapper.select(interfaceConfigBrand);
         if (CollectionUtils.isNotEmpty(select))
@@ -118,7 +141,9 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
         result.put("key", key);
         result.put("secret", secret);
         return result;
-    }
+    }*/
+
+
 
     @Override
     @CacheEvict(value = Constant.Cache.THIRD_PARTY_INTERFACE, allEntries = true)
@@ -128,23 +153,17 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
         List<InterfaceConfigBrand> select = interfaceConfigBrandMapper.select(icb);
         if (CollectionUtils.isNotEmpty(select))
             throw new WechatException(Message.INTERFACECONFIG_BRAND_EXIST, Message.INTERFACECONFIG_BRAND_EXIST.getName());
-        String key = UUID.randomUUID().toString().replaceAll("-", "");
-        String oldSecret = MD5.MD5Encode(key + interfaceConfigBrand.getName());
-        final String secret = oldSecret.substring(0, 15);
-        interfaceConfigBrand.setKey(key);
-        interfaceConfigBrand.setSecret(secret);
+        interfaceConfigBrand.setCreateAt(DateUtil.formatYYYYMMDDHHMMSS(new Date()));
         return interfaceConfigBrandMapper.updateByPrimaryKeySelective(interfaceConfigBrand);
     }
 
     @Override
     @CacheEvict(value = Constant.Cache.THIRD_PARTY_INTERFACE, allEntries = true)
-    public int deleteBrand(String id) throws WechatException {
-        InterfaceConfig interfaceConfig = new InterfaceConfig();
-        interfaceConfig.setBrand(id);
-        if (interfaceConfigMapper.selectCount(interfaceConfig) > 0)
-            throw new WechatException(Message.INTERFACECONFIG_BRAND_IN_USED, Message.INTERFACECONFIG_BRAND_IN_USED.getName());
+    public int deleteBrand(String brand) throws WechatException {
+        if (interfaceConfigService.findByIdAndDeleted(brand) > 0)
+           throw new WechatException(Message.INTERFACECONFIG_BRAND_IN_USED, Message.INTERFACECONFIG_BRAND_IN_USED.getName());
         InterfaceConfigBrand interfaceConfigBrand = new InterfaceConfigBrand();
-        interfaceConfigBrand.setId(Long.valueOf(id));
+        interfaceConfigBrand.setId(Long.valueOf(brand).longValue());
         interfaceConfigBrand.setDeleted(true);
         return interfaceConfigBrandMapper.updateByPrimaryKeySelective(interfaceConfigBrand);
     }
@@ -216,6 +235,7 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
      * @param status 状态 0 停用，1 启用
      * @param id
      */
+    @CacheEvict(value = Constant.Cache.THIRD_PARTY_INTERFACE, allEntries = true)
     public void enableOrDisable(InterfaceStatus status, String id) {
         try {
             int t = interfaceConfigMapper.updateStatusById(id, status, DateUtil.formatYYYYMMDDHHMM(new Date()));
@@ -236,6 +256,12 @@ public class InterfaceConfigServiceImpl implements InterfaceConfigService {
         InterfaceConfig interfaceConfig = new InterfaceConfig();
         interfaceConfig.setId(id);
         return interfaceConfigMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public int findByIdAndDeleted(String brand) {
+        return interfaceConfigMapper.findIdAndDeleted(brand);
+
     }
 
 }

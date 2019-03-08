@@ -23,16 +23,18 @@
         <result column="updated_by" property="updatedBy"/>
         <result column="status" jdbcType="TINYINT" property="status"/>
         <result column="retry" jdbcType="TINYINT" property="retry"/>
-
+        <result column="user_uuid" property="unionIdControl"/>
     </resultMap>
 
     <select id="selectItems" resultMap="interfaceConfigResultMap" parameterType="java.util.HashMap">
         SELECT ic.id,ic.name,ic.method_type,ic.type,ic.event,ic.parameter,ic.description,ic.url, ic.wrong_url
         ,ic.sequence,ic.is_deleted,ic.created_at,ic.created_by,ic.updated_at,ic.updated_by,ib.name AS
-        brand,ib.app_key,ic.status,ic.retry
+        brand, ifs.app_key,ic.status,ic.retry
         FROM interface_config ic
         LEFT JOIN interface_brand ib ON ib.id = ic.brand
+        LEFT JOIN interface_secret ifs ON ic.brand = ifs.brand_id AND ic.type = ifs.type
         WHERE ic.is_deleted = 0
+         AND ib.is_deleted = 0
         <if test="id != null and id!='' ">AND ic.id = #{id}</if>
         <if test="brand != null and brand!=0">AND ic.brand =#{brand}</if>
         <if test="name != null and name!=''">AND ic.name LIKE concat ('%',#{name},'%')</if>
@@ -63,22 +65,24 @@
                ic.updated_at,
                ic.updated_by,
                ib.name AS brand,
-               ib.app_key,
-               ib.app_secret,
+               ifs.app_key,
+               ifs.app_secret,
+               ic.status,
                ic.retry
         FROM interface_config ic
                  LEFT JOIN interface_brand ib ON ib.id = ic.brand
+                 LEFT JOIN interface_secret ifs ON ic.brand = ifs.brand_id AND ic.type = ifs.type
         WHERE ic.id = #{0}
     </select>
 
     <select id="getSecret" resultMap="interfaceConfigResultMap" parameterType="java.lang.String">
-        SELECT ib.app_key, ib.app_secret
+        SELECT ifs.app_key, ifs.app_secret
         FROM interface_config ic
-                 LEFT JOIN interface_brand ib ON ib.id = ic.brand
-        WHERE ic.id = #{0}
+                 LEFT JOIN  interface_secret ifs ON ic.brand = ifs.brand_id AND ic.type = ifs.type
+        WHERE ic.id = #{id}
     </select>
 
-    <select id="checkRepeatById" resultType="int">
+    <select id="checkRepeatById" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM interface_config ic
         WHERE ic.id != #{id}
@@ -106,7 +110,8 @@
                         ib.name AS brand,
                         ib.app_key,
                         ib.app_secret,
-                        ic.retry
+                        ic.retry,
+                        ef.user_uuid
         from interface_config ic
                  left join event_forward ef on ic.id = ef.interface_id
                  LEFT JOIN interface_brand ib ON ib.id = ic.brand
@@ -114,7 +119,8 @@
                  left join wx_event we on we.id = efd.event_id
         where ib.is_deleted = 0
           and ic.is_deleted = 0
-          and ic.status = 0
+          and ic.status = 1
+          and ef.status = 1
           and we.code = #{eventCode}
     </select>
 
@@ -124,6 +130,12 @@
             status     = #{status}
         WHERE id = #{id}
     </update>
+
+
+    <select id="findIdAndDeleted" resultType="java.lang.Integer">
+        SELECT count(*) from interface_config ic
+        WHERE ic.brand = #{brand} AND ic.is_deleted = 0
+    </select>
 </mapper>
 
 
