@@ -136,4 +136,14 @@ public class MemberMemberTag {
 	public void setOpenId(String openId) {
 		this.openId = openId;
 	}
+
+	public MemberMemberTag() {}
+
+	public MemberMemberTag(Integer memberId, Integer memberTagId, Integer wechatId, String openId, Date createdAt) {
+        this.memberId = memberId;
+        this.memberTagId = memberTagId;
+        this.wechatId = wechatId;
+        this.openId = openId;
+        this.createdAt = createdAt;
+    }
 }
