@@ -24,7 +24,8 @@ public interface InterfaceConfigService {
 
     List<InterfaceConfigBrandDto> listBrand();
 
-    Map<String, String> createBrand(InterfaceConfigBrand interfaceConfigBrand) throws WechatException;
+    //Map<String, String> createBrand(InterfaceConfigBrand interfaceConfigBrand) throws WechatException;
+     void createBrand(InterfaceConfigBrand interfaceConfigBrand);
 
     int updateBrand(InterfaceConfigBrand interfaceConfigBrand);
 
@@ -60,4 +61,6 @@ public interface InterfaceConfigService {
     InterfaceConfig checkIsExist(String id);
 
     int findByIdAndDeleted(String brand);
+
+
 }
