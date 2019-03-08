@@ -29,9 +29,10 @@
     <select id="selectItems" resultMap="interfaceConfigResultMap" parameterType="java.util.HashMap">
         SELECT ic.id,ic.name,ic.method_type,ic.type,ic.event,ic.parameter,ic.description,ic.url, ic.wrong_url
         ,ic.sequence,ic.is_deleted,ic.created_at,ic.created_by,ic.updated_at,ic.updated_by,ib.name AS
-        brand,ib.app_key,ic.status,ic.retry
+        brand, ifs.app_key,ic.status,ic.retry
         FROM interface_config ic
         LEFT JOIN interface_brand ib ON ib.id = ic.brand
+        LEFT JOIN interface_secret ifs ON ic.brand = ifs.brand_id AND ic.type = ifs.type
         WHERE ic.is_deleted = 0
          AND ib.is_deleted = 0
         <if test="id != null and id!='' ">AND ic.id = #{id}</if>
@@ -64,23 +65,24 @@
                ic.updated_at,
                ic.updated_by,
                ib.name AS brand,
-               ib.app_key,
-               ib.app_secret,
+               ifs.app_key,
+               ifs.app_secret,
                ic.status,
                ic.retry
         FROM interface_config ic
                  LEFT JOIN interface_brand ib ON ib.id = ic.brand
+                 LEFT JOIN interface_secret ifs ON ic.brand = ifs.brand_id AND ic.type = ifs.type
         WHERE ic.id = #{0}
     </select>
 
     <select id="getSecret" resultMap="interfaceConfigResultMap" parameterType="java.lang.String">
-        SELECT ib.app_key, ib.app_secret
+        SELECT ifs.app_key, ifs.app_secret
         FROM interface_config ic
-                 LEFT JOIN interface_brand ib ON ib.id = ic.brand
-        WHERE ic.id = #{0}
+                 LEFT JOIN  interface_secret ifs ON ic.brand = ifs.brand_id AND ic.type = ifs.type
+        WHERE ic.id = #{id}
     </select>
 
-    <select id="checkRepeatById" resultType="int">
+    <select id="checkRepeatById" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM interface_config ic
         WHERE ic.id != #{id}

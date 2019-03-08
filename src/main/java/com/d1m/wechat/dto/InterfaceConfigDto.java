@@ -71,7 +71,7 @@ public class InterfaceConfigDto {
         return methodType;
     }
 
-    public void setMethodType(int methodType) {    //修改
+    public void setMethodType(Integer methodType) {    //修改
         this.methodType = methodType;                              //修改
     }
 

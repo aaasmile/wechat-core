@@ -12,6 +12,7 @@ import com.d1m.wechat.model.InterfaceConfigBrand;
 import com.d1m.wechat.model.enums.InterfaceStatus;
 import com.d1m.wechat.service.EventForwardService;
 import com.d1m.wechat.service.InterfaceConfigService;
+import com.d1m.wechat.service.InterfaceSecretService;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.Message;
 import com.github.pagehelper.Page;
@@ -48,6 +49,9 @@ public class InterfaceConfigController extends BaseController {
     @Autowired
     private EventForwardService eventForwardService;
 
+    @Autowired
+    private InterfaceSecretService interfaceSecretService;
+
     @ApiOperation(value = "查询第三方接口", tags = "第三方接口列表")
     @ApiResponse(code = 200, message = "获取第三方接口信息成功")
     @ApiImplicitParams({
@@ -74,10 +78,8 @@ public class InterfaceConfigController extends BaseController {
             final List<InterfaceConfigDto> collect = interfaceConfigDtos.stream().map(icd -> {
                 final InterfaceConfigDto interfaceConfigDto = new InterfaceConfigDto();
                 BeanUtils.copyProperties(icd, interfaceConfigDto);
-                final String updatedAt = icd.getUpdatedAt().substring(0, 19);
-                final String createdAt = icd.getCreatedAt().substring(0, 19);
-                interfaceConfigDto.setUpdatedAt(updatedAt);
-                interfaceConfigDto.setCreatedAt(createdAt);
+                interfaceConfigDto.setUpdatedAt(icd.getUpdatedAt().substring(0, 19));
+                interfaceConfigDto.setCreatedAt(icd.getCreatedAt().substring(0, 19));
                 return interfaceConfigDto;
             }).collect(Collectors.toList());
             return representation(Message.SUCCESS, collect, Integer.parseInt(query.get("pageSize")), Integer.parseInt(query.get("pageNum")), interfaceConfigDtos.getTotal());
@@ -174,7 +176,8 @@ public class InterfaceConfigController extends BaseController {
     @RequestMapping(value = "createBrand.json", method = RequestMethod.PUT)
     public JSONObject createBrand(@RequestBody InterfaceConfigBrand interfaceConfigBrand) {
         try {
-            return representation(Message.SUCCESS, interfaceConfigService.createBrand(interfaceConfigBrand));
+            interfaceConfigService.createBrand(interfaceConfigBrand);
+            return representation(Message.SUCCESS);
         } catch (WechatException e) {
             return representation(e.getMessageInfo(), e.getMessage());
         } catch (Exception e) {
@@ -189,6 +192,8 @@ public class InterfaceConfigController extends BaseController {
     public JSONObject updateBrand(@RequestBody InterfaceConfigBrand interfaceConfigBrand) {
         try {
             return representation(Message.SUCCESS, interfaceConfigService.updateBrand(interfaceConfigBrand));
+        }catch (WechatException e) {
+            return representation(e.getMessageInfo(), e.getMessage());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return representation(Message.INTERFACECONFIG_BRAND_UPDATE_FAIL, e.getMessage());
