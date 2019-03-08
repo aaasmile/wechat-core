@@ -932,14 +932,6 @@
         </if>
     </select>
 
-    <select id="findByWechatIdForLimit" resultType="java.util.HashMap">
-        select id, open_id as openId from member where wechat_id = #{wechatId} order by id limit #{offset}, #{rows};
-    </select>
-
-    <select id="findByWechatIdForSubLimit" resultType="java.util.HashMap">
-        select id, open_id as openId from member where id >= #{offset} and wechat_id = #{wechatId} order by id limit #{rows}
-    </select>
-
     <select id="findMemberTagsByWechatIdForSubLimit" resultType="com.d1m.wechat.dto.MemberUseTagDto">
         select x.id as id, x.open_id as openId, mmt.member_tag_id as tagId  from
             (SELECT m.id, m.open_id FROM member m
@@ -952,7 +944,7 @@
               group by t.member_id)
             as mt on mt.member_id = m.id
         </if>
-            where m.id >= #{offset} and m.wechat_id = #{wechatId}
+            where m.id > #{offset} and m.wechat_id = #{wechatId}
         <if test="nickname != null">
             and m.nickname like CONCAT('%',#{nickname},'%')
         </if>
@@ -960,11 +952,14 @@
             and m.mobile like CONCAT('%',#{mobile},'%')
         </if>
         <if test="subscribe != null">
-            <if test="subscribe == true">
+            <if test="subscribe == 1">
                 and m.is_subscribe = 1
             </if>
-            <if test="subscribe == false">
+            <if test="subscribe == 0">
                 and m.is_subscribe = 0
+            </if>
+            <if test="subscribe == -1">
+                and m.is_subscribe is null
             </if>
         </if>
         <if test="sex != null">
@@ -1036,7 +1031,7 @@
     </select>
 
     <select id="countAll" resultType="long">
-        select count(1) from member
+        select count(1) from member where wechat_id = #{wechatId}
     </select>
 
     <select id="getMemberMemberTagsByMemberId" resultType="java.lang.Integer">
