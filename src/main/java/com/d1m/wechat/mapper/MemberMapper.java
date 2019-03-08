@@ -25,7 +25,7 @@ public interface MemberMapper extends MyMapper<Member> {
                            @Param("country") Integer country,
                            @Param("province") Integer province,
                            @Param("city") Integer city,
-                           @Param("subscribe") Boolean subscribe,
+                           @Param("subscribe") Integer subscribe,
                            @Param("activityStartAt") Integer activityStartAt,
                            @Param("activityEndAt") Integer activityEndAt,
                            @Param("batchSendOfMonthStartAt") Integer batchSendOfMonthStartAt,
@@ -68,7 +68,7 @@ public interface MemberMapper extends MyMapper<Member> {
                @Param("openId") String openId, @Param("nickname") String nickname,
                @Param("sex") Byte sex, @Param("country") Integer country,
                @Param("province") Integer province, @Param("city") Integer city,
-               @Param("subscribe") Boolean subscribe,
+               @Param("subscribe") Integer subscribe,
                @Param("activityStartAt") Integer activityStartAt,
                @Param("activityEndAt") Integer activityEndAt,
                @Param("batchSendOfMonthStartAt") Integer batchSendOfMonthStartAt,
@@ -295,4 +295,10 @@ public interface MemberMapper extends MyMapper<Member> {
                                                               @Param("cancelSubscribeStartAt") Date cancelSubscribeStartAt,
                                                               @Param("cancelSubscribeEndAt") Date cancelSubscribeEndAt,
                                                               @Param("fuzzyRemarks") String fuzzyRemarks);
+
+    List<Member> selectByMemberIdsAndWechatId(@Param("ids") Integer[] memberId, @Param("wechatId") Integer wechatId);
+
+    List<Integer> getMemberMemberTagsByMemberId(@Param("memberId") Integer memberId);
+
+    Long countAll();
 }
