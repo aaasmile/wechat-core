@@ -49,7 +49,7 @@ public class MemberServiceTest {
                         with(aNull(String.class)), with(aNull(String.class)),
                         with(aNull(Byte.class)), with(aNull(Integer.class)),
                         with(aNull(Integer.class)), with(aNull(Integer.class)),
-                        with(aNull(Boolean.class)), with(aNull(Integer.class)),
+                        with(aNull(Integer.class)), with(aNull(Integer.class)),
                         with(aNull(Integer.class)), with(aNull(Integer.class)),
                         with(aNull(Integer.class)), with(aNull(Date.class)),
                         with(aNull(Date.class)), with(aNull(Date.class)),

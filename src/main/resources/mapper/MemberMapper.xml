@@ -145,11 +145,14 @@
                 and m.city = #{city}
             </if>
             <if test="subscribe != null">
-                <if test="subscribe == true">
+                <if test="subscribe == 1">
                     and m.is_subscribe = 1
                 </if>
-                <if test="subscribe == false">
+                <if test="subscribe == 0">
                     and m.is_subscribe = 0
+                </if>
+                <if test="subscribe == -1">
+                    and m.is_subscribe is null
                 </if>
             </if>
             <if test="activityStartAt != null">
@@ -210,7 +213,7 @@
         select
         count(m.id)
         from member as m
-        <include refid="searchM"></include>
+        <include refid="searchM"/>
     </select>
 
     <select id="search" parameterType="HashMap" resultMap="MemberBindListDtoResultMap">
@@ -261,7 +264,7 @@
         m.remark,
         IF(ISNULL(m.status),2,m.status) as bindStatus
         from member as m
-        <include refid="searchM"></include>
+        <include refid="searchM"/>
         <if test="sortName != null">
             <if test="sortName == 'bind_status'.toString()">
                 order by m.status
@@ -289,7 +292,7 @@
 
     <select id="searchIds" resultType="java.lang.Integer">
         select m.id from member m
-        <include refid="searchM"></include>
+        <include refid="searchM"/>
         <if test="sortName != null">
             <if test="sortName == 'bind_status'.toString()">
                 order by m.status
