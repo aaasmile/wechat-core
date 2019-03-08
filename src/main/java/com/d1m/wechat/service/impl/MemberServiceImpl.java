@@ -39,7 +39,6 @@ import tk.mybatis.mapper.common.Mapper;
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
@@ -364,8 +363,8 @@ public class MemberServiceImpl extends BaseService<Member> implements
 
     private List<MemberTagDto> processAddMemberTag(Integer wechatId, User user,
                                                    AddMemberTagModel addMemberTagModel) {
-
-        List<MemberTag> memberTagsIn = getMemberTags(wechatId, addMemberTagModel.getTags());
+        List<MemberTag> memberTagsIn = getMemberTags(wechatId, user,
+                addMemberTagModel.getTags());
 
         List<MemberDto> members = queryMember(wechatId, addMemberTagModel, TenantContext.getCurrentTenant());
 
@@ -422,14 +421,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
                 throw new WechatException(Message.MEMBER_ADD_TAG_OPERATOR_ONLY);
             }
 
-            //return processAddMemberTag(wechatId, user, addMemberTagModel);
-            processAddMemberTag(wechatId, addMemberTagModel);
-
-            List<MemberTagDto> memberTagDtos = new ArrayList<>();
-            addMemberTagModel.getTags().forEach( memberTagModel -> {
-                memberTagDtos.add(new MemberTagDto(memberTagModel.getId(), memberTagModel.getName()));
-            });
-            return memberTagDtos;
+            return processAddMemberTag(wechatId, user, addMemberTagModel);
         } catch (WechatException e) {
             throw e;
         } catch (Exception e) {
@@ -621,20 +613,6 @@ public class MemberServiceImpl extends BaseService<Member> implements
             }
         }
         return false;
-    }
-
-    private List<MemberTag> getMemberTags(Integer wechatId, List<MemberTagModel> memberTagModels) {
-        List<MemberTag> memberTags = new ArrayList<>();
-        memberTagModels.forEach( memberTagModel -> {
-            if(memberTagModel.getId() == null) {
-                throw new WechatException(Message.MEMBER_TAG_TYPE_NOT_BLANK);
-            }
-            MemberTag memberTag = new MemberTag(memberTagModel.getId(), wechatId);
-            memberTag = memberTagMapper.selectOne(memberTag);
-            notBlank(memberTag, Message.MEMBER_TAG_NOT_EXIST);
-            memberTags.add(memberTag);
-        });
-        return memberTags;
     }
 
     private List<MemberTag> getMemberTags(Integer wechatId, User user,

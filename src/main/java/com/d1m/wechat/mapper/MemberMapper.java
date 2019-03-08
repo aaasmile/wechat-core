@@ -85,14 +85,10 @@ public interface MemberMapper extends MyMapper<Member> {
                @Param("bindStatus") Integer bindStatus, @Param("daytime") Date daytime,
                @Param("fuzzyRemarks") String fuzzyRemarks);
 
-    Long countAll();
-
     List<MemberDto> selectByWechat(@Param("wechatId") Integer wechatId);
 
     List<MemberDto> selectByMemberId(@Param("ids") Integer[] memberId,
                                      @Param("wechatId") Integer wechatId, @Param("isForce") Boolean isForce);
-
-    List<Member> selectByMemberIdsAndWechatId(@Param("ids") Integer[] memberId, @Param("wechatId") Integer wechatId);
 
     Long countByMemberId(@Param("ids") Integer[] memberId,
                          @Param("wechatId") Integer wechatId, @Param("isForce") Boolean isForce);
@@ -100,7 +96,6 @@ public interface MemberMapper extends MyMapper<Member> {
     List<MemberTagDto> getMemberMemberTags(@Param("wechatId") Integer wechatId,
                                            @Param("memberId") Integer memberId);
 
-    List<Integer> getMemberMemberTagsByMemberId(@Param("memberId") Integer memberId);
 
     List<MemberDto> searchBySql(@Param("wechatId") Integer wechatId,
                                 @Param("sql") String sql);
