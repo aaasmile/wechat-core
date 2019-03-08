@@ -279,7 +279,7 @@ public interface MemberMapper extends MyMapper<Member> {
                                                               @Param("memberTags") Integer[] memberTags,
                                                               @Param("nickname") String nickname,
                                                               @Param("mobile") String mobile,
-                                                              @Param("subscribe") Boolean subscribe,
+                                                              @Param("subscribe") Integer subscribe,
                                                               @Param("sex") Byte sex,
                                                               @Param("country") Integer country,
                                                               @Param("province") Integer province,
@@ -300,5 +300,5 @@ public interface MemberMapper extends MyMapper<Member> {
 
     List<Integer> getMemberMemberTagsByMemberId(@Param("memberId") Integer memberId);
 
-    Long countAll();
+    Long countAll(@Param("wechatId") Integer wechatId);
 }

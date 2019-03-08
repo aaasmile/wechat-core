@@ -290,14 +290,14 @@ public class MemberServiceImpl extends BaseService<Member> implements
 
         //String tenant = TenantContext.getCurrentTenant();
         if(ObjectUtils.isEmpty(addMemberTagModel.getMemberIds())) {
-            Long count = memberMapper.countAll();
+            Long count = memberMapper.countAll(wechatId);
             if(count == null || count == 0) {
                 throw new WechatException(Message.MEMBER_NOT_BLANK);
             }
 
             int threadID = 16;
-            int rows = count.intValue()/threadID-1;
-            int more = count.intValue()%threadID-1;
+            int rows = count.intValue()/ (threadID-1);
+            int more = count.intValue()% (threadID-1);
             int offset = 0;
             Date createdAt = new Date();
 
@@ -307,7 +307,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
                         memberModel.getMemberTags(),
                         memberModel.getNickname(),
                         memberModel.getMobile(),
-                        memberModel.getSubscribe(),
+                        addMemberTagModel.getSubscribe(),
                         memberModel.getSex(),
                         memberModel.getCountry(),
                         memberModel.getProvince(),
@@ -323,17 +323,16 @@ public class MemberServiceImpl extends BaseService<Member> implements
                         DateUtil.getDateBegin(DateUtil.parse(memberModel.getCancelSubscribeStartAt())),
                         DateUtil.getDateBegin(DateUtil.parse(memberModel.getCancelSubscribeEndAt())),
                         addMemberTagModel.getFuzzyRemarks());
-                offset = Integer.valueOf(members.get(members.size() - 1).getId());
+                offset = members.get(members.size() - 1).getId();
 
                 List<MemberMemberTag> memberMemberTags = new ArrayList<>();
                 Map<Integer, List<MemberUseTagDto>> memberMap = members.stream().collect(Collectors.groupingBy(MemberUseTagDto::getId));
                 for (Integer key : memberMap.keySet()) {
-                    List<Integer> memberTagDtoIds = memberMap.get(key).stream().map(memberUseTagDto -> memberUseTagDto.getTagId())
-                            .filter(Objects::nonNull).collect(Collectors.toList());
+                    List<Integer> memberTagDtoIds = memberMap.get(key).stream().map(memberUseTagDto -> memberUseTagDto.getTagId()).collect(Collectors.toList());
                     List<MemberTag> addTags = memberTagsIn.stream().filter((MemberTag t) -> !memberTagDtoIds.contains(t.getId())).collect(Collectors.toList());
                     for (MemberTag tag : addTags) {
                         memberMemberTags.add(new MemberMemberTag(key, tag.getId(), wechatId, memberMap.get(key).get(0).getOpenId(), createdAt));
-                        if(memberMemberTags.size() > 0 && memberMemberTags.size() == 5000){
+                        if(memberMemberTags.size() > 0 && memberMemberTags.size() == 1000){
                             memberMemberTagMapper.insertList(memberMemberTags);
                             memberMemberTags = new ArrayList<>();
                         }
