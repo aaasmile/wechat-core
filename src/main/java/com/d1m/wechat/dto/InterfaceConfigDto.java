@@ -8,7 +8,6 @@ import lombok.Setter;
 public class InterfaceConfigDto {
 
     private String id;
-    private Integer menuKey;
     private String brand;
     private String name;
     private Integer methodType;  //修改
@@ -41,14 +40,6 @@ public class InterfaceConfigDto {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public Integer getMenuKey() {
-        return menuKey;
-    }
-
-    public void setMenuKey(Integer menuKey) {
-        this.menuKey = menuKey;
     }
 
     public String getBrand() {
@@ -210,7 +201,6 @@ public class InterfaceConfigDto {
 
     public static class Builder {
         private String id;
-        private Integer menuKey;
         private String brand;
         private String name;
         private Integer methodType;
@@ -237,10 +227,6 @@ public class InterfaceConfigDto {
             return this;
         }
 
-        public Builder menuKey(Integer menuKey) {
-            this.menuKey = menuKey;
-            return this;
-        }
 
         public Builder brand(String brand) {
             this.brand = brand;
@@ -351,7 +337,6 @@ public class InterfaceConfigDto {
 
     private InterfaceConfigDto(Builder builder) {
         this.id = builder.id;
-        this.menuKey = builder.menuKey;
         this.brand = builder.brand;
         this.name = builder.name;
         this.methodType = builder.methodType;
@@ -385,7 +370,6 @@ public class InterfaceConfigDto {
     public String toString() {
         return "InterfaceConfigDto{" +
                 "id='" + id + '\'' +
-                ", menuKey=" + menuKey +
                 ", brand='" + brand + '\'' +
                 ", name='" + name + '\'' +
                 ", methodType=" + methodType +

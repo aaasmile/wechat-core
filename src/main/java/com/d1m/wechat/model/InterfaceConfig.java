@@ -17,9 +17,6 @@ public class InterfaceConfig {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private String id;
 
-	@Column(name = "menu_key")
-	private Integer menuKey;
-
 	private String brand;
 
 	private String name;
