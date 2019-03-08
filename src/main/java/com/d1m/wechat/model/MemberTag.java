@@ -171,4 +171,11 @@ public class MemberTag {
     public void setStatus(Byte status) {
         this.status = status;
     }
+
+    public MemberTag() {}
+
+    public MemberTag(Integer id, Integer wechatId) {
+        this.id = id;
+        this.wechatId = wechatId;
+    }
 }
