@@ -295,4 +295,10 @@ public interface MemberMapper extends MyMapper<Member> {
                                                               @Param("cancelSubscribeStartAt") Date cancelSubscribeStartAt,
                                                               @Param("cancelSubscribeEndAt") Date cancelSubscribeEndAt,
                                                               @Param("fuzzyRemarks") String fuzzyRemarks);
+
+    List<Member> selectByMemberIdsAndWechatId(@Param("ids") Integer[] memberId, @Param("wechatId") Integer wechatId);
+
+    List<Integer> getMemberMemberTagsByMemberId(@Param("memberId") Integer memberId);
+
+    Long countAll();
 }
