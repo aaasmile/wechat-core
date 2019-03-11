@@ -12,6 +12,7 @@ public class InterfaceConfigBrandDto {
 	private String name;
 	private String key;
 	private String secret;
+	private String  createAt;
 	private boolean deleted;
 
 	public Long getId() {

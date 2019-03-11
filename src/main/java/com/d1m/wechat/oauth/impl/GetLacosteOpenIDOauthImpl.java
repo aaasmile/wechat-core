@@ -60,6 +60,9 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 
 	@Autowired
 	private WechatCrmRestService wechatCrmRestService;
+
+	@Autowired
+	private WechatCrmRestK8sService wechatCrmRestK8sService;
 	
 	@Autowired
 	private OauthUrlService oauthUrlService;

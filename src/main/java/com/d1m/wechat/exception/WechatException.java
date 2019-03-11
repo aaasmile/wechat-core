@@ -7,10 +7,10 @@ public class WechatException extends RuntimeException {
     private Message message;
     private Integer code;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2164207829730030776L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -2164207829730030776L;
 
     public WechatException(Message message) {
         super(message.name());
@@ -19,6 +19,7 @@ public class WechatException extends RuntimeException {
 
     public WechatException(Message message, String detail) {
         super(message.name() + ":" + detail);
+        this.message = message;
     }
 
     public Message getMessageInfo() {

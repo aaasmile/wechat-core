@@ -16,7 +16,11 @@ public interface EventService extends BaseService<WxEvent> {
 
     List<EventForward> getForwardByThirdPartyId(Integer thirdPartyId);
 
+    List<EventForward> getForwardByThirdPartyIdAndStatus(Integer thirdPartyId, Integer status);
+
     boolean editEventForward(EditEventForwardModel model);
 
     EventForwardDetailsDto queryEventForwardDetails(Integer eventForwardId);
+
+    boolean deleteEventForward(Integer eventForwardId);
 }

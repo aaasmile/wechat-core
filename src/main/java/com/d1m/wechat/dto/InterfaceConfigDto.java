@@ -1,13 +1,17 @@
 package com.d1m.wechat.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+@AllArgsConstructor
 public class InterfaceConfigDto {
 
     private String id;
-    private int menuKey;
     private String brand;
     private String name;
-    private int methodType;  //修改
-    private int type;              //修改
+    private Integer methodType;  //修改
+    private Integer type;              //修改
     private String event;
     private String interfaceName;
     private String parameter;
@@ -22,7 +26,13 @@ public class InterfaceConfigDto {
     private String createdBy;
     private String updatedAt;
     private String updatedBy;
-    private int status;        //修改
+    @Getter
+    @Setter
+    private Boolean retry;
+    private Integer status;//修改
+    @Getter
+    @Setter
+    private String unionIdControl;          //是否需要uuid
 
     public String getId() {
         return id;
@@ -30,14 +40,6 @@ public class InterfaceConfigDto {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public int getMenuKey() {
-        return menuKey;
-    }
-
-    public void setMenuKey(int menuKey) {
-        this.menuKey=menuKey;
     }
 
     public String getBrand() {
@@ -56,19 +58,19 @@ public class InterfaceConfigDto {
         this.name = name;
     }
 
-    public int getMethodType() {                  //修改
+    public Integer getMethodType() {                  //修改
         return methodType;
     }
 
-    public void setMethodType(int methodType) {    //修改
+    public void setMethodType(Integer methodType) {    //修改
         this.methodType = methodType;                              //修改
     }
 
-    public int getType() {
+    public Integer getType() {
         return type;
     }                 //修改
 
-    public void setType(int type) {
+    public void setType(Integer type) {
         this.type = type;
     }    //修改
 
@@ -107,6 +109,7 @@ public class InterfaceConfigDto {
     public String getUrl() {
         return url;
     }
+
     public void setUrl(String url) {
         this.url = url;
     }
@@ -184,38 +187,13 @@ public class InterfaceConfigDto {
     }
 
 
-    public int getStatus() {
+    public Integer getStatus() {
         return status;
     }                      //修改
 
-    public void setStatus(int status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }       //修改
-
-    public InterfaceConfigDto(String id,  int menuKey ,String brand, String name, int methodType, int type, String event, String interfaceName, String parameter, String description, String url,String wrongUrl , String key, String secret, String sequence, String deleted, String createdAt, String createdBy, String updatedAt, String updatedBy, int status) {
-        super();
-        this.id = id;
-        this.menuKey=menuKey;
-        this.brand = brand;
-        this.name = name;
-        this.methodType = methodType;
-        this.type = type;
-        this.event = event;
-        this.interfaceName = interfaceName;
-        this.parameter = parameter;
-        this.description = description;
-        this.url = url;
-        this.wrongUrl = wrongUrl;
-        this.key = key;
-        this.secret = secret;
-        this.sequence = sequence;
-        this.deleted = deleted;
-        this.createdAt = createdAt;
-        this.createdBy = createdBy;
-        this.updatedAt = updatedAt;
-        this.updatedBy = updatedBy;
-        this.status = status;
-    }
 
     public InterfaceConfigDto() {
         super();
@@ -223,11 +201,10 @@ public class InterfaceConfigDto {
 
     public static class Builder {
         private String id;
-        private int menuKey;
         private String brand;
         private String name;
-        private int methodType;
-        private int type;
+        private Integer methodType;
+        private Integer type;
         private String event;
         private String interfaceName;
         private String parameter;
@@ -242,16 +219,14 @@ public class InterfaceConfigDto {
         private String createdBy;
         private String lasteUpdatedAt;
         private String lasteUpdatedBy;
-        private int status;
+        private Integer status;
+        private Boolean retry;
 
         public Builder id(String id) {
             this.id = id;
             return this;
         }
-        public Builder menuKey(int  menuKey) {
-            this.menuKey = menuKey;
-            return this;
-        }
+
 
         public Builder brand(String brand) {
             this.brand = brand;
@@ -263,12 +238,12 @@ public class InterfaceConfigDto {
             return this;
         }
 
-        public Builder methodType(int methodType) {
+        public Builder methodType(Integer methodType) {
             this.methodType = methodType;
             return this;
         }
 
-        public Builder type(int type) {
+        public Builder type(Integer type) {
             this.type = type;
             return this;
         }
@@ -348,6 +323,13 @@ public class InterfaceConfigDto {
             return this;
         }
 
+
+        public Builder retry(Boolean retry) {
+            this.retry = retry;
+            return this;
+        }
+
+
         public InterfaceConfigDto build() {
             return new InterfaceConfigDto(this);
         }
@@ -355,7 +337,6 @@ public class InterfaceConfigDto {
 
     private InterfaceConfigDto(Builder builder) {
         this.id = builder.id;
-        this.menuKey=builder.menuKey;
         this.brand = builder.brand;
         this.name = builder.name;
         this.methodType = builder.methodType;
@@ -375,6 +356,7 @@ public class InterfaceConfigDto {
         this.updatedAt = builder.lasteUpdatedAt;
         this.updatedBy = builder.lasteUpdatedBy;
         this.status = builder.status;
+        this.retry = builder.retry;
     }
 
 
@@ -384,12 +366,10 @@ public class InterfaceConfigDto {
         this.interfaceName = interfaceName;
     }
 
-
     @Override
     public String toString() {
         return "InterfaceConfigDto{" +
                 "id='" + id + '\'' +
-                ",nenuKey'"+ menuKey +'\''+
                 ", brand='" + brand + '\'' +
                 ", name='" + name + '\'' +
                 ", methodType=" + methodType +
@@ -408,6 +388,7 @@ public class InterfaceConfigDto {
                 ", createdBy='" + createdBy + '\'' +
                 ", updatedAt='" + updatedAt + '\'' +
                 ", updatedBy='" + updatedBy + '\'' +
+                ", retry=" + retry +
                 ", status=" + status +
                 '}';
     }

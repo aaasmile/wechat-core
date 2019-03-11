@@ -1,5 +1,6 @@
 package com.d1m.wechat.service.impl;
 
+import com.d1m.wechat.common.Constant;
 import com.d1m.wechat.dto.EventForwardDetailsDto;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.EventForwardDetailsMapper;
@@ -8,6 +9,7 @@ import com.d1m.wechat.mapper.WxEventMapper;
 import com.d1m.wechat.model.EventForward;
 import com.d1m.wechat.model.EventForwardDetails;
 import com.d1m.wechat.model.WxEvent;
+import com.d1m.wechat.model.enums.EventForwardStatus;
 import com.d1m.wechat.pamametermodel.AddEventForwardModel;
 import com.d1m.wechat.pamametermodel.EditEventForwardModel;
 import com.d1m.wechat.service.EventService;
@@ -15,9 +17,11 @@ import com.d1m.wechat.util.Message;
 import com.d1m.wechat.util.MyMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -39,10 +43,11 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @CacheEvict(value = Constant.Cache.THIRD_PARTY_INTERFACE, allEntries = true)
     public boolean addEventForward(AddEventForwardModel model) {
-        EventForward eventForward = new EventForward(model.getThirdPartyId(), model.getInterfaceId());
+        EventForward eventForward = new EventForward(model.getThirdPartyId(), model.getInterfaceId(), EventForwardStatus.INUSED.getStatus());
         List<EventForward> eventForwards = eventForwardMapper.select(eventForward);
-        if(eventForwards != null && eventForwards.size() > 0) {
+        if (eventForwards != null && eventForwards.size() > 0) {
             throw new WechatException(Message.EVENT_FORWARD_EXIST);
         }
 
@@ -73,6 +78,12 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public List<EventForward> getForwardByThirdPartyIdAndStatus(Integer thirdPartyId, Integer status) {
+        return eventForwardMapper.select(new EventForward(thirdPartyId, status));
+    }
+
+    @Override
+    @CacheEvict(value = Constant.Cache.THIRD_PARTY_INTERFACE, allEntries = true)
     public boolean editEventForward(EditEventForwardModel model) {
         EventForward eventForward = eventForwardMapper.selectByPrimaryKey(model.getId());
         if (eventForward == null) {
@@ -84,6 +95,7 @@ public class EventServiceImpl implements EventService {
         }
 
         eventForward.setUserUuid(model.getUserUuid());
+        eventForward.setUpdateAt(new Date());
         eventForwardMapper.updateByPrimaryKey(eventForward);
 
         eventForwardDetailsMapper.delete(new EventForwardDetails(model.getId()));
@@ -95,6 +107,14 @@ public class EventServiceImpl implements EventService {
     public EventForwardDetailsDto queryEventForwardDetails(Integer eventForwardId) {
         return eventForwardMapper.queryEventForwardDetailsById(eventForwardId);
     }
+
+    @Override
+    @CacheEvict(value = Constant.Cache.THIRD_PARTY_INTERFACE, allEntries = true)
+    public boolean deleteEventForward(Integer eventForwardId) {
+        eventForwardMapper.deleteEventForward(eventForwardId);
+        return true;
+    }
+
 
     @Override
     public MyMapper<WxEvent> getMapper() {

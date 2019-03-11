@@ -24,11 +24,12 @@ public interface InterfaceConfigService {
 
     List<InterfaceConfigBrandDto> listBrand();
 
-    Map<String, String> createBrand(InterfaceConfigBrand interfaceConfigBrand) throws WechatException;
+    //Map<String, String> createBrand(InterfaceConfigBrand interfaceConfigBrand) throws WechatException;
+     void createBrand(InterfaceConfigBrand interfaceConfigBrand);
 
     int updateBrand(InterfaceConfigBrand interfaceConfigBrand);
 
-    int deleteBrand(String id) throws WechatException;
+    int deleteBrand(String brand) throws WechatException;
 
     InterfaceConfigDto getSecret(String id);
 
@@ -58,4 +59,8 @@ public interface InterfaceConfigService {
      * @return
      */
     InterfaceConfig checkIsExist(String id);
+
+    int findByIdAndDeleted(String brand);
+
+
 }
