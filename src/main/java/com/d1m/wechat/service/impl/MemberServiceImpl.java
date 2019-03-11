@@ -290,14 +290,41 @@ public class MemberServiceImpl extends BaseService<Member> implements
 
         //String tenant = TenantContext.getCurrentTenant();
         if(ObjectUtils.isEmpty(addMemberTagModel.getMemberIds())) {
-            Long count = memberMapper.countAll(wechatId);
+            Long count = memberMapper.count(wechatId, memberModel.getOpenId(),
+                    memberModel.getNickname(), memberModel.getSex(), memberModel
+                            .getCountry(), memberModel.getProvince(), memberModel
+                            .getCity(), addMemberTagModel.getSubscribe(), memberModel
+                            .getActivityStartAt(), memberModel.getActivityEndAt(),
+                    memberModel.getBatchSendOfMonthStartAt(), memberModel
+                            .getBatchSendOfMonthEndAt(), DateUtil
+                            .getDateBegin(DateUtil.parse(memberModel
+                                    .getAttentionStartAt())), DateUtil
+                            .getDateEnd(DateUtil.parse(memberModel
+                                    .getAttentionEndAt())), DateUtil
+                            .getDateBegin(DateUtil.parse(memberModel
+                                    .getCancelSubscribeStartAt())), DateUtil
+                            .getDateEnd(DateUtil.parse(memberModel
+                                    .getCancelSubscribeEndAt())), memberModel
+                            .getIsOnline(), null, memberModel.getMobile(),
+                    memberModel.getMemberTags(), addMemberTagModel.getSortName(),
+                    addMemberTagModel.getSortDir(), addMemberTagModel
+                            .getBindStatus(), DateUtil.getDate(-2),
+                    addMemberTagModel.getFuzzyRemarks());
+
             if(count == null || count == 0) {
                 throw new WechatException(Message.MEMBER_NOT_BLANK);
             }
 
-            int threadID = 16;
-            int rows = count.intValue()/ (threadID-1);
-            int more = count.intValue()% (threadID-1);
+            int threadID = 20;
+            int rows = 0;
+            int more = 0;
+            if(count < 5000) {
+                rows = count.intValue();
+                more = count.intValue();
+            } else {
+                rows = count.intValue()/ (threadID-1);
+                more = count.intValue()% (threadID-1);
+            }
             int offset = 0;
             Date createdAt = new Date();
 
