@@ -67,6 +67,9 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 	@Autowired
 	private OauthUrlService oauthUrlService;
 
+	@Autowired
+	private WechatCrmRestK8sService wechatCrmRestK8sService;
+
 	private String getStatus(Integer wechatId, Integer memberId) {
 		try {
 			log.info("getStatus...");
@@ -148,7 +151,7 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 					log.info("判断needBind 参数是否为1");
 					String status = null;
 					try {
-						status = this.getStatus(wechatId, member.getId());
+						status = getStatus(wechatId, member.getId());
 						if (StringUtils.isBlank(status)) {
 							log.error("status get null.");
 							status = SYSTEM_ERROR;
@@ -193,7 +196,7 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 							String val = configService.getConfigValue(wechatId,
 									"LACOSTE_CRM", "LACOSTE_MEMBER_CENTER_URL");
 							JSONObject json = JSONObject.parseObject(val);
-							String levels = this.getLevels(wechatId, member.getId());
+							String levels = getLevels(wechatId, member.getId());
 							log.info(
 									"wechatId : {}, memberId : {}, levels : {}.",
 									wechatId, member.getId(), levels);
