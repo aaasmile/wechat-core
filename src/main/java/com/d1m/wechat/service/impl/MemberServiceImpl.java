@@ -319,6 +319,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
             int rows = 0;
             int more = 0;
             if(count < 5000) {
+                threadID = 1;
                 rows = count.intValue();
                 more = count.intValue();
             } else {
@@ -340,7 +341,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
                         memberModel.getProvince(),
                         memberModel.getCity(),
                         memberModel.getIsOnline(),
-                        null,
+                        addMemberTagModel.getBindStatus(),
                         memberModel.getActivityStartAt(),
                         memberModel.getActivityEndAt(),
                         memberModel.getBatchSendOfMonthStartAt(),
