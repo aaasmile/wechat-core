@@ -67,8 +67,8 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 	@Autowired
 	private OauthUrlService oauthUrlService;
 
-	@Autowired
-	private WechatCrmRestK8sService wechatCrmRestK8sService;
+//	@Autowired
+//	private WechatCrmRestK8sService wechatCrmRestK8sService;
 
 	private String getStatus(Integer wechatId, Integer memberId) {
 		try {
