@@ -92,7 +92,7 @@
 		<if test="type == 41">
 			SELECT
 			ic.id,
-			ib.name as brand,
+			ib1.name as brand,
 			ic.`name`,
 			ic.type,
 			ic.method_type,
@@ -102,7 +102,8 @@
 			ib.app_secret
 			FROM
 			interface_config ic
-			LEFT JOIN interface_brand ib ON ic.brand = ib.id
+			LEFT JOIN interface_secret ib on ic.brand = ib.brand_id and ic.type = ib.type
+			LEFT JOIN interface_brand ib1 on ic.brand = ib1.id
 			WHERE 1=1
 			AND ic.`status` = 1 and ic.is_deleted = 0
 			AND ic.id = #{url}
@@ -111,7 +112,7 @@
 		<if test="type != 41">
 			SELECT
 			ic.id,
-			ic.brand,
+			ib1.name as brand,
 			ic.`name`,
 			ic.type,
 			ic.method_type,
@@ -121,7 +122,8 @@
 			ib.app_secret
 			FROM
 			interface_config ic
-			LEFT JOIN interface_brand ib ON ic.brand = ib.id
+			LEFT JOIN interface_secret ib on ic.brand = ib.brand_id and ic.type = ib.type
+			LEFT JOIN interface_brand ib1 on ic.brand = ib1.id
 			WHERE 1=1
 			AND ic.`status` = 1 and ic.is_deleted = 0
 			AND ic.id = -1
