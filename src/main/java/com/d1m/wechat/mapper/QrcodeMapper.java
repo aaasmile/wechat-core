@@ -1,15 +1,14 @@
 package com.d1m.wechat.mapper;
 
-import java.util.Date;
-import java.util.List;
-
-import org.apache.ibatis.annotations.Param;
-
 import com.d1m.wechat.dto.QrcodeDto;
 import com.d1m.wechat.dto.ReportQrcodeItemDto;
 import com.d1m.wechat.model.Qrcode;
 import com.d1m.wechat.util.MyMapper;
 import com.github.pagehelper.Page;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.Date;
+import java.util.List;
 
 public interface QrcodeMapper extends MyMapper<Qrcode> {
 
@@ -49,4 +48,5 @@ public interface QrcodeMapper extends MyMapper<Qrcode> {
 			@Param("status") Integer status, @Param("qrcodeId") Integer qrcodeId,
 			@Param("scene") String scene);
 
+	List<Qrcode> getAllByWechatId(@Param("wechatId") Integer wechatId);
 }

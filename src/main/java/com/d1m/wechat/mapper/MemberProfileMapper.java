@@ -26,6 +26,12 @@ public interface MemberProfileMapper extends MyMapper<MemberProfile> {
 
     Integer getMemberBindStatus(@Param("id") Integer id, @Param("wechatId") Integer wechatId);
 
+    @Deprecated
     List<MemberExcel> findMemberExcelByParams(Map<String, Object> params);
 
+    Integer countByParams(Map<String, Object> params);
+
+    List<MemberExcel> findMemberExcelByParamsNew(Map<String, Object> params);
+
+    List<MemberProfile> getByWechatId(@Param("wechatId") Integer wechatId);
 }

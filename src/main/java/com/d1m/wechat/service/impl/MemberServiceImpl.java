@@ -557,6 +557,16 @@ public class MemberServiceImpl extends BaseService<Member> implements
 
     }
 
+    @Override
+    public Integer countByParams(Map<String, Object> params) {
+        return memberProfileMapper.countByParams(params);
+    }
+
+    @Override
+    public List<MemberExcel> findMemberExcelByParamsNew(Map<String, Object> params) {
+        return memberProfileMapper.findMemberExcelByParamsNew(params);
+    }
+
     /**
      * 获取需要加标签的批量数据
      *
