@@ -284,14 +284,15 @@ public class MemberController extends BaseController {
                 workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);
 
             } else {
-                HashMap<String, Object> params = null;
+                //HashMap<String, Object> params = null;
                 Integer wechatId = null;
 
                 if (sendToAll != null && sendToAll) {
-                    params = Maps.newHashMap();
+                    //params = Maps.newHashMap();
+                    addMemberTagModel = new AddMemberTagModel();
                 } else {
-                    final MapType mapType = objectMapper.getTypeFactory().constructMapType(HashMap.class, String.class, Object.class);
-                    params = objectMapper.readValue(data, mapType);
+                    //final MapType mapType = objectMapper.getTypeFactory().constructMapType(HashMap.class, String.class, Object.class);
+                    //params = objectMapper.readValue(data, mapType);
                     wechatId = getWechatId();
                 }
 
@@ -301,21 +302,22 @@ public class MemberController extends BaseController {
                 //List<Qrcode> qrcodes = qrcodeService.getAllByWechatId(wechatId);
                 //Map<String, String> qrcodeMap = qrcodes.stream().collect(Collectors.toMap(Qrcode::getScene, Qrcode::getName));
 
-                Integer count = memberService.countByParams(params);
+                Integer count = memberService.countByParams(wechatId, addMemberTagModel);
                 boolean flag = false;
                 if(count != null && count > 0) {
                     if(count > 1000000) flag = true;
 
                     int size = count % pageSize == 0 ? count/pageSize : count/pageSize + 1;
                     int more = count % pageSize;
+
                     int maxId = 0;
+                    int rows = pageSize;
+                    int offset = 0;
 
                     for (int i = 0; i < size; i++) {
-                        params.put("maxId", maxId);
-                        params.put("rows", pageSize);
-                        params.put("offset", i * pageSize);
-                        if(i == size -1) params.put("rows", more);
-                        List<MemberExcel> result = memberService.findMemberExcelByParamsNew(params);
+                        offset = i * pageSize;
+                        if(i == size -1) rows = more;
+                        List<MemberExcel> result = memberService.findMemberExcelByParamsNew(wechatId, addMemberTagModel, maxId, rows, offset);
                         maxId = result.get(result.size() -1).getMemberId();
                         result.stream().forEach(memberExcel -> {
                             MemberProfile memberProfile = memberProfileMap.get(memberExcel.getMemberId());
