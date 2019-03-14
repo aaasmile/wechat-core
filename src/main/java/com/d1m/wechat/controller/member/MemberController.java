@@ -12,10 +12,13 @@ import com.d1m.wechat.dto.MemberLevelDto;
 import com.d1m.wechat.dto.MemberTagDto;
 import com.d1m.wechat.model.Member;
 import com.d1m.wechat.model.MemberExcel;
+import com.d1m.wechat.model.MemberProfile;
 import com.d1m.wechat.pamametermodel.AddMemberTagModel;
 import com.d1m.wechat.pamametermodel.ExcelMember;
 import com.d1m.wechat.service.AreaInfoService;
+import com.d1m.wechat.service.MemberProfileService;
 import com.d1m.wechat.service.MemberService;
+import com.d1m.wechat.service.QrcodeService;
 import com.d1m.wechat.service.impl.MemberServiceImpl;
 import com.d1m.wechat.util.*;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
@@ -50,6 +53,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/member")
@@ -72,6 +76,12 @@ public class MemberController extends BaseController {
 
     @Autowired
     private MemberExcelDateHandler memberExcelDateHandler;
+
+    @Autowired
+    private MemberProfileService memberProfileService;
+
+    @Autowired
+    private QrcodeService qrcodeService;
 
 
     @ApiOperation(value = "拉取微信会员信息", tags = "会员接口")
@@ -267,76 +277,60 @@ public class MemberController extends BaseController {
             String name = I18nUtil.getMessage("follwer.list", locale);
             Integer[] memberIds = addMemberTagModel.getMemberIds();
             Boolean sendToAll = addMemberTagModel.getSendToAll();
-            final int pageSize = 10000;
+            int pageSize = 40000;
             if (memberIds != null && memberIds.length != 0) {
                 final ImmutableMap<String, Object> params = ImmutableMap.of("ids", memberIds);
                 final List<MemberExcel> result = memberService.findMemberExcelByParams(params);
                 workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);
 
             } else {
+                HashMap<String, Object> params = null;
+                Integer wechatId = null;
+
                 if (sendToAll != null && sendToAll) {
-
-                    final HashMap<String, Object> params = Maps.newHashMap();
-
-                    int offset = 1;
-
-                    params.put("offset", (offset - 1) * pageSize);
-                    params.put("rows", pageSize);
-
-                    List<MemberExcel> result = memberService.findMemberExcelByParams(params);
-                    boolean hasMore;
-                    if (CollectionUtils.isNotEmpty(result)) {
-                        workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);
-                        hasMore = result.size() == pageSize;
-                    } else {
-                        hasMore = false;
-                    }
-
-
-                    while (hasMore) {
-                        offset++;
-                        params.put("offset", (offset - 1) * pageSize);
-                        result = memberService.findMemberExcelByParams(params);
-                        if (CollectionUtils.isNotEmpty(result)) {
-                            workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);
-                            hasMore = result.size() == pageSize;
-                        } else {
-                            hasMore = false;
-                        }
-
-                    }
-
+                    params = Maps.newHashMap();
                 } else {
                     final MapType mapType = objectMapper.getTypeFactory().constructMapType(HashMap.class, String.class, Object.class);
-                    final Map<String, Object> params = objectMapper.readValue(data, mapType);
+                    params = objectMapper.readValue(data, mapType);
+                    wechatId = getWechatId();
+                }
 
-                    int offset = 1;
+                List<MemberProfile> memberProfiles = memberProfileService.getByWechatId(wechatId);
+                Map<Integer, MemberProfile> memberProfileMap = memberProfiles.stream().collect(Collectors.toMap(MemberProfile::getMemberId, memberProfile -> memberProfile));
 
-                    params.put("wechatId", getWechatId());
-                    params.put("offset", (offset - 1) * 1000);
-                    params.put("rows", 1000);
+                //List<Qrcode> qrcodes = qrcodeService.getAllByWechatId(wechatId);
+                //Map<String, String> qrcodeMap = qrcodes.stream().collect(Collectors.toMap(Qrcode::getScene, Qrcode::getName));
 
-                    List<MemberExcel> result = memberService.findMemberExcelByParams(params);
-                    boolean hasMore;
-                    if (CollectionUtils.isNotEmpty(result)) {
+                Integer count = memberService.countByParams(params);
+                boolean flag = false;
+                if(count != null && count > 0) {
+                    if(count > 1000000) flag = true;
+
+                    int size = count % pageSize == 0 ? count/pageSize : count/pageSize + 1;
+                    int more = count % pageSize;
+                    int maxId = 0;
+
+                    for (int i = 0; i < size; i++) {
+                        params.put("maxId", maxId);
+                        params.put("rows", pageSize);
+                        params.put("offset", i * pageSize);
+                        if(i == size -1) params.put("rows", more);
+                        List<MemberExcel> result = memberService.findMemberExcelByParamsNew(params);
+                        maxId = result.get(result.size() -1).getMemberId();
+                        result.stream().forEach(memberExcel -> {
+                            MemberProfile memberProfile = memberProfileMap.get(memberExcel.getMemberId());
+                            if(memberProfile != null) {
+                                memberExcel.setBindProvince(memberProfile.getProvince());
+                                memberExcel.setBindMobile(memberProfile.getMobile());
+                                memberExcel.setBindCity(memberProfile.getCity());
+                                memberExcel.setBindCounty(memberProfile.getCounty());
+                                memberExcel.setBindGender(memberProfile.getSex());
+                                memberExcel.setBindBirthday(memberProfile.getBirthDate());
+                                memberExcel.setBindAddress(memberProfile.getAddress());
+                                memberExcel.setBindName(memberProfile.getName());
+                            }
+                        });
                         workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);
-                        hasMore = result.size() == 1000;
-                    } else {
-                        hasMore = false;
-                    }
-
-
-                    while (hasMore) {
-                        offset++;
-                        params.put("offset", (offset - 1) * 1000);
-                        result = memberService.findMemberExcelByParams(params);
-                        if (CollectionUtils.isNotEmpty(result)) {
-                            workbook = ExcelExportUtil.exportBigExcel(exportParams, MemberExcel.class, result);
-                            hasMore = result.size() == 1000;
-                        } else {
-                            hasMore = false;
-                        }
-
                     }
                 }
             }
