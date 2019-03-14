@@ -263,11 +263,14 @@
             and m.city = #{city}
         </if>
         <if test="subscribe != null">
-            <if test="subscribe == true">
+            <if test="subscribe == 1">
                 and m.is_subscribe = 1
             </if>
-            <if test="subscribe == false">
+            <if test="subscribe == 0">
                 and m.is_subscribe = 0
+            </if>
+            <if test="subscribe == -1">
+                and m.is_subscribe is null
             </if>
         </if>
         <if test="activityStartAt != null">
@@ -307,9 +310,6 @@
                 <![CDATA[ > ]]> DATE_ADD(m.last_conversation_at, INTERVAL 48 DAY_HOUR)))
             </if>
         </if>
-        <if test="memberTags != null and memberTags.length &gt; 0">
-            and mmt.member_id is not null
-        </if>
         <if test="bindStatus != null">
             <if test="bindStatus != 2">
                 and m.status = #{bindStatus}
@@ -317,6 +317,9 @@
             <if test="bindStatus == 2">
                 and m.status is null
             </if>
+        </if>
+        <if test="fuzzyRemarks!=null">
+            and m.remark like CONCAT('%', #{fuzzyRemarks}, '%')
         </if>
     </sql>
 

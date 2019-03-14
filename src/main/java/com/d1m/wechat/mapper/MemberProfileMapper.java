@@ -26,12 +26,46 @@ public interface MemberProfileMapper extends MyMapper<MemberProfile> {
 
     Integer getMemberBindStatus(@Param("id") Integer id, @Param("wechatId") Integer wechatId);
 
-    @Deprecated
     List<MemberExcel> findMemberExcelByParams(Map<String, Object> params);
 
-    Integer countByParams(Map<String, Object> params);
+    Integer countByParams(@Param("wechatId") Integer wechatId,
+                          @Param("openId") String openId, @Param("nickname") String nickname,
+                          @Param("sex") Byte sex, @Param("country") Integer country,
+                          @Param("province") Integer province, @Param("city") Integer city,
+                          @Param("subscribe") Integer subscribe,
+                          @Param("activityStartAt") Integer activityStartAt,
+                          @Param("activityEndAt") Integer activityEndAt,
+                          @Param("batchSendOfMonthStartAt") Integer batchSendOfMonthStartAt,
+                          @Param("batchSendOfMonthEndAt") Integer batchSendOfMonthEndAt,
+                          @Param("attentionStartAt") Date attentionStartAt,
+                          @Param("attentionEndAt") Date attentionEndAt,
+                          @Param("cancelSubscribeStartAt") Date cancelSubscribeStartAt,
+                          @Param("cancelSubscribeEndAt") Date cancelSubscribeEndAt,
+                          @Param("isOnline") Boolean isOnline,
+                          @Param("mobile") String mobile,
+                          @Param("memberTagIds") Integer[] memberTags,
+                          @Param("bindStatus") Integer bindStatus,
+                          @Param("fuzzyRemarks") String fuzzyRemarks);
 
-    List<MemberExcel> findMemberExcelByParamsNew(Map<String, Object> params);
+    List<MemberExcel> findMemberExcelByParamsNew(@Param("wechatId") Integer wechatId,
+                                                 @Param("maxId") Integer maxId, @Param("rows") Integer rows, @Param("offset") Integer offset,
+                                                 @Param("openId") String openId, @Param("nickname") String nickname,
+                                                 @Param("sex") Byte sex, @Param("country") Integer country,
+                                                 @Param("province") Integer province, @Param("city") Integer city,
+                                                 @Param("subscribe") Integer subscribe,
+                                                 @Param("activityStartAt") Integer activityStartAt,
+                                                 @Param("activityEndAt") Integer activityEndAt,
+                                                 @Param("batchSendOfMonthStartAt") Integer batchSendOfMonthStartAt,
+                                                 @Param("batchSendOfMonthEndAt") Integer batchSendOfMonthEndAt,
+                                                 @Param("attentionStartAt") Date attentionStartAt,
+                                                 @Param("attentionEndAt") Date attentionEndAt,
+                                                 @Param("cancelSubscribeStartAt") Date cancelSubscribeStartAt,
+                                                 @Param("cancelSubscribeEndAt") Date cancelSubscribeEndAt,
+                                                 @Param("isOnline") Boolean isOnline,
+                                                 @Param("mobile") String mobile,
+                                                 @Param("memberTagIds") Integer[] memberTags,
+                                                 @Param("bindStatus") Integer bindStatus,
+                                                 @Param("fuzzyRemarks") String fuzzyRemarks);
 
     List<MemberProfile> getByWechatId(@Param("wechatId") Integer wechatId);
 }
