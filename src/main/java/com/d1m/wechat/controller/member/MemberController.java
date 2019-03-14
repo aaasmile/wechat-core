@@ -302,7 +302,10 @@ public class MemberController extends BaseController {
                 //Map<String, String> qrcodeMap = qrcodes.stream().collect(Collectors.toMap(Qrcode::getScene, Qrcode::getName));
 
                 Integer count = memberService.countByParams(params);
+                boolean flag = false;
                 if(count != null && count > 0) {
+                    if(count > 1000000) flag = true;
+
                     int size = count % pageSize == 0 ? count/pageSize : count/pageSize + 1;
                     int more = count % pageSize;
                     int maxId = 0;
