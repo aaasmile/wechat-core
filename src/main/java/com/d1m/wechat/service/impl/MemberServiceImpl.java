@@ -1330,6 +1330,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
         ObjectMapper objectMapper = new ObjectMapper();
         memberDtos.stream().forEach(member -> {
             try {
+                member.setMemberTags(null);
                 String memberStr = objectMapper.writeValueAsString(member);
                 JsonObject jsonObject = jsonParser.parse(memberStr).getAsJsonObject();
                 jsonArray.add(jsonObject);
