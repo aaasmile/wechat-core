@@ -1405,19 +1405,19 @@ public class MemberServiceImpl extends BaseService<Member> implements
     public RabbitTemplate rabbitTemplate;
     @Override
     public int loadMember(Integer wechatId) {
-        int pageNum = 0;
+        int pageNum = 1;
         int pageSize = 1000;
         int current = pageSize * pageNum;
         int totalCount = memberMapper.selectCount(null);
-        while (current < totalCount) {
-            pageNum = pageNum ++;
-            current = pageSize * pageNum;
+//        while (current < totalCount) {
+//            pageNum = pageNum ++;
+//            current = pageSize * pageNum;
             fetchMember(wechatId, pageNum, pageSize, current);
-        }
-        if(current != totalCount) {
-            pageNum ++;
-            fetchMember(wechatId, pageNum, pageSize, current);
-        }
+//        }
+//        if(current != totalCount) {
+//            pageNum ++;
+//            fetchMember(wechatId, pageNum, pageSize, current);
+//        }
         return totalCount;
     }
 
