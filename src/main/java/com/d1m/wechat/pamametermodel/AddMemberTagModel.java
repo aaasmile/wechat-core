@@ -4,6 +4,8 @@ import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.ParamUtil;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.List;
@@ -45,7 +47,9 @@ public class AddMemberTagModel extends BaseModel {
     private String sex;
 
     @ApiModelProperty("是否关注")
-    private Boolean subscribe;
+    @Getter
+    @Setter
+    private Integer subscribe;
 
     private Integer[] memberIds;
 
@@ -180,7 +184,7 @@ public class AddMemberTagModel extends BaseModel {
         }
         mm.setMobile(addMemberTagModel.getMobile());
         mm.setIsOnline(addMemberTagModel.getIsOnline());
-        mm.setSubscribe(addMemberTagModel.getSubscribe());
+        mm.setSubscribe(Integer.valueOf(1).equals(addMemberTagModel.getSubscribe()));
         return mm;
     }
 
@@ -210,10 +214,6 @@ public class AddMemberTagModel extends BaseModel {
 
     public String getSex() {
         return sex;
-    }
-
-    public Boolean getSubscribe() {
-        return subscribe;
     }
 
     public List<MemberTagModel> getTags() {
@@ -286,10 +286,6 @@ public class AddMemberTagModel extends BaseModel {
 
     public void setSex(String sex) {
         this.sex = sex;
-    }
-
-    public void setSubscribe(Boolean subscribe) {
-        this.subscribe = subscribe;
     }
 
     public void setTags(List<MemberTagModel> tags) {
