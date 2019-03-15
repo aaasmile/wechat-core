@@ -1310,7 +1310,8 @@ public class MemberServiceImpl extends BaseService<Member> implements
         int current = pageSize * pageNum;
         int totalCount = memberMapper.selectCount(null);
         while (current < totalCount) {
-            pageNum ++;
+            pageNum = pageNum ++;
+            current = pageSize * pageNum;
             fetchMember(wechatId, pageNum, pageSize, current);
         }
         if(current != totalCount) {
