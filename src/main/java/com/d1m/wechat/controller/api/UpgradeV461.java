@@ -13,7 +13,7 @@ public class UpgradeV461 extends BaseController {
   @Autowired
   MemberService memberService;
 
-  @RequestMapping("")
+  @RequestMapping("transferMember")
   public String transferMember() {
     Integer wechatId = this.getWechatId();
     int count = memberService.loadMember(wechatId);
