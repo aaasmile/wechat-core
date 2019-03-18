@@ -222,8 +222,8 @@ public class MemberController extends BaseController {
                             RequestContextUtils.getLocale(request).getCountry()));
                 }
             }
-            return representation(Message.MEMBER_LIST_SUCCESS, page.getResult(), addMemberTagModel.getPageNum(),
-                    addMemberTagModel.getPageSize(), page.getTotal());
+            return representation(Message.MEMBER_LIST_SUCCESS, page.getResult(), addMemberTagModel.getPageSize(),
+                    addMemberTagModel.getPageNum(), page.getTotal());
         } catch (Exception e) {
             log.error(e.getMessage());
             return wrapException(e);

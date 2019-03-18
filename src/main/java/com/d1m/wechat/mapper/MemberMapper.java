@@ -228,7 +228,7 @@ public interface MemberMapper extends MyMapper<Member> {
                             @Param("country") Integer country,
                             @Param("province") Integer province,
                             @Param("city") Integer city,
-                            @Param("subscribe") Boolean subscribe,
+                            @Param("subscribe") Integer subscribe,
                             @Param("activityStartAt") Integer activityStartAt,
                             @Param("activityEndAt") Integer activityEndAt,
                             @Param("batchSendOfMonthStartAt") Integer batchSendOfMonthStartAt,
