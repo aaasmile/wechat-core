@@ -202,7 +202,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
             List<Integer> ids = memberMapper.searchIds(wechatId, memberModel
                             .getOpenId(), memberModel.getNickname(), memberModel.getSex(),
                     memberModel.getCountry(), memberModel.getProvince(),
-                    memberModel.getCity(), memberModel.getSubscribe(), memberModel
+                    memberModel.getCity(), addMemberTagModel.getSubscribe(), memberModel
                             .getActivityStartAt(), memberModel.getActivityEndAt(),
                     memberModel.getBatchSendOfMonthStartAt(), memberModel
                             .getBatchSendOfMonthEndAt(), DateUtil
