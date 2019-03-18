@@ -1,9 +1,8 @@
 package com.d1m.wechat.service;
 
-import com.alibaba.fastjson.JSONArray;
-import com.d1m.wechat.dto.MemberProfileDto;
 import com.d1m.wechat.model.MemberProfile;
-import com.d1m.wechat.pamametermodel.MemberProfileModel;
+
+import java.util.List;
 
 public interface MemberProfileService extends IService<MemberProfile> {
 
@@ -11,4 +10,5 @@ public interface MemberProfileService extends IService<MemberProfile> {
 
 	Integer getMemberBindStatus(Integer id, Integer wechatId);
 
+	List<MemberProfile> getByWechatId(Integer wechatId);
 }

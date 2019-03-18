@@ -276,4 +276,13 @@
 		<result column="qrCodeType" jdbcType="VARCHAR" property="qrCodeType" />
     </resultMap>
 
+	<select id="getAllByWechatId" resultType="com.d1m.wechat.model.Qrcode">
+		select * from qrcode
+		<where>
+			<if test="wechatId != null">
+				wechat_id = #{wechatId}
+			</if>
+		</where>
+	</select>
+
 </mapper>
