@@ -96,6 +96,7 @@ public interface MemberMapper extends MyMapper<Member> {
     List<MemberTagDto> getMemberMemberTags(@Param("wechatId") Integer wechatId,
                                            @Param("memberId") Integer memberId);
 
+
     List<MemberDto> searchBySql(@Param("wechatId") Integer wechatId,
                                 @Param("sql") String sql);
 
@@ -273,4 +274,31 @@ public interface MemberMapper extends MyMapper<Member> {
                                          @Param("memberTags") Integer[] memberTags,
                                          @Param("sortName") String sortName, @Param("sortDir") String sortDir,
                                          @Param("bindStatus") Integer bindStatus, @Param("daytime") Date daytime);
+
+    List<MemberUseTagDto> findMemberTagsByWechatIdForSubLimit(@Param("wechatId") Integer wechatId, @Param("offset") Integer offset, @Param("rows") Integer rows,
+                                                              @Param("memberTags") Integer[] memberTags,
+                                                              @Param("nickname") String nickname,
+                                                              @Param("mobile") String mobile,
+                                                              @Param("subscribe") Integer subscribe,
+                                                              @Param("sex") Byte sex,
+                                                              @Param("country") Integer country,
+                                                              @Param("province") Integer province,
+                                                              @Param("city") Integer city,
+                                                              @Param("isOnline") Boolean isOnline,
+                                                              @Param("bindStatus") Integer bindStatus,
+                                                              @Param("activityStartAt") Integer activityStartAt,
+                                                              @Param("activityEndAt") Integer activityEndAt,
+                                                              @Param("batchSendOfMonthStartAt") Integer batchSendOfMonthStartAt,
+                                                              @Param("batchSendOfMonthEndAt") Integer batchSendOfMonthEndAt,
+                                                              @Param("attentionStartAt") Date attentionStartAt,
+                                                              @Param("attentionEndAt") Date attentionEndAt,
+                                                              @Param("cancelSubscribeStartAt") Date cancelSubscribeStartAt,
+                                                              @Param("cancelSubscribeEndAt") Date cancelSubscribeEndAt,
+                                                              @Param("fuzzyRemarks") String fuzzyRemarks);
+
+    List<Member> selectByMemberIdsAndWechatId(@Param("ids") Integer[] memberId, @Param("wechatId") Integer wechatId);
+
+    List<Integer> getMemberMemberTagsByMemberId(@Param("memberId") Integer memberId);
+
+    Long countAll(@Param("wechatId") Integer wechatId);
 }
