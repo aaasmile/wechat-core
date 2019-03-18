@@ -1,20 +1,8 @@
 package com.d1m.wechat.service.impl;
 
-import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
+import cn.d1m.wechat.client.core.WechatClient;
+import cn.d1m.wechat.client.model.WxQRCode;
+import cn.d1m.wechat.client.model.common.WxFile;
 import com.d1m.wechat.dto.QrcodeDto;
 import com.d1m.wechat.dto.ReportQrcodeDto;
 import com.d1m.wechat.dto.ReportQrcodeItemDto;
@@ -28,19 +16,24 @@ import com.d1m.wechat.model.enums.QrcodeAction;
 import com.d1m.wechat.model.enums.QrcodeStatus;
 import com.d1m.wechat.pamametermodel.QrcodeModel;
 import com.d1m.wechat.service.QrcodeService;
-import com.d1m.wechat.util.Constants;
-import com.d1m.wechat.util.DateUtil;
-import com.d1m.wechat.util.FileUploadConfigUtil;
-import com.d1m.wechat.util.FileUtils;
-import com.d1m.wechat.util.Message;
+import com.d1m.wechat.util.*;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-
-import cn.d1m.wechat.client.core.WechatClient;
-import cn.d1m.wechat.client.model.WxQRCode;
-import cn.d1m.wechat.client.model.common.WxFile;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.common.Mapper;
+
+import javax.annotation.Resource;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
 @Service
 public class QrcodeServiceImpl extends BaseService<Qrcode> implements
@@ -393,6 +386,11 @@ public class QrcodeServiceImpl extends BaseService<Qrcode> implements
 	public List<ReportQrcodeItemDto> dateQrcodeList(Integer wechatId,
 			Date start, Date end, Integer qrcodeId, String scene, Integer status) {
 		return qrcodeMapper.qrcodeReport(wechatId, start, end, status, qrcodeId, scene);
+	}
+
+	@Override
+	public List<Qrcode> getAllByWechatId(Integer wechatId) {
+		return qrcodeMapper.getAllByWechatId(wechatId);
 	}
 
 }

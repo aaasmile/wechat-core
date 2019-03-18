@@ -557,6 +557,52 @@ public class MemberServiceImpl extends BaseService<Member> implements
 
     }
 
+    @Override
+    public Integer countByParams(Integer wechatId, AddMemberTagModel addMemberTagModel) {
+        MemberModel memberModel = addMemberTagModel.getMemberModel();
+        return memberProfileMapper.countByParams(wechatId,
+                memberModel.getOpenId(), memberModel.getNickname(),
+                memberModel.getSex(), memberModel.getCountry(),
+                memberModel.getProvince(), memberModel.getCity(),
+                addMemberTagModel.getSubscribe(),
+                memberModel.getActivityStartAt(),
+                memberModel.getActivityEndAt(),
+                memberModel.getBatchSendOfMonthStartAt(),
+                memberModel.getBatchSendOfMonthEndAt(),
+                DateUtil.getDateBegin(DateUtil.parse(memberModel.getAttentionStartAt())),
+                DateUtil.getDateEnd(DateUtil.parse(memberModel.getAttentionEndAt())),
+                DateUtil.getDateBegin(DateUtil.parse(memberModel.getCancelSubscribeStartAt())),
+                DateUtil.getDateEnd(DateUtil.parse(memberModel.getCancelSubscribeEndAt())), memberModel.getIsOnline(),
+                memberModel.getMobile(),
+                memberModel.getMemberTags(),
+                addMemberTagModel.getBindStatus(),
+                addMemberTagModel.getFuzzyRemarks());
+    }
+
+    @Override
+    public List<MemberExcel> findMemberExcelByParamsNew(Integer wechatId, AddMemberTagModel addMemberTagModel,
+                                                        Integer maxId, Integer rows, Integer offset) {
+        MemberModel memberModel = addMemberTagModel.getMemberModel();
+        return memberProfileMapper.findMemberExcelByParamsNew(wechatId,
+                maxId, rows, offset,
+                memberModel.getOpenId(), memberModel.getNickname(),
+                memberModel.getSex(), memberModel.getCountry(),
+                memberModel.getProvince(), memberModel.getCity(),
+                addMemberTagModel.getSubscribe(),
+                memberModel.getActivityStartAt(),
+                memberModel.getActivityEndAt(),
+                memberModel.getBatchSendOfMonthStartAt(),
+                memberModel.getBatchSendOfMonthEndAt(),
+                DateUtil.getDateBegin(DateUtil.parse(memberModel.getAttentionStartAt())),
+                DateUtil.getDateEnd(DateUtil.parse(memberModel.getAttentionEndAt())),
+                DateUtil.getDateBegin(DateUtil.parse(memberModel.getCancelSubscribeStartAt())),
+                DateUtil.getDateEnd(DateUtil.parse(memberModel.getCancelSubscribeEndAt())), memberModel.getIsOnline(),
+                memberModel.getMobile(),
+                memberModel.getMemberTags(),
+                addMemberTagModel.getBindStatus(),
+                addMemberTagModel.getFuzzyRemarks());
+    }
+
     /**
      * 获取需要加标签的批量数据
      *
