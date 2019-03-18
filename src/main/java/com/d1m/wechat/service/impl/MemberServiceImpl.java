@@ -27,7 +27,6 @@ import com.github.pagehelper.PageHelper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -1485,7 +1484,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
 //        while (current < totalCount) {
 //            pageNum = pageNum ++;
 //            current = pageSize * pageNum;
-            fetchMember(wechatId, pageNum, pageSize, current);
+        fetchMember(wechatId, pageNum, pageSize, current);
 //        }
 //        if(current != totalCount) {
 //            pageNum ++;
@@ -1501,7 +1500,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
         JsonArray jsonArray = new JsonArray();
         JsonParser jsonParser = new JsonParser();
         ObjectMapper objectMapper = new ObjectMapper();
-        memberDtos.stream().forEach(member -> {
+        memberDtos.forEach(member -> {
             try {
                 member.setMemberTags(null);
                 String memberStr = objectMapper.writeValueAsString(member);
@@ -1515,4 +1514,6 @@ public class MemberServiceImpl extends BaseService<Member> implements
         rabbitTemplate.convertAndSend("elas.exchange", "elas.queue", jsonArray.toString());
         log.info("jsonArray..end send..." + jsonArray.size());
     }
+
+
 }
