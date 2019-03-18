@@ -13,7 +13,9 @@
   
   
   <select id="get" resultMap="ActivityCouponSettingListResultMap">
-   	select acs.id, cs.id as coupon_setting_id, cs.name as coupon_setting_name, cs.grno as coupon_setting_grno, cs.channel as coupon_setting_channel, cs.type as coupon_setting_type from activity_coupon_setting acs left join coupon_setting cs on acs.coupon_setting_id = cs.id
+   	select acs.id, cs.id as coupon_setting_id, cs.name as coupon_setting_name,
+	  cs.grno as coupon_setting_grno, cs.channel as coupon_setting_channel,
+	  cs.type as coupon_setting_type from activity_coupon_setting acs left join coupon_setting cs on acs.coupon_setting_id = cs.id
    	<where>
    		acs.wechat_id = #{wechatId} and acs.id = #{id}
     </where>

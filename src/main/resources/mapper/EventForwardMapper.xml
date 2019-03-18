@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.d1m.wechat.mapper.EventForwardMapper">
+	<resultMap id="BaseResultMap" type="com.d1m.wechat.model.EventForward">
+		<!--
+          WARNING - @mbg.generated
+        -->
+		<id column="id" jdbcType="VARCHAR" property="id"/>
+		<result column="third_party_id" jdbcType="INTEGER" property="thirdPartyId" />
+		<result column="interface_id" jdbcType="INTEGER" property="interfaceId" />
+		<result column="user_uuid" jdbcType="VARCHAR" property="userUuid"/>
+		<result column="status" jdbcType="TINYINT" property="status"/>
+		<result column="create_at" jdbcType="TIMESTAMP" property="createAt"/>
+		<result column="update_at" jdbcType="TIMESTAMP" property="updateAt"/>
+	</resultMap>
+
+
+
+	<resultMap id="EventForwardMap" type="com.d1m.wechat.dto.EventForwardDto">
+		<!--
+          WARNING - @mbg.generated
+        -->
+		<id column="id" jdbcType="VARCHAR" property="id"/>
+		<result column="name"  property="name" />
+		<result column="brand_Name"  property="brand_name" />
+		<result column="type" jdbcType="VARCHAR" property="type"/>
+		<result column="status" jdbcType="TINYINT" property="status"/>
+		<result column="description" jdbcType="VARCHAR" property="description"/>
+		<result column="update_at" jdbcType="TIMESTAMP" property="updateAt"/>
+		<result column="is_deleted" jdbcType="TIMESTAMP" property="isDeleted"/>
+	</resultMap>
+
+	<sql id="findParams">
+		<if test="id != null and id!='' "> AND  ic.id = #{id} </if>
+		<if test="brand != null and brand!=0"> AND ic.brand =#{brand} </if>
+		<if test="name != null and name!=''"> AND ic.name LIKE concat ('%',#{name},'%') </if>
+		<if test="status != null and status!=-1"> AND ef.status = #{status} </if>
+        AND  ef.status != 2
+	</sql>
+
+
+
+	<select id="selectEventForwardItems" resultMap="EventForwardMap" parameterType="java.util.HashMap">
+		select ef.id , ic.name ,ib.name as brand_name , ic.is_deleted ,ic.type ,ic.description  ,ef.status ,ef.update_at as update_at   From event_forward ef
+		left JOIN interface_config ic on  ef.interface_id=ic.id
+		LEFT JOIN interface_brand ib ON ib.id = ef.third_party_id
+		<where>
+			<include refid="findParams"/>
+		</where>
+		ORDER BY update_at DESC
+	</select>
+
+	<resultMap id="EventForwardDetailsMap" type="com.d1m.wechat.dto.EventForwardDetailsDto" extends="BaseResultMap">
+		<result column="thirdPartyName" jdbcType="VARCHAR" property="thirdPartyName"/>
+		<result column="interfaceName" jdbcType="VARCHAR" property="interfaceName"/>
+		<collection property="eventIds" column="id" select="com.d1m.wechat.mapper.EventForwardDetailsMapper.getByEventForwardId"
+					ofType="java.lang.Integer" javaType="ArrayList"/>
+	</resultMap>
+
+
+	<select id="queryEventForwardDetailsById" resultMap="EventForwardDetailsMap">
+		select ef.*, ib.name as thirdPartyName, ic.name as interfaceName
+		from event_forward ef
+		left join interface_brand ib on ef.third_party_id = ib.id
+		left join interface_config ic on ef.interface_id = ic.id and ib.id = ic.brand
+		where ef.id = #{id}
+	</select>
+
+
+
+	<update id="updateStatusById">
+		UPDATE event_forward
+		SET updated_at = #{updatedAt},
+		status = #{status}
+		WHERE id = #{id}
+	</update>
+
+	<update id="deleteEventForward" parameterType="java.util.HashMap">
+		update event_forward set status=2 where id=#{id}
+	</update>
+
+
+
+
+	<select id="queryEventForwardByInterfaceId" resultType="java.lang.String" >
+		select user_uuid from event_forward where interface_id=#{id}
+	</select>
+
+  </mapper>
+
+
+
+
+
+

@@ -2,6 +2,7 @@ package com.d1m.wechat.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import javax.persistence.*;
 
@@ -9,6 +10,7 @@ import javax.persistence.*;
  * Auth: Jo.Ho
  * Date: 2018/12/9
  */
+@Data
 @Table(name = "interface_brand")
 public class InterfaceConfigBrand {
 
@@ -18,11 +20,8 @@ public class InterfaceConfigBrand {
 
 	private String name;
 
-	@Column(name = "app_key")
-	private String key;
-
-	@Column(name = "app_secret")
-	private String secret;
+	@Column(name ="create_at")
+	private String createAt;
 
 	@Column(name = "is_deleted")
 	private boolean deleted;
@@ -41,22 +40,6 @@ public class InterfaceConfigBrand {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getKey() {
-		return key;
-	}
-
-	public void setKey(String key) {
-		this.key = key;
-	}
-
-	public String getSecret() {
-		return secret;
-	}
-
-	public void setSecret(String secret) {
-		this.secret = secret;
 	}
 
 	public boolean isDeleted() {

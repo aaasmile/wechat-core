@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="5">
+    <Properties>
+        <Property name="log.level">info</Property>
+        <Property name="log.path">/data/log/wechat-core</Property>
+        <Property name="project.name">spring</Property>
+        <Property name="ELK_LOG_PATTERN">${sys:PID} %4p %t (%F) - %m%n</Property>
+    </Properties>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss,SSS}:%4p %t (%F) - %m%n"/>
+        </Console>
+
+        <RollingFile name="fullLog" fileName="${log.path}/${project.name}.log"
+                     filePattern="${log.path}/$${date:yyyy-MM}/${project.name}-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss,SSS}:%4p %t (%F) - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="200MB"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="event_to_third_party" fileName="${log.path}/event_to_third_party.log"
+                     filePattern="${log.path}/$${date:yyyy-MM}/event_to_third_party-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss,SSS}:%4p %t (%F) - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="200MB"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="errorLog" fileName="${log.path}/${project.name}-error.log"
+                     filePattern="${log.path}/$${date:yyyy-MM}/${project.name}-%d{yyyy-MM-dd}-%i-error.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss,SSS}:%4p %t (%F) - %m%n"/>
+            <Filters>
+                <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="200MB"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <logger name="org.mybatis.spring.mapper.ClassPathMapperScanner" level="error"/>
+        <logger name="org.springframework.jdbc.datasource.DataSourceTransactionManager" level="info"/>
+        <logger name="org.springframework" level="info"/>
+        <logger name="org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor" level="info"/>
+        <logger name="com.d1m.wechat" level="${sys:log.level}"/>
+        <logger name="com.d1m.wechat.controller.interfaces.InterfaceRabbitMQListener" level="${sys:log.level}">
+            <AppenderRef ref="event_to_third_party"/>
+        </logger>
+        <!--fixme when full push request, -->
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="fullLog"/>
+            <AppenderRef ref="errorLog"/>
+        </Root>
+    </Loggers>
+</Configuration>
