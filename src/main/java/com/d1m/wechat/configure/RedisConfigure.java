@@ -26,14 +26,16 @@ public class RedisConfigure {
     @Value("${redis.default.expiration:300}")
     private Long redisDefaultExpiration;
 
-    public @Bean RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
+    public @Bean
+    RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<Object, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
         template.setDefaultSerializer(new GenericJackson2JsonRedisSerializer());
         return template;
     }
 
-    public @Bean CacheManager cacheManager(@Qualifier("redisTemplate") RedisTemplate<Object, Object> redisOperations) {
+    public @Bean
+    CacheManager cacheManager(@Qualifier("redisTemplate") RedisTemplate<Object, Object> redisOperations) {
         RedisCacheManager redisCacheManager = new RedisCacheManager(redisOperations);
         redisCacheManager.setUsePrefix(true);
         redisCacheManager.setDefaultExpiration(redisDefaultExpiration);
@@ -43,6 +45,7 @@ public class RedisConfigure {
         expiresMap.put(Constant.Cache.memberSession, 60 * 60 * 24 * 30L);
         expiresMap.put(Constant.Cache.memberToken, 60 * 60 * 24 * 30L);
         expiresMap.put(Constant.Cache.tokenMember, 60 * 60 * 24 * 30L);
+        expiresMap.put(Constant.Cache.THIRD_PARTY_INTERFACE, 60 * 30L);
         redisCacheManager.setExpires(expiresMap);
 
         return redisCacheManager;

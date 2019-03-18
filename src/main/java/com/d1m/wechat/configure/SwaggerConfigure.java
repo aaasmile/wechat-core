@@ -1,15 +1,11 @@
 package com.d1m.wechat.configure;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StopWatch;
-
-import io.swagger.annotations.Api;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -21,6 +17,9 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * SwaggerConfigure
  *
@@ -28,18 +27,19 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  */
 @Configuration
 @EnableSwagger2
-public class SwaggerConfigure /*extends WebMvcConfigurerAdapter implements EnvironmentAware */{
-	private static final Logger log = LoggerFactory.getLogger(SwaggerConfigure.class);
+public class SwaggerConfigure /*extends WebMvcConfigurerAdapter implements EnvironmentAware */ {
+    private static final Logger log = LoggerFactory.getLogger(SwaggerConfigure.class);
+
     private ApiInfo getApiInfo() {
-	    return new ApiInfoBuilder()
-	            .title("wechat-core APIs")
-	            .termsOfServiceUrl("fake.wechat.d1m.cn")
-	            .contact(new Contact("d1m","http://www.d1m.com","fake@d1m.com"))
-	            .version("v0.0.1")
-	            .description("微信后台管理模块")
-	            .build();
+        return new ApiInfoBuilder()
+                .title("wechat-core APIs")
+                .termsOfServiceUrl("fake.wechat.d1m.cn")
+                .contact(new Contact("d1m", "http://www.d1m.com", "fake@d1m.com"))
+                .version("v0.0.1")
+                .description("微信后台管理模块")
+                .build();
     }
-	
+
     @Bean
     public Docket swaggerSpringfox() {
         log.debug("Starting Swagger");
@@ -61,8 +61,8 @@ public class SwaggerConfigure /*extends WebMvcConfigurerAdapter implements Envir
         log.debug("Started Swagger in {} ms", watch.getTotalTimeMillis());
         return swaggerSpringMvcPlugin;
     }
-    
-    
+
+
 //    public void addResourceHandlers(ResourceHandlerRegistry registry) {
 //        registry.addResourceHandler("swagger-ui.html")
 //                .addResourceLocations("classpath:/META-INF/resources/");
@@ -71,7 +71,7 @@ public class SwaggerConfigure /*extends WebMvcConfigurerAdapter implements Envir
 //                .addResourceLocations("classpath:/META-INF/resources/webjars/");
 //        super.addResourceHandlers(registry);
 //    }
-    
+
 //	@Override
 //	public void setEnvironment(Environment environment) {
 //		 this.propertyResolver = new RelaxedPropertyResolver(environment,
@@ -79,7 +79,7 @@ public class SwaggerConfigure /*extends WebMvcConfigurerAdapter implements Envir
 //	}
 //	
 //	 private RelaxedPropertyResolver propertyResolver;
-    
+
 //    @Bean
 //    SecurityScheme oauth() {
 //        return new OAuthBuilder()
@@ -89,7 +89,7 @@ public class SwaggerConfigure /*extends WebMvcConfigurerAdapter implements Envir
 //                .grantTypes(grantTypes())
 //                .build();
 //    }
-    
+
 //	@Bean
 //	List<GrantType> grantTypes() {
 //		List<GrantType> grantTypes = new ArrayList<>();
@@ -106,16 +106,17 @@ public class SwaggerConfigure /*extends WebMvcConfigurerAdapter implements Envir
 //		list.add(new AuthorizationScope("admin_scope","Grants read write and delete access"));
 //		return list;
 //    }	
-    
-    
+
+
     private List<Parameter> setHeaderHost() {
         ParameterBuilder host = new ParameterBuilder();
         List<Parameter> pars = new ArrayList<>();
         host.name("x-forwarded-host")
-        	.description("domain")
-        	.modelRef(new ModelRef("string"))
-        	.parameterType("header")
-        	.required(false).build();
+                .description("domain")
+                .modelRef(new ModelRef("string"))
+                .parameterType("header")
+                .defaultValue("dev.wechat.d1m.cn")
+                .required(false).build();
         pars.add(host.build());
         return pars;
     }

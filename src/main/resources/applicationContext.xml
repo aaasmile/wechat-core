@@ -26,7 +26,6 @@
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:context="http://www.springframework.org/schema/context"
        xmlns="http://www.springframework.org/schema/beans"
        xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
@@ -35,8 +34,8 @@
        http://www.springframework.org/schema/tx/spring-tx.xsd
        http://www.springframework.org/schema/aop
        http://www.springframework.org/schema/aop/spring-aop.xsd
-       http://www.springframework.org/schema/context
-       http://www.springframework.org/schema/context/spring-context.xsd
+
+
        http://www.springframework.org/schema/task
        http://www.springframework.org/schema/task/spring-task.xsd">
 
@@ -44,7 +43,8 @@
         <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
     </context:component-scan>-->
 
-    <bean id="dataSourceDefault" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close" primary="true">
+    <bean id="dataSourceDefault" class="com.alibaba.druid.pool.DruidDataSource" init-method="init"
+          destroy-method="close" primary="true">
         <property name="driverClassName" value="${jdbc.driverClass}"/>
         <property name="url" value="${jdbc.url}"/>
         <property name="username" value="${jdbc.user}"/>
@@ -70,7 +70,7 @@
     </bean>
 
     <!-- 动态数据源 -->
-    <bean id="dynamicDataSource" class="com.d1m.common.ds.DynamicDataSource">
+    <bean id="dynamicDataSource" class="com.d1m.wechat.util.DynamicDataSourceExtend">
         <property name="enable" value="${jdbc.enableDynamic}"></property>
         <property name="targetDataSources">
             <map key-type="java.lang.String"></map>
@@ -107,9 +107,9 @@
         <property name="configLocation" value="classpath:mybatis.xml"/>
     </bean>
     <!-- mybatis原始mapper扫描 -->
-	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-		<property name="basePackage" value="com.d1m.wechat.dao" />
-	</bean>
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.d1m.wechat.dao"/>
+    </bean>
     <bean class="tk.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="com.d1m.wechat.mapper"/>
         <!-- 3.2.2版本新特性，markerInterface可以起到mappers配置的作用，详细情况需要看Marker接口类 -->
@@ -157,7 +157,8 @@
     <task:annotation-driven executor="callerRunsExecutor" scheduler="scheduler"/>
     <task:scheduler id="scheduler"/>
     -->
-    <task:executor id="callerRunsExecutor" pool-size="10-500" queue-capacity="20" keep-alive="60" rejection-policy="CALLER_RUNS"/>
+    <task:executor id="callerRunsExecutor" pool-size="10-500" queue-capacity="20" keep-alive="60"
+                   rejection-policy="CALLER_RUNS"/>
 
     <import resource="classpath:applicationContext-shiro.xml"/>
     <import resource="classpath:applicationContext-job.xml"/>
