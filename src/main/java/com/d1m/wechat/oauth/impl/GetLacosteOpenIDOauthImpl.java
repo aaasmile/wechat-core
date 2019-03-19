@@ -1,5 +1,6 @@
 package com.d1m.wechat.oauth.impl;
 
+import com.d1m.wechat.wechatclient.WechatCrmRestK8sService;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
@@ -59,9 +60,34 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 
 	@Autowired
 	private WechatCrmRestService wechatCrmRestService;
+
+	@Autowired
+	private WechatCrmRestK8sService wechatCrmRestK8sService;
 	
 	@Autowired
 	private OauthUrlService oauthUrlService;
+
+//	@Autowired
+//	private WechatCrmRestK8sService wechatCrmRestK8sService;
+
+	private String getStatus(Integer wechatId, Integer memberId) {
+		try {
+			log.info("getStatus...");
+			return wechatCrmRestService.getMemberStatus(wechatId, memberId);
+		} catch (Exception e) {
+			log.info("getStatus k8s...");
+			return wechatCrmRestK8sService.getMemberStatus(wechatId, memberId);
+		}
+	}
+	private String getLevels(Integer wechatId, Integer memberId) {
+		try {
+			log.info("getLevels...");
+			return wechatCrmRestService.getMemberLevels(wechatId, memberId);
+		} catch (Exception e) {
+			log.info("getLevels k8s...");
+			return wechatCrmRestK8sService.getMemberLevels(wechatId, memberId);
+		}
+	}
 	
 	@Override
 	public void execute(HttpServletRequest request,
@@ -125,8 +151,7 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 					log.info("判断needBind 参数是否为1");
 					String status = null;
 					try {
-						status = wechatCrmRestService.getMemberStatus(wechatId,
-								member.getId());
+						status = getStatus(wechatId, member.getId());
 						if (StringUtils.isBlank(status)) {
 							log.error("status get null.");
 							status = SYSTEM_ERROR;
@@ -171,8 +196,7 @@ public class GetLacosteOpenIDOauthImpl implements IOauth {
 							String val = configService.getConfigValue(wechatId,
 									"LACOSTE_CRM", "LACOSTE_MEMBER_CENTER_URL");
 							JSONObject json = JSONObject.parseObject(val);
-							String levels = wechatCrmRestService
-									.getMemberLevels(wechatId, member.getId());
+							String levels = getLevels(wechatId, member.getId());
 							log.info(
 									"wechatId : {}, memberId : {}, levels : {}.",
 									wechatId, member.getId(), levels);
