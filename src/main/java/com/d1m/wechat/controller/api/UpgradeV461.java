@@ -83,12 +83,14 @@ public class UpgradeV461 extends BaseController {
   private void fetchMember(Integer wechatId) {
     int pageNum = 1;
     int pageSize = 1000;
-    while (true) {
+//    while (true) {
       log.info("current...{},...{}", pageNum, pageSize);
       PageHelper.startPage(pageNum, pageSize, true);
       List<Member> members = memberMapper.selectAll();
       if(members == null || members.isEmpty()) {
-        break;
+        log.error("members.isEmpty");
+        return;
+//        break;
       }
       JsonArray jsonArray = new JsonArray();
       JsonParser jsonParser = new JsonParser();
@@ -106,18 +108,20 @@ public class UpgradeV461 extends BaseController {
       rabbitTemplate.convertAndSend("elas.exchange", "elas.queue.memberAdd", jsonArray.toString());
       log.info("jsonArray..end send..." + jsonArray.size());
       pageNum = pageNum + 1;
-    }
+//    }
   }
 
   private void fetchConversation(Integer wechatId) {
     int pageNum = 1;
     int pageSize = 1000;
-    while (true) {
+//    while (true) {
       log.info("current...{},...{}", pageNum, pageSize);
       PageHelper.startPage(pageNum, pageSize, true);
       List<Conversation> conversations = conversationMapper.selectAll();
       if(conversations == null || conversations.isEmpty()) {
-        break;
+        log.error("conversations.isEmpty");
+        return;
+//        break;
       }
       JsonArray jsonArray = new JsonArray();
       JsonParser jsonParser = new JsonParser();
@@ -135,18 +139,20 @@ public class UpgradeV461 extends BaseController {
       rabbitTemplate.convertAndSend("elas.exchange", "elas.queue.conversationAdd", jsonArray.toString());
       log.info("jsonArray..end send..." + jsonArray.size());
       pageNum = pageNum + 1;
-    }
+//    }
   }
 
   private void fetchMemberMemberTag(Integer wechatId) {
     int pageNum = 1;
     int pageSize = 1000;
-    while (true) {
+//    while (true) {
       log.info("current...{},...{}", pageNum, pageSize);
-      PageHelper.startPage(pageNum, pageSize, true);
+      PageHelper.startPage(pageNum, pageSize, false);
       List<MemberMemberTag> memberMemberTags = memberMemberTagMapper.selectAll();
       if(memberMemberTags == null || memberMemberTags.isEmpty()) {
-        break;
+        log.error("memberMemberTags.isEmpty");
+        return;
+//        break;
       }
       JsonArray jsonArray = new JsonArray();
       JsonParser jsonParser = new JsonParser();
@@ -164,6 +170,6 @@ public class UpgradeV461 extends BaseController {
       rabbitTemplate.convertAndSend("elas.exchange", "elas.queue.memberMemberTagAdd", jsonArray.toString());
       log.info("jsonArray..end send..." + jsonArray.size());
       pageNum = pageNum + 1;
-    }
+//    }
   }
 }
