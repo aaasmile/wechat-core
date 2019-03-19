@@ -1,16 +1,15 @@
 package com.d1m.wechat.service.impl;
 
-import com.d1m.wechat.mapper.MemberMapper;
-import com.d1m.wechat.model.*;
-import com.d1m.wechat.service.*;
+import com.d1m.wechat.mapper.MemberProfileMapper;
+import com.d1m.wechat.model.MemberProfile;
+import com.d1m.wechat.service.MemberProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import tk.mybatis.mapper.common.Mapper;
 
-import com.d1m.wechat.mapper.MemberProfileMapper;
+import java.util.List;
 
 @Service
 public class MemberProfileServiceImpl extends BaseService<MemberProfile>
@@ -44,6 +43,11 @@ public class MemberProfileServiceImpl extends BaseService<MemberProfile>
 			resultCode = memberProfileMapper.getMemberBindStatus(id, wechatId);
 		}
 		return resultCode;
+	}
+
+	@Override
+	public List<MemberProfile> getByWechatId(Integer wechatId) {
+		return memberProfileMapper.getByWechatId(wechatId);
 	}
 
 }
