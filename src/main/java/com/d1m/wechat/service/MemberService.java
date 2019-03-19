@@ -94,5 +94,12 @@ public interface MemberService extends IService<Member> {
      */
     public Integer getBatchSize(Integer wechatId);
 
+    @Deprecated
     List<MemberExcel> findMemberExcelByParams(Map<String, Object> params);
+
+    int loadMember(Integer wechatId);
+    Integer countByParams(Integer wechatId, AddMemberTagModel addMemberTagModel);
+
+    List<MemberExcel> findMemberExcelByParamsNew(Integer wechatId, AddMemberTagModel addMemberTagModel,
+                                                 Integer maxId, Integer rows, Integer offset);
 }
