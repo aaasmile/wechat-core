@@ -208,7 +208,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
             List<Integer> ids = memberMapper.searchIds(wechatId, memberModel
                             .getOpenId(), memberModel.getNickname(), memberModel.getSex(),
                     memberModel.getCountry(), memberModel.getProvince(),
-                    memberModel.getCity(), memberModel.getSubscribe(), memberModel
+                    memberModel.getCity(), addMemberTagModel.getSubscribe(), memberModel
                             .getActivityStartAt(), memberModel.getActivityEndAt(),
                     memberModel.getBatchSendOfMonthStartAt(), memberModel
                             .getBatchSendOfMonthEndAt(), DateUtil
@@ -296,14 +296,42 @@ public class MemberServiceImpl extends BaseService<Member> implements
 
         //String tenant = TenantContext.getCurrentTenant();
         if(ObjectUtils.isEmpty(addMemberTagModel.getMemberIds())) {
-            Long count = memberMapper.countAll();
+            Long count = memberMapper.count(wechatId, memberModel.getOpenId(),
+                    memberModel.getNickname(), memberModel.getSex(), memberModel
+                            .getCountry(), memberModel.getProvince(), memberModel
+                            .getCity(), addMemberTagModel.getSubscribe(), memberModel
+                            .getActivityStartAt(), memberModel.getActivityEndAt(),
+                    memberModel.getBatchSendOfMonthStartAt(), memberModel
+                            .getBatchSendOfMonthEndAt(), DateUtil
+                            .getDateBegin(DateUtil.parse(memberModel
+                                    .getAttentionStartAt())), DateUtil
+                            .getDateEnd(DateUtil.parse(memberModel
+                                    .getAttentionEndAt())), DateUtil
+                            .getDateBegin(DateUtil.parse(memberModel
+                                    .getCancelSubscribeStartAt())), DateUtil
+                            .getDateEnd(DateUtil.parse(memberModel
+                                    .getCancelSubscribeEndAt())), memberModel
+                            .getIsOnline(), null, memberModel.getMobile(),
+                    memberModel.getMemberTags(), addMemberTagModel.getSortName(),
+                    addMemberTagModel.getSortDir(), addMemberTagModel
+                            .getBindStatus(), DateUtil.getDate(-2),
+                    addMemberTagModel.getFuzzyRemarks());
+
             if(count == null || count == 0) {
                 throw new WechatException(Message.MEMBER_NOT_BLANK);
             }
 
-            int threadID = 16;
-            int rows = count.intValue()/threadID-1;
-            int more = count.intValue()%threadID-1;
+            int threadID = 20;
+            int rows = 0;
+            int more = 0;
+            if(count < 5000) {
+                threadID = 1;
+                rows = count.intValue();
+                more = count.intValue();
+            } else {
+                rows = count.intValue()/ (threadID-1);
+                more = count.intValue()% (threadID-1);
+            }
             int offset = 0;
             Date createdAt = new Date();
 
@@ -313,13 +341,13 @@ public class MemberServiceImpl extends BaseService<Member> implements
                         memberModel.getMemberTags(),
                         memberModel.getNickname(),
                         memberModel.getMobile(),
-                        memberModel.getSubscribe(),
+                        addMemberTagModel.getSubscribe(),
                         memberModel.getSex(),
                         memberModel.getCountry(),
                         memberModel.getProvince(),
                         memberModel.getCity(),
                         memberModel.getIsOnline(),
-                        null,
+                        addMemberTagModel.getBindStatus(),
                         memberModel.getActivityStartAt(),
                         memberModel.getActivityEndAt(),
                         memberModel.getBatchSendOfMonthStartAt(),
@@ -329,17 +357,16 @@ public class MemberServiceImpl extends BaseService<Member> implements
                         DateUtil.getDateBegin(DateUtil.parse(memberModel.getCancelSubscribeStartAt())),
                         DateUtil.getDateBegin(DateUtil.parse(memberModel.getCancelSubscribeEndAt())),
                         addMemberTagModel.getFuzzyRemarks());
-                offset = Integer.valueOf(members.get(members.size() - 1).getId());
+                offset = members.get(members.size() - 1).getId();
 
                 List<MemberMemberTag> memberMemberTags = new ArrayList<>();
                 Map<Integer, List<MemberUseTagDto>> memberMap = members.stream().collect(Collectors.groupingBy(MemberUseTagDto::getId));
                 for (Integer key : memberMap.keySet()) {
-                    List<Integer> memberTagDtoIds = memberMap.get(key).stream().map(memberUseTagDto -> memberUseTagDto.getTagId())
-                            .filter(Objects::nonNull).collect(Collectors.toList());
+                    List<Integer> memberTagDtoIds = memberMap.get(key).stream().map(memberUseTagDto -> memberUseTagDto.getTagId()).collect(Collectors.toList());
                     List<MemberTag> addTags = memberTagsIn.stream().filter((MemberTag t) -> !memberTagDtoIds.contains(t.getId())).collect(Collectors.toList());
                     for (MemberTag tag : addTags) {
                         memberMemberTags.add(new MemberMemberTag(key, tag.getId(), wechatId, memberMap.get(key).get(0).getOpenId(), createdAt));
-                        if(memberMemberTags.size() > 0 && memberMemberTags.size() == 5000){
+                        if(memberMemberTags.size() > 0 && memberMemberTags.size() == 1000){
                             memberMemberTagMapper.insertList(memberMemberTags);
                             memberMemberTags = new ArrayList<>();
                         }
@@ -534,6 +561,52 @@ public class MemberServiceImpl extends BaseService<Member> implements
     public List<MemberExcel> findMemberExcelByParams(Map<String, Object> params) {
         return memberProfileMapper.findMemberExcelByParams(params);
 
+    }
+
+    @Override
+    public Integer countByParams(Integer wechatId, AddMemberTagModel addMemberTagModel) {
+        MemberModel memberModel = addMemberTagModel.getMemberModel();
+        return memberProfileMapper.countByParams(wechatId,
+                memberModel.getOpenId(), memberModel.getNickname(),
+                memberModel.getSex(), memberModel.getCountry(),
+                memberModel.getProvince(), memberModel.getCity(),
+                addMemberTagModel.getSubscribe(),
+                memberModel.getActivityStartAt(),
+                memberModel.getActivityEndAt(),
+                memberModel.getBatchSendOfMonthStartAt(),
+                memberModel.getBatchSendOfMonthEndAt(),
+                DateUtil.getDateBegin(DateUtil.parse(memberModel.getAttentionStartAt())),
+                DateUtil.getDateEnd(DateUtil.parse(memberModel.getAttentionEndAt())),
+                DateUtil.getDateBegin(DateUtil.parse(memberModel.getCancelSubscribeStartAt())),
+                DateUtil.getDateEnd(DateUtil.parse(memberModel.getCancelSubscribeEndAt())), memberModel.getIsOnline(),
+                memberModel.getMobile(),
+                memberModel.getMemberTags(),
+                addMemberTagModel.getBindStatus(),
+                addMemberTagModel.getFuzzyRemarks());
+    }
+
+    @Override
+    public List<MemberExcel> findMemberExcelByParamsNew(Integer wechatId, AddMemberTagModel addMemberTagModel,
+                                                        Integer maxId, Integer rows, Integer offset) {
+        MemberModel memberModel = addMemberTagModel.getMemberModel();
+        return memberProfileMapper.findMemberExcelByParamsNew(wechatId,
+                maxId, rows, offset,
+                memberModel.getOpenId(), memberModel.getNickname(),
+                memberModel.getSex(), memberModel.getCountry(),
+                memberModel.getProvince(), memberModel.getCity(),
+                addMemberTagModel.getSubscribe(),
+                memberModel.getActivityStartAt(),
+                memberModel.getActivityEndAt(),
+                memberModel.getBatchSendOfMonthStartAt(),
+                memberModel.getBatchSendOfMonthEndAt(),
+                DateUtil.getDateBegin(DateUtil.parse(memberModel.getAttentionStartAt())),
+                DateUtil.getDateEnd(DateUtil.parse(memberModel.getAttentionEndAt())),
+                DateUtil.getDateBegin(DateUtil.parse(memberModel.getCancelSubscribeStartAt())),
+                DateUtil.getDateEnd(DateUtil.parse(memberModel.getCancelSubscribeEndAt())), memberModel.getIsOnline(),
+                memberModel.getMobile(),
+                memberModel.getMemberTags(),
+                addMemberTagModel.getBindStatus(),
+                addMemberTagModel.getFuzzyRemarks());
     }
 
     /**

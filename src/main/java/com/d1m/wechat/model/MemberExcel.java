@@ -4,6 +4,8 @@ import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.d1m.wechat.domain.enumeration.MemberSubscribeScene;
 import com.d1m.wechat.model.enums.MemberProfileStatus;
 import com.d1m.wechat.model.enums.Sex;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
 
@@ -11,8 +13,11 @@ import java.util.Date;
  * Created by jone.wang on 2018/12/5.
  * Description:
  */
+@Getter
+@Setter
 public class MemberExcel {
 
+    private Integer memberId;
 
     @Excel(name = "no", type = 10, orderNum = "0")
     private Integer id;
