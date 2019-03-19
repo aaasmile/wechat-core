@@ -1400,46 +1400,4 @@ public class MemberServiceImpl extends BaseService<Member> implements
                 addMemberTagModel.getSortDir(), addMemberTagModel
                         .getBindStatus(), DateUtil.getDate(-2));
     }
-
-    @Autowired
-    public RabbitTemplate rabbitTemplate;
-    @Override
-    public int loadMember(Integer wechatId) {
-        int pageNum = 1;
-        int pageSize = 1000;
-        int current = pageSize * pageNum;
-        int totalCount = memberMapper.selectCount(null);
-//        while (current < totalCount) {
-//            pageNum = pageNum ++;
-//            current = pageSize * pageNum;
-            fetchMember(wechatId, pageNum, pageSize, current);
-//        }
-//        if(current != totalCount) {
-//            pageNum ++;
-//            fetchMember(wechatId, pageNum, pageSize, current);
-//        }
-        return totalCount;
-    }
-
-    private void fetchMember(Integer wechatId, int pageNum, int pageSize, int current) {
-        log.info("current...", current);
-        PageHelper.startPage(pageNum, pageSize, true);
-        List<MemberDto> memberDtos = memberMapper.selectByWechat(wechatId);
-        JsonArray jsonArray = new JsonArray();
-        JsonParser jsonParser = new JsonParser();
-        ObjectMapper objectMapper = new ObjectMapper();
-        memberDtos.stream().forEach(member -> {
-            try {
-                member.setMemberTags(null);
-                String memberStr = objectMapper.writeValueAsString(member);
-                JsonObject jsonObject = jsonParser.parse(memberStr).getAsJsonObject();
-                jsonArray.add(jsonObject);
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-            }
-        });
-        log.info("jsonArray..send..." + jsonArray.size());
-        rabbitTemplate.convertAndSend("elas.exchange", "elas.queue", jsonArray.toString());
-        log.info("jsonArray..end send..." + jsonArray.size());
-    }
 }
