@@ -307,4 +307,20 @@ public class AddMemberTagModel extends BaseModel {
     public void setFuzzyRemarks(String fuzzyRemarks) {
         this.fuzzyRemarks = fuzzyRemarks;
     }
+
+    public Integer getSubscribe() {
+        return subscribe;
+    }
+
+    public Boolean getOnline() {
+        return isOnline;
+    }
+
+    public void setSubscribe(Integer subscribe) {
+        this.subscribe = subscribe;
+    }
+
+    public void setOnline(Boolean online) {
+        isOnline = online;
+    }
 }
