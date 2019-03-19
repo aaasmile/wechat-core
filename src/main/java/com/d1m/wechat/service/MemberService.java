@@ -96,7 +96,4 @@ public interface MemberService extends IService<Member> {
 
     @Deprecated
     List<MemberExcel> findMemberExcelByParams(Map<String, Object> params);
-
-    int loadMember(Integer wechatId);
-
 }
