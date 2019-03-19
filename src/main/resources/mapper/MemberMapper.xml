@@ -145,11 +145,14 @@
                 and m.city = #{city}
             </if>
             <if test="subscribe != null">
-                <if test="subscribe == true">
+                <if test="subscribe == 1">
                     and m.is_subscribe = 1
                 </if>
-                <if test="subscribe == false">
+                <if test="subscribe == 0">
                     and m.is_subscribe = 0
+                </if>
+                <if test="subscribe == -1">
+                    and m.is_subscribe is null
                 </if>
             </if>
             <if test="activityStartAt != null">
@@ -210,7 +213,7 @@
         select
         count(m.id)
         from member as m
-        <include refid="searchM"></include>
+        <include refid="searchM"/>
     </select>
 
     <select id="search" parameterType="HashMap" resultMap="MemberBindListDtoResultMap">
@@ -261,7 +264,7 @@
         m.remark,
         IF(ISNULL(m.status),2,m.status) as bindStatus
         from member as m
-        <include refid="searchM"></include>
+        <include refid="searchM"/>
         <if test="sortName != null">
             <if test="sortName == 'bind_status'.toString()">
                 order by m.status
@@ -289,7 +292,7 @@
 
     <select id="searchIds" resultType="java.lang.Integer">
         select m.id from member m
-        <include refid="searchM"></include>
+        <include refid="searchM"/>
         <if test="sortName != null">
             <if test="sortName == 'bind_status'.toString()">
                 order by m.status
@@ -929,4 +932,125 @@
         </if>
     </select>
 
+    <select id="findMemberTagsByWechatIdForSubLimit" resultType="com.d1m.wechat.dto.MemberUseTagDto">
+        select x.id as id, x.open_id as openId, mmt.member_tag_id as tagId  from
+            (SELECT m.id, m.open_id FROM member m
+        <if test="memberTags != null and memberTags.length &gt; 0">
+            inner join (
+              select t.member_id from member_member_tag t where t.member_tag_id in
+            <foreach close=")" collection="memberTags" index="index" item="item" open="(" separator=",">
+                #{item}
+            </foreach>
+              group by t.member_id)
+            as mt on mt.member_id = m.id
+        </if>
+            where m.id > #{offset} and m.wechat_id = #{wechatId}
+        <if test="nickname != null">
+            and m.nickname like CONCAT('%',#{nickname},'%')
+        </if>
+        <if test="mobile != null">
+            and m.mobile like CONCAT('%',#{mobile},'%')
+        </if>
+        <if test="subscribe != null">
+            <if test="subscribe == 1">
+                and m.is_subscribe = 1
+            </if>
+            <if test="subscribe == 0">
+                and m.is_subscribe = 0
+            </if>
+            <if test="subscribe == -1">
+                and m.is_subscribe is null
+            </if>
+        </if>
+        <if test="sex != null">
+            and m.sex = #{sex}
+        </if>
+        <if test="country != null">
+            and m.country = #{country}
+        </if>
+        <if test="province != null">
+            and m.province = #{province}
+        </if>
+        <if test="city != null">
+            and m.city = #{city}
+        </if>
+        <if test="isOnline != null">
+            <if test="isOnline == true">
+                and (m.is_subscribe = 1 and now() <![CDATA[ <= ]]> DATE_ADD(m.last_conversation_at, INTERVAL 48
+                DAY_HOUR))
+            </if>
+            <if test="isOnline == false">
+                and (m.is_subscribe = 0 or m.last_conversation_at is null or (m.is_subscribe = 1 and now()
+                <![CDATA[ > ]]> DATE_ADD(m.last_conversation_at, INTERVAL 48 DAY_HOUR)))
+            </if>
+        </if>
+        <if test="bindStatus != null">
+            <if test="bindStatus != 2">
+                and m.status = #{bindStatus}
+            </if>
+            <if test="bindStatus == 2">
+                and m.status is null
+            </if>
+        </if>
+        <if test="activityStartAt != null">
+            and m.activity &gt;= #{activityStartAt}
+        </if>
+        <if test="activityEndAt != null">
+            and m.activity &lt;= #{activityEndAt}
+        </if>
+        <if test="batchSendOfMonthStartAt != null">
+            and m.batchsend_month &gt;= #{batchSendOfMonthStartAt}
+        </if>
+        <if test="batchSendOfMonthEndAt != null">
+            and m.batchsend_month &lt;= #{batchSendOfMonthEndAt}
+        </if>
+        <if test="attentionStartAt != null">
+            and m.subscribe_at &gt;= #{attentionStartAt}
+        </if>
+        <if test="attentionEndAt != null">
+            and m.subscribe_at &lt;= #{attentionEndAt}
+        </if>
+        <if test="cancelSubscribeStartAt != null">
+            and m.unsubscribe_at &gt;= #{cancelSubscribeStartAt}
+        </if>
+        <if test="cancelSubscribeEndAt != null">
+            and m.unsubscribe_at &lt;= #{cancelSubscribeEndAt}
+        </if>
+        <if test="fuzzyRemarks!=null">
+            and m.remark like CONCAT('%', #{fuzzyRemarks}, '%')
+        </if>
+            order by m.id limit #{rows}) x
+        left join member_member_tag mmt on mmt.member_id = x.id
+        <if test="memberTags != null and memberTags.length &gt; 0">
+            where mmt.member_tag_id in
+            <foreach close=")" collection="memberTags" index="index" item="item" open="(" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        order by x.id;
+    </select>
+
+    <select id="countAll" resultType="long">
+        select count(1) from member where wechat_id = #{wechatId}
+    </select>
+
+    <select id="getMemberMemberTagsByMemberId" resultType="java.lang.Integer">
+        SELECT mt.id as id
+        FROM member_member_tag mmt
+        LEFT JOIN member_tag mt ON mmt.member_tag_id = mt.id
+        WHERE mmt.member_id = #{memberId}
+    </select>
+
+    <select id="selectByMemberIdsAndWechatId" resultType="com.d1m.wechat.model.Member">
+        select * from member
+        <where>
+            wechat_id = #{wechatId}
+            <if test="ids != null and ids.length &gt; 0">
+                and id in
+                <foreach close=")" collection="ids" index="index" item="item" open="(" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
 </mapper>
