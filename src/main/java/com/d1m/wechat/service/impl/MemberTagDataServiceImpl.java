@@ -623,7 +623,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                         String memberStr = objectMapper.writeValueAsString(tagsList);
                         JsonParser jsonParser = new JsonParser();
                         JsonArray array = jsonParser.parse(memberStr).getAsJsonArray();
-                        rabbitTemplate.convertAndSend(ElasticsearchConsumer.ELAS_EXCHANGE, ElasticsearchConsumer.ELAS_QUEUE_MEMBERMEMBERTAGUPDATE,array.toString());
+                        rabbitTemplate.convertAndSend(ElasticsearchConsumer.ELAS_EXCHANGE, ElasticsearchConsumer.ELAS_QUEUE_MEMBERMEMBERTAGADD,array.toString());
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                     }
