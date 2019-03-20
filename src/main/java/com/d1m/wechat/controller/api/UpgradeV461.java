@@ -93,7 +93,7 @@ public class UpgradeV461 extends BaseController {
 
   public int loadMemberScanQrcode(Integer wechatId) {
     int totalCount = memberScanQrcodeMapper.selectCount(null);
-    fetchMemberMemberTag(wechatId);
+    fetchMemberScanQrcode(wechatId);
     return totalCount;
   }
 
