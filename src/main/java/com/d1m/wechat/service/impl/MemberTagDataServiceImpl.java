@@ -1,5 +1,10 @@
 package com.d1m.wechat.service.impl;
 
+import com.d1m.wechat.model.enums.ElasticsearchConsumer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,6 +31,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -71,7 +77,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
     private static final Logger log = LoggerFactory.getLogger(MemberTagDataServiceImpl.class);
     //默认每批次处理数量
     private static final Integer BATCHSIZE = 10000;
-
+    private ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     private MemberTagDataMapper memberTagDataMapper;
 
@@ -101,6 +107,8 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
 
 
     private CsvMapper csvMapper = new CsvMapper();
+    @Autowired
+    public RabbitTemplate rabbitTemplate;
 
 
     @Override
@@ -610,6 +618,15 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                     memberMemberTagMapper.insertOrUpdateList(tagsList);
                     suceessCount = tagsList.size();
                     log.info("======加签中，已完成：》》》》》=" + suceessCount + "===========");
+                    //V4.6.1 定时更新用户信息
+                    try {
+                        String memberStr = objectMapper.writeValueAsString(tagsList);
+                        JsonParser jsonParser = new JsonParser();
+                        JsonArray array = jsonParser.parse(memberStr).getAsJsonArray();
+                        rabbitTemplate.convertAndSend(ElasticsearchConsumer.ELAS_EXCHANGE, ElasticsearchConsumer.ELAS_QUEUE_MEMBERMEMBERTAGUPDATE,array.toString());
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                    }
                 }
                 status = MemberTagDataStatus.PROCESS_SUCCEED;
             }
