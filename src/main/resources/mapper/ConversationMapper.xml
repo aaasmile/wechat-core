@@ -119,6 +119,10 @@
                 and c.msg_type = #{msgType}
             </if>
 
+            <if test="msgType == null">
+                and c.msg_type != 10
+            </if>
+
             <if test="keyWords != null">
                 and c.content like CONCAT('%',#{keyWords},'%')
             </if>
