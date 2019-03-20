@@ -5,9 +5,11 @@ import com.d1m.wechat.dto.MemberDto;
 import com.d1m.wechat.mapper.ConversationMapper;
 import com.d1m.wechat.mapper.MemberMapper;
 import com.d1m.wechat.mapper.MemberMemberTagMapper;
+import com.d1m.wechat.mapper.MemberScanQrcodeMapper;
 import com.d1m.wechat.model.Conversation;
 import com.d1m.wechat.model.Member;
 import com.d1m.wechat.model.MemberMemberTag;
+import com.d1m.wechat.model.MemberScanQrcode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
 import com.google.gson.JsonArray;
@@ -35,6 +37,8 @@ public class UpgradeV461 extends BaseController {
   ConversationMapper conversationMapper;
   @Autowired
   MemberMemberTagMapper memberMemberTagMapper;
+  @Autowired
+  MemberScanQrcodeMapper memberScanQrcodeMapper;
 
   @RequestMapping("transferMember")
   public String transferMember() {
@@ -57,6 +61,13 @@ public class UpgradeV461 extends BaseController {
     int count = loadMemberMemberTag(wechatId);
     return "loadMemberMemberTag...load...." + count;
   }
+  @RequestMapping("transferMemberScanQrcode")
+  public String loadMemberScanQrcode() {
+    log.info("loadMemberScanQrcode...start");
+    Integer wechatId = this.getWechatId();
+    int count = loadMemberScanQrcode(wechatId);
+    return "loadMemberScanQrcode...load...." + count;
+  }
 
   @Autowired
   public RabbitTemplate rabbitTemplate;
@@ -76,6 +87,12 @@ public class UpgradeV461 extends BaseController {
 
   public int loadMemberMemberTag(Integer wechatId) {
     int totalCount = memberMemberTagMapper.selectCount(null);
+    fetchMemberScanQrcode(wechatId);
+    return totalCount;
+  }
+
+  public int loadMemberScanQrcode(Integer wechatId) {
+    int totalCount = memberScanQrcodeMapper.selectCount(null);
     fetchMemberMemberTag(wechatId);
     return totalCount;
   }
@@ -168,6 +185,37 @@ public class UpgradeV461 extends BaseController {
       });
       log.info("jsonArray..send..." + jsonArray.size());
       rabbitTemplate.convertAndSend("elas.exchange", "elas.queue.memberMemberTagAdd", jsonArray.toString());
+      log.info("jsonArray..end send..." + jsonArray.size());
+      pageNum = pageNum + 1;
+//    }
+  }
+
+  private void fetchMemberScanQrcode(Integer wechatId) {
+    int pageNum = 1;
+    int pageSize = 1000;
+//    while (true) {
+      log.info("current...{},...{}", pageNum, pageSize);
+      PageHelper.startPage(pageNum, pageSize, false);
+      List<MemberScanQrcode> memberScanQrcodes = memberScanQrcodeMapper.selectAll();
+      if(memberScanQrcodes == null || memberScanQrcodes.isEmpty()) {
+        log.error("memberMemberTags.isEmpty");
+        return;
+//        break;
+      }
+      JsonArray jsonArray = new JsonArray();
+      JsonParser jsonParser = new JsonParser();
+      ObjectMapper objectMapper = new ObjectMapper();
+      memberScanQrcodes.stream().forEach(memberScanQrcode -> {
+        try {
+          String memberMemberTagStr = objectMapper.writeValueAsString(memberScanQrcode);
+          JsonObject jsonObject = jsonParser.parse(memberMemberTagStr).getAsJsonObject();
+          jsonArray.add(jsonObject);
+        } catch (Exception e) {
+          log.error(e.getMessage(), e);
+        }
+      });
+      log.info("jsonArray..send..." + jsonArray.size());
+      rabbitTemplate.convertAndSend("elas.exchange", "elas.queue.memberScanQrcodeAdd", jsonArray.toString());
       log.info("jsonArray..end send..." + jsonArray.size());
       pageNum = pageNum + 1;
 //    }
