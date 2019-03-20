@@ -87,7 +87,7 @@ public class UpgradeV461 extends BaseController {
 
   public int loadMemberMemberTag(Integer wechatId) {
     int totalCount = memberMemberTagMapper.selectCount(null);
-    fetchMemberScanQrcode(wechatId);
+    fetchMemberMemberTag(wechatId);
     return totalCount;
   }
 
