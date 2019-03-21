@@ -621,9 +621,7 @@ public class MemberTagDataServiceImpl implements MemberTagDataService {
                     //V4.6.1 定时更新用户信息
                     try {
                         String memberStr = objectMapper.writeValueAsString(tagsList);
-                        JsonParser jsonParser = new JsonParser();
-                        JsonArray array = jsonParser.parse(memberStr).getAsJsonArray();
-                        rabbitTemplate.convertAndSend(ElasticsearchConsumer.ELAS_EXCHANGE, ElasticsearchConsumer.ELAS_QUEUE_MEMBERMEMBERTAGADD,array.toString());
+                        rabbitTemplate.convertAndSend(ElasticsearchConsumer.ELAS_EXCHANGE, ElasticsearchConsumer.ELAS_QUEUE_MEMBERMEMBERTAGADD, memberStr);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                     }
