@@ -1,7 +1,6 @@
 package com.d1m.wechat.controller.api;
 
 import com.d1m.wechat.controller.BaseController;
-import com.d1m.wechat.dto.MemberDto;
 import com.d1m.wechat.mapper.ConversationMapper;
 import com.d1m.wechat.mapper.MemberMapper;
 import com.d1m.wechat.mapper.MemberMemberTagMapper;
@@ -16,12 +15,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.util.List;
+import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.d1m.wechat.dto.ConversationsDto;
 
 /***
  * V4.6.1升级 es 数据初始化
@@ -145,7 +146,9 @@ public class UpgradeV461 extends BaseController {
       ObjectMapper objectMapper = new ObjectMapper();
       conversations.stream().forEach(conversation -> {
         try {
-          String conversationStr = objectMapper.writeValueAsString(conversation);
+          ConversationsDto conversationsDto = new ConversationsDto();
+          BeanUtils.copyProperties(conversationsDto, conversation);
+          String conversationStr = objectMapper.writeValueAsString(conversationsDto);
           JsonObject jsonObject = jsonParser.parse(conversationStr).getAsJsonObject();
           jsonArray.add(jsonObject);
         } catch (Exception e) {
