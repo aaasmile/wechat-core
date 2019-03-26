@@ -38,6 +38,7 @@ public interface MemberMapper extends MyMapper<Member> {
                            @Param("fromWhere") String fromWhere,
                            @Param("mobile") String mobile,
                            @Param("memberTags") Integer[] memberTags,
+                           @Param("encludeMemberTags") Integer[] encludeMemberTags,
                            @Param("sortName") String sortName,
                            @Param("sortDir") String sortDir,
                            @Param("bindStatus") Integer bindStatus,
@@ -61,6 +62,7 @@ public interface MemberMapper extends MyMapper<Member> {
                                       @Param("fromWhere") String fromWhere,
                                       @Param("mobile") String mobile,
                                       @Param("memberTags") Integer[] memberTags,
+                                      @Param("encludeMemberTags") Integer[] encludeMemberTags,
                                       @Param("sortName") String sortName, @Param("sortDir") String sortDir,
                                       @Param("bindStatus") Integer bindStatus);
 
@@ -81,6 +83,7 @@ public interface MemberMapper extends MyMapper<Member> {
                @Param("fromWhere") String fromWhere,
                @Param("mobile") String mobile,
                @Param("memberTags") Integer[] memberTags,
+               @Param("encludeMemberTags") Integer[] encludeMemberTags,
                @Param("sortName") String sortName, @Param("sortDir") String sortDir,
                @Param("bindStatus") Integer bindStatus, @Param("daytime") Date daytime,
                @Param("fuzzyRemarks") String fuzzyRemarks);
@@ -242,6 +245,7 @@ public interface MemberMapper extends MyMapper<Member> {
                             @Param("fromWhere") String fromWhere,
                             @Param("mobile") String mobile,
                             @Param("memberTags") Integer[] memberTags,
+                            @Param("encludeMemberTags") Integer[] encludeMemberTags,
                             @Param("sortName") String sortName,
                             @Param("sortDir") String sortDir,
                             @Param("bindStatus") Integer bindStatus,

@@ -36,6 +36,16 @@ public class MemberModel {
 
 	private Integer[] memberTags;
 
+	public Integer[] getEncludeMemberTags() {
+		return encludeMemberTags;
+	}
+
+	public void setEncludeMemberTags(Integer[] encludeMemberTags) {
+		this.encludeMemberTags = encludeMemberTags;
+	}
+
+	private Integer[] encludeMemberTags;
+
 	private String openId;
 
 	private Integer[] memberIds;

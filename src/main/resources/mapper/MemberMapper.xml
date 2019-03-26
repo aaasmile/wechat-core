@@ -122,6 +122,15 @@
             </foreach>
             ) as mmt on m.id = mmt.member_id
         </if>
+        <if test="encludeMemberTags != null and encludeMemberTags.length &gt; 0">
+            left join (
+            SELECT DISTINCT member_id FROM member_member_tag where 1=1
+            and member_tag_id  not in
+            <foreach close=")" collection="memberTags" index="index" item="item" open="(" separator=",">
+                #{item}
+            </foreach>
+            ) as mmtt on m.id = mmtt.member_id
+        </if>
         <where>
             <if test="wechatId != null">
                 m.wechat_id = #{wechatId}
