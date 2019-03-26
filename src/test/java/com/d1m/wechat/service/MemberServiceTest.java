@@ -55,7 +55,7 @@ public class MemberServiceTest {
                         with(aNull(Date.class)), with(aNull(Date.class)),
                         with(aNull(Date.class)), with(aNull(Boolean.class)),
                         with(aNull(String.class)), with(aNull(String.class)),
-                        with(aNull(Integer[].class)),
+                        with(aNull(Integer[].class)), with(aNull(Integer[].class)),
                         with(aNonNull(String.class)),
                         with(aNonNull(String.class)),
                         with(aNull(Integer.class)),
