@@ -8,6 +8,7 @@ import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.lock.RedisLock;
 import com.d1m.wechat.mapper.*;
 import com.d1m.wechat.model.*;
+import com.d1m.wechat.model.enums.ElasticsearchConsumer;
 import com.d1m.wechat.model.enums.Language;
 import com.d1m.wechat.model.enums.MemberSource;
 import com.d1m.wechat.model.enums.MemberTagStatus;
@@ -83,6 +84,9 @@ public class MemberServiceImpl extends BaseService<Member> implements
 
     @Autowired
     private ConversationMapper conversationMapper;
+    @Autowired
+    public RabbitTemplate rabbitTemplate;
+    private ObjectMapper objectMapper = new ObjectMapper();
 
 
     @Resource
@@ -390,7 +394,20 @@ public class MemberServiceImpl extends BaseService<Member> implements
             });
             if(memberMemberTags.size() > 0){
                 memberMemberTagMapper.insertList(memberMemberTags);
+                //V4.6.1 定时更新用户信息
+                pushEs(memberMemberTags);
             }
+        }
+    }
+
+    private void pushEs(List<MemberMemberTag> memberMemberTags) {
+        try {
+            String memberStr = objectMapper.writeValueAsString(memberMemberTags);
+            JsonParser jsonParser = new JsonParser();
+            JsonArray array = jsonParser.parse(memberStr).getAsJsonArray();
+            rabbitTemplate.convertAndSend(ElasticsearchConsumer.ELAS_EXCHANGE, ElasticsearchConsumer.ELAS_QUEUE_MEMBERMEMBERTAGUPDATE,array.toString());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
     }
 
