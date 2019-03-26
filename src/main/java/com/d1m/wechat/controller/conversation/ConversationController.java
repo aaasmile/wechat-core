@@ -286,9 +286,9 @@ public class ConversationController extends BaseController {
                 return this.representation(Message.CONVERSATION_LIST_FAIL, null);
             }
             Integer wechatId = getWechatId();
-            PageHelper.startPage(conversationModel.getPageNum(), conversationModel.getPageSize(), true);
-            Page<UserLocation> userLocationPage = conversationService.selectUserLocation(wechatId, conversationModel);
-            return this.representation(Message.CONVERSATION_LIST_SUCCESS, userLocationPage.getResult(), userLocationPage.getPageSize(), userLocationPage.getPageNum(), userLocationPage.getTotal());
+//            PageHelper.startPage(conversationModel.getPageNum(), conversationModel.getPageSize(), true);
+            List<UserLocation> userLocationPage = conversationService.selectUserLocation(wechatId, conversationModel);
+            return this.representation(Message.CONVERSATION_LIST_SUCCESS, userLocationPage, 0, 0, userLocationPage.size());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return representation(Message.CONVERSATION_LIST_FAIL);
