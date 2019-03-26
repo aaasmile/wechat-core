@@ -201,7 +201,6 @@
                 <foreach close=")" collection="encludeMemberTags" index="index" item="item" open="(" separator=",">
                 #{item}
             </foreach>))
-                and mmt.member_id is not null
             </if>
 
             <if test="bindStatus != null">
