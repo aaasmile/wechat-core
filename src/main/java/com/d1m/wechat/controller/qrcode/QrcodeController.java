@@ -174,6 +174,7 @@ public class QrcodeController extends BaseController {
     @SuppressWarnings("unchecked")
     @ApiOperation(value = "搜索服务用的二维码列表", tags = "二维码接口")
     @GetMapping(value = "list_for_es.json")
+    @ResponseBody
     public BaseResponse<List<QrCodeES>> qrCodeListForES() {
         final List<Qrcode> qrcodes = qrcodeService.getAllByWechatId(getWechatId());
         final List<QrCodeES> result = qrcodes.stream()
