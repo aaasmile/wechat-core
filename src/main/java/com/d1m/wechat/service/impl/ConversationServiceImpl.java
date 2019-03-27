@@ -487,6 +487,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
         massConversationResult.setId(massConversationModel.getId());
         massConversationResult.setStatus(MassConversationResultStatus.getByName(massConversationModel.getStatus()).getValue());
         massConversationResult = massConversationResultMapper.selectOne(massConversationResult);
+        log.info("massConversationResult-wechatId-id"+wechatId+massConversationResult.getId());
 
         IllegalArgumentUtil.notBlank(massConversationResult, Message.CONVERSATION_MASS_NOT_EXIST);
         MassConversationModel condition = JSONObject.parseObject(massConversationResult.getConditions(), MassConversationModel.class);
@@ -638,6 +639,9 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
                 return;
             }
             log.info("start mass conversation with send by wx {}!", massConversationResult.getId());
+
+            massConversationResult.setStatus(MassConversationResultStatus.GROUPING.getValue());
+            massConversationResultMapper.updateByPrimaryKey(massConversationResult);
             asynSendMasMessage(wechatId, massConversationResult, msgType, message, current, condition, user);
 
         } else {
