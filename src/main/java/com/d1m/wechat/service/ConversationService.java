@@ -9,6 +9,7 @@ import com.d1m.wechat.model.enums.RabbitmqTable;
 import com.d1m.wechat.dto.ConversationDto;
 import com.d1m.wechat.dto.MemberDto;
 import com.d1m.wechat.dto.ReportMessageDto;
+import com.d1m.wechat.pamametermodel.ConversationActivityModel;
 import com.d1m.wechat.pamametermodel.ConversationModel;
 import com.d1m.wechat.pamametermodel.MassConversationModel;
 import com.github.pagehelper.Page;
@@ -43,4 +44,6 @@ public interface ConversationService extends IService<Conversation> {
 
 	public Page<UserBehavior> selectUserBehavior(Integer wechatId, ConversationModel conversationModel);
 	public List<UserLocation> selectUserLocation(Integer wechatId, ConversationModel conversationModel);
+
+	void saveActivity(ConversationActivityModel conversationActivityModel,Integer wechatId);
 }

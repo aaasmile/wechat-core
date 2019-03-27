@@ -48,6 +48,7 @@
         <result column="kf_photo" jdbcType="VARCHAR" property="kfPhoto"/>
         <result column="is_mass" jdbcType="BIT" property="isMass"/>
         <result column="content" jdbcType="LONGVARCHAR" property="content"/>
+        <result column="event_name" jdbcType="VARCHAR" property="eventName"/>
     </resultMap>
 
     <resultMap type="com.d1m.wechat.model.UserBehavior" id="userBehaviorResultMap">
@@ -67,7 +68,7 @@
         from conversation con LEFT JOIN menu m on con.event_key=m.id
         where member_id = #{memberId}
 				and m.type is null or m.type not in(1,2)
-          and cast(event as char) in (1, 2, 3, 5, 6, 10, 22, 30, 31, 35, 36, 37, 39, 40, 41, 47, 48, 49)
+          and cast(event as char) in (1, 2, 3, 5, 6, 10, 22, 30, 31, 35, 36, 37, 39, 40, 41, 47, 48, 49, 50)
         order by created_at desc
     </select>
     <select id="selectUserLocation" parameterType="HashMap" resultMap="userLocationResultMap">
