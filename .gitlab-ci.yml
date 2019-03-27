@@ -8,7 +8,7 @@ stages:
 build-dev:
   stage: build
   only:
-  - dev
+  - V4.5.1
   tags:
   - shell-build-dev
   script:
