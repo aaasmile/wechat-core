@@ -10,6 +10,7 @@ import com.d1m.wechat.model.*;
 import com.d1m.wechat.model.enums.ConversationStatus;
 import com.d1m.wechat.model.enums.MassConversationResultStatus;
 import com.d1m.wechat.model.enums.MsgType;
+import com.d1m.wechat.pamametermodel.ConversationActivityModel;
 import com.d1m.wechat.pamametermodel.ConversationModel;
 import com.d1m.wechat.pamametermodel.MassConversationModel;
 import com.d1m.wechat.service.*;
@@ -289,6 +290,23 @@ public class ConversationController extends BaseController {
 //            PageHelper.startPage(conversationModel.getPageNum(), conversationModel.getPageSize(), true);
             List<UserLocation> userLocationPage = conversationService.selectUserLocation(wechatId, conversationModel);
             return this.representation(Message.CONVERSATION_LIST_SUCCESS, userLocationPage, 0, 0, userLocationPage.size());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return representation(Message.CONVERSATION_LIST_FAIL);
+        }
+    }
+
+    @ApiOperation(value = "第三方用户活动接口", tags = "第三方用户活动接口")
+    @ApiResponse(code = 200, message = "保存成功")
+    @RequestMapping(value = "saveActivity.json", method = RequestMethod.POST)
+    public JSONObject saveActivity(@ApiParam(name = "ConversationActivityModel", required = false) @RequestBody(required = false) ConversationActivityModel conversationActivityModel, HttpSession session) {
+        try {
+            if (conversationActivityModel.getOpenId() == null) {
+                return this.representation(Message.CONVERSATION_LIST_FAIL, null);
+            }
+            Integer wechatId = getWechatId();
+            conversationService.saveActivity(conversationActivityModel,wechatId);
+            return this.representation(Message.SUCCESS);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return representation(Message.CONVERSATION_LIST_FAIL);

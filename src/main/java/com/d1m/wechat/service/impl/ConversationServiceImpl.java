@@ -10,6 +10,7 @@ import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.*;
 import com.d1m.wechat.model.*;
 import com.d1m.wechat.model.enums.*;
+import com.d1m.wechat.pamametermodel.ConversationActivityModel;
 import com.d1m.wechat.pamametermodel.ConversationModel;
 import com.d1m.wechat.pamametermodel.MassConversationModel;
 import com.d1m.wechat.pamametermodel.MemberModel;
@@ -1075,6 +1076,25 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
     public List<UserLocation> selectUserLocation(Integer wechatId, ConversationModel conversationModel) {
         List<UserLocation> userLocations = conversationMapper.selectUserLocation(wechatId, conversationModel.getMemberId());
         return filtrateDate(userLocations);
+    }
+
+    @Override
+    public void saveActivity(ConversationActivityModel conversationActivityModel, Integer wechatId) {
+        MemberDto memberDto = memberMapper.selectByOpenId(conversationActivityModel.getOpenId(), wechatId);
+        Conversation conversation=new Conversation();
+        conversation.setEvent((byte)50);
+        conversation.setOpenId(conversationActivityModel.getOpenId());
+        conversation.setUnionId(conversationActivityModel.getUnionId());
+        conversation.setEventName("ACTIVITY");
+        conversation.setEventKey(conversationActivityModel.getEventKey());
+        conversation.setMemberId(memberDto.getId());
+        conversation.setCreatedAt(new Date());
+        conversation.setTitle(conversationActivityModel.getTitle());
+        conversation.setMsgType((byte)10);
+        conversation.setWechatId(wechatId);
+        conversation.setStatus((byte)0);
+        conversation.setDirection(true);
+        conversationMapper.insert(conversation);
     }
 
     private List<UserLocation> filtrateDate(List<UserLocation> userLocations) {
