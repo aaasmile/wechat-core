@@ -78,7 +78,7 @@
                created_at
         from conversation
         where member_id = #{memberId}
-          and cast(event as char) in (4, 34)
+        and cast(event as char) in (4, 34)
         order by created_at desc
     </select>
     <select id="search" parameterType="HashMap" resultMap="ConversationDtoResultMap">

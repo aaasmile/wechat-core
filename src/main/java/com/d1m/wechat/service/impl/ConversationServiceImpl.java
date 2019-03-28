@@ -1100,22 +1100,30 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
         for (int i=0;i<userLocations.size();i++){
             if(i+1<userLocations.size()){
                 UserLocation userLocationTo = userLocations.get(i + 1);
-                Date toDate=userLocationTo.getCreatedAt();
-                long from = fromDate.getTime();
-                long to = toDate.getTime();
-                int hours = (int) ((to - from) / (1000 * 60 * 60));
-                if(hours!=0){
-                    fromDate=toDate;
-                    result.add(userLocations.get(i + 1));
+                if(userLocationTo.getEventName().equalsIgnoreCase("location")){
+                    result.add(userLocationTo);
+                }else{
+                    Date toDate=userLocationTo.getCreatedAt();
+                    long from = fromDate.getTime();
+                    long to = toDate.getTime();
+                    int hours = (int) ((to - from) / (1000 * 60 * 60));
+                    if(hours!=0){
+                        fromDate=toDate;
+                        result.add(userLocations.get(i + 1));
+                    }
                 }
             }else{
                 UserLocation userLocationTo = userLocations.get(i);
-                Date toDate=userLocationTo.getCreatedAt();
-                long from = fromDate.getTime();
-                long to = toDate.getTime();
-                int hours = (int) ((to - from) / (1000 * 60 * 60));
-                if(hours!=0){
-                    result.add(userLocations.get(i));
+                if(userLocationTo.getEventName().equalsIgnoreCase("location")){
+                    result.add(userLocationTo);
+                }else {
+                    Date toDate=userLocationTo.getCreatedAt();
+                    long from = fromDate.getTime();
+                    long to = toDate.getTime();
+                    int hours = (int) ((to - from) / (1000 * 60 * 60));
+                    if(hours!=0){
+                        result.add(userLocations.get(i));
+                    }
                 }
             }
         }
