@@ -220,10 +220,10 @@ public class MemberController extends BaseController {
             @ApiParam(name = "AddMemberTagModel", required = false) @RequestBody(required = false) AddMemberTagModel addMemberTagModel,
             HttpSession session, HttpServletRequest request, HttpServletResponse response) {
         try {
-
             if (addMemberTagModel == null) {
                 addMemberTagModel = new AddMemberTagModel();
             }
+            getWechatId(session);
             Page<MemberDto> page = memberService.search(getWechatId(session), addMemberTagModel, true);
             log.info("Country:" + RequestContextUtils.getLocale(request).getCountry());
             if (CollectionUtils.isNotEmpty(page)) {
