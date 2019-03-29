@@ -172,7 +172,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
                         .getDateEnd(DateUtil.parse(memberModel
                                 .getCancelSubscribeEndAt())), memberModel
                         .getIsOnline(), null, memberModel.getMobile(),
-                memberModel.getMemberTags(), addMemberTagModel.getSortName(),
+                memberModel.getMemberTags(),memberModel.getEncludeMemberTags(), addMemberTagModel.getSortName(),
                 addMemberTagModel.getSortDir(), addMemberTagModel
                         .getBindStatus(), DateUtil.getDate(-2),
                 addMemberTagModel.getFuzzyRemarks());
@@ -202,7 +202,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
                             .getDateEnd(DateUtil.parse(memberModel
                                     .getCancelSubscribeEndAt())), memberModel
                             .getIsOnline(), null, memberModel.getMobile(),
-                    memberModel.getMemberTags(), addMemberTagModel.getSortName(),
+                    memberModel.getMemberTags(),memberModel.getEncludeMemberTags(), addMemberTagModel.getSortName(),
                     addMemberTagModel.getSortDir(), addMemberTagModel
                             .getBindStatus(), DateUtil.getDate(-2),
                     addMemberTagModel.getFuzzyRemarks());
@@ -224,7 +224,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
                             .getDateEnd(DateUtil.parse(memberModel
                                     .getCancelSubscribeEndAt())), memberModel
                             .getIsOnline(), null, memberModel.getMobile(),
-                    memberModel.getMemberTags(), addMemberTagModel.getSortName(),
+                    memberModel.getMemberTags(),memberModel.getEncludeMemberTags(), addMemberTagModel.getSortName(),
                     addMemberTagModel.getSortDir(), addMemberTagModel
                             .getBindStatus(), offset, pageSize, addMemberTagModel.getFuzzyRemarks());
             list = memberMapper.searchByIds(ids, ids.size());
@@ -281,7 +281,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
                                     .getCancelSubscribeStartAt())), DateUtil
                             .getDateEnd(DateUtil.parse(memberModel
                                     .getCancelSubscribeEndAt())), null, null,
-                    memberModel.getMobile(), memberModel.getMemberTags(), null,
+                    memberModel.getMobile(), memberModel.getMemberTags(),memberModel.getEncludeMemberTags(), null,
                     null, null, DateUtil.getDate(-2),
                     addMemberTagModel.getFuzzyRemarks());
         } else {
@@ -315,7 +315,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
                             .getDateEnd(DateUtil.parse(memberModel
                                     .getCancelSubscribeEndAt())), memberModel
                             .getIsOnline(), null, memberModel.getMobile(),
-                    memberModel.getMemberTags(), addMemberTagModel.getSortName(),
+                    memberModel.getMemberTags(),memberModel.getEncludeMemberTags(), addMemberTagModel.getSortName(),
                     addMemberTagModel.getSortDir(), addMemberTagModel
                             .getBindStatus(), DateUtil.getDate(-2),
                     addMemberTagModel.getFuzzyRemarks());
@@ -1285,7 +1285,7 @@ public class MemberServiceImpl extends BaseService<Member> implements
                         .getDateEnd(DateUtil.parse(memberModel
                                 .getCancelSubscribeEndAt())), memberModel
                         .getIsOnline(), null, memberModel.getMobile(),
-                memberModel.getMemberTags(), addMemberTagModel.getSortName(),
+                memberModel.getMemberTags(),memberModel.getEncludeMemberTags(), addMemberTagModel.getSortName(),
                 addMemberTagModel.getSortDir(), addMemberTagModel
                         .getBindStatus(), DateUtil.getDate(-2),
                 addMemberTagModel.getFuzzyRemarks());
