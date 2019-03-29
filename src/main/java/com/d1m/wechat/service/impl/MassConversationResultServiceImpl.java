@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.common.Mapper;
 
+import java.util.List;
+
 @Service
 public class MassConversationResultServiceImpl extends
         BaseService<MassConversationResult> implements
@@ -34,5 +36,10 @@ public class MassConversationResultServiceImpl extends
 		record.setWechatId(wechatId);
 		record.setConversationId(conversationId);
 		return massConversationResultMapper.selectOne(record);
+	}
+
+	@Override
+	public List<String> selectMsgDataId(Integer wechatId) {
+		return massConversationResultMapper.selectMsgDataId(wechatId);
 	}
 }
