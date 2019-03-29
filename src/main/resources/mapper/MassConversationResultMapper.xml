@@ -34,7 +34,7 @@
     <result column="conditions" jdbcType="LONGVARCHAR" property="conditions" />
   </resultMap>
 
-  <select id="selectMsgDataId" parameterType="Integer" resultType="String">
-        select msg_data_id from mass_conversation_result GROUP BY msg_data_id where wechat_id=#{wechatId}
+  <select id="selectMsgDataId" parameterType="HashMap" resultType="String">
+        select msg_data_id from mass_conversation_result where wechat_id=#{wechatId} GROUP BY msg_data_id
     </select>
 </mapper>
