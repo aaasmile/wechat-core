@@ -13,6 +13,7 @@ import com.d1m.wechat.pamametermodel.ConversationActivityModel;
 import com.d1m.wechat.pamametermodel.ConversationModel;
 import com.d1m.wechat.pamametermodel.MassConversationModel;
 import com.github.pagehelper.Page;
+import io.swagger.models.auth.In;
 
 public interface ConversationService extends IService<Conversation> {
 
@@ -46,4 +47,6 @@ public interface ConversationService extends IService<Conversation> {
 	public List<UserLocation> selectUserLocation(Integer wechatId, ConversationModel conversationModel);
 
 	void saveActivity(ConversationActivityModel conversationActivityModel,Integer wechatId);
+
+	List<ConversationDto> searchComment(Integer wechatId,Conversation conversation);
 }

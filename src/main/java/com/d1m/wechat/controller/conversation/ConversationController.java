@@ -6,17 +6,17 @@ import com.d1m.common.ds.TenantHelper;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.dto.*;
 import com.d1m.wechat.exception.WechatException;
+import com.d1m.wechat.mapper.ConversationMapper;
 import com.d1m.wechat.model.*;
 import com.d1m.wechat.model.enums.ConversationStatus;
+import com.d1m.wechat.model.enums.Event;
 import com.d1m.wechat.model.enums.MassConversationResultStatus;
 import com.d1m.wechat.model.enums.MsgType;
 import com.d1m.wechat.pamametermodel.ConversationActivityModel;
 import com.d1m.wechat.pamametermodel.ConversationModel;
 import com.d1m.wechat.pamametermodel.MassConversationModel;
 import com.d1m.wechat.service.*;
-import com.d1m.wechat.util.CommonUtils;
-import com.d1m.wechat.util.DateUtil;
-import com.d1m.wechat.util.Message;
+import com.d1m.wechat.util.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -35,11 +35,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.lang.model.element.ElementVisitor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
@@ -312,6 +314,60 @@ public class ConversationController extends BaseController {
             return representation(Message.CONVERSATION_LIST_FAIL);
         }
     }
+
+    /*@Autowired
+    private MassConversationResultService massConversationResultService;
+
+    private final static String COMMENT_API="https://api.weixin.qq.com/cgi-bin/comment/list?access_token=";*/
+
+    /*@ApiOperation(value = "拉取微信评论", tags = "拉取微信评论")
+    @ApiResponse(code = 200, message = "保存成功")
+    @RequestMapping(value = "weChatCommentJob.json", method = RequestMethod.GET)
+    public JSONObject saveActivity(HttpSession session) {
+        String [] strings={"11"};
+        if(strings!=null){
+            // 参数1为微信ID
+            Integer wechatId = ParamUtil.getInt(strings[0], null);
+            String tokenUrl=System.getProperty("accesstoken.url") == null ?"http://dev.wechat.d1m.cn/api/wechat/access-token/wx2e896c8034634aa6/7f22235bed7a6fcc281b09958b2ce5f8":System.getProperty("accesstoken.url");
+            String tokenDataString = HttpUtils.sendGet(tokenUrl);
+            if(tokenDataString==null){
+                return null;
+            }
+            JSONObject tokenData = JSONObject.parseObject(tokenDataString);
+            List<String> list = massConversationResultService.selectMsgDataId(11);
+            for (String msgDataId : list) {
+                if(msgDataId==null)
+                    continue;
+                JSONObject sendData=new JSONObject();
+                sendData.put("msg_data_id",msgDataId);
+                sendData.put("begin",0);
+                sendData.put("count",50);
+                sendData.put("type",0);
+                String commenData = HttpUtils.doPost(COMMENT_API + tokenData.get("data"), sendData);
+                JSONObject commentDataJson =JSONObject.parseObject(commenData);
+                if (commentDataJson == null) continue;
+                if(commentDataJson.get("errmsg").toString().equalsIgnoreCase("ok")){
+                    saveJsonObject(wechatId, msgDataId, commentDataJson);
+                    int total = Integer.parseInt(commentDataJson.get("total").toString());
+                    if(total>50){
+                        int count=total%50==0?total/50:total/50+1;
+                        for(int i=1;i<count;i++){
+                            sendData.put("begin",0);
+                            sendData.put("count",50);
+                            String commenDataMore = HttpUtils.doPost(COMMENT_API + tokenData.get("data"), sendData);
+                            JSONObject commentDataJsonMore =JSONObject.parseObject(commenDataMore);
+                            saveJsonObject(wechatId,msgDataId,commentDataJsonMore);
+                        }
+                    }
+                }else{
+                    return null;
+                }
+            }
+        }
+        return null;
+    }*/
+
+
 
     private List<ConversationDto> convertMass(Page<ConversationDto> page, Integer wechatId) {
         List<ConversationDto> result = page.getResult();
