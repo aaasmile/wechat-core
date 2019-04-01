@@ -99,11 +99,10 @@ public class InterfaceConfigController extends BaseController {
     @RequestMapping(value = "newItem.json", method = RequestMethod.PUT)
     public JSONObject createItems(@RequestBody InterfaceConfig interfaceConfig) {
         try {
-
             final InterfaceConfigBrand icb = new InterfaceConfigBrand();
-            icb.setName(interfaceConfig.getName());
+            icb.setId(Long.parseLong(interfaceConfig.getBrand()));
             icb.setDeleted(false);
-            if(interfaceConfigBrandMapper.selectCount(icb)==0){
+            if(interfaceConfigBrandMapper.selectCount(icb)<1){
                         return representation(Message.INTERFACECONFIG_BRAND_NOT_EXIST);
                     }
             final InterfaceConfig ifcf = new InterfaceConfig();
