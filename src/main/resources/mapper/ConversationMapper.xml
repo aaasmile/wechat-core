@@ -353,6 +353,16 @@
         </where>
     </select>
 
+    <select id="searchComment" parameterType="HashMap" resultMap="ConversationDtoResultMap">
+        select id from conversation
+        where
+            wechat_id=#{wechatId}
+            and member_id=#{memberId}
+            and event=#{event}
+            and event_key=#{eventKey}
+            and msg_id=#{msgId}
+    </select>
+
     <resultMap id="MessageBaseResultMap" type="com.d1m.wechat.dto.ReportMessageItemDto">
         <id column="created_at" jdbcType="TIMESTAMP" property="date"/>
         <result column="sendTimes" jdbcType="INTEGER" property="sendTimes"/>

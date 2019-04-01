@@ -42,4 +42,9 @@ public class MassConversationResultServiceImpl extends
 	public List<String> selectMsgDataId(Integer wechatId) {
 		return massConversationResultMapper.selectMsgDataId(wechatId);
 	}
+
+	@Override
+	public List<Integer> getConversationId(Integer wechatId, String msgDataId) {
+		return massConversationResultMapper.getConversationId(wechatId,msgDataId);
+	}
 }
