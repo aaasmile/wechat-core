@@ -25,7 +25,7 @@ import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
-@JobHander(value="weChatCommentJob")
+@JobHander(value="weChatCommentsJob")
 @Component
 public class WeChatCommentJob extends BaseJobHandler {
     @Resource
