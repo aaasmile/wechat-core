@@ -46,7 +46,8 @@ public class WeChatCommentJob extends BaseJobHandler {
         if(strings!=null){
             // 参数1为微信ID
             Integer wechatId = ParamUtil.getInt(strings[0], null);
-            String tokenUrl=System.getProperty("accesstoken.url") == null ?"http://dev.wechat.d1m.cn/api/wechat/access-token/wx2e896c8034634aa6/7f22235bed7a6fcc281b09958b2ce5f8":System.getProperty("accesstoken.url");
+            XxlJobLogger.log("wechatId===========>>"+wechatId);
+            String tokenUrl=System.getProperty("accesstoken.url") == null ?"http://qa.wechat.d1m.cn/api/wechat/access-token/wxb709c8392fe2b357/412e024cfbd344ff630bf496138f5cd8":System.getProperty("accesstoken.url");
             String tokenDataString = HttpUtils.sendGet(tokenUrl);
             if(tokenDataString==null){
                 XxlJobLogger.log("ERROR===========>>tokenData is null");
