@@ -98,6 +98,11 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
     }
 
     @Override
+    public List<ConversationDto> searchComment(Integer wechatId, Conversation conversation) {
+        return conversationMapper.searchComment(wechatId,conversation.getMemberId(),conversation.getEvent(),conversation.getEventKey(),conversation.getMsgId());
+    }
+
+    @Override
     public Conversation wechatToMember(Integer wechatId, User user, ConversationModel conversationModel, MemberDto member) {
         log.info("wechat to member start.");
         if (conversationModel == null) {
@@ -1096,6 +1101,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
         conversation.setDirection(true);
         conversationMapper.insert(conversation);
     }
+
 
     private List<UserLocation> filtrateDate(List<UserLocation> userLocations) {
         List<UserLocation> result=new ArrayList<>();
