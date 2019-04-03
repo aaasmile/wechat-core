@@ -99,7 +99,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 
     @Override
     public List<ConversationDto> searchComment(Integer wechatId, Conversation conversation) {
-        return conversationMapper.searchComment(wechatId,conversation.getMemberId(),conversation.getEvent(),conversation.getEventKey(),conversation.getMsgId());
+        return conversationMapper.searchComment(wechatId,conversation.getMemberId(),conversation.getEvent(),conversation.getDescription(),conversation.getMsgId());
     }
 
     @Override
