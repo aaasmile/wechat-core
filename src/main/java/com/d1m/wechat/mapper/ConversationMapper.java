@@ -65,5 +65,5 @@ public interface ConversationMapper extends MyMapper<Conversation> {
     public Page<UserBehavior> selectUserBehavior(@Param("wechatId") Integer wechatId, @Param("memberId") Integer memberId);
 	public List<UserLocation> selectUserLocation(@Param("wechatId") Integer wechatId, @Param("memberId") Integer memberId);
 
-	List<ConversationDto> searchComment(@Param("wechatId")Integer wechatId,@Param("memberId") Integer memberId,@Param("event") Byte event,@Param("eventKey") String eventKey,@Param("msgId") String msgId);
+	List<ConversationDto> searchComment(@Param("wechatId")Integer wechatId,@Param("memberId") Integer memberId,@Param("event") Byte event,@Param("description") String description,@Param("msgId") String msgId);
 }

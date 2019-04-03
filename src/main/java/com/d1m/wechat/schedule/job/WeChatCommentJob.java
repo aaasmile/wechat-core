@@ -102,7 +102,7 @@ public class WeChatCommentJob extends BaseJobHandler {
             conversation.setEventName(Event.USER_COMMENT.getName());
             conversation.setMemberId(member.getId());
             conversation.setMsgId(msgDataId);
-            conversation.setEventKey(comment.get("user_comment_id").toString());
+            conversation.setDescription(comment.get("user_comment_id").toString());
             List<ConversationDto> conversationDtos = conversationService.searchComment(wechatId, conversation);
             if(conversationDtos.size()>0){
                 continue;
