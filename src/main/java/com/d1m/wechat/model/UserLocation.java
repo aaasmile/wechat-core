@@ -1,11 +1,16 @@
 package com.d1m.wechat.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.util.Date;
+
 public class UserLocation {
 
 	private String eventName;
 	private Double locationX;
 	private Double locationY;
-	private String createdAt;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	private Date createdAt;
 	
 	public String getEventName() {
 		return eventName;
@@ -25,16 +30,16 @@ public class UserLocation {
 	public void setLocationY(Double locationY) {
 		this.locationY = locationY;
 	}
-	public String getCreatedAt() {
+	public Date getCreatedAt() {
 		return createdAt;
 	}
-	public void setCreatedAt(String createdAt) {
+	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
 	}
 	public UserLocation() {
 		super();
 	}
-	public UserLocation(String eventName, Double locationX, Double locationY, String createdAt) {
+	public UserLocation(String eventName, Double locationX, Double locationY, Date createdAt) {
 		super();
 		this.eventName = eventName;
 		this.locationX = locationX;

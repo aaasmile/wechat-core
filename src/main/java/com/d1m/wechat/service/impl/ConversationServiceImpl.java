@@ -10,6 +10,7 @@ import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.*;
 import com.d1m.wechat.model.*;
 import com.d1m.wechat.model.enums.*;
+import com.d1m.wechat.pamametermodel.ConversationActivityModel;
 import com.d1m.wechat.pamametermodel.ConversationModel;
 import com.d1m.wechat.pamametermodel.MassConversationModel;
 import com.d1m.wechat.pamametermodel.MemberModel;
@@ -94,6 +95,11 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
     @Override
     public Mapper<Conversation> getGenericMapper() {
         return conversationMapper;
+    }
+
+    @Override
+    public List<ConversationDto> searchComment(Integer wechatId, Conversation conversation) {
+        return conversationMapper.searchComment(wechatId,conversation.getMemberId(),conversation.getEvent(),conversation.getDescription(),conversation.getMsgId());
     }
 
     @Override
@@ -1072,8 +1078,66 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
     }
 
     @Override
-    public Page<UserLocation> selectUserLocation(Integer wechatId, ConversationModel conversationModel) {
-        return conversationMapper.selectUserLocation(wechatId, conversationModel.getMemberId());
+    public List<UserLocation> selectUserLocation(Integer wechatId, ConversationModel conversationModel) {
+        List<UserLocation> userLocations = conversationMapper.selectUserLocation(wechatId, conversationModel.getMemberId());
+        return filtrateDate(userLocations);
+    }
+
+    @Override
+    public void saveActivity(ConversationActivityModel conversationActivityModel, Integer wechatId) {
+        MemberDto memberDto = memberMapper.selectByOpenId(conversationActivityModel.getOpenId(), wechatId);
+        Conversation conversation=new Conversation();
+        conversation.setEvent((byte)50);
+        conversation.setOpenId(conversationActivityModel.getOpenId());
+        conversation.setUnionId(conversationActivityModel.getUnionId());
+        conversation.setEventName("ACTIVITY");
+        conversation.setEventKey(conversationActivityModel.getEventKey());
+        conversation.setMemberId(memberDto.getId());
+        conversation.setCreatedAt(new Date());
+        conversation.setTitle(conversationActivityModel.getTitle());
+        conversation.setMsgType((byte)10);
+        conversation.setWechatId(wechatId);
+        conversation.setStatus((byte)0);
+        conversation.setDirection(true);
+        conversationMapper.insert(conversation);
+    }
+
+
+    private List<UserLocation> filtrateDate(List<UserLocation> userLocations) {
+        List<UserLocation> result=new ArrayList<>();
+        result.add(userLocations.get(0));
+        Date fromDate=userLocations.get(0).getCreatedAt();
+        for (int i=0;i<userLocations.size();i++){
+            if(i+1<userLocations.size()){
+                UserLocation userLocationTo = userLocations.get(i + 1);
+                if(userLocationTo.getEventName().equalsIgnoreCase("location")){
+                    result.add(userLocationTo);
+                }else{
+                    Date toDate=userLocationTo.getCreatedAt();
+                    long from = fromDate.getTime();
+                    long to = toDate.getTime();
+                    int hours = (int) ((to - from) / (1000 * 60 * 60));
+                    if(hours!=0){
+                        fromDate=toDate;
+                        result.add(userLocations.get(i + 1));
+                    }
+                }
+            }else{
+                UserLocation userLocationTo = userLocations.get(i);
+                if(userLocationTo.getEventName().equalsIgnoreCase("location")){
+                    result.add(userLocationTo);
+                }else {
+                    Date toDate=userLocationTo.getCreatedAt();
+                    long from = fromDate.getTime();
+                    long to = toDate.getTime();
+                    int hours = (int) ((to - from) / (1000 * 60 * 60));
+                    if(hours!=0){
+                        result.add(userLocations.get(i));
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     @Autowired
