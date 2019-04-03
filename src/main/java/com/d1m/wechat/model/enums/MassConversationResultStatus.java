@@ -12,6 +12,8 @@ public enum MassConversationResultStatus {
 
 	WAIT_SEND((byte) 16, "", "待发送"),
 
+	GROUPING((byte) 17,"","分组中"),
+
 	SENDING((byte) 1, "", "发送中"),
 
 	SEND_SUCCESS((byte) 2, "send success", "发送成功"),
