@@ -359,7 +359,7 @@
             wechat_id=#{wechatId}
             and member_id=#{memberId}
             and event=#{event}
-            and event_key=#{eventKey}
+            and description=#{description}
             and msg_id=#{msgId}
     </select>
 
