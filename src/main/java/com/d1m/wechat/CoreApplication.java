@@ -4,8 +4,6 @@ import cn.afterturn.easypoi.handler.inter.IExcelI18nHandler;
 import com.d1m.wechat.util.AppContextUtils;
 import com.d1m.wechat.util.IExcelI18nHandlerImpl;
 import com.d1m.wechat.util.MemberExcelDateHandler;
-import com.d1m.wechat.wechatclient.ConsulProperties;
-import com.xxl.job.core.executor.XxlJobExecutor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -37,8 +35,6 @@ import org.springframework.web.client.RestTemplate;
 public class CoreApplication {
 
     public static void main(String[] args) {
-        ConsulProperties consulProperties = new ConsulProperties();
-		consulProperties.onStartup();
         SpringApplication.run(CoreApplication.class, args);
     }
 
