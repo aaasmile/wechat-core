@@ -1,5 +1,6 @@
 package com.d1m.wechat.pamametermodel;
 
+import com.d1m.wechat.mapper.MemberMapper;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.ParamUtil;
 import io.swagger.annotations.ApiModel;
@@ -54,6 +55,16 @@ public class AddMemberTagModel extends BaseModel {
     private Integer[] memberIds;
 
     private List<MemberTagModel> memberTags;
+
+    private List<MemberTagModel> encludeMemberTags;
+
+    public List<MemberTagModel> getEncludeMemberTags() {
+        return encludeMemberTags;
+    }
+
+    public void setEncludeMemberTags(List<MemberTagModel> encludeMemberTags) {
+        this.encludeMemberTags = encludeMemberTags;
+    }
 
     @ApiModelProperty("手机")
     private String mobile;
@@ -182,6 +193,18 @@ public class AddMemberTagModel extends BaseModel {
             }
             mm.setMemberTags(memberTagsArray);
         }
+
+        List<MemberTagModel> encludeMemberTags = addMemberTagModel.getEncludeMemberTags();
+        if (encludeMemberTags != null && !encludeMemberTags.isEmpty()) {
+            Integer[] memberTagsArray = new Integer[encludeMemberTags.size()];
+            for (int i = 0; i < encludeMemberTags.size(); i++) {
+                memberTagsArray[i] =encludeMemberTags.get(i).getId();
+            }
+            mm.setEncludeMemberTags(memberTagsArray);
+        }
+
+
+
         mm.setMobile(addMemberTagModel.getMobile());
         mm.setIsOnline(addMemberTagModel.getIsOnline());
         mm.setSubscribe(Integer.valueOf(1).equals(addMemberTagModel.getSubscribe()));

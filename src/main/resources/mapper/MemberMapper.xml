@@ -195,6 +195,14 @@
             <if test="memberTags != null and memberTags.length &gt; 0">
                 and mmt.member_id is not null
             </if>
+            <if test="encludeMemberTags != null and encludeMemberTags.length &gt; 0">
+               and  m.id not in (
+                ( SELECT  member_id FROM member_member_tag where 1=1 and member_tag_id in
+                <foreach close=")" collection="encludeMemberTags" index="index" item="item" open="(" separator=",">
+                #{item}
+            </foreach>))
+            </if>
+
             <if test="bindStatus != null">
                 <if test="bindStatus != 2">
                     and m.status = #{bindStatus}
