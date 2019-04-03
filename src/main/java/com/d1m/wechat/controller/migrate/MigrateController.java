@@ -1,7 +1,14 @@
 package com.d1m.wechat.controller.migrate;
 
+import com.d1m.wechat.controller.BaseController;
+import com.d1m.wechat.migrate.MigrateResult;
+import com.d1m.wechat.model.User;
+import com.d1m.wechat.service.MigrateService;
+import com.d1m.wechat.util.Message;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
 import javax.annotation.Resource;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,17 +16,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.d1m.wechat.controller.BaseController;
-import com.d1m.wechat.migrate.MigrateResult;
-import com.d1m.wechat.model.User;
-import com.d1m.wechat.service.MigrateService;
-import com.d1m.wechat.util.Message;
-import com.d1m.wechat.wechatclient.ConsulProperties;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
 
 /**
  * 类描述
@@ -105,8 +101,6 @@ public class MigrateController extends BaseController {
     @ResponseBody
     public Object migrateConfig() {
         try {
-            ConsulProperties consulProperties = new ConsulProperties();
-            consulProperties.onStartup();
             return "successful!";
         } catch (Exception e) {
             log.error(e.getMessage());
