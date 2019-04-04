@@ -313,7 +313,7 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
                 wechat.setId(wechatId);
                 Wechat wt = wechatMapper.selectByPrimaryKey(wechat);
                 if (wt != null) {
-                    String accessToken = getAccesToken(wt.getAppid(), wt.getAppscret());
+                    String accessToken = getAccesToken(wechatId);
                     log.info("返回结果：{}", accessToken);
                     if (StringUtils.isNotBlank(accessToken)) {
                         String result = deleteMaterial(accessToken, materialDto.getMediaId());
@@ -355,14 +355,13 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
     /**
      * 获取accessToken
      *
-     * @param appid
-     * @param appscret
+     * @param wechatId
      * @return
      */
-    private String getAccesToken(String appid, String appscret) {
+    private String getAccesToken(Integer wechatId) {
         String accessToken = null;
         try {
-            String result = restTemplate.getForObject(System.getProperty("wechat_token_server") + "/access-token/" + appid + "/" + appscret, String.class);
+            String result = WechatClientDelegate.getAccessToken(wechatId);
             log.info("请求获取accessToken接口返回：{}", result);
             JSONObject jsonObject = JSONObject.parseObject(result);
             accessToken = (String) jsonObject.get("data");
