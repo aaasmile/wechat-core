@@ -1,7 +1,6 @@
 package com.d1m.wechat.controller.interfaces;
 
 import com.d1m.wechat.CoreApplication;
-import com.d1m.wechat.wechatclient.ConsulProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.google.common.collect.Lists;
@@ -30,8 +29,6 @@ import static com.d1m.wechat.controller.TestController.*;
 public class InterfaceRabbitMQListenerTest {
 
     static {
-        ConsulProperties consulProperties = new ConsulProperties();
-        consulProperties.onStartup();
     }
 
 
