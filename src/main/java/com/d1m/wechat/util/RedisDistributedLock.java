@@ -1,8 +1,10 @@
 package com.d1m.wechat.util;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisCommands;
@@ -14,9 +16,10 @@ import java.util.List;
  * Created by jone.wang on 2019/2/28.
  * Description:
  */
-@Slf4j
+@Component
 public class RedisDistributedLock implements DistributedLock {
 
+    private static final Logger log = LoggerFactory.getLogger(RedisDistributedLock.class);
     private RedisTemplate<?, ?> redisTemplate;
 
     private ThreadLocal<String> lockFlag = new ThreadLocal<>();
