@@ -1,5 +1,6 @@
 package com.d1m.wechat.controller.api;
 
+import com.d1m.wechat.common.Config;
 import com.d1m.wechat.model.CustomRequestBody;
 import com.d1m.wechat.util.Security;
 import com.ecwid.consul.v1.ConsulClient;
@@ -7,6 +8,7 @@ import com.ecwid.consul.v1.Response;
 import com.ecwid.consul.v1.kv.model.GetValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,13 +27,10 @@ public class ThirdPartyController {
 	private Logger log = LoggerFactory.getLogger(ThirdPartyController.class);
 	private static ObjectMapper om = new ObjectMapper();
 
-	@Autowired
-	private ConsulClient consulClient;
-
 	@RequestMapping(value = "/api/menu/callback")
 	public List<CustomRequestBody> callback(@RequestBody String encryptedData) throws Exception {
 		log.info("encryptedData..." + encryptedData);
-		Response<GetValue> response = consulClient.getKVValue("configuration/application/secret");
+		Response<GetValue> response = consulClient().getKVValue("configuration/application/secret");
 		String secret = response.getValue().getDecodedValue();
 		log.info("secret..." + secret);
 		String data = Security.decrypt(encryptedData, secret);
@@ -40,7 +39,7 @@ public class ThirdPartyController {
 		Map<String, Object> wechatMessage = gson.fromJson(data, Map.class);
 		String fromUserName = (String) wechatMessage.get("FromUserName");
 
-		Response<GetValue> messageR = consulClient.getKVValue("configuration/application/message");
+		Response<GetValue> messageR = consulClient().getKVValue("configuration/application/message");
 		String message = messageR.getValue().getDecodedValue();
 		log.info(message);
 //		JsonArray array = new JsonArray();
@@ -100,5 +99,15 @@ public class ThirdPartyController {
 
 	public static void main(String[] args) {
 		System.out.println(Security.decrypt("6PFJM72Xp0k2WrMUsScaMiAQdLDPBmqekuAXil06Ij2zWtjroISxa0o8aKRjPzOmcnVxvW2TZGMrWm+7XwajyhAfI3sEAArjAOVPP+ruQIdq191O81/iIyS1hWdlmHDYP0WBEqN5zHFEU7qQQ+r1tb/mys4oa8QlDAme1/Q2MDGeOEocTCSWcMvrr6XfErKXMH4l8RFNPGUUlth0g/oopkfreQhyMfhK9ldRWtcb2wJvf2swZgHxn3cw8JjngsED", "dcd9b0464f2c6824"));
+	}
+
+	public ConsulClient consulClient() {
+		String host = Config.bootstrap.getProperty("spring.cloud.consul.host");
+		if(StringUtils.isNotEmpty(System.getProperty("ENV_HOST"))) {
+			log.info("ENV_HOST>>" + System.getProperty("ENV_HOST"));
+			host = System.getProperty("ENV_HOST");
+		}
+		ConsulClient consulClient = new ConsulClient(host, 8500);
+		return consulClient;
 	}
 }
