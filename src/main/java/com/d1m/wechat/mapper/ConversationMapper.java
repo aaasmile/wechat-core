@@ -3,6 +3,7 @@ package com.d1m.wechat.mapper;
 import java.util.Date;
 import java.util.List;
 
+import com.d1m.wechat.pamametermodel.ConversationModel;
 import org.apache.ibatis.annotations.Param;
 
 import com.d1m.wechat.dto.ConversationDto;
@@ -62,5 +63,7 @@ public interface ConversationMapper extends MyMapper<Conversation> {
     List<Integer> getLiveChatStatistic(@Param("wechatId") Integer wechatId);
     
     public Page<UserBehavior> selectUserBehavior(@Param("wechatId") Integer wechatId, @Param("memberId") Integer memberId);
-	public Page<UserLocation> selectUserLocation(@Param("wechatId") Integer wechatId, @Param("memberId") Integer memberId);
+	public List<UserLocation> selectUserLocation(@Param("wechatId") Integer wechatId, @Param("memberId") Integer memberId);
+
+	List<ConversationDto> searchComment(@Param("wechatId")Integer wechatId,@Param("memberId") Integer memberId,@Param("event") Byte event,@Param("description") String description,@Param("msgId") String msgId);
 }

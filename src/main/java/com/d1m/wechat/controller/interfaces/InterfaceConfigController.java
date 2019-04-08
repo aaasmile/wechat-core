@@ -7,6 +7,7 @@ import com.d1m.wechat.dto.EventForwardDto;
 import com.d1m.wechat.dto.InterfaceConfigDto;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.EventForwardMapper;
+import com.d1m.wechat.mapper.InterfaceConfigBrandMapper;
 import com.d1m.wechat.model.EventForward;
 import com.d1m.wechat.model.InterfaceConfig;
 import com.d1m.wechat.model.InterfaceConfigBrand;
@@ -53,6 +54,9 @@ public class InterfaceConfigController extends BaseController {
     @Autowired
    private EventForwardMapper eventForwardMapper;
 
+    @Autowired
+    private InterfaceConfigBrandMapper interfaceConfigBrandMapper;
+
 
     @ApiOperation(value = "查询第三方接口", tags = "第三方接口列表")
     @ApiResponse(code = 200, message = "获取第三方接口信息成功")
@@ -95,6 +99,12 @@ public class InterfaceConfigController extends BaseController {
     @RequestMapping(value = "newItem.json", method = RequestMethod.PUT)
     public JSONObject createItems(@RequestBody InterfaceConfig interfaceConfig) {
         try {
+            final InterfaceConfigBrand icb = new InterfaceConfigBrand();
+            icb.setId(Long.parseLong(interfaceConfig.getBrand()));
+            icb.setDeleted(false);
+            if(interfaceConfigBrandMapper.selectCount(icb)<1){
+                        return representation(Message.INTERFACECONFIG_BRAND_NOT_EXIST);
+                    }
             final InterfaceConfig ifcf = new InterfaceConfig();
             ifcf.setName(interfaceConfig.getName());
             ifcf.setBrand(interfaceConfig.getBrand());

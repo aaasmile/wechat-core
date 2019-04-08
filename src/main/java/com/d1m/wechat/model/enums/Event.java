@@ -49,6 +49,8 @@ public enum Event {
 
 	CARD_SKU_REMIND((byte)21, "库存警告", true, false),
 
+	USER_COMMENT((byte)51, "USER_COMMENT", false, true),
+
 	CONVERSATION_TRANSFER((byte)99, "会话转接", true, false),
 
 	;

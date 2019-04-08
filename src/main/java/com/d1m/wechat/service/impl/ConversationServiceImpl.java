@@ -11,6 +11,7 @@ import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.*;
 import com.d1m.wechat.model.*;
 import com.d1m.wechat.model.enums.*;
+import com.d1m.wechat.pamametermodel.ConversationActivityModel;
 import com.d1m.wechat.pamametermodel.ConversationModel;
 import com.d1m.wechat.pamametermodel.MassConversationModel;
 import com.d1m.wechat.pamametermodel.MemberModel;
@@ -101,6 +102,11 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
     @Override
     public Mapper<Conversation> getGenericMapper() {
         return conversationMapper;
+    }
+
+    @Override
+    public List<ConversationDto> searchComment(Integer wechatId, Conversation conversation) {
+        return conversationMapper.searchComment(wechatId,conversation.getMemberId(),conversation.getEvent(),conversation.getDescription(),conversation.getMsgId());
     }
 
     @Override
@@ -494,6 +500,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
         massConversationResult.setId(massConversationModel.getId());
         massConversationResult.setStatus(MassConversationResultStatus.getByName(massConversationModel.getStatus()).getValue());
         massConversationResult = massConversationResultMapper.selectOne(massConversationResult);
+        log.info("massConversationResult-wechatId-id"+wechatId+massConversationResult.getId());
 
         IllegalArgumentUtil.notBlank(massConversationResult, Message.CONVERSATION_MASS_NOT_EXIST);
         MassConversationModel condition = JSONObject.parseObject(massConversationResult.getConditions(), MassConversationModel.class);
@@ -646,6 +653,9 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
                 return;
             }
             log.info("start mass conversation with send by wx {}!", massConversationResult.getId());
+
+            massConversationResult.setStatus(MassConversationResultStatus.GROUPING.getValue());
+            massConversationResultMapper.updateByPrimaryKey(massConversationResult);
             asynSendMasMessage(wechatId, massConversationResult, msgType, message, current, condition, user);
         } else {
             massConversationResult.setStatus(MassConversationResultStatus.WAIT_SEND.getValue());
@@ -716,7 +726,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
         List<MemberDto> members = null;
         if (condition.getMemberIds() == null || condition.getMemberIds().length == 0) {
             MemberModel memberModel = condition.getMemberModel();
-            members = memberMapper.search(wechatId, memberModel.getOpenId(), memberModel.getNickname(), memberModel.getSex(), memberModel.getCountry(), memberModel.getProvince(), memberModel.getCity(), Objects.nonNull(memberModel.getSubscribe()) ? (memberModel.getSubscribe() ? 1 : 0) : null, memberModel.getActivityStartAt(), memberModel.getActivityEndAt(), memberModel.getBatchSendOfMonthStartAt(), memberModel.getBatchSendOfMonthEndAt(), DateUtil.getDateBegin(DateUtil.parse(memberModel.getAttentionStartAt())), DateUtil.getDateEnd(DateUtil.parse(memberModel.getAttentionEndAt())), DateUtil.getDateBegin(DateUtil.parse(memberModel.getCancelSubscribeStartAt())), DateUtil.getDateEnd(DateUtil.parse(memberModel.getCancelSubscribeEndAt())), true, null, memberModel.getMobile(), memberModel.getMemberTags(), null, null, null, DateUtil.getDate(-2), null);
+            members = memberMapper.search(wechatId, memberModel.getOpenId(), memberModel.getNickname(), memberModel.getSex(), memberModel.getCountry(), memberModel.getProvince(), memberModel.getCity(), Objects.nonNull(memberModel.getSubscribe()) ? (memberModel.getSubscribe() ? 1 : 0) : null, memberModel.getActivityStartAt(), memberModel.getActivityEndAt(), memberModel.getBatchSendOfMonthStartAt(), memberModel.getBatchSendOfMonthEndAt(), DateUtil.getDateBegin(DateUtil.parse(memberModel.getAttentionStartAt())), DateUtil.getDateEnd(DateUtil.parse(memberModel.getAttentionEndAt())), DateUtil.getDateBegin(DateUtil.parse(memberModel.getCancelSubscribeStartAt())), DateUtil.getDateEnd(DateUtil.parse(memberModel.getCancelSubscribeEndAt())), true, null, memberModel.getMobile(), memberModel.getMemberTags(), memberModel.getEncludeMemberTags(),null, null, null, DateUtil.getDate(-2), null);
         } else {
             members = memberMapper.selectByMemberId(condition.getMemberIds(), wechatId, true);
         }
@@ -735,7 +745,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
             totalCount = condition.getMemberIds().length;
             filterCount = members.size();
         } else {
-            Long totalMemberCount = memberMapper.count(wechatId, memberModel.getOpenId(), memberModel.getNickname(), memberModel.getSex(), memberModel.getCountry(), memberModel.getProvince(), memberModel.getCity(), Objects.nonNull(memberModel.getSubscribe()) ? (memberModel.getSubscribe() ? 1 : 0) : null, memberModel.getActivityStartAt(), memberModel.getActivityEndAt(), memberModel.getBatchSendOfMonthStartAt(), memberModel.getBatchSendOfMonthEndAt(), DateUtil.getDateBegin(DateUtil.parse(memberModel.getAttentionStartAt())), DateUtil.getDateEnd(DateUtil.parse(memberModel.getAttentionEndAt())), DateUtil.getDateBegin(DateUtil.parse(memberModel.getCancelSubscribeStartAt())), DateUtil.getDateEnd(DateUtil.parse(memberModel.getCancelSubscribeEndAt())), true, null, memberModel.getMobile(), memberModel.getMemberTags(), null, null, null, DateUtil.getDate(-2), null);
+            Long totalMemberCount = memberMapper.count(wechatId, memberModel.getOpenId(), memberModel.getNickname(), memberModel.getSex(), memberModel.getCountry(), memberModel.getProvince(), memberModel.getCity(), Objects.nonNull(memberModel.getSubscribe()) ? (memberModel.getSubscribe() ? 1 : 0) : null, memberModel.getActivityStartAt(), memberModel.getActivityEndAt(), memberModel.getBatchSendOfMonthStartAt(), memberModel.getBatchSendOfMonthEndAt(), DateUtil.getDateBegin(DateUtil.parse(memberModel.getAttentionStartAt())), DateUtil.getDateEnd(DateUtil.parse(memberModel.getAttentionEndAt())), DateUtil.getDateBegin(DateUtil.parse(memberModel.getCancelSubscribeStartAt())), DateUtil.getDateEnd(DateUtil.parse(memberModel.getCancelSubscribeEndAt())), true, null, memberModel.getMobile(), memberModel.getMemberTags(),memberModel.getEncludeMemberTags(), null, null, null, DateUtil.getDate(-2), null);
             if (null == totalMemberCount) {
                 totalCount = 0;
             } else {
@@ -851,7 +861,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
             for (; ; batchIndex++) {
                 PageHelper.startPage(batchIndex, batchSize, false);
                 MemberModel memberModel = condition.getMemberModel();
-                Page<MemberDto> list = memberMapper.massMembersSearch(wechatId, memberModel.getOpenId(), memberModel.getNickname(), memberModel.getSex(), memberModel.getCountry(), memberModel.getProvince(), memberModel.getCity(), memberModel.getSubscribe(), memberModel.getActivityStartAt(), memberModel.getActivityEndAt(), memberModel.getBatchSendOfMonthStartAt(), memberModel.getBatchSendOfMonthEndAt(), DateUtil.getDateBegin(DateUtil.parse(memberModel.getAttentionStartAt())), DateUtil.getDateEnd(DateUtil.parse(memberModel.getAttentionEndAt())), DateUtil.getDateBegin(DateUtil.parse(memberModel.getCancelSubscribeStartAt())), DateUtil.getDateEnd(DateUtil.parse(memberModel.getCancelSubscribeEndAt())), memberModel.getIsOnline(), null, memberModel.getMobile(), memberModel.getMemberTags(), condition.getSortName(), condition.getSortDir(), condition.getBindStatus());
+                Page<MemberDto> list = memberMapper.massMembersSearch(wechatId, memberModel.getOpenId(), memberModel.getNickname(), memberModel.getSex(), memberModel.getCountry(), memberModel.getProvince(), memberModel.getCity(), memberModel.getSubscribe(), memberModel.getActivityStartAt(), memberModel.getActivityEndAt(), memberModel.getBatchSendOfMonthStartAt(), memberModel.getBatchSendOfMonthEndAt(), DateUtil.getDateBegin(DateUtil.parse(memberModel.getAttentionStartAt())), DateUtil.getDateEnd(DateUtil.parse(memberModel.getAttentionEndAt())), DateUtil.getDateBegin(DateUtil.parse(memberModel.getCancelSubscribeStartAt())), DateUtil.getDateEnd(DateUtil.parse(memberModel.getCancelSubscribeEndAt())), memberModel.getIsOnline(), null, memberModel.getMobile(), memberModel.getMemberTags(), memberModel.getEncludeMemberTags(),condition.getSortName(), condition.getSortDir(), condition.getBindStatus());
 
                 if (list == null || list.size() == 0) {
                     break;
@@ -958,7 +968,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
                 massConversationModel.setIsOnline(true);
             }
             MemberModel memberModel = massConversationModel.getMemberModel();
-            size = memberMapper.count(wechatId, memberModel.getOpenId(), memberModel.getNickname(), memberModel.getSex(), memberModel.getCountry(), memberModel.getProvince(), memberModel.getCity(), Objects.nonNull(memberModel.getSubscribe()) ? (memberModel.getSubscribe() ? 1 : 0) : null, memberModel.getActivityStartAt(), memberModel.getActivityEndAt(), memberModel.getBatchSendOfMonthStartAt(), memberModel.getBatchSendOfMonthEndAt(), DateUtil.getDateBegin(DateUtil.parse(memberModel.getAttentionStartAt())), DateUtil.getDateEnd(DateUtil.parse(memberModel.getAttentionEndAt())), DateUtil.getDateBegin(DateUtil.parse(memberModel.getCancelSubscribeStartAt())), DateUtil.getDateEnd(DateUtil.parse(memberModel.getCancelSubscribeEndAt())), memberModel.getIsOnline(), null, memberModel.getMobile(), memberModel.getMemberTags(), massConversationModel.getSortName(), massConversationModel.getSortDir(), massConversationModel.getBindStatus(), DateUtil.getDate(-2), null);
+            size = memberMapper.count(wechatId, memberModel.getOpenId(), memberModel.getNickname(), memberModel.getSex(), memberModel.getCountry(), memberModel.getProvince(), memberModel.getCity(), Objects.nonNull(memberModel.getSubscribe()) ? (memberModel.getSubscribe() ? 1 : 0) : null, memberModel.getActivityStartAt(), memberModel.getActivityEndAt(), memberModel.getBatchSendOfMonthStartAt(), memberModel.getBatchSendOfMonthEndAt(), DateUtil.getDateBegin(DateUtil.parse(memberModel.getAttentionStartAt())), DateUtil.getDateEnd(DateUtil.parse(memberModel.getAttentionEndAt())), DateUtil.getDateBegin(DateUtil.parse(memberModel.getCancelSubscribeStartAt())), DateUtil.getDateEnd(DateUtil.parse(memberModel.getCancelSubscribeEndAt())), memberModel.getIsOnline(), null, memberModel.getMobile(), memberModel.getMemberTags(),memberModel.getEncludeMemberTags(), massConversationModel.getSortName(), massConversationModel.getSortDir(), massConversationModel.getBindStatus(), DateUtil.getDate(-2), null);
         }
 
         return size;
@@ -1080,8 +1090,66 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
     }
 
     @Override
-    public Page<UserLocation> selectUserLocation(Integer wechatId, ConversationModel conversationModel) {
-        return conversationMapper.selectUserLocation(wechatId, conversationModel.getMemberId());
+    public List<UserLocation> selectUserLocation(Integer wechatId, ConversationModel conversationModel) {
+        List<UserLocation> userLocations = conversationMapper.selectUserLocation(wechatId, conversationModel.getMemberId());
+        return filtrateDate(userLocations);
+    }
+
+    @Override
+    public void saveActivity(ConversationActivityModel conversationActivityModel, Integer wechatId) {
+        MemberDto memberDto = memberMapper.selectByOpenId(conversationActivityModel.getOpenId(), wechatId);
+        Conversation conversation=new Conversation();
+        conversation.setEvent((byte)50);
+        conversation.setOpenId(conversationActivityModel.getOpenId());
+        conversation.setUnionId(conversationActivityModel.getUnionId());
+        conversation.setEventName("ACTIVITY");
+        conversation.setEventKey(conversationActivityModel.getEventKey());
+        conversation.setMemberId(memberDto.getId());
+        conversation.setCreatedAt(new Date());
+        conversation.setTitle(conversationActivityModel.getTitle());
+        conversation.setMsgType((byte)10);
+        conversation.setWechatId(wechatId);
+        conversation.setStatus((byte)0);
+        conversation.setDirection(true);
+        conversationMapper.insert(conversation);
+    }
+
+
+    private List<UserLocation> filtrateDate(List<UserLocation> userLocations) {
+        List<UserLocation> result=new ArrayList<>();
+        result.add(userLocations.get(0));
+        Date fromDate=userLocations.get(0).getCreatedAt();
+        for (int i=0;i<userLocations.size();i++){
+            if(i+1<userLocations.size()){
+                UserLocation userLocationTo = userLocations.get(i + 1);
+                if(userLocationTo.getEventName().equalsIgnoreCase("location")){
+                    result.add(userLocationTo);
+                }else{
+                    Date toDate=userLocationTo.getCreatedAt();
+                    long from = fromDate.getTime();
+                    long to = toDate.getTime();
+                    int hours = (int) ((to - from) / (1000 * 60 * 60));
+                    if(hours!=0){
+                        fromDate=toDate;
+                        result.add(userLocations.get(i + 1));
+                    }
+                }
+            }else{
+                UserLocation userLocationTo = userLocations.get(i);
+                if(userLocationTo.getEventName().equalsIgnoreCase("location")){
+                    result.add(userLocationTo);
+                }else {
+                    Date toDate=userLocationTo.getCreatedAt();
+                    long from = fromDate.getTime();
+                    long to = toDate.getTime();
+                    int hours = (int) ((to - from) / (1000 * 60 * 60));
+                    if(hours!=0){
+                        result.add(userLocations.get(i));
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     @Autowired
