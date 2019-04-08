@@ -4,9 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.controller.file.Upload;
 import com.d1m.wechat.controller.file.UploadController;
+import com.d1m.wechat.dto.ImageTextDto;
 import com.d1m.wechat.dto.MaterialDto;
 import com.d1m.wechat.dto.MaterialImageTextDetailDto;
 import com.d1m.wechat.dto.MemberDto;
+import com.d1m.wechat.mapper.MaterialCategoryMapper;
 import com.d1m.wechat.model.Material;
 import com.d1m.wechat.model.MaterialImageTextDetail;
 import com.d1m.wechat.pamametermodel.ImageModel;
@@ -30,6 +32,7 @@ import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
@@ -42,7 +45,9 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -651,4 +656,43 @@ public class MaterialController extends BaseController {
         MaterialDto materialDto = materialService.getInfoBySn(sn);
         return representation(Message.MATERIAL_IMAGE_TEXT_GET_SUCCESS, materialDto);
     }
+
+    @Autowired
+    private MaterialCategoryMapper materialCategoryMapper;
+    /**
+     * 图文列表分组
+     */
+    @ApiResponse(code = 200, message = "1-获取素材图文列表成功")
+    @PostMapping(value = "imagetext/group/list.json")
+    @ResponseBody
+    public JSONObject getImageTextGroupList(HttpSession session) {
+        try {
+        Page<MaterialDto> materialDtos = materialService.getImageTextGroupList(getWechatId(session));
+            final List<MaterialDto> arrayList = new ArrayList<>();
+            materialDtos.stream()
+                    .map(a -> {
+                        if (a.getMaterialCategoryId() == null) {
+                            a.setMaterialCategoryName("未知");
+                            final String title = a.getItems().get(0).getTitle();  //标题
+                        }else {
+                            final String name = materialCategoryMapper.selectByPrimaryKey(a.getMaterialCategoryId()).getName();
+                            a.setMaterialCategoryName(name);
+                        }
+                        arrayList.add(a);
+                        return null;
+                    }).collect(Collectors.toList());
+            final Map<String, List<MaterialDto>> collect = arrayList.stream()
+                    .collect(Collectors.groupingBy(MaterialDto::getMaterialCategoryName));
+
+
+            System.out.println("ceshi ");
+        return representation(Message.SUCCESS, collect);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return wrapException(e);
+        }
+    }
+
+
+
 }

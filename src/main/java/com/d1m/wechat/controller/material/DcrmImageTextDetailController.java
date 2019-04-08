@@ -12,20 +12,26 @@ import com.d1m.wechat.service.MaterialService;
 import com.d1m.wechat.service.MemberService;
 import com.d1m.wechat.util.CommonUtils;
 import com.d1m.wechat.util.Message;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -213,6 +219,5 @@ public class DcrmImageTextDetailController extends BaseController {
             return wrapException(e);
         }
     }
-
 
 }
