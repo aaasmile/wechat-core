@@ -3,6 +3,7 @@ package com.d1m.wechat.util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisCommands;
@@ -15,6 +16,7 @@ import java.util.List;
  * Description:
  */
 @Slf4j
+@Component
 public class RedisDistributedLock implements DistributedLock {
 
     private RedisTemplate<?, ?> redisTemplate;
