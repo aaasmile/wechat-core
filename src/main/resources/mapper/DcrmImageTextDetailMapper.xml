@@ -30,6 +30,12 @@
         d.wx_last_pust_time as wxLastPushTime
         from dcrm_image_text_detail d
         WHERE 1=1
+        <if test='wxImageTextId == "1"'>
+           and  d.wx_image_text_id is null
+        </if>
+        <if test='wxImageTextId == "2"'>
+            and  d.wx_image_text_id is  NOT null
+        </if>
         <if test="search != null">
             AND (d.title like concat('%',#{search},'%')
         </if>
@@ -59,9 +65,14 @@
                 order by d.laste_updated_at desc
             </otherwise>
         </choose>
+
+
         <if test="offset != null and limit != null">
             limit #{offset}, #{limit}
         </if>
+
+
+
     </select>
 
     <select id="queryObject" resultType="com.d1m.wechat.dto.DcrmImageTextDetailDto">

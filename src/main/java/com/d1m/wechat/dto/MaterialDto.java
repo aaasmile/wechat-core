@@ -1,10 +1,11 @@
 package com.d1m.wechat.dto;
 
 import com.d1m.wechat.util.DateUtil;
+import lombok.Data;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.List;
-
+@Data
 public class MaterialDto {
 
     private Integer id;
@@ -34,6 +35,8 @@ public class MaterialDto {
     private String name;
 
     private String materialCategoryId;
+
+    private String materialCategoryName;
 
     private String typeName;
 
