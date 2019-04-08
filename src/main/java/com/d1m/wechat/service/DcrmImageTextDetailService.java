@@ -6,6 +6,7 @@ import com.d1m.wechat.dto.QueryDto;
 import com.d1m.wechat.model.Qrcode;
 import com.github.pagehelper.PageInfo;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -73,4 +74,7 @@ public interface DcrmImageTextDetailService {
      * @return
      */
     int updateSendTimes(Integer id);
+
+    List<DcrmImageTextDetailDto> getMassList(QueryDto dto);
+
 }

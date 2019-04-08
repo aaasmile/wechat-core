@@ -945,4 +945,11 @@ public class MaterialServiceImpl extends BaseService<Material> implements Materi
 
         return materialMapper.selectByPrimaryKey(id);
     }
+
+    @Override
+    public Page<MaterialDto> getImageTextGroupList(Integer wechatId) {
+        final HashMap<String, Object> params = Maps.newHashMap();
+        params.put("wechatId", wechatId);
+        return materialMapper.searchImageText(params);
+    }
 }
