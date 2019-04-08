@@ -5,6 +5,7 @@ import cn.d1m.wechat.client.model.request.WxArticleMessage;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.common.ds.TenantContext;
+import com.d1m.wechat.common.ElasticsearchConsumer;
 import com.d1m.wechat.dto.*;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.*;
@@ -23,7 +24,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.xxl.job.core.biz.model.ReturnT;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -47,6 +52,8 @@ import static com.d1m.wechat.util.IllegalArgumentUtil.notBlank;
 public class ConversationServiceImpl extends BaseService<Conversation> implements ConversationService {
 
     private static Logger log = LoggerFactory.getLogger(ConversationServiceImpl.class);
+    private static final DateTimeFormatter formatter = DateTimeFormatter
+        .ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private Gson gson = new Gson();
 
@@ -639,8 +646,9 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
             }
 
             // send to all by WX
+            //不推荐
             if (condition.emptyQuery()) {
-                log.info("start mass conversation with is_to_all {}!", massConversationResult.getId());
+                log.error("start mass conversation with is_to_all {}!", massConversationResult.getId());
                 sendToAllByWx(wechatId, massConversationResult, msgType, message, current, condition, material);
                 return;
             }
@@ -649,7 +657,6 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
             massConversationResult.setStatus(MassConversationResultStatus.GROUPING.getValue());
             massConversationResultMapper.updateByPrimaryKey(massConversationResult);
             asynSendMasMessage(wechatId, massConversationResult, msgType, message, current, condition, user);
-
         } else {
             massConversationResult.setStatus(MassConversationResultStatus.WAIT_SEND.getValue());
             massConversationResult.setRunAt(runAt);
@@ -799,8 +806,16 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
         if (null != condition.getMemberIds() && condition.getMemberIds().length > 0) {
             List<MemberDto> list = memberMapper.selectByMemberId(condition.getMemberIds(), wechatId, condition.getIsForce());
             List<MassConversation> massConversations = new ArrayList<MassConversation>();
+            List<String> openIdList = new LinkedList<>();
+            JsonArray array = new JsonArray();
             MassConversation massConversation = null;
             for (MemberDto memberDto : list) {
+
+                openIdList.add(memberDto.getOpenId());
+                JsonObject jsonObject = getPushEsObj(memberDto.getOpenId(), wxMassMessage,
+                    Integer.valueOf(String.valueOf(msgType.getValue())));
+                array.add(jsonObject);
+
                 massConversation = new MassConversation();
                 massConversation.setConversationId(conversation.getId());
                 massConversation.setCreatedAt(current);
@@ -815,8 +830,14 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
             // batch insert into DB
             insertConversationListToDB(massConversations);
 
-            wxMessage = WechatClientDelegate.sendMessage(wechatId, getOpenIds(list), msgType.toString().toLowerCase(), wxMassMessage);
+            wxMessage = WechatClientDelegate.sendMessage(wechatId, openIdList, msgType.toString().toLowerCase(), wxMassMessage);
             log.info("sendMessageResponse : {}", wxMessage);
+            //群发图文推送到es
+            if (array != null && array.size() > 0) {
+                log.info("pushEs...{}...", wxMassMessage);
+                rabbitTemplate.convertAndSend(com.d1m.wechat.common.ElasticsearchConsumer.ELAS_EXCHANGE,
+                    ElasticsearchConsumer.ELAS_QUEUE_WECHAT_IMAGE_TEXT_ADD, array.toString());
+            }
             if (wxMessage.fail()) {
                 throw new WechatException(Message.SYSTEM_ERROR);
             }
@@ -922,15 +943,6 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
         conversationMapper.insert(record);
 
     }
-
-    private List<String> getOpenIds(List<MemberDto> members) {
-        List<String> openIdList = new LinkedList<>();
-        for (MemberDto member : members) {
-            openIdList.add(member.getOpenId());
-        }
-        return openIdList;
-    }
-
     /**
      * 用于检查预审核时符合条件的用户数量
      *
@@ -1162,5 +1174,16 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
+    }
+
+    private JsonObject getPushEsObj(String openid, String id, Integer type) {
+        LocalDateTime localDateTimeToday = LocalDateTime.now();
+        String pushAt = localDateTimeToday.format(formatter);
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("openid", openid);
+        jsonObject.addProperty("id", id);
+        jsonObject.addProperty("type", type);
+        jsonObject.addProperty("pushAt", pushAt);
+        return jsonObject;
     }
 }
