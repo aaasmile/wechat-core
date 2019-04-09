@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.dto.ConversationDto;
 import com.d1m.wechat.model.*;
+import com.d1m.wechat.model.enums.ElasticsearchConsumer;
 import com.d1m.wechat.model.enums.Event;
 import com.d1m.wechat.model.enums.MassConversationResultStatus;
 import com.d1m.wechat.pamametermodel.MassConversationModel;
@@ -14,10 +15,15 @@ import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.HttpUtils;
 import com.d1m.wechat.util.ParamUtil;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.annotation.JobHander;
 import com.xxl.job.core.log.XxlJobLogger;
 import org.reflections.scanners.FieldAnnotationsScanner;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -39,10 +45,16 @@ public class WeChatCommentJob extends BaseJobHandler {
 
     private final static String COMMENT_API="https://api.weixin.qq.com/cgi-bin/comment/list?access_token=";
 
+    @Resource
+    public RabbitTemplate rabbitTemplate;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
+
 
     @Override
     public ReturnT<String> run(String... strings) throws Exception {
         XxlJobLogger.log("WeChatCommentJob===========>>");
+        List<Conversation> conversationList=new ArrayList<>();
         if(strings!=null){
             // 参数1为微信ID
             Integer wechatId = ParamUtil.getInt(strings[0], null);
@@ -68,7 +80,7 @@ public class WeChatCommentJob extends BaseJobHandler {
                 JSONObject commentDataJson =JSONObject.parseObject(commenData);
                 if (commentDataJson == null) continue;
                 if(commentDataJson.get("errmsg").toString().equalsIgnoreCase("ok")){
-                    saveJsonObject(wechatId, msgDataId, commentDataJson);
+                    saveJsonObject(wechatId, msgDataId, commentDataJson,conversationList);
                     int total = Integer.parseInt(commentDataJson.get("total").toString());
                     if(total>50){
                         int count=total%50==0?total/50:total/50+1;
@@ -77,18 +89,20 @@ public class WeChatCommentJob extends BaseJobHandler {
                             sendData.put("count",50);
                             String commenDataMore = HttpUtils.doPost(COMMENT_API + tokenData.get("data"), sendData);
                             JSONObject commentDataJsonMore =JSONObject.parseObject(commenDataMore);
-                            saveJsonObject(wechatId,msgDataId,commentDataJsonMore);
+                            saveJsonObject(wechatId,msgDataId,commentDataJsonMore,conversationList);
                         }
                     }
                 }else{
-                    return null;
+                    continue;
                 }
             }
+            //v4.6.1
+            pushEs(conversationList);
         }
         return ReturnT.SUCCESS;
     }
 
-    private JSONObject saveJsonObject(Integer wechatId, String msgDataId, JSONObject commentDataJson) {
+    private JSONObject saveJsonObject(Integer wechatId, String msgDataId, JSONObject commentDataJson,List<Conversation> conversationList) {
         XxlJobLogger.log("save===========>>"+msgDataId);
         JSONArray comments = (JSONArray) commentDataJson.get("comment");
         for (Object commentObject : comments) {
@@ -133,9 +147,20 @@ public class WeChatCommentJob extends BaseJobHandler {
             conversation.setContent(comment.get("content").toString());
             XxlJobLogger.log("conversation===========>>"+conversation);
             conversationService.save(conversation);
-
+            conversationList.add(conversation);
         }
         return commentDataJson;
+    }
+
+    private void pushEs(List<Conversation> conversationListonversation) {
+        try {
+            String memberStr = objectMapper.writeValueAsString(conversationListonversation);
+            JsonParser jsonParser = new JsonParser();
+            JsonArray array = jsonParser.parse(memberStr).getAsJsonArray();
+            rabbitTemplate.convertAndSend(ElasticsearchConsumer.ELAS_EXCHANGE, ElasticsearchConsumer.ELAS_QUEUE_COMMENT,array.toString());
+        } catch (Exception e) {
+            XxlJobLogger.log(e.getMessage());
+        }
     }
 
 }
