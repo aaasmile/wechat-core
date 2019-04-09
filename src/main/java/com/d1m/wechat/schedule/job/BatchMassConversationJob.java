@@ -18,7 +18,6 @@ import com.google.gson.JsonObject;
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.annotation.JobHander;
 import com.xxl.job.core.log.XxlJobLogger;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -143,13 +142,11 @@ public class BatchMassConversationJob extends BaseJobHandler {
   }
 
   private JsonObject getPushEsObj(String openid, String id, Integer type) {
-    LocalDateTime localDateTimeToday = LocalDateTime.now();
-    String pushAt = localDateTimeToday.format(formatter);
     JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty("openid", openid);
     jsonObject.addProperty("id", id);
     jsonObject.addProperty("type", type);
-    jsonObject.addProperty("pushAt", pushAt);
+    jsonObject.addProperty("pushAt", System.currentTimeMillis());
     return jsonObject;
   }
 }
