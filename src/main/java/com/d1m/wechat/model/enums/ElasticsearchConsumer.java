@@ -9,4 +9,5 @@ public class ElasticsearchConsumer {
   public static final String ELAS_QUEUE_CONVERSATIONUPDATE = "elas.queue.conversationUpdate";
   public static final String ELAS_QUEUE_MEMBERMEMBERTAGADD = "elas.queue.memberMemberTagAdd";
   public static final String ELAS_QUEUE_MEMBERMEMBERTAGUPDATE = "elas.queue.memberMemberTagUpdate";
+  public static final String ELAS_QUEUE_COMMENT = "elas.queue.comment";
 }
