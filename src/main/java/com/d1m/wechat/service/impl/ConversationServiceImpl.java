@@ -1177,13 +1177,11 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
     }
 
     private JsonObject getPushEsObj(String openid, String id, Integer type) {
-        LocalDateTime localDateTimeToday = LocalDateTime.now();
-        String pushAt = localDateTimeToday.format(formatter);
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("openid", openid);
         jsonObject.addProperty("id", id);
         jsonObject.addProperty("type", type);
-        jsonObject.addProperty("pushAt", pushAt);
+        jsonObject.addProperty("pushAt", System.currentTimeMillis());
         return jsonObject;
     }
 }
