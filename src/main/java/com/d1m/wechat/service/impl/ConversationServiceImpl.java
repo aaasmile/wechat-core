@@ -813,7 +813,7 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
 
                 openIdList.add(memberDto.getOpenId());
                 JsonObject jsonObject = getPushEsObj(memberDto.getOpenId(), wxMassMessage,
-                    Integer.valueOf(String.valueOf(msgType.getValue())));
+                    Integer.valueOf(String.valueOf(msgType.getValue())), wechatId);
                 array.add(jsonObject);
 
                 massConversation = new MassConversation();
@@ -1176,11 +1176,12 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
         }
     }
 
-    private JsonObject getPushEsObj(String openid, String id, Integer type) {
+    private JsonObject getPushEsObj(String openid, String id, Integer type, Integer wechatId) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("openid", openid);
         jsonObject.addProperty("id", id);
         jsonObject.addProperty("type", type);
+        jsonObject.addProperty("wechatId", wechatId);
         jsonObject.addProperty("pushAt", System.currentTimeMillis());
         return jsonObject;
     }
