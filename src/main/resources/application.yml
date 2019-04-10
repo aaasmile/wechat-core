@@ -76,7 +76,7 @@ jdbc.url: jdbc:mysql://${MYSQL_HOST:${ENV_HOST}}:${MYSQL_PORT:3306}/${MYSQL_DB:t
 jdbc.user: ${MYSQL_USER:root}
 jdbc.password: ${MYSQL_PASSWORD:root}
 jdbc.enableDynamic: ${ENABLE_DYNAMIC:false}
-
+crm.service.url: http://10.60.1.22:10312
 
 ---
 #云环境配置
