@@ -101,7 +101,7 @@ public class BatchMassConversationJob extends BaseJobHandler {
             //群发图文推送到es
             if (Integer.valueOf(String.valueOf(msgType.getValue())) == 1) {
               JsonObject jsonObject = getPushEsObj(bm.getOpenId(), wxMassMessage,
-                  Integer.valueOf(String.valueOf(msgType.getValue())));
+                  Integer.valueOf(String.valueOf(msgType.getValue())), wechatId);
               array.add(jsonObject);
             }
           }
@@ -141,11 +141,12 @@ public class BatchMassConversationJob extends BaseJobHandler {
     return wxusers;
   }
 
-  private JsonObject getPushEsObj(String openid, String id, Integer type) {
+  private JsonObject getPushEsObj(String openid, String id, Integer type, Integer wechatId) {
     JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty("openid", openid);
     jsonObject.addProperty("id", id);
     jsonObject.addProperty("type", type);
+    jsonObject.addProperty("wechatId", wechatId);
     jsonObject.addProperty("pushAt", System.currentTimeMillis());
     return jsonObject;
   }
