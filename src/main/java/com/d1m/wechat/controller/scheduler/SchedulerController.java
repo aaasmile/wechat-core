@@ -84,11 +84,12 @@ public class SchedulerController extends BaseController {
     }
   }
 
-  @ApiOperation( value = "创建任务", tags = "任务中心测试接口")
-  @ApiResponse(code = 200, message = "创建任务")
+  @ApiOperation( value = "查询任务", tags = "任务中心测试接口")
+  @ApiResponse(code = 200, message = "查询任务")
   @RequestMapping(value = "list", method = RequestMethod.POST)
   public JSONObject list(@RequestBody SchedulerVO schedulerVO) {
     try {
+      schedulerVO.setWechatCode(String.valueOf(getWechatId()));
       List<Scheduler> list = schedulerService.list(schedulerVO);
       Integer count = schedulerService.count(schedulerVO);
       return representation(Message.SCHEDULER_SUCCESS, list, schedulerVO.getPageSize(), schedulerVO.getPageNum(), count);
