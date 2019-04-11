@@ -1,33 +1,27 @@
 package com.d1m.wechat.schedule.job;
 
-import cn.d1m.wechat.client.model.WxTemplate;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.dto.ConversationDto;
 import com.d1m.wechat.model.*;
 import com.d1m.wechat.model.enums.ElasticsearchConsumer;
 import com.d1m.wechat.model.enums.Event;
-import com.d1m.wechat.model.enums.MassConversationResultStatus;
-import com.d1m.wechat.pamametermodel.MassConversationModel;
 import com.d1m.wechat.schedule.BaseJobHandler;
 import com.d1m.wechat.service.*;
 import com.d1m.wechat.util.DateUtil;
 import com.d1m.wechat.util.HttpUtils;
 import com.d1m.wechat.util.ParamUtil;
-import com.d1m.wechat.wechatclient.WechatClientDelegate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.annotation.JobHander;
 import com.xxl.job.core.log.XxlJobLogger;
-import org.reflections.scanners.FieldAnnotationsScanner;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +40,9 @@ public class WeChatCommentJob extends BaseJobHandler {
     private final static String COMMENT_API="https://api.weixin.qq.com/cgi-bin/comment/list?access_token=";
 
     @Resource
+    private MaterialService materialService;
+
+    @Resource
     public RabbitTemplate rabbitTemplate;
 
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -59,7 +56,7 @@ public class WeChatCommentJob extends BaseJobHandler {
             // 参数1为微信ID
             Integer wechatId = ParamUtil.getInt(strings[0], null);
             XxlJobLogger.log("wechatId===========>>"+wechatId);
-            String tokenUrl=System.getProperty("accesstoken.url") == null ?"http://qa.wechat.d1m.cn/api/wechat/access-token/wxb709c8392fe2b357/412e024cfbd344ff630bf496138f5cd8":System.getProperty("accesstoken.url");
+            String tokenUrl=System.getProperty("accesstoken.url") == null ?"http://dev.wechat.d1m.cn/api/wechat/access-token/wx2e896c8034634aa6/7f22235bed7a6fcc281b09958b2ce5f8":System.getProperty("accesstoken.url");
             String tokenDataString = HttpUtils.sendGet(tokenUrl);
             if(tokenDataString==null){
                 XxlJobLogger.log("ERROR===========>>tokenData is null");
@@ -79,6 +76,7 @@ public class WeChatCommentJob extends BaseJobHandler {
                 String commenData = HttpUtils.doPost(COMMENT_API + tokenData.get("data"), sendData);
                 JSONObject commentDataJson =JSONObject.parseObject(commenData);
                 if (commentDataJson == null) continue;
+                XxlJobLogger.log("commentDataJson===========>>"+commentDataJson.toString());
                 if(commentDataJson.get("errmsg").toString().equalsIgnoreCase("ok")){
                     saveJsonObject(wechatId, msgDataId, commentDataJson,conversationList);
                     int total = Integer.parseInt(commentDataJson.get("total").toString());
@@ -97,6 +95,7 @@ public class WeChatCommentJob extends BaseJobHandler {
                 }
             }
             //v4.6.1
+            XxlJobLogger.log("conversationList============>"+conversationList.toString());
             pushEs(conversationList);
         }
         return ReturnT.SUCCESS;
@@ -138,6 +137,8 @@ public class WeChatCommentJob extends BaseJobHandler {
                 titles.put(contentObject.get("title"));
                 titles.put(contentObject.get("id"));
                 titles.put(comment.get("content"));
+                Integer materialId = (Integer) contentObject.get("materialId");
+                conversation.setMaterialId(materialId);
                 conversation.setTitle(titles.toString());
             }
             conversation.setMsgType((byte)10);
@@ -152,11 +153,20 @@ public class WeChatCommentJob extends BaseJobHandler {
         return commentDataJson;
     }
 
-    private void pushEs(List<Conversation> conversationListonversation) {
+    private void pushEs(List<Conversation> conversationList) {
         try {
-            String memberStr = objectMapper.writeValueAsString(conversationListonversation);
-            JsonParser jsonParser = new JsonParser();
-            JsonArray array = jsonParser.parse(memberStr).getAsJsonArray();
+            JsonArray array = new JsonArray();
+            for (Conversation conversation : conversationList) {
+                Material material = materialService.getMaterial(conversation.getWechatId(), conversation.getMaterialId());
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("id", conversation.getId());
+                jsonObject.addProperty("mediaId", material.getMediaId());
+                jsonObject.addProperty("openId", conversation.getOpenId());
+                jsonObject.addProperty("createdAt", conversation.getCreatedAt().getTime());
+                jsonObject.addProperty("wechatId", conversation.getWechatId());
+                jsonObject.addProperty("memberId", conversation.getMemberId());
+                array.add(jsonObject);
+            }
             rabbitTemplate.convertAndSend(ElasticsearchConsumer.ELAS_EXCHANGE, ElasticsearchConsumer.ELAS_QUEUE_COMMENT,array.toString());
         } catch (Exception e) {
             XxlJobLogger.log(e.getMessage());
