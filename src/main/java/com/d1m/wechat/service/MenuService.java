@@ -20,6 +20,7 @@ public interface MenuService extends IService<Menu> {
 			throws WechatException;
 
 	Menu getByUrl(Integer wechatId, String url, Integer menuId);
-	
-	
+
+
+    List<Menu> getClickMenuList(Menu menu);
 }

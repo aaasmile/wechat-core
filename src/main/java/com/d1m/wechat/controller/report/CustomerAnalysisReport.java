@@ -6,11 +6,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.d1m.wechat.controller.reply.ReplyController;
+import com.d1m.wechat.model.Menu;
+import com.d1m.wechat.model.ReplyWords;
+import lombok.Data;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -19,11 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSON;
@@ -932,4 +933,40 @@ public class CustomerAnalysisReport extends BaseController {
  		UserData userData = new UserData();
  		return new ModelAndView(userData, modelMap);
  	}
+
+
+	@ApiOperation(value = "获取点击菜单", tags = "获取点击菜单接口")
+	@ResponseBody
+	@GetMapping(value = "/click/list.json")
+	public JSONObject getClickMenuList( HttpSession session) {
+		try {
+			final Menu menu = new Menu();
+			menu.setWechatId(getWechatId(session));
+			menu.setType( (byte)1);
+			 List<Menu> menuList =  menuService.getClickMenuList(menu);
+			final List<MenuReq> menuReqs = menuList.stream().map(e -> {
+				final MenuReq menuReq = new MenuReq();
+				menuReq.setKey(e.getId());
+				menuReq.setTitle(e.getName());
+				menuReq.setWechatId(e.getWechatId());
+				return menuReq;
+			}).collect(Collectors.toList());
+			return representation(Message.REPLY_GET_SUCCESS, menuReqs);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			return wrapException(e);
+		}
+	}
+	@Data
+	private static class MenuReq {
+
+		private Integer key;   //id
+
+		private String title;  //name
+
+		private Integer wechatId;
+	}
+
+
+
 }

@@ -1,32 +1,36 @@
 package com.d1m.wechat.controller.reply;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.d1m.wechat.mapper.ReplyWordsMapper;
+import com.d1m.wechat.model.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.pagehelper.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
+import lombok.Data;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.dto.*;
-import com.d1m.wechat.model.Material;
-import com.d1m.wechat.model.MaterialImageTextDetail;
-import com.d1m.wechat.model.MemberTag;
-import com.d1m.wechat.model.Reply;
 import com.d1m.wechat.model.enums.Effect;
 import com.d1m.wechat.pamametermodel.ActionEngineCondition;
 import com.d1m.wechat.pamametermodel.ActionEngineEffect;
@@ -345,5 +349,44 @@ public class ReplyController extends BaseController {
 			return wrapException(e);
 		}
 	}
+    @Autowired
+	private ReplyWordsMapper replyWordsMapper;
+
+	@ApiOperation(value = "获取发送关键词", tags = "获取发送关键词接口")
+	@ResponseBody
+	@GetMapping(value = "list.json")
+	public JSONObject getReplyWord( HttpSession session) {
+		try {
+			final ReplyWords replyWords1 = new ReplyWords();
+			replyWords1.setWechatId(getWechatId(session));
+			final List<ReplyWords> replyWords = replyWordsMapper.select(replyWords1);
+			final List<ReplyWordReq> replyWordReqs = replyWords.stream().map(e -> {
+				final ReplyWordReq replyWordReq = new ReplyWordReq();
+				replyWordReq.setKey(e.getId());
+				replyWordReq.setTitle(e.getReplyWord());
+				replyWordReq.setWechatId(e.getWechatId());
+				return replyWordReq;
+			}).collect(Collectors.toList());
+			return representation(Message.REPLY_GET_SUCCESS, replyWordReqs);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			return wrapException(e);
+		}
+	}
+
+	@Data
+	private static class ReplyWordReq {
+
+		private Integer key;
+
+		private String title;
+
+		private Integer wechatId;
+	}
+
+
+
+
+
 
 }
