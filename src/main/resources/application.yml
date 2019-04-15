@@ -4,6 +4,7 @@ logging.config: classpath:logback-spring.xml
 logging.path: /data/log/wechat-core
 log4j.logger.com.d1m.wechat.mapper: DEBUG
 logging.level.com.d1m.wechat: DEBUG
+spring.cloud.config.enabled: false
 wechat-crm:
   url: http://wechat-crm/
 spring:
