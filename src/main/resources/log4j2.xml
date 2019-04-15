@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN" monitorInterval="5">
     <Properties>
-        <Property name="log.level">info</Property>
+        <Property name="log.level">debug</Property>
         <Property name="log.path">/data/log/wechat-core</Property>
         <Property name="project.name">spring</Property>
         <Property name="ELK_LOG_PATTERN">${sys:PID} %4p %t (%F) - %m%n</Property>
