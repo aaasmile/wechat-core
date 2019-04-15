@@ -163,6 +163,7 @@ public class RestAccessTokenProvider implements AccessTokenProvider {
     		if(restResponse == null) {
     			return null;
     		}
+    		log.info("AccessToken [appid={},secret={}]:{}", appid, secret, restResponse.getData());
 	        if (!restResponse.isSuccess()) {
 	            throw new RuntimeException("AccessToken获取失败[appid=" + appid + ",secret=" + secret + "]:" + restResponse.getInfo());
 	        }
