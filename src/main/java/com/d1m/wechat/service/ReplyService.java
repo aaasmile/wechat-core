@@ -3,6 +3,7 @@ package com.d1m.wechat.service;
 import java.util.List;
 
 import com.d1m.wechat.dto.ReplyDto;
+import com.d1m.wechat.dto.ReplyKeywordDto;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.model.Reply;
 import com.d1m.wechat.model.User;
@@ -30,4 +31,6 @@ public interface ReplyService extends IService<Reply> {
 
 	ReplyDto getDefaultReply(Integer wechatId);
 
+    //查询关键字列表
+	List<ReplyKeywordDto> getKeywordList(Integer wechatId);
 }

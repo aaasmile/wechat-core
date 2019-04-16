@@ -841,4 +841,20 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 		// TODO Auto-generated method stub
 		return menuGroupMapper.reportMenuGroupList(wechatId);
 	}
+
+
+
+	//人群分组查询菜单列表
+	@Override
+	public List<MenuGroupDto> getClickMenuList(Integer wechatId, MenuGroupModel menuGroupModel, boolean queryCount) {
+		if (menuGroupModel == null) {
+			menuGroupModel = new MenuGroupModel();
+		}
+		return menuGroupMapper.getClickSearch(wechatId, MenuStatus.INUSED.getValue());
+
+
+
+	}
+
+
 }

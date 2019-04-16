@@ -249,5 +249,16 @@
 			order by id asc
 		</where>
 	</select>
+
+
+	<select id="getClickSearch" resultMap="SimpleMenuGroupResultMap">
+		select * from menu_group as mg
+		<where>
+			mg.wechat_id = #{wechatId}
+			<if test="status != null">
+				and mg.status = #{status}
+			</if>
+		</where>
+	</select>
 	
 </mapper>

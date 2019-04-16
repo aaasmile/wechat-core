@@ -118,6 +118,30 @@
 	)
 	order by weight desc
   </select>
+
+
+	<resultMap id="ReplyKeywordResultMap" type="com.d1m.wechat.dto.ReplyKeywordDto">
+		<id column="id" jdbcType="INTEGER" property="key" />
+		<result column="reply_key" jdbcType="VARCHAR" property="title" />
+		<result column="created_at" jdbcType="VARCHAR" property="createdAt" />
+		<collection column="{replyId=id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.ReplyWordDto" property="children" select="getReplyWordsResult"/>
+	</resultMap>
+	<select id="getKeywordList" resultMap="ReplyKeywordResultMap">
+		SELECT id, reply_key,reply_type, DATE_FORMAT(created_at,'%Y-%m-%d %T') as created_at,match_mode, wechat_id, weight  from reply
+		<where>
+			wechat_id = #{wechatId}  and status = 1
+		</where>
+	</select>
+	<resultMap id="ReplyKeywordsResultMap" type="com.d1m.wechat.dto.ReplyWordDto">
+		<id column="id" jdbcType="INTEGER" property="key" />
+		<result column="reply_word" jdbcType="TINYINT" property="title" />
+		</resultMap>
+	<select id="getReplyWordsResult" resultMap="ReplyKeywordsResultMap">
+		select  id ,reply_word from reply_word
+		<where>
+			reply_id = #{replyId}
+		</where>
+	</select>
   
   
 </mapper>

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.d1m.wechat.dto.ReplyKeywordDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -323,6 +324,13 @@ public class ReplyServiceImpl extends BaseService<Reply> implements
 	@Override
 	public ReplyDto getDefaultReply(Integer wechatId) {
 		return replyMapper.getDefaultReply(wechatId);
+	}
+
+	@Override
+	public List<ReplyKeywordDto> getKeywordList(Integer wechatId) {
+
+		return replyMapper.getKeywordList(wechatId);
+
 	}
 
 }
