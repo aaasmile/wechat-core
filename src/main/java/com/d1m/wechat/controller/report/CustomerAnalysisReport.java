@@ -934,7 +934,7 @@ public class CustomerAnalysisReport extends BaseController {
  		return new ModelAndView(userData, modelMap);
  	}
 
-
+   /*
 	@ApiOperation(value = "获取点击菜单", tags = "获取点击菜单接口")
 	@ResponseBody
 	@GetMapping(value = "/click/list.json")
@@ -943,7 +943,7 @@ public class CustomerAnalysisReport extends BaseController {
 			final Menu menu = new Menu();
 			menu.setWechatId(getWechatId(session));
 			menu.setType( (byte)1);
-			 List<Menu> menuList =  menuService.getClickMenuList(menu);
+			// List<Menu> menuList =  menuService.getClickMenuList(menu);
 			final List<MenuReq> menuReqs = menuList.stream().map(e -> {
 				final MenuReq menuReq = new MenuReq();
 				menuReq.setKey(e.getId());
@@ -965,7 +965,7 @@ public class CustomerAnalysisReport extends BaseController {
 		private String title;  //name
 
 		private Integer wechatId;
-	}
+	}*/
 
 
 

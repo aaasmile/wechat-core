@@ -208,10 +208,10 @@ public class MenuServiceImpl extends BaseService<Menu> implements MenuService {
 		}
 	}
 
-	@Override
+	/*@Override
 	public List<Menu> getClickMenuList(Menu menu) {
 
 		return menuMapper.select(menu);
-	}
+	}*/
 
 }

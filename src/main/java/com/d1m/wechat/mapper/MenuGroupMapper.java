@@ -29,5 +29,7 @@ public interface MenuGroupMapper extends MyMapper<MenuGroup> {
 
 	List<ReportMenuGroupDto> reportMenuGroupList(@Param("wechatId") Integer wechatId)
 			throws WechatException;
-	
+
+	List<MenuGroupDto> getClickSearch(@Param("wechatId") Integer wechatId,
+									  @Param("status") byte status);
 }

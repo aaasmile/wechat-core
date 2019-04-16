@@ -33,4 +33,8 @@ public interface MenuGroupService extends IService<MenuGroup> {
 
 	List<ReportMenuGroupDto> menuGroupList(Integer wechatId)
 			throws WechatException;
+
+	List<MenuGroupDto> getClickMenuList(Integer wechatId, MenuGroupModel menuGroupModel,
+										boolean queryCount);
+
 }
