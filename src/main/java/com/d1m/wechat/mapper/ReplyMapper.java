@@ -2,6 +2,7 @@ package com.d1m.wechat.mapper;
 
 import java.util.List;
 
+import com.d1m.wechat.dto.ReplyKeywordDto;
 import org.apache.ibatis.annotations.Param;
 
 import com.d1m.wechat.dto.ReplyDto;
@@ -23,4 +24,8 @@ public interface ReplyMapper extends MyMapper<Reply> {
 			@Param("content") String content);
 
 	ReplyDto getDefaultReply(@Param("wechatId") Integer wechatId);
+
+	List<ReplyKeywordDto> getKeywordList(@Param("wechatId") Integer wechatId);
+
+	List<ReplyKeywordDto> getReplyWordsResult();
 }

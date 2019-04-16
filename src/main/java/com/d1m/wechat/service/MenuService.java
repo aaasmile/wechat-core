@@ -22,5 +22,5 @@ public interface MenuService extends IService<Menu> {
 	Menu getByUrl(Integer wechatId, String url, Integer menuId);
 
 
-    List<Menu> getClickMenuList(Menu menu);
+   // List<Menu> getClickMenuList(Menu menu);
 }

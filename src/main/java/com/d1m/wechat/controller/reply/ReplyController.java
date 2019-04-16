@@ -354,35 +354,17 @@ public class ReplyController extends BaseController {
 
 	@ApiOperation(value = "获取发送关键词", tags = "获取发送关键词接口")
 	@ResponseBody
-	@GetMapping(value = "list.json")
+	@GetMapping(value = "/keyword/list.json")
 	public JSONObject getReplyWord( HttpSession session) {
 		try {
-			final ReplyWords replyWords1 = new ReplyWords();
-			replyWords1.setWechatId(getWechatId(session));
-			final List<ReplyWords> replyWords = replyWordsMapper.select(replyWords1);
-			final List<ReplyWordReq> replyWordReqs = replyWords.stream().map(e -> {
-				final ReplyWordReq replyWordReq = new ReplyWordReq();
-				replyWordReq.setKey(e.getId());
-				replyWordReq.setTitle(e.getReplyWord());
-				replyWordReq.setWechatId(e.getWechatId());
-				return replyWordReq;
-			}).collect(Collectors.toList());
-			return representation(Message.REPLY_GET_SUCCESS, replyWordReqs);
+			List<ReplyKeywordDto> replyKeywordDto =replyService.getKeywordList(getWechatId(session));
+			return representation(Message.REPLY_GET_SUCCESS, replyKeywordDto);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			return wrapException(e);
 		}
 	}
 
-	@Data
-	private static class ReplyWordReq {
-
-		private Integer key;
-
-		private String title;
-
-		private Integer wechatId;
-	}
 
 
 
