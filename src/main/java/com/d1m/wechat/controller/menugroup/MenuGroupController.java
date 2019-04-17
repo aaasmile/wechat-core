@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.d1m.wechat.dto.ClickMenuDto;
 import com.d1m.wechat.dto.MenuDto;
 import com.d1m.wechat.mapper.MenuGroupMapper;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -179,48 +180,36 @@ public class MenuGroupController extends BaseController {
 	@RequestMapping(value = "/clickmenu/list.json", method = RequestMethod.GET)
 	@ResponseBody
 		public JSONObject getClickList(@ApiParam(name = "MenuGroupModel", required = false) @RequestBody(required = false) MenuGroupModel menuGroupModel, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
-
 			if (menuGroupModel == null) {
 			menuGroupModel = new MenuGroupModel();
 		}
-
-		System.out.println("测试结束");
-
-		List<MenuGroupDto> menuGroupDtoList =menuGroupService.getClickMenuList(getWechatId(), menuGroupModel, false);
-		final ArrayList<clickMenuRep> clickMenuRepArrayList = new ArrayList<>();
-		menuGroupDtoList.stream().map(e ->{
-			final clickMenuRep clickMenuRep = new clickMenuRep();
-			BeanUtils.copyProperties(e,clickMenuRep);
-			clickMenuRepArrayList.add(clickMenuRep);
-			return null;
-		}).collect(Collectors.toList());
-		System.out.println(clickMenuRepArrayList);
-		return representation(Message.MENU_GROUP_LIST_SUCCESS,clickMenuRepArrayList);
+		List<ClickMenuDto> menuGroupDtoList =menuGroupService.getClickMenuList(getWechatId(), menuGroupModel, false);
+		return representation(Message.MENU_GROUP_LIST_SUCCESS,menuGroupDtoList);
 
 	}
 
 
 
-	 @Data
-	 public class  clickMenuRep{
-		 @JsonProperty("key")
+	/* private static class  ClickMenuResp{
+
+
 		 private Integer id;
-		 @JsonProperty("title")
+		 @JsonProperty(value = "title")
 		 private String name;
-		 @JsonProperty("children")
+		 @JsonProperty(value = "children")
 		 private List<Menus> menus;
 	 }
 
 	@Data
-	public class  Menus{
-		@JsonProperty("key")
+	private static class  Menus{
+		@JsonProperty(value = "key")
 		private Integer id;
-		@JsonProperty("title")
+		@JsonProperty(value = "title")
 		private String name;
-		@JsonProperty("children")
+		@JsonProperty(value = "children")
 		private List<Menus> children;
 	}
-
+*/
 
 
 }
