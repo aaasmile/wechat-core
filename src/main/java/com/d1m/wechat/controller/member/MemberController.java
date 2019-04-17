@@ -7,18 +7,16 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.d1m.wechat.controller.BaseController;
 import com.d1m.wechat.controller.report.ReportXlsxStreamView;
+import com.d1m.wechat.domain.web.BaseResponse;
 import com.d1m.wechat.dto.MemberDto;
 import com.d1m.wechat.dto.MemberLevelDto;
 import com.d1m.wechat.dto.MemberTagDto;
-import com.d1m.wechat.model.Member;
-import com.d1m.wechat.model.MemberExcel;
-import com.d1m.wechat.model.MemberProfile;
+import com.d1m.wechat.model.*;
+import com.d1m.wechat.model.enums.Category;
+import com.d1m.wechat.model.enums.State;
 import com.d1m.wechat.pamametermodel.AddMemberTagModel;
 import com.d1m.wechat.pamametermodel.ExcelMember;
-import com.d1m.wechat.service.AreaInfoService;
-import com.d1m.wechat.service.MemberProfileService;
-import com.d1m.wechat.service.MemberService;
-import com.d1m.wechat.service.QrcodeService;
+import com.d1m.wechat.service.*;
 import com.d1m.wechat.service.impl.MemberServiceImpl;
 import com.d1m.wechat.util.*;
 import com.d1m.wechat.wechatclient.WechatClientDelegate;
@@ -82,6 +80,12 @@ public class MemberController extends BaseController {
 
     @Autowired
     private QrcodeService qrcodeService;
+
+    @Autowired
+    private SchedulerService schedulerService;
+
+    @Autowired
+    private ExceptionsService exceptionsService;
 
 
     @ApiOperation(value = "拉取微信会员信息", tags = "会员接口")
@@ -502,6 +506,49 @@ public class MemberController extends BaseController {
             log.error(e.getMessage());
             return wrapException(e);
         }
+    }
+
+    @ApiOperation( value = "使用任务中心导出会员信息", tags = "会员接口")
+    @ApiResponse(code = 200, message = "创建任务完成")
+    @RequestMapping(value = "memberExportByScheduler", method = RequestMethod.POST)
+    public BaseResponse memberExportByScheduler(HttpServletRequest request) throws Exception {
+
+        String id = UUID.randomUUID().toString().replaceAll("-","");
+        try {
+            String condition = request.getParameter("data");
+            Scheduler schedulerC = new Scheduler();
+            schedulerC.setId(id);
+            schedulerC.setCategory(Category.MEMBER_EXPORT.getValue());
+            schedulerC.setState(State.STEP0.getValue());
+            schedulerC.setWechatCode(String.valueOf(this.getWechatId()));
+            schedulerC.setSchedulerCondition(condition);
+            schedulerService.create(schedulerC);
+
+            state(id, State.STEP2.getValue());
+            return new BaseResponse.Builder().resultCode(Message.SCHEDULER_SUCCESS.getCode())
+                    .msg(Message.SCHEDULER_SUCCESS.getName()).build();
+        } catch (Exception e) {
+            state(id,State.STEP_1.getValue() );
+            log.error(e.getMessage(), e);
+            log(id, e.getMessage());
+            return new BaseResponse.Builder().resultCode(Message.SCHEDULER_FAIL.getCode())
+                    .msg(Message.SCHEDULER_FAIL.getName()).build();
+        }
+    }
+
+    private void state(String id, Integer state) {
+        Scheduler scheduler = new Scheduler();
+        scheduler.setId(id);
+        scheduler.setState(state);
+        schedulerService.updateState(scheduler);
+    }
+
+    private void log(String schedulerId, String exception) {
+        Exceptions exceptions = new Exceptions();
+        exceptions.setException(exception);
+        exceptions.setSchedulerId(schedulerId);
+        exceptions.setId(UUID.randomUUID().toString().replaceAll("-",""));
+        exceptionsService.create(exceptions);
     }
 
 }
