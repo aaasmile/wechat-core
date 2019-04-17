@@ -6,10 +6,7 @@ import cn.d1m.wechat.client.model.WxMenuGroup;
 import cn.d1m.wechat.client.model.WxMenuMatchrule;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.d1m.wechat.dto.MaterialDto;
-import com.d1m.wechat.dto.MenuDto;
-import com.d1m.wechat.dto.MenuGroupDto;
-import com.d1m.wechat.dto.ReportMenuGroupDto;
+import com.d1m.wechat.dto.*;
 import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.mapper.*;
 import com.d1m.wechat.model.*;
@@ -846,7 +843,7 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 
 	//人群分组查询菜单列表
 	@Override
-	public List<MenuGroupDto> getClickMenuList(Integer wechatId, MenuGroupModel menuGroupModel, boolean queryCount) {
+	public List<ClickMenuDto> getClickMenuList(Integer wechatId, MenuGroupModel menuGroupModel, boolean queryCount) {
 		if (menuGroupModel == null) {
 			menuGroupModel = new MenuGroupModel();
 		}

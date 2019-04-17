@@ -2,6 +2,7 @@ package com.d1m.wechat.mapper;
 
 import java.util.List;
 
+import com.d1m.wechat.dto.ClickMenuDto;
 import org.apache.ibatis.annotations.Param;
 
 import com.d1m.wechat.dto.MenuDto;
@@ -30,6 +31,6 @@ public interface MenuGroupMapper extends MyMapper<MenuGroup> {
 	List<ReportMenuGroupDto> reportMenuGroupList(@Param("wechatId") Integer wechatId)
 			throws WechatException;
 
-	List<MenuGroupDto> getClickSearch(@Param("wechatId") Integer wechatId,
+	List<ClickMenuDto> getClickSearch(@Param("wechatId") Integer wechatId,
 									  @Param("status") byte status);
 }
