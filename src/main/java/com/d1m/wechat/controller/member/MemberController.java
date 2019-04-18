@@ -52,6 +52,7 @@ import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Controller
 @RequestMapping("/member")
@@ -522,9 +523,9 @@ public class MemberController extends BaseController {
             schedulerC.setState(State.STEP0.getValue());
             schedulerC.setWechatCode(String.valueOf(this.getWechatId()));
             schedulerC.setSchedulerCondition(condition);
+            schedulerC.setName(Category.MEMBER_EXPORT.getName());
             schedulerService.create(schedulerC);
-
-            state(id, State.STEP2.getValue());
+            state(id, State.STEP1.getValue());
             return new BaseResponse.Builder().resultCode(Message.SCHEDULER_SUCCESS.getCode())
                     .msg(Message.SCHEDULER_SUCCESS.getName()).build();
         } catch (Exception e) {
@@ -549,6 +550,22 @@ public class MemberController extends BaseController {
         exceptions.setSchedulerId(schedulerId);
         exceptions.setId(UUID.randomUUID().toString().replaceAll("-",""));
         exceptionsService.create(exceptions);
+    }
+
+    public static void main(String[] args) {
+//        String id = UUID.randomUUID().toString().replaceAll("-","");
+//        Scheduler schedulerC = new Scheduler();
+//        schedulerC.setId(id);
+//        schedulerC.setCategory(Category.MEMBER_EXPORT.getValue());
+//        schedulerC.setState(State.STEP0.getValue());
+//        schedulerC.setWechatCode(11+"");
+//        schedulerC.setSchedulerCondition("{}");
+//        System.out.println(JSONObject.toJSON(schedulerC));
+
+        String[] titleStrs = {"序号","昵称","性别","手机号","省份","城市","关注状态","绑定状态","关注时间","群发消息数","标签","Open Id","绑定时间","取消关注时间","unionid"};
+        IntStream.range(0,titleStrs.length).forEach(i ->{
+            System.out.println(titleStrs[i]);
+        });
     }
 
 }
