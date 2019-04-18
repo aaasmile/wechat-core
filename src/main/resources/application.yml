@@ -54,6 +54,7 @@ spring:
     - member-token
   jackson:
     date-format: 'yyyy-MM-dd HH:mm:ss'
+    time-zone: GMT+8
     serialization:
       indent_output: true                 #格式化打印json字符串
       fail_on_empty_beans: false          #循环依赖自动拆开

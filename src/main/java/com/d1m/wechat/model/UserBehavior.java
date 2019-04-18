@@ -1,10 +1,15 @@
 package com.d1m.wechat.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.util.Date;
+
 public class UserBehavior {
 	
 	private String eventName;
 	private String title;
-	private String createdAt;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	private Date createdAt;
 	
 	public String getEventName() {
 		return eventName;
@@ -18,16 +23,16 @@ public class UserBehavior {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public String getCreatedAt() {
+	public Date getCreatedAt() {
 		return createdAt;
 	}
-	public void setCreatedAt(String createdAt) {
+	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
 	}
 	public UserBehavior() {
 		super();
 	}
-	public UserBehavior(String eventName, String title, String createdAt) {
+	public UserBehavior(String eventName, String title, Date createdAt) {
 		super();
 		this.eventName = eventName;
 		this.title = title;

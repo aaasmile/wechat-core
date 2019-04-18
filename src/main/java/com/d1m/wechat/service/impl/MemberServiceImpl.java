@@ -8,6 +8,7 @@ import com.d1m.wechat.exception.WechatException;
 import com.d1m.wechat.lock.RedisLock;
 import com.d1m.wechat.mapper.*;
 import com.d1m.wechat.model.*;
+import com.d1m.wechat.model.enums.ElasticsearchConsumer;
 import com.d1m.wechat.model.enums.Language;
 import com.d1m.wechat.model.enums.MemberSource;
 import com.d1m.wechat.model.enums.MemberTagStatus;
@@ -83,6 +84,9 @@ public class MemberServiceImpl extends BaseService<Member> implements
 
     @Autowired
     private ConversationMapper conversationMapper;
+    @Autowired
+    public RabbitTemplate rabbitTemplate;
+    private ObjectMapper objectMapper = new ObjectMapper();
 
 
     @Resource
@@ -390,7 +394,20 @@ public class MemberServiceImpl extends BaseService<Member> implements
             });
             if(memberMemberTags.size() > 0){
                 memberMemberTagMapper.insertList(memberMemberTags);
+                //V4.6.1 定时更新用户信息
+                pushEs(memberMemberTags);
             }
+        }
+    }
+
+    private void pushEs(List<MemberMemberTag> memberMemberTags) {
+        try {
+            String memberStr = objectMapper.writeValueAsString(memberMemberTags);
+            JsonParser jsonParser = new JsonParser();
+            JsonArray array = jsonParser.parse(memberStr).getAsJsonArray();
+            rabbitTemplate.convertAndSend(ElasticsearchConsumer.ELAS_EXCHANGE, ElasticsearchConsumer.ELAS_QUEUE_MEMBERMEMBERTAGUPDATE,array.toString());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -1472,48 +1489,4 @@ public class MemberServiceImpl extends BaseService<Member> implements
                 addMemberTagModel.getSortDir(), addMemberTagModel
                         .getBindStatus(), DateUtil.getDate(-2));
     }
-
-    @Autowired
-    public RabbitTemplate rabbitTemplate;
-    @Override
-    public int loadMember(Integer wechatId) {
-        int pageNum = 1;
-        int pageSize = 1000;
-        int current = pageSize * pageNum;
-        int totalCount = memberMapper.selectCount(null);
-//        while (current < totalCount) {
-//            pageNum = pageNum ++;
-//            current = pageSize * pageNum;
-        fetchMember(wechatId, pageNum, pageSize, current);
-//        }
-//        if(current != totalCount) {
-//            pageNum ++;
-//            fetchMember(wechatId, pageNum, pageSize, current);
-//        }
-        return totalCount;
-    }
-
-    private void fetchMember(Integer wechatId, int pageNum, int pageSize, int current) {
-        log.info("current...", current);
-        PageHelper.startPage(pageNum, pageSize, true);
-        List<MemberDto> memberDtos = memberMapper.selectByWechat(wechatId);
-        JsonArray jsonArray = new JsonArray();
-        JsonParser jsonParser = new JsonParser();
-        ObjectMapper objectMapper = new ObjectMapper();
-        memberDtos.forEach(member -> {
-            try {
-                member.setMemberTags(null);
-                String memberStr = objectMapper.writeValueAsString(member);
-                JsonObject jsonObject = jsonParser.parse(memberStr).getAsJsonObject();
-                jsonArray.add(jsonObject);
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-            }
-        });
-        log.info("jsonArray..send..." + jsonArray.size());
-        rabbitTemplate.convertAndSend("elas.exchange", "elas.queue", jsonArray.toString());
-        log.info("jsonArray..end send..." + jsonArray.size());
-    }
-
-
 }

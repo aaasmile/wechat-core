@@ -48,6 +48,7 @@
         <result column="kf_photo" jdbcType="VARCHAR" property="kfPhoto"/>
         <result column="is_mass" jdbcType="BIT" property="isMass"/>
         <result column="content" jdbcType="LONGVARCHAR" property="content"/>
+        <result column="event_name" jdbcType="VARCHAR" property="eventName"/>
     </resultMap>
 
     <resultMap type="com.d1m.wechat.model.UserBehavior" id="userBehaviorResultMap">
@@ -63,10 +64,11 @@
     </resultMap>
 
     <select id="selectUserBehavior" parameterType="HashMap" resultMap="userBehaviorResultMap">
-        select ifnull(title, '') as title, ifnull(LOWER(event_name), '') AS event_name, created_at
-        from conversation
+        select ifnull(title, '') as title, ifnull(LOWER(event_name), '') AS event_name, con.created_at,m.type
+        from conversation con LEFT JOIN menu m on con.event_key=m.id
         where member_id = #{memberId}
-          and cast(event as char) in (1, 2, 3, 5, 6, 9, 10, 22, 30, 31, 33, 35, 36, 37, 39, 40, 41, 47)
+          and (cast(event as char) in (1, 2, 3, 5, 6, 10, 30, 31, 35, 36, 37, 39, 40, 41, 47, 48, 49, 50, 51)
+          and m.type is null or m.type not in(1,2))
         order by created_at desc
     </select>
     <select id="selectUserLocation" parameterType="HashMap" resultMap="userLocationResultMap">
@@ -76,7 +78,7 @@
                created_at
         from conversation
         where member_id = #{memberId}
-          and cast(event as char) in (4, 34)
+        and cast(event as char) in (4, 34)
         order by created_at desc
     </select>
     <select id="search" parameterType="HashMap" resultMap="ConversationDtoResultMap">
@@ -117,6 +119,10 @@
 
             <if test="msgType != null">
                 and c.msg_type = #{msgType}
+            </if>
+
+            <if test="msgType == null">
+                and c.msg_type != 10
             </if>
 
             <if test="keyWords != null">
@@ -345,6 +351,16 @@
                 and mass.status = #{status}
             </if>
         </where>
+    </select>
+
+    <select id="searchComment" parameterType="HashMap" resultMap="ConversationDtoResultMap">
+        select id from conversation
+        where
+            wechat_id=#{wechatId}
+            and member_id=#{memberId}
+            and event=#{event}
+            and description=#{description}
+            and msg_id=#{msgId}
     </select>
 
     <resultMap id="MessageBaseResultMap" type="com.d1m.wechat.dto.ReportMessageItemDto">
