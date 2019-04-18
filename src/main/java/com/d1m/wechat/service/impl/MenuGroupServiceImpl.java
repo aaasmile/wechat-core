@@ -22,12 +22,14 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.gson.Gson;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.common.Mapper;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -780,57 +782,68 @@ public class MenuGroupServiceImpl extends BaseService<MenuGroup> implements Menu
 		WxMenu weixinButton = null;
 		WxMenu subWxMenu = null;
 		for (MenuDto menuDto : menus) {
-			weixinButton = new WxMenu();
-			MenuType menuType = MenuType.getByValue(menuDto.getType());
-			weixinButton.setType(menuType != null ? menuType.name().toLowerCase() : null);
-			if (menuType == MenuType.CLICK) {
-				weixinButton.setKey(menuDto.getId().toString());
-			} else if (menuType == MenuType.VIEW) {
-				weixinButton.setUrl(menuDto.getUrl());
-			} else if (menuType == MenuType.MINIPROGRAM) {
-				weixinButton.setAppid(menuDto.getAppId());
-				weixinButton.setPagepath(menuDto.getPagePath());
-				weixinButton.setUrl(menuDto.getAppUrl());
-			} else if (menuType == MenuType.LOCATION_SELECT) {
-				weixinButton.setKey(menuDto.getId() + "_SEND_LOCATION");
-			}
-			//新增第三方接口，事件类型为CLICK
-			else if (menuType == MenuType.INTERFACE) {
-				weixinButton.setKey(menuDto.getId().toString());
-                weixinButton.setType(MenuType.CLICK.name().toLowerCase());
-			}
-			weixinButton.setName(menuDto.getName());
-			menuDtos = menuDto.getChildren();
-			if (menuDtos != null && !menuDtos.isEmpty()) {
-				subWxMenus = new ArrayList<WxMenu>();
-				for (MenuDto child : menuDtos) {
-					subWxMenu = new WxMenu();
-					menuType = MenuType.getByValue(child.getType());
-					subWxMenu.setType(menuType != null ? menuType.name().toLowerCase() : null);
-					if (menuType == MenuType.CLICK) {
-						subWxMenu.setKey(child.getId().toString());
-					} else if (menuType == MenuType.VIEW) {
-						subWxMenu.setUrl(child.getUrl());
-					} else if (menuType == MenuType.MINIPROGRAM) {
-						subWxMenu.setAppid(child.getAppId());
-						subWxMenu.setPagepath(child.getPagePath() + "?menuid=" + child.getId());
-						subWxMenu.setUrl(child.getAppUrl());
-					} else if (menuType == MenuType.LOCATION_SELECT) {
-						subWxMenu.setKey(child.getId() + "_SEND_LOCATION");
-					}
-					//新增第三方接口，事件类型为CLICK
-					else if (menuType == MenuType.INTERFACE) {
-						subWxMenu.setKey(child.getId().toString());
-						subWxMenu.setType(MenuType.CLICK.name().toLowerCase());
-					}
-					subWxMenu.setName(child.getName());
-					subWxMenus.add(subWxMenu);
+			try {
+				weixinButton = new WxMenu();
+				MenuType menuType = MenuType.getByValue(menuDto.getType());
+				weixinButton.setType(menuType != null ? menuType.name().toLowerCase() : null);
+				if (menuType == MenuType.CLICK) {
+					weixinButton.setKey(menuDto.getId().toString());
+				} else if (menuType == MenuType.VIEW) {
+					weixinButton.setUrl(menuDto.getUrl());
+				} else if (menuType == MenuType.MINIPROGRAM) {
+					weixinButton.setAppid(menuDto.getAppId());
+					log.info("主菜单pagePath" + menuDto.getPagePath());
+					URIBuilder buttonBuilder = new URIBuilder(menuDto.getPagePath());
+					buttonBuilder.addParameter("menuid", String.valueOf(menuDto.getId()));
+					weixinButton.setPagepath(String.valueOf(buttonBuilder));
+					weixinButton.setUrl(menuDto.getAppUrl());
+				} else if (menuType == MenuType.LOCATION_SELECT) {
+					weixinButton.setKey(menuDto.getId() + "_SEND_LOCATION");
 				}
-				if (!subWxMenus.isEmpty()) {
-					weixinButton.setSubButton(subWxMenus);
+				//新增第三方接口，事件类型为CLICK
+				else if (menuType == MenuType.INTERFACE) {
+					weixinButton.setKey(menuDto.getId().toString());
+					weixinButton.setType(MenuType.CLICK.name().toLowerCase());
 				}
+				weixinButton.setName(menuDto.getName());
+				menuDtos = menuDto.getChildren();
+				if (menuDtos != null && !menuDtos.isEmpty()) {
+					subWxMenus = new ArrayList<WxMenu>();
+					for (MenuDto child : menuDtos) {
+						subWxMenu = new WxMenu();
+						menuType = MenuType.getByValue(child.getType());
+						subWxMenu.setType(menuType != null ? menuType.name().toLowerCase() : null);
+						if (menuType == MenuType.CLICK) {
+							subWxMenu.setKey(child.getId().toString());
+						} else if (menuType == MenuType.VIEW) {
+							subWxMenu.setUrl(child.getUrl());
+						} else if (menuType == MenuType.MINIPROGRAM) {
+							subWxMenu.setAppid(child.getAppId());
+							log.info("子菜单pagePath" + child.getPagePath());
+							URIBuilder subBuilder = new URIBuilder(child.getPagePath());
+							subBuilder.addParameter("menuid", String.valueOf(child.getId()));
+							subWxMenu.setPagepath(String.valueOf(subBuilder));
+							subWxMenu.setUrl(child.getAppUrl());
+						} else if (menuType == MenuType.LOCATION_SELECT) {
+							subWxMenu.setKey(child.getId() + "_SEND_LOCATION");
+						}
+						//新增第三方接口，事件类型为CLICK
+						else if (menuType == MenuType.INTERFACE) {
+							subWxMenu.setKey(child.getId().toString());
+							subWxMenu.setType(MenuType.CLICK.name().toLowerCase());
+						}
+						subWxMenu.setName(child.getName());
+						subWxMenus.add(subWxMenu);
+					}
+					if (!subWxMenus.isEmpty()) {
+						weixinButton.setSubButton(subWxMenus);
+					}
+				}
+				weixinButtons.add(weixinButton);
+			}catch (URISyntaxException e) {
+				e.printStackTrace();
 			}
-			weixinButtons.add(weixinButton);
+
 		}
 		log.info("weixinButtons : " + JSONObject.toJSONString(weixinButtons));
 		return weixinButtons;
