@@ -2,7 +2,7 @@ tokens.url: http://dev.wechat.d1m.cn/tokens
 access-trace-oauth-url: http://dev.wechat.d1m.cn/api/v2/oauth/article?state=%d&redirect_uri=%s&dcrm_image_text_detail_id=%d&source=%s
 logging:
   config: classpath:log4j2.xml
-logging.level.: DEBUG
+logging.level.com.d1m.wechat: INFO
 wechat-crm:
   url: http://wechat-crm/
 spring:
