@@ -351,6 +351,15 @@ public class UserServiceImpl extends BaseService<User> implements UserService {
 		initDataService.initSubscribeAutoReply();
 	}
 
+	@Override
+	public Integer updateGuide(Integer id) {
+		User user =new User();
+		user.setId(id);
+		user.setNoviceGuide((byte)1);
+		Integer result =userMapper.updateByPrimaryKeySelective(user);
+		return  result;
+	}
+
 	private void createInitWechat(Wechat wechat, Integer userId) {
 		wechat.setPriority(1);
 		wechat.setCreatedAt(new Date());

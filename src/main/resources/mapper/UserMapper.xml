@@ -25,6 +25,7 @@
     <result column="role_id" jdbcType="INTEGER" property="roleId" />
     <result column="company_id" jdbcType="INTEGER" property="companyId" />
     <result column="counter" jdbcType="INTEGER" property="counter" />
+    <result column="novice_guide" jdbcType="TINYINT" property="noviceGuide" />
   </resultMap>
   
   <select id="login" parameterType="HashMap" resultMap="BaseResultMap">
@@ -128,6 +129,7 @@
     <result column="last_login_at" jdbcType="VARCHAR" property="lastLoginAt" />
     <result column="role_id" jdbcType="INTEGER" property="roleId" />
     <result column="company_id" jdbcType="INTEGER" property="companyId" />
+    <result column="novice_guide" jdbcType="TINYINT" property="noviceGuide" />
     <collection column="{userId=id, companyId=company_id}" ofType="com.d1m.wechat.dto.RoleDto" property="role" select="listVisibleRole" />
     <collection column="{userId=id, companyId=company_id}" javaType="ArrayList" ofType="com.d1m.wechat.dto.WechatDto" property="wechats" select="listVisibleWechat" />
   </resultMap>

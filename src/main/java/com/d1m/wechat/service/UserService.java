@@ -36,4 +36,7 @@ public interface UserService extends IService<User> {
 	List<WechatDto> listAvailableWechat(User user);
 
 	void init(String companyName, String wechatName);
+
+	Integer updateGuide(Integer id);
+
 }
