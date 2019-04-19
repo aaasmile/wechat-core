@@ -7,7 +7,7 @@ stages:
 build-dev:
   stage: build
   only:
-  - V4.5.1
+  - dev
   tags:
   - shell-build-dev
   script:
@@ -16,7 +16,7 @@ build-dev:
 push-dev:
   stage: push
   only:
-  - V4.5.1
+  - dev
   tags:
   - shell-build-dev
   script:
@@ -25,7 +25,7 @@ push-dev:
 deploy-dev:
   stage: deploy
   only:
-  - V4.5.1
+  - dev
   tags:
   - shell-deploy-dev
   script:
