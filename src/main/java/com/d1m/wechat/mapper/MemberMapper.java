@@ -64,7 +64,7 @@ public interface MemberMapper extends MyMapper<Member> {
                                       @Param("memberTags") Integer[] memberTags,
                                       @Param("encludeMemberTags") Integer[] encludeMemberTags,
                                       @Param("sortName") String sortName, @Param("sortDir") String sortDir,
-                                      @Param("bindStatus") Integer bindStatus);
+                                      @Param("bindStatus") Integer bindStatus, @Param("fuzzyRemarks") String fuzzyRemarks);
 
     Long count(@Param("wechatId") Integer wechatId,
                @Param("openId") String openId, @Param("nickname") String nickname,
