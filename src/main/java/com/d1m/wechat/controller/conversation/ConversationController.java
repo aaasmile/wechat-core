@@ -62,9 +62,6 @@ public class ConversationController extends BaseController {
     @Autowired
     private MaterialService materialService;
 
-    @Autowired
-    private MassConversationResultMapper massConversationResultMapper;
-
     @Resource
     TenantHelper tenantHelper;
     @Autowired
@@ -105,11 +102,6 @@ public class ConversationController extends BaseController {
     public JSONObject sendMass(@ApiParam(name = "MassConversationModel", required = false) @RequestBody(required = false) MassConversationModel massConversationModel, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
         try {
             massConversationModel.setStatus(MassConversationResultStatus.AUDIT_PASS.name());
-            MassConversationResult massConversationResult = new MassConversationResult();
-            massConversationResult.setWechatId(getWechatId());
-            massConversationResult.setId(massConversationModel.getId());
-            massConversationResult.setStatus(MassConversationResultStatus.GROUPING.getValue());
-            massConversationResultMapper.updateByPrimaryKeySelective(massConversationResult);
             conversationService.sendMassConversation(getWechatId(), getUser(), massConversationModel);
             return representation(Message.CONVERSATION_MASS_SEND_SUCCESS);
         } catch (Exception e) {
