@@ -66,6 +66,12 @@ public class Conversation {
     private Integer wechatId;
 
     /**
+     * 事件名称
+     */
+    @Column(name = "event_name")
+    private String eventName;
+
+    /**
      * 状态(0:未回复,1:已回复)
      */
     private Byte status;
@@ -1023,5 +1029,12 @@ public class Conversation {
     public void setContent(String content) {
         this.content = content == null ? null : content.trim();
     }
-    
+
+    public String getEventName() {
+        return eventName;
+    }
+
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
+    }
 }

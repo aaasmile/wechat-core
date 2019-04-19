@@ -127,4 +127,6 @@ public interface MaterialService extends IService<Material> {
      * @return
      */
     Material checkMaterialExist(Integer id);
+
+    Page<MaterialDto> getImageTextGroupList(Integer wechatId);
 }

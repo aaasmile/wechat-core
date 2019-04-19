@@ -4,9 +4,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.d1m.wechat.dto.ClickMenuDto;
+import com.d1m.wechat.dto.MenuDto;
+import com.d1m.wechat.mapper.MenuGroupMapper;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,6 +39,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/menugroup")
@@ -160,4 +170,46 @@ public class MenuGroupController extends BaseController {
 		WxList<WxTag> wxTagList = WechatClientDelegate.getTags(wechatId);
 		return representation(Message.SUCCESS, wxTagList.get());
 	}
+
+
+	@Autowired
+	private MenuGroupMapper menuGroupMapper;
+
+	@ApiOperation(value = "人群分组拉取菜单", tags = "菜单组别接口")
+	@ApiResponse(code = 200, message = "1-获取菜单组列表成功")
+	@RequestMapping(value = "/clickmenu/list.json", method = RequestMethod.GET)
+	@ResponseBody
+		public JSONObject getClickList(@ApiParam(name = "MenuGroupModel", required = false) @RequestBody(required = false) MenuGroupModel menuGroupModel, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
+			if (menuGroupModel == null) {
+			menuGroupModel = new MenuGroupModel();
+		}
+		List<ClickMenuDto> menuGroupDtoList =menuGroupService.getClickMenuList(getWechatId(), menuGroupModel, false);
+		return representation(Message.MENU_GROUP_LIST_SUCCESS,menuGroupDtoList);
+
+	}
+
+
+
+	/* private static class  ClickMenuResp{
+
+
+		 private Integer id;
+		 @JsonProperty(value = "title")
+		 private String name;
+		 @JsonProperty(value = "children")
+		 private List<Menus> menus;
+	 }
+
+	@Data
+	private static class  Menus{
+		@JsonProperty(value = "key")
+		private Integer id;
+		@JsonProperty(value = "title")
+		private String name;
+		@JsonProperty(value = "children")
+		private List<Menus> children;
+	}
+*/
+
+
 }

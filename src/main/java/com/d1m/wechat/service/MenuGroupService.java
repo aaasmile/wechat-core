@@ -2,6 +2,7 @@ package com.d1m.wechat.service;
 
 import java.util.List;
 
+import com.d1m.wechat.dto.ClickMenuDto;
 import com.d1m.wechat.dto.MenuGroupDto;
 import com.d1m.wechat.dto.ReportMenuGroupDto;
 import com.d1m.wechat.exception.WechatException;
@@ -33,4 +34,8 @@ public interface MenuGroupService extends IService<MenuGroup> {
 
 	List<ReportMenuGroupDto> menuGroupList(Integer wechatId)
 			throws WechatException;
+
+	List<ClickMenuDto> getClickMenuList(Integer wechatId, MenuGroupModel menuGroupModel,
+										boolean queryCount);
+
 }

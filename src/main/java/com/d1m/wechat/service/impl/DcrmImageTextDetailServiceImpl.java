@@ -502,4 +502,18 @@ public class DcrmImageTextDetailServiceImpl implements DcrmImageTextDetailServic
 
         return 0;
     }
+
+    @Override
+    public List<DcrmImageTextDetailDto> getMassList(QueryDto dto) {
+        final HashMap<String, Object> query =new HashMap<>();
+        List<DcrmImageTextDetailDto> list = dcrmImageTextDetailMapper.queryList(query);
+        //检验是否不完整非群发单图文
+        checkIsNotComplete(list);
+        //检查微信图文是否存在
+        checkIsWxImageTextExist(list);
+        //检查关联微信图文是否已更新
+        checkIsWx(list);
+
+        return list;
+    }
 }

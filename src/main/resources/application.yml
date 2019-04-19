@@ -54,6 +54,7 @@ spring:
     - member-token
   jackson:
     date-format: 'yyyy-MM-dd HH:mm:ss'
+    time-zone: GMT+8
     serialization:
       indent_output: true                 #格式化打印json字符串
       fail_on_empty_beans: false          #循环依赖自动拆开
@@ -74,11 +75,11 @@ server:
     uri-encoding: UTF-8
 
 jdbc.driverClass: com.mysql.jdbc.Driver
-jdbc.url: jdbc:mysql://${MYSQL_HOST:${ENV_HOST}}:${MYSQL_PORT:3306}/${MYSQL_DB:tenancydb}?autoReconnect=true
+jdbc.url: jdbc:mysql://${MYSQL_HOST:${ENV_HOST}}:${MYSQL_PORT:3306}/d1m_wechat?autoReconnect=true
 jdbc.user: ${MYSQL_USER:root}
 jdbc.password: ${MYSQL_PASSWORD:root}
 jdbc.enableDynamic: ${ENABLE_DYNAMIC:false}
-
+crm.service.url: http://10.60.1.22:10312
 
 ---
 #云环境配置

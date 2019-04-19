@@ -68,11 +68,11 @@ public class WechatServiceImpl extends BaseService<Wechat> implements
 		if (StringUtils.isBlank(openId)) {
 			return null;
 		}
-		
 		Wechat record = new Wechat();
 		record.setOpenId(openId);
 		return wechatMapper.selectOne(record);
 	}
+
 
 	@Override
 	public Page<Wechat> search(WechatModel wechatModel, boolean queryCount) {

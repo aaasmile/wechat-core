@@ -31,7 +31,17 @@ public class UserDto {
 	private List<String> functionCodes;
 	
 	private Integer companyId;
-	
+
+	private Byte noviceGuide;
+
+	public Byte getNoviceGuide() {
+		return noviceGuide;
+	}
+
+	public void setNoviceGuide(Byte noviceGuide) {
+		this.noviceGuide = noviceGuide;
+	}
+
 	public String getAvatar() {
 		return avatar;
 	}

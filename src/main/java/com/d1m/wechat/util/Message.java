@@ -1026,6 +1026,8 @@ public enum Message {
 
     INTERFACECONFIG_BRAND_IN_USED(42082, "第三方名称在使用中"),
 
+    INTERFACECONFIG_BRAND_NOT_EXIST(42083, "第三方名称不存在"),
+
     INTERFACECONFIG_SECRET_GET_FAIL(42091, "获取秘钥失败"),
 
     INTERFACECONFIG_SECRET_EXIST(42092, "秘钥已经存在"),
@@ -1041,6 +1043,11 @@ public enum Message {
 
     EVENT_FORWARD_ADD_FAIL(50000, "添加事件转发失败"),
     EVENT_FORWARD_EXIST(50001, "事件转发已存在"),
+
+
+    SCHEDULER_SUCCESS(70001, "执行成功"),
+    SCHEDULER_FAIL(70001, "执行失败"),
+
 
     /**
      * 测试接口

@@ -1,6 +1,8 @@
 package com.d1m.wechat.dto;
 
 
+import lombok.Data;
+
 import java.io.Serializable;
 
 /**
@@ -9,6 +11,7 @@ import java.io.Serializable;
  * @Author: Liu weilin
  * @Description:
  */
+@Data
 public class QueryDto implements Serializable {
     private static final long serialVersionUID = 1L;
     //搜索关键词
@@ -17,6 +20,9 @@ public class QueryDto implements Serializable {
     private String name;
 
     private String materialCategoryId;
+
+    //微信图文Id
+    private String wxImageTextId;
 
     //每页记录数
     private int pageSize = 10;

@@ -1,0 +1,1 @@
+alter table user add column `novice_guide` tinyint(2) NOT NULL DEFAULT '0' COMMENT '未完成新手引导-0，完成-1';
