@@ -20,7 +20,7 @@ public class User implements Serializable {
 				+ localHeadImgUrl + ", createdAt=" + createdAt + ", creatorId=" + creatorId + ", modifyAt=" + modifyAt
 				+ ", pushAt=" + pushAt + ", wechatId=" + wechatId + ", position=" + position + ", mobile=" + mobile
 				+ ", lastLoginAt=" + lastLoginAt + ", status=" + status + ", roleId=" + roleId + ", companyId="
-				+ companyId + ", counter=" + counter + "]";
+				+ companyId + ", counter=" + counter + ", noviceGuide=" + noviceGuide + "]";
 	}
 
 	/**
@@ -155,6 +155,22 @@ public class User implements Serializable {
      */
     @ApiModelProperty("登录失败计数器")
     private Integer counter;
+
+
+    /**
+     * 新手引导
+     */
+    @ApiModelProperty("新手引导")
+    @Column(name = "novice_guide")
+    private Byte noviceGuide;
+
+    public Byte getNoviceGuide() {
+        return noviceGuide;
+    }
+
+    public void setNoviceGuide(Byte noviceGuide) {
+        this.noviceGuide = noviceGuide;
+    }
 
     /**
      * 获取主键ID
