@@ -92,6 +92,13 @@ public class SchedulerController extends BaseController {
       schedulerVO.setWechatCode(String.valueOf(getWechatId()));
       List<Scheduler> list = schedulerService.list(schedulerVO);
       Integer count = schedulerService.count(schedulerVO);
+      FileUploadConfigUtil instance = FileUploadConfigUtil.getInstance();
+      final String downLoadExcelPath = instance.getValue(getWechatId(), "upload_url_base") + "/excel/";
+
+      list.stream().forEach(scheduler ->{
+        scheduler.setRightFile(downLoadExcelPath + scheduler.getRightFile());
+        scheduler.setWrongFile(downLoadExcelPath + scheduler.getWrongFile());
+      });
       return representation(Message.SCHEDULER_SUCCESS, list, schedulerVO.getPageSize(), schedulerVO.getPageNum(), count);
     } catch (Exception e) {
       log.error(e.getMessage(), e);
