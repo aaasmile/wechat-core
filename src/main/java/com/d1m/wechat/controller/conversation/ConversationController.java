@@ -109,7 +109,7 @@ public class ConversationController extends BaseController {
             massConversationResult.setWechatId(getWechatId());
             massConversationResult.setId(massConversationModel.getId());
             massConversationResult.setStatus(MassConversationResultStatus.GROUPING.getValue());
-            massConversationResultMapper.updateByPrimaryKey(massConversationResult);
+            massConversationResultMapper.updateByPrimaryKeySelective(massConversationResult);
             conversationService.sendMassConversation(getWechatId(), getUser(), massConversationModel);
             return representation(Message.CONVERSATION_MASS_SEND_SUCCESS);
         } catch (Exception e) {
