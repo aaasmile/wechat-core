@@ -2,13 +2,12 @@ stages:
 - build
 - push
 - deploy
-- release
 
 #开发环境打包发布
 build-dev:
   stage: build
   only:
-  - dev
+  - V4.5.1
   tags:
   - shell-build-dev
   script:
@@ -17,7 +16,7 @@ build-dev:
 push-dev:
   stage: push
   only:
-  - dev
+  - V4.5.1
   tags:
   - shell-build-dev
   script:
@@ -26,58 +25,9 @@ push-dev:
 deploy-dev:
   stage: deploy
   only:
-  - dev
+  - V4.5.1
   tags:
   - shell-deploy-dev
-  script:
-  - cd /root/docker-swarm/
-  - docker stack deploy -c wechat1.yml wechat1
-
-#部署UAT    
-deploy-uat:
-  stage: deploy
-  only:
-  - uat
-  tags:
-  - shell-deploy-qa
-  script:
-  - cd /root/docker-swarm/
-  - docker stack deploy -c wechat1.yml wechat1
-
-#打标签    
-release-job:
-  stage: release
-  script:
-  - docker tag docker.d1m.cn/wechat-core:latest docker.d1m.cn/wechat-core:$CI_COMMIT_TAG
-  - docker push docker.d1m.cn/wechat-core:$CI_COMMIT_TAG
-  only:
-  - tags
-
-#解决BUG
-issues-build:
-  stage: build
-  only:
-  - /^issue-.*$/
-  tags:
-  - issues-build-dev
-  script:
-  - mvn -Dmaven.test.skip=true clean package
-
-issues-push:
-  stage: push
-  only:
-  - /^issue-.*$/
-  tags:
-  - issues-build-dev
-  script:
-  - mvn docker:push
-
-issues-deploy:
-  stage: deploy
-  only:
-  - /^issue-.*$/
-  tags:
-  - issues-deploy-dev
   script:
   - cd /root/docker-swarm/
   - docker stack deploy -c wechat1.yml wechat1
