@@ -640,8 +640,6 @@ public class ConversationServiceImpl extends BaseService<Conversation> implement
             }
             log.info("start mass conversation with send by wx {}!", massConversationResult.getId());
 
-            massConversationResult.setStatus(MassConversationResultStatus.GROUPING.getValue());
-            massConversationResultMapper.updateByPrimaryKey(massConversationResult);
             asynSendMasMessage(wechatId, massConversationResult, msgType, message, current, condition, user);
 
         } else {
