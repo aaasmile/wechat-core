@@ -512,6 +512,7 @@ public class MemberController extends BaseController {
     @ApiOperation( value = "使用任务中心导出会员信息", tags = "会员接口")
     @ApiResponse(code = 200, message = "创建任务完成")
     @RequestMapping(value = "memberExportByScheduler", method = RequestMethod.POST)
+    @ResponseBody
     public BaseResponse memberExportByScheduler(HttpServletRequest request) throws Exception {
 
         String id = UUID.randomUUID().toString().replaceAll("-","");
