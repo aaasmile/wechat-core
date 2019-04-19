@@ -19,6 +19,7 @@ public class Scheduler {
   private String createdTime;
   private String createdBy;
   private String updatedTime;
+  private String schedulerCondition;
 
   public String getId() {
     return id;
@@ -156,6 +157,14 @@ public class Scheduler {
     this.updatedTime = updatedTime;
   }
 
+  public String getSchedulerCondition() {
+    return schedulerCondition;
+  }
+
+  public void setSchedulerCondition(String schedulerCondition) {
+    this.schedulerCondition = schedulerCondition;
+  }
+
   @Override
   public String toString() {
     return "Scheduler{" +
@@ -176,6 +185,7 @@ public class Scheduler {
         ", createdTime='" + createdTime + '\'' +
         ", createdBy='" + createdBy + '\'' +
         ", updatedTime='" + updatedTime + '\'' +
+            ", schedulerCondition='" + schedulerCondition + '\'' +
         '}';
   }
 }
