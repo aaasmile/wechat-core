@@ -527,13 +527,13 @@ public class MemberController extends BaseController {
             schedulerC.setName(Category.MEMBER_EXPORT.getName());
             schedulerService.create(schedulerC);
             state(id, State.STEP1.getValue());
-            return new BaseResponse.Builder().resultCode(Message.SCHEDULER_SUCCESS.getCode())
+            return new BaseResponse.Builder().resultCode(Message.SUCCESS.getCode())
                     .msg(Message.SCHEDULER_SUCCESS.getName()).build();
         } catch (Exception e) {
             state(id,State.STEP_1.getValue() );
             log.error(e.getMessage(), e);
             log(id, e.getMessage());
-            return new BaseResponse.Builder().resultCode(Message.SCHEDULER_FAIL.getCode())
+            return new BaseResponse.Builder().resultCode(Message.SYSTEM_ERROR.getCode())
                     .msg(Message.SCHEDULER_FAIL.getName()).build();
         }
     }
