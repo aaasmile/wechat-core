@@ -3,7 +3,7 @@ package com.d1m.wechat.model.enums;
 public enum Category {
 
   TAG("打标签", 0),
-  MEMBER_EXPORT("用户导出", 1);
+  MEMBER_EXPORT("用户列表导出", 1);
 
   private String name;
   private Integer value;
